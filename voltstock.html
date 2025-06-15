@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VoltStock AI - Generate Stock Images</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Roboto', sans-serif; }
+    h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
+  </style>
+</head>
+
+<body class="bg-[#1A1A1A] text-white">
+
+  <!-- Header -->
+  <header class="flex justify-between items-center p-6 bg-[#2C3E50] shadow-lg">
+    <div class="flex items-center">
+      <img src="images/voltan-logo-transparent.png" alt="VoltanLabs" class="h-10 mr-3">
+      <h1 class="text-2xl font-bold text-white">VoltStock AI</h1>
+    </div>
+    <nav>
+      <a href="/" class="mx-4 text-white hover:text-[#FFD700]">Home</a>
+      <a href="/voltstock.html" class="mx-4 text-white hover:text-[#FFD700]">VoltStock AI</a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="text-center py-20 bg-gradient-to-b from-[#2C3E50] to-[#1A1A1A]">
+    <h2 class="text-5xl font-bold mb-4 text-[#007BFF]">Generate Stunning Stock Images</h2>
+    <p class="text-xl mb-10">AI-powered stock image generator tailored for your creative needs.</p>
+
+    <div class="max-w-xl mx-auto bg-[#2C3E50] p-8 rounded-2xl shadow-lg">
+      <label for="prompt" class="block mb-2 text-xl font-semibold">Enter your prompt:</label>
+      <input id="prompt" type="text" placeholder="e.g. Futuristic city skyline at sunset" 
+        class="w-full p-4 rounded-lg text-black mb-4" />
+
+      <label for="style" class="block mb-2 text-xl font-semibold">Select Style:</label>
+      <select id="style" class="w-full p-4 rounded-lg text-black mb-6">
+        <option>Photorealistic</option>
+        <option>Illustration</option>
+        <option>3D Render</option>
+        <option>Cartoon</option>
+      </select>
+
+      <button onclick="generateImages()" class="px-8 py-4 bg-[#007BFF] text-white rounded-xl hover:bg-[#005FCC] transition w-full text-xl">Generate</button>
+    </div>
+  </section>
+
+  <!-- Results Section -->
+  <section id="results" class="py-20 bg-[#1A1A1A] text-center hidden">
+    <h3 class="text-4xl mb-10">Your Generated Images:</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto" id="image-grid"></div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center py-10 bg-[#2C3E50]">
+    <p>© 2025 VoltanLabs — All rights reserved.</p>
+  </footer>
+
+  <script>
+    function generateImages() {
+      const prompt = document.getElementById('prompt').value;
+      const style = document.getElementById('style').value;
+      const grid = document.getElementById('image-grid');
+      grid.innerHTML = "";
+
+      for (let i = 1; i <= 4; i++) {
+        const img = document.createElement('img');
+        img.src = `https://placehold.co/400x300?text=${encodeURIComponent(style)}+Image+${i}`;
+        img.alt = "Generated image";
+        img.className = "rounded-xl shadow-lg mx-auto";
+        grid.appendChild(img);
+      }
+      document.getElementById('results').classList.remove('hidden');
+    }
+  </script>
+
+</body>
+</html>
