@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Voltan's Quest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Arial', sans-serif; }
+  </style>
+</head>
+
+<body class="bg-[#1A1A1A] text-white min-h-screen flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="bg-[#2C3E50] p-4 shadow-lg flex items-center">
+    <img src="images/voltan-icon.png" alt="Voltan" class="h-12 w-12 mr-4">
+    <h1 class="text-2xl font-bold">Voltan's Quest</h1>
+  </header>
+
+  <!-- Game Section -->
+  <main class="flex-1 p-8">
+    <div id="story" class="text-xl mb-8"></div>
+    <div id="choices" class="space-y-4"></div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#2C3E50] p-4 text-center text-sm">
+    © 2025 VoltanLabs - VoltArcade Series
+  </footer>
+
+  <script>
+    const story = {
+      start: {
+        text: "You are Voltan, guardian of the Voltaverse. A distress signal arrives: The Null King is draining energy from the city. Do you respond immediately or gather intel first?",
+        choices: [
+          { text: "Respond Immediately ⚡", next: "battle" },
+          { text: "Gather Intel 🔎", next: "intel" }
+        ]
+      },
+      battle: {
+        text: "You burst into the city center. The Null King's minions await! Do you attack with a lightning blast or attempt to negotiate?",
+        choices: [
+          { text: "Lightning Blast ⚡", next: "victory" },
+          { text: "Negotiate 🤝", next: "trap" }
+        ]
+      },
+      intel: {
+        text: "You gather valuable information. The Null King has a weakness to amplified energy fields. Do you build a device or confront him with the knowledge?",
+        choices: [
+          { text: "Build Device 🔧", next: "device" },
+          { text: "Confront Directly 💪", next: "trap" }
+        ]
+      },
+      device: {
+        text: "Your device amplifies your power. You confront the Null King and overpower him. The Voltaverse is saved!",
+        choices: [
+          { text: "Play Again", next: "start" }
+        ]
+      },
+      trap: {
+        text: "It was a trap! You're overwhelmed and captured. The Voltaverse falls into darkness.",
+        choices: [
+          { text: "Try Again", next: "start" }
+        ]
+      },
+      victory: {
+        text: "Your powerful lightning blast defeats the Null King's minions. The city is safe, but the Null King escapes — for now...",
+        choices: [
+          { text: "Play Again", next: "start" }
+        ]
+      }
+    };
+
+    function renderScene(scene) {
+      document.getElementById('story').textContent = story[scene].text;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      story[scene].choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.textContent = choice.text;
+        btn.className = "block w-full py-4 bg-[#007BFF] rounded-lg text-white text-xl hover:bg-[#005FCC] transition";
+        btn.onclick = () => renderScene(choice.next);
+        choicesDiv.appendChild(btn);
+      });
+    }
+
+    // Start game
+    renderScene('start');
+  </script>
+
+</body>
+</html>
