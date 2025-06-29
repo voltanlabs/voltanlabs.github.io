@@ -13,7 +13,6 @@
 </head>
 <body class="bg-[#1A1A1A] text-white">
 
-  <!-- Header -->
   <header class="flex flex-col sm:flex-row justify-between items-center p-4 sm:p-6 bg-[#2C3E50] shadow-lg space-y-2 sm:space-y-0">
     <div class="flex items-center">
       <img src="images/voltanlabs_icon.png" alt="VoltanLabs Logo" class="h-10 mr-3">
@@ -25,12 +24,11 @@
     </nav>
   </header>
 
-  <!-- Main Prompt Builder -->
   <main class="max-w-3xl mx-auto py-16 px-4 sm:px-6">
     <h2 class="text-4xl font-bold text-center mb-10">Craft Powerful AI Prompts</h2>
 
     <div class="bg-[#2C3E50] rounded-2xl p-6 sm:p-10 shadow-lg">
-      <label class="block mb-2 text-lg sm:text-xl">Select Prompt Type:</label>
+      <label for="promptType" class="block mb-2 text-lg sm:text-xl">Select Prompt Type:</label>
       <select id="promptType" class="w-full p-3 rounded-lg text-black mb-6">
         <option>Image</option>
         <option>Chat</option>
@@ -39,10 +37,10 @@
         <option>Branding</option>
       </select>
 
-      <label class="block mb-2 text-lg sm:text-xl">Describe your idea:</label>
+      <label for="promptInput" class="block mb-2 text-lg sm:text-xl">Describe your idea:</label>
       <input type="text" id="promptInput" placeholder="e.g. A futuristic robot in Tokyo at night..." class="w-full p-4 mb-6 rounded-lg text-black" />
 
-      <label class="block mb-2 text-lg sm:text-xl">Enhance with style:</label>
+      <label for="styleEnhancer" class="block mb-2 text-lg sm:text-xl">Enhance with style:</label>
       <select id="styleEnhancer" class="w-full p-3 rounded-lg text-black mb-6">
         <option>None</option>
         <option>High detail</option>
@@ -52,40 +50,104 @@
         <option>Elegant</option>
       </select>
 
-      <button onclick="buildPrompt()" class="w-full bg-[#007BFF] text-white p-4 rounded-xl hover:bg-[#005FCC] transition">Generate Prompt</button>
+      <button id="generatePromptBtn" class="w-full bg-[#007BFF] text-white p-4 rounded-xl hover:bg-[#005FCC] transition">Generate Prompt</button>
     </div>
 
     <div id="resultBox" class="mt-10 hidden">
       <h3 class="text-2xl font-bold mb-4">Your Prompt:</h3>
       <div id="finalPrompt" class="p-5 bg-[#2C3E50] rounded-xl text-lg leading-relaxed tracking-wide border border-[#007BFF] whitespace-pre-wrap"></div>
-      <button onclick="copyPrompt()" class="mt-4 px-6 py-2 bg-[#FFD700] text-black rounded hover:bg-yellow-400">Copy to Clipboard</button>
+      <button id="copyPromptBtn" class="mt-4 px-6 py-2 bg-[#FFD700] text-black rounded hover:bg-yellow-400">Copy to Clipboard</button>
     </div>
   </main>
-
-  <script>
-    function buildPrompt() {
-      const type = document.getElementById('promptType').value;
-      const idea = document.getElementById('promptInput').value;
-      const style = document.getElementById('styleEnhancer').value;
-
-      let final = idea;
-      if (style !== 'None') final += ` in a ${style.toLowerCase()} style`;
-      final += ` // (${type.toUpperCase()} prompt)`;
-
-      document.getElementById('finalPrompt').innerText = final;
-      document.getElementById('resultBox').classList.remove('hidden');
-    }
-
-    function copyPrompt() {
-      const text = document.getElementById('finalPrompt').innerText;
-      navigator.clipboard.writeText(text);
-      alert('Prompt copied to clipboard!');
-    }
-  </script>
 
   <footer class="text-center py-10 bg-[#2C3E50] mt-20">
     <p class="text-sm">© 2025 VoltanLabs — All rights reserved.</p>
   </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Constants for DOM elements
+      const promptTypeSelect = document.getElementById('promptType');
+      const promptInput = document.getElementById('promptInput');
+      const styleEnhancerSelect = document.getElementById('styleEnhancer');
+      const generateButton = document.getElementById('generatePromptBtn');
+      const resultBox = document.getElementById('resultBox');
+      const finalPromptDiv = document.getElementById('finalPrompt');
+      const copyButton = document.getElementById('copyPromptBtn');
+
+      // Function to build the prompt
+      function buildPrompt() {
+        const type = promptTypeSelect.value;
+        const idea = promptInput.value.trim(); // Trim whitespace
+
+        if (!idea) {
+          alert('Please describe your idea before generating a prompt.');
+          return;
+        }
+
+        const style = styleEnhancerSelect.value;
+
+        let finalPromptText = idea;
+
+        if (style !== 'None') {
+          finalPromptText += ` in a ${style.toLowerCase()} style`;
+        }
+
+        finalPromptText += ` // (${type.toUpperCase()} prompt)`;
+
+        finalPromptDiv.innerText = finalPromptText;
+        resultBox.classList.remove('hidden');
+      }
+
+      // Function to copy the prompt
+      function copyPrompt() {
+        const textToCopy = finalPromptDiv.innerText;
+        navigator.clipboard.writeText(textToCopy)
+          .then(() => {
+            // Provide visual feedback on the button itself
+            const originalButtonText = copyButton.innerText;
+            copyButton.innerText = 'Copied!';
+            setTimeout(() => {
+              copyButton.innerText = originalButtonText;
+            }, 2000); // Change back after 2 seconds
+          })
+          .catch(err => {
+            console.error('Failed to copy text: ', err);
+            alert('Failed to copy prompt. Please try again.');
+          });
+      }
+
+      // Attach event listeners
+      generateButton.addEventListener('click', buildPrompt);
+      copyButton.addEventListener('click', copyPrompt);
+
+      // Dynamic placeholder for prompt input based on type selection
+      promptTypeSelect.addEventListener('change', () => {
+        const selectedType = promptTypeSelect.value;
+        let placeholderText = '';
+        switch (selectedType) {
+          case 'Image':
+            placeholderText = 'e.g. A cyberpunk cityscape with flying cars...';
+            break;
+          case 'Chat':
+            placeholderText = 'e.g. Explain quantum entanglement in simple terms...';
+            break;
+          case 'Video':
+            placeholderText = 'e.g. A time-lapse of a flower blooming, from bud to full blossom...';
+            break;
+          case 'Code':
+            placeholderText = 'e.g. A Python function to reverse a string...';
+            break;
+          case 'Branding':
+            placeholderText = 'e.g. Catchy slogan for a sustainable coffee shop...';
+            break;
+          default:
+            placeholderText = 'e.g. A futuristic robot in Tokyo at night...';
+        }
+        promptInput.placeholder = placeholderText;
+      });
+    });
+  </script>
 
 </body>
 </html>
