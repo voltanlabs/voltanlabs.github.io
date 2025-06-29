@@ -14,48 +14,50 @@
 <body class="bg-[#1A1A1A] text-white">
 
   <!-- Header -->
-  <header class="flex justify-between items-center p-6 bg-[#2C3E50] shadow-lg">
+  <header class="flex flex-col sm:flex-row justify-between items-center p-4 sm:p-6 bg-[#2C3E50] shadow-lg space-y-2 sm:space-y-0">
     <div class="flex items-center">
       <img src="images/voltanlabs_icon.png" alt="VoltanLabs Logo" class="h-10 mr-3">
       <h1 class="text-2xl font-bold">VoltPromptCraft</h1>
     </div>
-    <nav>
-      <a href="/" class="mx-4 hover:text-[#FFD700]">Home</a>
-      <a href="/voltstock.html" class="mx-4 hover:text-[#FFD700]">VoltStock AI</a>
+    <nav class="flex space-x-4">
+      <a href="/" class="hover:text-[#FFD700]">Home</a>
+      <a href="/voltstock.html" class="hover:text-[#FFD700]">VoltStock AI</a>
     </nav>
   </header>
 
   <!-- Main Prompt Builder -->
-  <main class="max-w-4xl mx-auto py-16 px-4">
+  <main class="max-w-3xl mx-auto py-16 px-4 sm:px-6">
     <h2 class="text-4xl font-bold text-center mb-10">Craft Powerful AI Prompts</h2>
 
-    <label class="block mb-2 text-xl">Select Prompt Type:</label>
-    <select id="promptType" class="w-full p-3 rounded-lg text-black mb-6">
-      <option>Image</option>
-      <option>Chat</option>
-      <option>Video</option>
-      <option>Code</option>
-      <option>Branding</option>
-    </select>
+    <div class="bg-[#2C3E50] rounded-2xl p-6 sm:p-10 shadow-lg">
+      <label class="block mb-2 text-lg sm:text-xl">Select Prompt Type:</label>
+      <select id="promptType" class="w-full p-3 rounded-lg text-black mb-6">
+        <option>Image</option>
+        <option>Chat</option>
+        <option>Video</option>
+        <option>Code</option>
+        <option>Branding</option>
+      </select>
 
-    <label class="block mb-2 text-xl">Describe your idea:</label>
-    <input type="text" id="promptInput" placeholder="e.g. A futuristic robot in Tokyo at night..." class="w-full p-4 mb-6 rounded-lg text-black" />
+      <label class="block mb-2 text-lg sm:text-xl">Describe your idea:</label>
+      <input type="text" id="promptInput" placeholder="e.g. A futuristic robot in Tokyo at night..." class="w-full p-4 mb-6 rounded-lg text-black" />
 
-    <label class="block mb-2 text-xl">Enhance with style:</label>
-    <select id="styleEnhancer" class="w-full p-3 rounded-lg text-black mb-6">
-      <option>None</option>
-      <option>High detail</option>
-      <option>Cinematic</option>
-      <option>Surreal</option>
-      <option>Funny</option>
-      <option>Elegant</option>
-    </select>
+      <label class="block mb-2 text-lg sm:text-xl">Enhance with style:</label>
+      <select id="styleEnhancer" class="w-full p-3 rounded-lg text-black mb-6">
+        <option>None</option>
+        <option>High detail</option>
+        <option>Cinematic</option>
+        <option>Surreal</option>
+        <option>Funny</option>
+        <option>Elegant</option>
+      </select>
 
-    <button onclick="buildPrompt()" class="w-full bg-[#007BFF] text-white p-4 rounded-xl hover:bg-[#005FCC] transition">Generate Prompt</button>
+      <button onclick="buildPrompt()" class="w-full bg-[#007BFF] text-white p-4 rounded-xl hover:bg-[#005FCC] transition">Generate Prompt</button>
+    </div>
 
     <div id="resultBox" class="mt-10 hidden">
       <h3 class="text-2xl font-bold mb-4">Your Prompt:</h3>
-      <div id="finalPrompt" class="p-4 bg-[#2C3E50] rounded-xl text-lg"></div>
+      <div id="finalPrompt" class="p-5 bg-[#2C3E50] rounded-xl text-lg leading-relaxed tracking-wide border border-[#007BFF] whitespace-pre-wrap"></div>
       <button onclick="copyPrompt()" class="mt-4 px-6 py-2 bg-[#FFD700] text-black rounded hover:bg-yellow-400">Copy to Clipboard</button>
     </div>
   </main>
