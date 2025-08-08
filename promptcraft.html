@@ -1,153 +1,359 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VoltPromptCraft - Prompt Generator</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VoltPromptCraft — Prompt Generator</title>
+  <meta name="description" content="VoltPromptCraft — Expand short ideas into powerful prompts for images, stories, roleplay, marketing and more.">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Roboto', sans-serif; }
-    h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
+    h1,h2,h3 { font-family: 'Orbitron', sans-serif; }
   </style>
 </head>
-<body class="bg-[#1A1A1A] text-white">
+<body class="bg-[#0f1724] text-white min-h-screen flex flex-col">
 
-  <header class="flex flex-col sm:flex-row justify-between items-center p-4 sm:p-6 bg-[#2C3E50] shadow-lg space-y-2 sm:space-y-0">
-    <div class="flex items-center">
-      <img src="images/voltanlabs_icon.png" alt="VoltanLabs Logo" class="h-10 mr-3">
-      <h1 class="text-2xl font-bold">VoltPromptCraft</h1>
+  <!-- Header -->
+  <header class="bg-[#112233] p-4 md:p-6 shadow-lg">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <div class="flex items-center">
+        <img src="images/voltanlabs_icon.png" alt="VoltanLabs" class="h-10 w-10 mr-3">
+        <h1 class="text-2xl font-bold">VoltPromptCraft</h1>
+      </div>
+      <nav class="hidden md:flex space-x-4 text-sm">
+        <a href="index.html" class="hover:text-[#FFD700]">Home</a>
+        <a href="features.html" class="hover:text-[#FFD700]">Features</a>
+        <a href="voltanquest.html" class="hover:text-[#FFD700]">Voltan's Quest</a>
+      </nav>
     </div>
-    <nav class="flex space-x-4">
-      <a href="/" class="hover:text-[#FFD700]">Home</a>
-      <a href="/voltstock.html" class="hover:text-[#FFD700]">VoltStock AI</a>
-    </nav>
   </header>
 
-  <main class="max-w-3xl mx-auto py-16 px-4 sm:px-6">
-    <h2 class="text-4xl font-bold text-center mb-10">Craft Powerful AI Prompts</h2>
+  <!-- Main -->
+  <main class="flex-1 max-w-5xl mx-auto w-full p-4 md:p-8">
+    <section class="mb-8 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold text-[#00A3FF]">Turn short ideas into powerful prompts</h2>
+      <p class="text-gray-300 mt-2 max-w-2xl mx-auto">Paste a short phrase, pick a context, choose a style, and VoltPromptCraft will expand it into a detailed, ready-to-use prompt.</p>
+    </section>
 
-    <div class="bg-[#2C3E50] rounded-2xl p-6 sm:p-10 shadow-lg">
-      <label for="promptType" class="block mb-2 text-lg sm:text-xl">Select Prompt Type:</label>
-      <select id="promptType" class="w-full p-3 rounded-lg text-black mb-6">
-        <option>Image</option>
-        <option>Chat</option>
-        <option>Video</option>
-        <option>Code</option>
-        <option>Branding</option>
-      </select>
+    <section class="bg-[#122233] p-6 rounded-2xl shadow-lg mb-8">
+      <!-- Input Row -->
+      <label class="block text-sm text-gray-300 mb-2">Your short idea / back phrase</label>
+      <input id="seedInput" type="text" placeholder="e.g. cyberpunk street market at night" 
+             class="w-full p-3 rounded-lg text-black mb-4" />
 
-      <label for="promptInput" class="block mb-2 text-lg sm:text-xl">Describe your idea:</label>
-      <input type="text" id="promptInput" placeholder="e.g. A futuristic robot in Tokyo at night..." class="w-full p-4 mb-6 rounded-lg text-black" />
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <!-- Context -->
+        <div>
+          <label class="block text-sm text-gray-300 mb-2">Context</label>
+          <select id="contextSelect" class="w-full p-3 rounded-lg text-black">
+            <option>Image</option>
+            <option>Story</option>
+            <option>Roleplay</option>
+            <option>Marketing</option>
+            <option>Technical</option>
+            <option>Random</option>
+          </select>
+        </div>
 
-      <label for="styleEnhancer" class="block mb-2 text-lg sm:text-xl">Enhance with style:</label>
-      <select id="styleEnhancer" class="w-full p-3 rounded-lg text-black mb-6">
-        <option>None</option>
-        <option>High detail</option>
-        <option>Cinematic</option>
-        <option>Surreal</option>
-        <option>Funny</option>
-        <option>Elegant</option>
-      </select>
+        <!-- Tone -->
+        <div>
+          <label class="block text-sm text-gray-300 mb-2">Tone / Style</label>
+          <select id="toneSelect" class="w-full p-3 rounded-lg text-black">
+            <option>Neutral</option>
+            <option>Detailed</option>
+            <option>Cinematic</option>
+            <option>Poetic</option>
+            <option>Concise</option>
+            <option>Vivid</option>
+          </select>
+        </div>
 
-      <button id="generatePromptBtn" class="w-full bg-[#007BFF] text-white p-4 rounded-xl hover:bg-[#005FCC] transition">Generate Prompt</button>
+        <!-- Detail level -->
+        <div>
+          <label class="block text-sm text-gray-300 mb-2">Detail Level</label>
+          <select id="detailSelect" class="w-full p-3 rounded-lg text-black">
+            <option>Standard</option>
+            <option>High</option>
+            <option>Ultra</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex gap-3">
+        <button id="genBtn" class="flex-1 px-4 py-3 bg-[#00A3FF] rounded-lg font-semibold hover:bg-[#008bd1] transition">Generate Prompt</button>
+        <button id="regenBtn" class="px-4 py-3 bg-[#2b3b4a] rounded-lg border border-gray-700 hover:bg-[#334655] transition">Regenerate</button>
+        <button id="clearBtn" class="px-4 py-3 bg-[#3b2b4b] rounded-lg border border-gray-700 hover:bg-[#4a3b5a] transition">Clear</button>
+      </div>
+    </section>
+
+    <!-- Result -->
+    <section id="resultSection" class="mb-8 hidden">
+      <h3 class="text-xl font-semibold mb-3">Generated Prompt</h3>
+      <div id="finalPrompt" class="whitespace-pre-wrap p-5 rounded-xl bg-[#0e2233] border border-[#08324a] text-lg leading-relaxed"></div>
+
+      <div class="flex gap-3 mt-4">
+        <button id="copyBtn" class="px-4 py-2 bg-[#FFD700] text-black rounded hover:bg-yellow-400">Copy</button>
+        <button id="saveBtn" class="px-4 py-2 bg-[#2b8f7e] rounded hover:bg-[#24745f]">Save</button>
+        <button id="downloadBtn" class="px-4 py-2 bg-[#6b5cff] rounded hover:bg-[#594be0]">Download .txt</button>
+        <button id="examplesBtn" class="px-4 py-2 bg-[#2b3b4a] rounded hover:bg-[#334655]">Examples</button>
+      </div>
+    </section>
+
+    <!-- Saved prompts -->
+    <section class="bg-[#0f1724] p-4 rounded-xl shadow-inner">
+      <div class="flex items-center justify-between mb-4">
+        <h4 class="text-lg font-semibold">Saved Prompts</h4>
+        <button id="clearSaved" class="text-sm text-gray-300 hover:text-white">Clear saved</button>
+      </div>
+      <div id="savedList" class="space-y-2 text-sm text-gray-300">
+        <!-- saved prompts inserted here -->
+      </div>
+    </section>
+
+    <!-- Examples modal (simple) -->
+    <div id="examplesModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4">
+      <div class="bg-[#0f1724] p-6 rounded-lg max-w-2xl w-full">
+        <h4 class="text-xl font-semibold mb-3">Prompt Examples</h4>
+        <div class="space-y-3 text-sm text-gray-300">
+          <div><strong>Image:</strong> A bustling cyberpunk street market at night, neon signs reflecting on wet pavement, dense fog, diverse crowd, ultra-detailed, cinematic lighting.</div>
+          <div><strong>Story:</strong> The bell tolled as Voltan stood on the cliff, thunder rolling across the sky. He tightened his gauntlet and stepped into the rain—this night would decide the Voltaverse.</div>
+          <div><strong>Roleplay:</strong> You are a wandering knight, standing before the gates of the cliff castle. The guard eyes you warily—what do you say?</div>
+          <div><strong>Marketing:</strong> Experience the ultimate creative toolkit—VoltPromptCraft. Generate professional prompts that get results in seconds.</div>
+        </div>
+        <div class="mt-4 text-right">
+          <button id="closeExamples" class="px-4 py-2 bg-[#007BFF] rounded">Close</button>
+        </div>
+      </div>
     </div>
 
-    <div id="resultBox" class="mt-10 hidden">
-      <h3 class="text-2xl font-bold mb-4">Your Prompt:</h3>
-      <div id="finalPrompt" class="p-5 bg-[#2C3E50] rounded-xl text-lg leading-relaxed tracking-wide border border-[#007BFF] whitespace-pre-wrap"></div>
-      <button id="copyPromptBtn" class="mt-4 px-6 py-2 bg-[#FFD700] text-black rounded hover:bg-yellow-400">Copy to Clipboard</button>
-    </div>
   </main>
 
-  <footer class="text-center py-10 bg-[#2C3E50] mt-20">
-    <p class="text-sm">© 2025 VoltanLabs — All rights reserved.</p>
+  <!-- Footer -->
+  <footer class="bg-[#112233] p-6 text-center text-sm text-gray-300">
+    <div class="max-w-5xl mx-auto">© 2025 VoltanLabs — All rights reserved. Follow us: <span class="text-[#FFD700]">@VoltanLabs</span></div>
   </footer>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Constants for DOM elements
-      const promptTypeSelect = document.getElementById('promptType');
-      const promptInput = document.getElementById('promptInput');
-      const styleEnhancerSelect = document.getElementById('styleEnhancer');
-      const generateButton = document.getElementById('generatePromptBtn');
-      const resultBox = document.getElementById('resultBox');
-      const finalPromptDiv = document.getElementById('finalPrompt');
-      const copyButton = document.getElementById('copyPromptBtn');
+<script>
+/* ---------- Descriptor banks & templates ---------- */
+// small descriptor banks for variation. Expand to taste.
+const envDescriptors = [
+  "dramatic lighting", "soft ambient light", "golden hour glow", "harsh studio lights",
+  "cinematic depth", "foggy atmosphere", "ultra-detailed textures", "high contrast"
+];
+const moodDescriptors = [
+  "moody", "uplifting", "melancholic", "tense", "mysterious", "energetic", "serene"
+];
+const cameraDescriptors = [
+  "wide-angle shot", "close up", "cinematic perspective", "bird's-eye view", "dramatic angle"
+];
+const qualityDescriptors = [
+  "ultra-detailed", "photorealistic", "8k", "high-resolution", "clean vector style", "painterly"
+];
 
-      // Function to build the prompt
-      function buildPrompt() {
-        const type = promptTypeSelect.value;
-        const idea = promptInput.value.trim(); // Trim whitespace
+const spiceWords = [
+  "vivid colors", "intricate patterns", "dynamic motion", "subtle reflections", "soft bokeh"
+];
 
-        if (!idea) {
-          alert('Please describe your idea before generating a prompt.');
-          return;
-        }
+// templates by context
+const templates = {
+  Image: [
+    (seed, tone, detail) => `${seed}, ${pick(envDescriptors,2)}, ${pick(spiceWords,1)}, ${pick(qualityDescriptors,1)}, ${formatTone(tone)}.`,
+    (seed, tone, detail) => `${formatTone(tone)} ${seed} with ${pick(envDescriptors,1)} and ${pick(cameraDescriptors,1)}, ${pick(qualityDescriptors,1)}.`
+  ],
+  Story: [
+    (seed, tone, detail) => `Write a short scene: ${formatTone(tone)} description of ${seed}. Focus on sensory detail and atmosphere.`,
+    (seed, tone, detail) => `${seed} — begin the scene with an evocative opening line and continue into a plot hook. Tone: ${tone}.`
+  ],
+  Roleplay: [
+    (seed, tone, detail) => `You are in the scene: ${seed}. Describe your surroundings and a starting action. Keep prompts short and actionable for roleplay.`,
+    (seed, tone, detail) => `Roleplay setup: ${seed}. Include NPCs, one conflict, and a goal for the player. Tone: ${tone}.`
+  ],
+  Marketing: [
+    (seed, tone, detail) => `Marketing headline and short blurb for: ${seed}. Make it persuasive, benefit-driven, and concise.`,
+    (seed, tone, detail) => `Write a product description and 3 bullet points highlighting benefits of ${seed}. Keep it suitable for a landing page.`
+  ],
+  Technical: [
+    (seed, tone, detail) => `Technical spec or explanation: ${seed}. Provide step-by-step details, constraints, and expected outputs.`,
+    (seed, tone, detail) => `Write a concise technical brief for ${seed} with implementation steps and performance considerations.`
+  ],
+  Random: [
+    (seed, tone, detail) => `Creative spin on ${seed}: ${pick(moodDescriptors,1)} and ${pick(qualityDescriptors,1)}. Add one unexpected twist.`,
+    (seed, tone, detail) => `Make a fresh version of ${seed} by combining ${pick(envDescriptors,1)}, ${pick(spiceWords,1)}, and a ${pick(moodDescriptors,1)} mood.`
+  ]
+};
 
-        const style = styleEnhancerSelect.value;
+/* ---------- Helpers ---------- */
+function rand(min=0,max=1){ return Math.random()*(max-min)+min; }
+function pick(arr,count=1){
+  const copy = [...arr];
+  const out = [];
+  for(let i=0;i<count;i++){
+    if(copy.length===0) break;
+    const idx = Math.floor(Math.random()*copy.length);
+    out.push(copy.splice(idx,1)[0]);
+  }
+  return count===1?out[0]:out;
+}
+function formatTone(tone){
+  switch(tone){
+    case 'Detailed': return "with highly detailed description";
+    case 'Cinematic': return "in a cinematic, dynamic style";
+    case 'Poetic': return "in poetic, vivid language";
+    case 'Concise': return "concise and to-the-point";
+    case 'Vivid': return "with vivid, saturated imagery";
+    default: return "in a neutral style";
+  }
+}
 
-        let finalPromptText = idea;
+/* ---------- Core generator ---------- */
+function generatePrompt(seed, context, tone, detail){
+  seed = (seed || '').trim();
+  if(!seed) return "Please enter a short idea (e.g. 'medieval castle on a cliff').";
 
-        if (style !== 'None') {
-          finalPromptText += ` in a ${style.toLowerCase()} style`;
-        }
+  const tpls = templates[context] || templates['Random'];
+  // choose template and optionally append detail descriptors based on detail level
+  const tpl = tpls[Math.floor(Math.random()*tpls.length)];
+  let base = tpl(seed, tone, detail);
 
-        finalPromptText += ` // (${type.toUpperCase()} prompt)`;
+  // append detail level flourishes
+  if(detail === 'High'){
+    base += ` Emphasize textures and atmosphere, include a focal point.`;
+  } else if(detail === 'Ultra'){
+    base += ` Emphasize ultra-detailed textures, multiple lighting passes, and exact color palettes.`;
+  }
+  // small cleanup
+  return cleanup(base);
+}
 
-        finalPromptDiv.innerText = finalPromptText;
-        resultBox.classList.remove('hidden');
-      }
+function cleanup(text){
+  // normalize spaces, trim extra commas
+  return text.replace(/\s+,/g,',').replace(/\s{2,}/g,' ').trim();
+}
 
-      // Function to copy the prompt
-      function copyPrompt() {
-        const textToCopy = finalPromptDiv.innerText;
-        navigator.clipboard.writeText(textToCopy)
-          .then(() => {
-            // Provide visual feedback on the button itself
-            const originalButtonText = copyButton.innerText;
-            copyButton.innerText = 'Copied!';
-            setTimeout(() => {
-              copyButton.innerText = originalButtonText;
-            }, 2000); // Change back after 2 seconds
-          })
-          .catch(err => {
-            console.error('Failed to copy text: ', err);
-            alert('Failed to copy prompt. Please try again.');
-          });
-      }
+/* ---------- UI wiring ---------- */
+const seedInput = document.getElementById('seedInput');
+const contextSelect = document.getElementById('contextSelect');
+const toneSelect = document.getElementById('toneSelect');
+const detailSelect = document.getElementById('detailSelect');
+const genBtn = document.getElementById('genBtn');
+const regenBtn = document.getElementById('regenBtn');
+const clearBtn = document.getElementById('clearBtn');
+const finalPrompt = document.getElementById('finalPrompt');
+const resultSection = document.getElementById('resultSection');
+const copyBtn = document.getElementById('copyBtn');
+const saveBtn = document.getElementById('saveBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const examplesBtn = document.getElementById('examplesBtn');
+const examplesModal = document.getElementById('examplesModal');
+const closeExamples = document.getElementById('closeExamples');
+const savedList = document.getElementById('savedList');
+const clearSaved = document.getElementById('clearSaved');
 
-      // Attach event listeners
-      generateButton.addEventListener('click', buildPrompt);
-      copyButton.addEventListener('click', copyPrompt);
+function showResult(text){
+  finalPrompt.textContent = text;
+  resultSection.classList.remove('hidden');
+}
+function runGenerate(){
+  const seed = seedInput.value;
+  const ctx = contextSelect.value;
+  const tone = toneSelect.value;
+  const detail = detailSelect.value;
+  const out = generatePrompt(seed, ctx, tone, detail);
+  showResult(out);
+}
 
-      // Dynamic placeholder for prompt input based on type selection
-      promptTypeSelect.addEventListener('change', () => {
-        const selectedType = promptTypeSelect.value;
-        let placeholderText = '';
-        switch (selectedType) {
-          case 'Image':
-            placeholderText = 'e.g. A cyberpunk cityscape with flying cars...';
-            break;
-          case 'Chat':
-            placeholderText = 'e.g. Explain quantum entanglement in simple terms...';
-            break;
-          case 'Video':
-            placeholderText = 'e.g. A time-lapse of a flower blooming, from bud to full blossom...';
-            break;
-          case 'Code':
-            placeholderText = 'e.g. A Python function to reverse a string...';
-            break;
-          case 'Branding':
-            placeholderText = 'e.g. Catchy slogan for a sustainable coffee shop...';
-            break;
-          default:
-            placeholderText = 'e.g. A futuristic robot in Tokyo at night...';
-        }
-        promptInput.placeholder = placeholderText;
-      });
-    });
-  </script>
+// buttons
+genBtn.addEventListener('click', runGenerate);
+regenBtn.addEventListener('click', runGenerate);
+clearBtn.addEventListener('click', () => {
+  seedInput.value='';
+  finalPrompt.textContent='';
+  resultSection.classList.add('hidden');
+});
 
+// copy
+copyBtn.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(finalPrompt.textContent);
+    copyBtn.textContent = 'Copied!';
+    setTimeout(()=> copyBtn.textContent = 'Copy', 1500);
+  } catch (e) {
+    alert('Copy failed - browser blocked clipboard access.');
+  }
+});
+
+// download
+downloadBtn.addEventListener('click', () => {
+  const txt = finalPrompt.textContent || '';
+  if(!txt) return alert('Nothing to download.');
+  const blob = new Blob([txt], {type: 'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'prompt.txt'; a.click();
+  URL.revokeObjectURL(url);
+});
+
+// examples modal
+examplesBtn.addEventListener('click', () => examplesModal.classList.remove('hidden'));
+closeExamples.addEventListener('click', () => examplesModal.classList.add('hidden'));
+
+// saved prompts: localStorage
+function loadSaved(){
+  const raw = localStorage.getItem('volt_prompts_v1');
+  return raw ? JSON.parse(raw) : [];
+}
+function savePrompt(text){
+  const list = loadSaved();
+  list.unshift({text,ts:Date.now()});
+  localStorage.setItem('volt_prompts_v1', JSON.stringify(list));
+  renderSaved();
+}
+function renderSaved(){
+  const items = loadSaved();
+  if(items.length===0){
+    savedList.innerHTML = '<div class=\"text-gray-500\">No saved prompts yet.</div>';
+    return;
+  }
+  savedList.innerHTML = '';
+  items.slice(0,20).forEach((it,idx) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'bg-[#081821] p-3 rounded flex items-start justify-between';
+    const left = document.createElement('div');
+    left.className = 'text-sm text-gray-200';
+    left.textContent = it.text;
+    const actions = document.createElement('div');
+    actions.className = 'ml-3 flex gap-2';
+    const useBtn = document.createElement('button'); useBtn.className='px-2 py-1 bg-[#007BFF] rounded text-xs'; useBtn.textContent='Use';
+    const delBtn = document.createElement('button'); delBtn.className='px-2 py-1 bg-[#663399] rounded text-xs'; delBtn.textContent='Delete';
+    useBtn.onclick = ()=> { seedInput.value = it.text; runGenerate(); };
+    delBtn.onclick = ()=> {
+      const list = loadSaved();
+      list.splice(idx,1);
+      localStorage.setItem('volt_prompts_v1', JSON.stringify(list));
+      renderSaved();
+    };
+    actions.appendChild(useBtn); actions.appendChild(delBtn);
+    wrap.appendChild(left); wrap.appendChild(actions);
+    savedList.appendChild(wrap);
+  });
+}
+saveBtn.addEventListener('click', () => {
+  if(!finalPrompt.textContent) return alert('Generate a prompt first.');
+  savePrompt(finalPrompt.textContent);
+  saveBtn.textContent = 'Saved!';
+  setTimeout(()=> saveBtn.textContent = 'Save', 1200);
+});
+clearSaved.addEventListener('click', ()=>{
+  if(confirm('Clear all saved prompts?')){
+    localStorage.removeItem('volt_prompts_v1');
+    renderSaved();
+  }
+});
+
+// initial render
+renderSaved();
+
+</script>
 </body>
 </html>
