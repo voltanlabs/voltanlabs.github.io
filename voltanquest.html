@@ -37,17 +37,31 @@
 
     /* STORY CARD — transparent with glow */
     #card {
-      background: rgba(0, 0, 0, 0.03) !important;
-      border-radius: 1.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      padding: 2rem;
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-radius: 1.5rem;
 
-      /* Glow rim around edges */
-      box-shadow:
-        0 0 25px rgba(0, 153, 255, 0.16),
-        0 0 6px rgba(0, 153, 255, 0.25) inset,
-        0 12px 40px rgba(0, 0, 0, 0.55);
-    }
+  /* thin, bright electric-blue border */
+  border: 2px solid rgba(0, 180, 255, 0.85);
+
+  /* layered glow system */
+  box-shadow:
+    /* outer wide glow */
+    0 0 40px rgba(0, 160, 255, 0.45),
+    0 0 80px rgba(0, 160, 255, 0.25),
+
+    /* rim glow hugging the border */
+    0 0 12px rgba(0, 200, 255, 0.9) inset,
+
+    /* inner subtle haze */
+    0 0 20px rgba(0, 140, 255, 0.35) inset,
+
+    /* drop shadow for depth */
+    0 18px 45px rgba(0, 0, 0, 0.5);
+
+  padding: 2rem;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
 
     /* Divider under title */
     .divider {
