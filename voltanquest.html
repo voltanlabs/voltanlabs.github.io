@@ -16,44 +16,44 @@
     #questBody {
       --scene-bg: url('images/quest/plaza-signal.jpg');
       min-height: 100vh;
+      color: #fff;
     }
 
-    /* Full-page background art */
+    /* Full-strength background art (no wash-out) */
     #questBody::before {
       content: "";
       position: fixed;
       inset: 0;
       background-image: var(--scene-bg);
       background-size: cover;
-      background-position: center 30%;   /* center hero nicely */
+      background-position: center 30%;
       background-repeat: no-repeat;
       background-attachment: fixed;
-      opacity: 0.25;
-      transition: background-image 0.6s ease, opacity 0.5s ease;
+      opacity: 1; /* full color */
+      transition: background-image 0.6s ease;
       z-index: -1;
     }
 
-    /* Glassmorphism story card */
+    /* Nearly-clear glass card */
     #card {
-  background: rgba(10, 18, 35, 0.30) !important;        /* lighter & clearer */
-  backdrop-filter: blur(10px) !important;               /* softer blur */
-  -webkit-backdrop-filter: blur(6px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.45);
-  border-radius: 1.5rem;
-}
+      background: rgba(5, 10, 20, 0.18) !important;         /* very transparent */
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      border-radius: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+    }
 
-    /* Simple fade animation on scene change */
+    /* Simple fade animation on scene changes */
     .fade-enter { opacity: 0; transform: translateY(8px); }
     .fade-enter-active { opacity: 1; transform: translateY(0); transition: all 0.25s ease; }
 
-    /* Primary button style */
     .btn-primary { background:#007BFF; color:#fff; }
     .btn-primary:hover { background:#005FCC; }
   </style>
 </head>
 
-<body id="questBody" class="text-white flex flex-col">
+<body id="questBody" class="flex flex-col">
 
   <!-- HEADER -->
   <header class="bg-[#2C3E50] text-white shadow-lg">
@@ -89,12 +89,12 @@
   </header>
 
   <!-- MAIN GAME AREA -->
-  <main class="flex-1">
+  <main class="flex-1 text-white">
     <section class="max-w-3xl mx-auto px-4 py-10">
 
       <!-- HUD -->
       <div class="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div class="text-sm text-white/80">
+        <div class="text-sm text-white/85">
           Chapter: <span id="chapter" class="font-medium">1</span>
         </div>
         <div class="flex items-center gap-4 text-sm">
@@ -123,7 +123,7 @@
   </main>
 
   <!-- FOOTER -->
-  <footer class="bg-[#2C3E50] text-center text-sm py-6">
+  <footer class="bg-[#2C3E50] text-center text-sm text-white py-6">
     © 2025 VoltanLabs — VoltArcade Series
   </footer>
 
@@ -320,11 +320,11 @@
     }
 
     /* ========= RENDER ENGINE ========= */
-    const titleEl = document.getElementById("title");
-    const textEl  = document.getElementById("text");
-    const choicesEl = document.getElementById("choices");
-    const chapterEl = document.getElementById("chapter");
-    const cardEl = document.getElementById("card");
+    const titleEl    = document.getElementById("title");
+    const textEl     = document.getElementById("text");
+    const choicesEl  = document.getElementById("choices");
+    const chapterEl  = document.getElementById("chapter");
+    const cardEl     = document.getElementById("card");
     const restartBtn = document.getElementById("restartBtn");
 
     function render(nodeKey) {
@@ -341,7 +341,7 @@
       }, 260);
 
       titleEl.textContent = node.title;
-      textEl.textContent = node.text;
+      textEl.textContent  = node.text;
       choicesEl.innerHTML = "";
 
       node.choices.forEach(choice => {
