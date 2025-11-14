@@ -12,21 +12,21 @@
     body { font-family: 'Roboto', sans-serif; }
     h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
 
-    /* Background container */
+    /* Root background */
     #questBody {
       --scene-bg: url('images/quest/plaza-signal.jpg');
       min-height: 100vh;
       color: #fff;
     }
 
-    /* Full-strength background image */
+    /* Full background */
     #questBody::before {
       content: "";
       position: fixed;
       inset: 0;
       background-image: var(--scene-bg);
       background-size: cover;
-      background-position: center 30%;
+      background-position: center 35%;
       background-repeat: no-repeat;
       background-attachment: fixed;
       opacity: 1;
@@ -34,37 +34,50 @@
       z-index: -1;
     }
 
-    /* STORY CARD (Ultra transparent + neon glow) */
+    /* STORY CARD — ultra-transparent, neon glow */
     #card {
-      background: rgba(0, 0, 0, 0.03) !important; /* option A */
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
+      background: rgba(0, 0, 0, 0.06) !important;
 
       border-radius: 1.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.20);
 
-      /* Dual-layer neon blue glow */
       box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.45),
-        0 0 18px rgba(0, 153, 255, 0.25),
-        0 0 36px rgba(0, 153, 255, 0.18);
+        0 8px 28px rgba(0, 0, 0, 0.55),
+        0 0 22px rgba(0, 153, 255, 0.35),
+        0 0 45px rgba(0, 153, 255, 0.22);
     }
 
-    /* Fade animation */
-    .fade-enter { opacity: 0; transform: translateY(10px); }
-    .fade-enter-active { opacity: 1; transform: translateY(0); transition: all 0.28s ease; }
-
-    .btn-primary {
-      background:#007BFF;
-      color:#fff;
-    }
-    .btn-primary:hover {
-      background:#005FCC;
+    /* Divider line above buttons */
+    #choices {
+      border-top: 1px solid rgba(255, 255, 255, 0.18);
+      padding-top: 20px;
     }
 
     /* Text clarity boost */
+    #title {
+      text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
     #text {
-      text-shadow: 0 1px 3px rgba(0,0,0,0.45);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.55);
+    }
+
+    /* Card fade-in */
+    .fade-enter { opacity: 0; transform: translateY(12px); }
+    .fade-enter-active { opacity: 1; transform: translateY(0); transition: all 0.3s ease; }
+
+    /* Button styles */
+    .btn-primary {
+      background:#007BFF;
+      color:#fff;
+      transition: all 0.22s ease;
+      box-shadow: 0 0 0 rgba(0,153,255,0);
+    }
+
+    /* Button hover pulse */
+    .btn-primary:hover {
+      background:#005FCC;
+      transform: translateY(-1px);
+      box-shadow: 0 0 12px rgba(0,153,255,0.45);
     }
   </style>
 </head>
@@ -80,10 +93,8 @@
         <span class="text-xl font-bold">VoltanLabs</span>
       </a>
 
-      <!-- Mobile burger -->
       <button id="navToggle" class="md:hidden p-2 rounded hover:bg-white/10" aria-label="Open menu">☰</button>
 
-      <!-- Desktop nav -->
       <nav class="hidden md:flex items-center space-x-6 text-sm">
         <a href="index.html" class="hover:text-[#FFD700]">Home</a>
         <a href="features.html" class="hover:text-[#FFD700]">Features</a>
@@ -93,7 +104,6 @@
 
     </div>
 
-    <!-- Mobile menu -->
     <div id="mobileMenu" class="md:hidden hidden border-t border-white/10">
       <nav class="px-4 py-3 space-y-2 text-sm">
         <a href="index.html" class="block py-2 hover:text-[#FFD700]">Home</a>
@@ -131,7 +141,7 @@
       <div id="card" class="p-6 md:p-8 space-y-5">
         <h2 id="title" class="text-3xl font-bold text-[#FFD700]"></h2>
         <p id="text" class="text-lg leading-relaxed"></p>
-        <div id="choices" class="mt-6 grid grid-cols-1 gap-3"></div>
+        <div id="choices" class="grid grid-cols-1 gap-3"></div>
       </div>
 
     </section>
@@ -142,14 +152,14 @@
     © 2025 VoltanLabs — VoltArcade Series
   </footer>
 
-  <!-- SCRIPT (unchanged logic) -->
+  <!-- SCRIPT (same logic as before) -->
   <script>
     /* MOBILE NAV */
     const navToggle = document.getElementById('navToggle');
     const mobileMenu = document.getElementById('mobileMenu');
-    navToggle.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); });
+    navToggle.onclick = () => mobileMenu.classList.toggle('hidden');
 
-    /* SFX */
+    /* CLICK SFX */
     function playBeep() {
       if (!document.getElementById('sfxToggle').checked) return;
       try {
@@ -164,52 +174,43 @@
         gain.gain.setValueAtTime(0.0001, t);
         gain.gain.exponentialRampToValueAtTime(0.05, t + 0.02);
         gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
-        osc.start(t);
-        osc.stop(t + 0.15);
+        osc.start(t); osc.stop(t + 0.15);
       } catch(e){}
     }
 
-    /* AMBIENCE */
-    let ambCtx = null, ambTimer = null;
+    /* AMBIENCE LOOP */
+    let ambCtx=null, ambTimer=null;
     function startAmbience() {
       if (ambCtx) return;
-      ambCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const master = ambCtx.createGain();
-      master.gain.value = 0.02;
+      ambCtx=new (window.AudioContext||window.webkitAudioContext)();
+      const master=ambCtx.createGain();
+      master.gain.value=0.02;
       master.connect(ambCtx.destination);
-
       function whoosh() {
-        const o = ambCtx.createOscillator();
-        const g = ambCtx.createGain();
-        o.type = 'sawtooth';
-        o.frequency.value = 120 + Math.random()*40;
+        const o=ambCtx.createOscillator();
+        const g=ambCtx.createGain();
+        o.type='sawtooth';
+        o.frequency.value=120+Math.random()*40;
         o.connect(g); g.connect(master);
-        const now = ambCtx.currentTime;
-        g.gain.setValueAtTime(0.0001, now);
-        g.gain.exponentialRampToValueAtTime(0.1, now+0.4);
-        g.gain.exponentialRampToValueAtTime(0.0001, now+2.2);
+        const now=ambCtx.currentTime;
+        g.gain.setValueAtTime(0.0001,now);
+        g.gain.exponentialRampToValueAtTime(0.1,now+0.4);
+        g.gain.exponentialRampToValueAtTime(0.0001,now+2.2);
         o.start(now); o.stop(now+2.4);
       }
-      ambTimer = setInterval(whoosh, 2600);
+      ambTimer=setInterval(whoosh,2600);
     }
-    function stopAmbience() {
-      if (ambTimer) clearInterval(ambTimer);
-      ambTimer = null;
-      if (ambCtx) { try{ ambCtx.close(); } catch(e){} }
-      ambCtx = null;
-    }
-    document.getElementById('ambienceToggle').addEventListener('change', e => {
-      e.target.checked ? startAmbience() : stopAmbience();
-    });
+    function stopAmbience(){ if(ambTimer)clearInterval(ambTimer); ambTimer=null; if(ambCtx){try{ambCtx.close()}catch(e){}} ambCtx=null; }
+    document.getElementById('ambienceToggle').onchange=e=>e.target.checked?startAmbience():stopAmbience();
     startAmbience();
 
-    /* STORY DATA */
+    /* STORY ENGINE */
     const STORY = {
-      start:{chapter:1,title:"Signal from the Voltaverse",text:"You are Voltan, guardian of the Voltaverse. A distress signal crackles...",img:"images/quest/plaza-signal.jpg",choices:[
+      start:{chapter:1,title:"Signal from the Voltaverse",text:"You are Voltan, guardian...",img:"images/quest/plaza-signal.jpg",choices:[
         {label:"Charge in ⚡",next:"plaza"},
         {label:"Gather intel 🔎",next:"intel"}
       ]},
-      plaza:{chapter:2,title:"Storm at the Plaza",text:"You land in the central plaza. Null drones swarm...",img:"images/quest/plaza-battle.jpg",choices:[
+      plaza:{chapter:2,title:"Storm at the Plaza",text:"You land in the central plaza...",img:"images/quest/plaza-battle.jpg",choices:[
         {label:"Arc burst attack",next:"minions_down"},
         {label:"Create shield & evacuate",next:"evac"}
       ]},
@@ -236,24 +237,21 @@
       stabilize:{chapter:4,title:"Gridkeeper",text:"You channel power...",img:"images/quest/grid-stable.jpg",choices:[
         {label:"Hunt him down",next:"lair"}
       ]},
-      trap:{chapter:4,title:"Ambush",text:"A hush. Then — the floor fractures...",img:"images/quest/ambush.jpg",choices:[
+      trap:{chapter:4,title:"Ambush",text:"A hush...",img:"images/quest/ambush.jpg",choices:[
         {label:"Try again",next:"start"}
       ]},
-      victory:{chapter:5,title:"Voltaverse Restored",text:"Your resonance floods...",img:"images/quest/victory.jpg",choices:[
+      victory:{chapter:5,title:"Voltaverse Restored",text:"Your resonance...",img:"images/quest/victory.jpg",choices:[
         {label:"Play again",next:"start"}
       ]}
     };
 
-    /* SAVE / LOAD */
-    const SAVE_KEY = "voltanquest_state_v3";
-    function loadState(){ try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{node:"start"};}catch{return{node:"start"}} }
-    function saveState(node){ localStorage.setItem(SAVE_KEY, JSON.stringify({node})); }
+    const SAVE_KEY="voltanquest_state_v3";
+    function loadState(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{node:"start"}}catch{return{node:"start"}}}
+    function saveState(n){localStorage.setItem(SAVE_KEY,JSON.stringify({node:n}))}
 
-    /* BACKGROUND HANDLING */
-    const questBody = document.getElementById('questBody');
-    function setSceneArt(node){ questBody.style.setProperty("--scene-bg", `url('${node.img}')`); }
+    const questBody=document.getElementById("questBody");
+    function setSceneArt(node){ questBody.style.setProperty("--scene-bg",`url('${node.img}')`); }
 
-    /* RENDER */
     const titleEl=document.getElementById("title");
     const textEl=document.getElementById("text");
     const choicesEl=document.getElementById("choices");
@@ -261,26 +259,24 @@
     const cardEl=document.getElementById("card");
 
     function render(key){
-      const node = STORY[key] || STORY.start;
+      const node=STORY[key]||STORY.start;
       chapterEl.textContent=node.chapter;
       setSceneArt(node);
 
       cardEl.classList.add("fade-enter");
       requestAnimationFrame(()=>cardEl.classList.add("fade-enter-active"));
-      setTimeout(()=>cardEl.classList.remove("fade-enter","fade-enter-active"),280);
+      setTimeout(()=>cardEl.classList.remove("fade-enter","fade-enter-active"),300);
 
       titleEl.textContent=node.title;
       textEl.textContent=node.text;
       choicesEl.innerHTML="";
 
-      node.choices.forEach(choice=>{
+      node.choices.forEach(ch=>{
         const btn=document.createElement("button");
         btn.className="btn-primary w-full py-3 rounded-xl text-base md:text-lg";
-        btn.textContent=choice.label;
+        btn.textContent=ch.label;
         btn.onclick=()=>{
-          playBeep();
-          saveState(choice.next);
-          render(choice.next);
+          playBeep(); saveState(ch.next); render(ch.next);
           window.scrollTo({top:0,behavior:"smooth"});
         };
         choicesEl.appendChild(btn);
@@ -288,15 +284,11 @@
     }
 
     document.getElementById("restartBtn").onclick=()=>{
-      playBeep();
-      saveState("start");
-      render("start");
+      playBeep(); saveState("start"); render("start");
       window.scrollTo({top:0,behavior:"smooth"});
     };
 
-    /* INIT */
-    const state = loadState();
-    render(state.node);
+    render(loadState().node);
   </script>
 
 </body>
