@@ -12,14 +12,14 @@
     body { font-family: 'Roboto', sans-serif; }
     h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
 
-    /* Root defaults for background */
+    /* Background container */
     #questBody {
       --scene-bg: url('images/quest/plaza-signal.jpg');
       min-height: 100vh;
       color: #fff;
     }
 
-    /* Full-strength background art (no wash-out) */
+    /* Full-strength background image */
     #questBody::before {
       content: "";
       position: fixed;
@@ -29,31 +29,43 @@
       background-position: center 30%;
       background-repeat: no-repeat;
       background-attachment: fixed;
-      opacity: 1; /* full color */
+      opacity: 1;
       transition: background-image 0.6s ease;
       z-index: -1;
     }
 
-  #card {
-  /* almost fully see-through, just a tiny dark tint */
-  background: rgba(0, 0, 0, 0.035) !important;
+    /* STORY CARD (Ultra transparent + neon glow) */
+    #card {
+      background: rgba(0, 0, 0, 0.03) !important; /* option A */
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
 
-  /* remove the blur so the image under the box is sharp */
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+      border-radius: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.18);
 
-  border-radius: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6),
-            0 0 25px rgba(0, 153, 255, 0.15);  /* subtle sci-fi blue glow */
-}
+      /* Dual-layer neon blue glow */
+      box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.45),
+        0 0 18px rgba(0, 153, 255, 0.25),
+        0 0 36px rgba(0, 153, 255, 0.18);
+    }
 
-    /* Simple fade animation on scene changes */
-    .fade-enter { opacity: 0; transform: translateY(8px); }
-    .fade-enter-active { opacity: 1; transform: translateY(0); transition: all 0.25s ease; }
+    /* Fade animation */
+    .fade-enter { opacity: 0; transform: translateY(10px); }
+    .fade-enter-active { opacity: 1; transform: translateY(0); transition: all 0.28s ease; }
 
-    .btn-primary { background:#007BFF; color:#fff; }
-    .btn-primary:hover { background:#005FCC; }
+    .btn-primary {
+      background:#007BFF;
+      color:#fff;
+    }
+    .btn-primary:hover {
+      background:#005FCC;
+    }
+
+    /* Text clarity boost */
+    #text {
+      text-shadow: 0 1px 3px rgba(0,0,0,0.45);
+    }
   </style>
 </head>
 
@@ -62,15 +74,14 @@
   <!-- HEADER -->
   <header class="bg-[#2C3E50] text-white shadow-lg">
     <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+
       <a href="index.html" class="flex items-center">
         <img src="images/voltanlabs_icon.png" alt="VoltanLabs Logo" class="h-10 w-10 mr-2">
         <span class="text-xl font-bold">VoltanLabs</span>
       </a>
 
       <!-- Mobile burger -->
-      <button id="navToggle" class="md:hidden p-2 rounded hover:bg-white/10" aria-label="Open menu">
-        ☰
-      </button>
+      <button id="navToggle" class="md:hidden p-2 rounded hover:bg-white/10" aria-label="Open menu">☰</button>
 
       <!-- Desktop nav -->
       <nav class="hidden md:flex items-center space-x-6 text-sm">
@@ -79,6 +90,7 @@
         <a href="promptcraft.html" class="hover:text-[#FFD700]">PromptCraft</a>
         <a href="voltanquest.html" class="hover:text-[#FFD700] font-semibold">Voltan’s Quest</a>
       </nav>
+
     </div>
 
     <!-- Mobile menu -->
@@ -92,7 +104,7 @@
     </div>
   </header>
 
-  <!-- MAIN GAME AREA -->
+  <!-- MAIN GAME -->
   <main class="flex-1 text-white">
     <section class="max-w-3xl mx-auto px-4 py-10">
 
@@ -101,14 +113,13 @@
         <div class="text-sm text-white/85">
           Chapter: <span id="chapter" class="font-medium">1</span>
         </div>
+
         <div class="flex items-center gap-4 text-sm">
           <label class="flex items-center gap-2">
-            <input id="sfxToggle" type="checkbox" class="accent-[#FFD700]">
-            SFX
+            <input id="sfxToggle" type="checkbox" class="accent-[#FFD700]"> SFX
           </label>
           <label class="flex items-center gap-2">
-            <input id="ambienceToggle" type="checkbox" class="accent-[#FFD700]" checked>
-            Ambience
+            <input id="ambienceToggle" type="checkbox" class="accent-[#FFD700]" checked> Ambience
           </label>
           <button id="restartBtn" class="px-3 py-1.5 rounded bg-white/10 hover:bg-white/20">
             Restart
@@ -117,7 +128,7 @@
       </div>
 
       <!-- STORY CARD -->
-      <div id="card" class="shadow-lg p-6 md:p-8 space-y-5">
+      <div id="card" class="p-6 md:p-8 space-y-5">
         <h2 id="title" class="text-3xl font-bold text-[#FFD700]"></h2>
         <p id="text" class="text-lg leading-relaxed"></p>
         <div id="choices" class="mt-6 grid grid-cols-1 gap-3"></div>
@@ -131,15 +142,14 @@
     © 2025 VoltanLabs — VoltArcade Series
   </footer>
 
+  <!-- SCRIPT (unchanged logic) -->
   <script>
-    /* ========= MOBILE NAV ========= */
+    /* MOBILE NAV */
     const navToggle = document.getElementById('navToggle');
     const mobileMenu = document.getElementById('mobileMenu');
-    navToggle.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
-    });
+    navToggle.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); });
 
-    /* ========= CLICK SFX ========= */
+    /* SFX */
     function playBeep() {
       if (!document.getElementById('sfxToggle').checked) return;
       try {
@@ -156,12 +166,11 @@
         gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
         osc.start(t);
         osc.stop(t + 0.15);
-      } catch (e) {}
+      } catch(e){}
     }
 
-    /* ========= AMBIENT LOOP ========= */
+    /* AMBIENCE */
     let ambCtx = null, ambTimer = null;
-
     function startAmbience() {
       if (ambCtx) return;
       ambCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -173,205 +182,121 @@
         const o = ambCtx.createOscillator();
         const g = ambCtx.createGain();
         o.type = 'sawtooth';
-        o.frequency.value = 120 + Math.random() * 40;
+        o.frequency.value = 120 + Math.random()*40;
         o.connect(g); g.connect(master);
         const now = ambCtx.currentTime;
         g.gain.setValueAtTime(0.0001, now);
-        g.gain.exponentialRampToValueAtTime(0.1, now + 0.4);
-        g.gain.exponentialRampToValueAtTime(0.0001, now + 2.2);
-        o.start(now);
-        o.stop(now + 2.4);
+        g.gain.exponentialRampToValueAtTime(0.1, now+0.4);
+        g.gain.exponentialRampToValueAtTime(0.0001, now+2.2);
+        o.start(now); o.stop(now+2.4);
       }
-
       ambTimer = setInterval(whoosh, 2600);
     }
-
     function stopAmbience() {
       if (ambTimer) clearInterval(ambTimer);
       ambTimer = null;
-      if (ambCtx) { try { ambCtx.close(); } catch(e){} }
+      if (ambCtx) { try{ ambCtx.close(); } catch(e){} }
       ambCtx = null;
     }
-
-    const ambienceToggle = document.getElementById('ambienceToggle');
-    ambienceToggle.addEventListener('change', () => {
-      ambienceToggle.checked ? startAmbience() : stopAmbience();
+    document.getElementById('ambienceToggle').addEventListener('change', e => {
+      e.target.checked ? startAmbience() : stopAmbience();
     });
     startAmbience();
 
-    /* ========= STORY DATA ========= */
+    /* STORY DATA */
     const STORY = {
-      start: {
-        chapter: 1,
-        title: "Signal from the Voltaverse",
-        text: "You are Voltan, guardian of the Voltaverse. A distress signal crackles through the aether — the Null King is siphoning energy from the city core. Do you surge in now or gather intel first?",
-        img: "images/quest/plaza-signal.jpg",
-        choices: [
-          { label: "Charge in ⚡", next: "plaza" },
-          { label: "Gather intel 🔎", next: "intel" }
-        ]
-      },
-      plaza: {
-        chapter: 2,
-        title: "Storm at the Plaza",
-        text: "You land in the central plaza. Null drones swarm, draining power from the grid. Sparks leap from your gauntlets as civilians scatter.",
-        img: "images/quest/plaza-battle.jpg",
-        choices: [
-          { label: "Arc burst attack", next: "minions_down" },
-          { label: "Create shield & evacuate", next: "evac" }
-        ]
-      },
-      intel: {
-        chapter: 2,
-        title: "The Hidden Weakness",
-        text: "You trace the siphon signal to sub-channel 57. A weakness emerges: the Null King’s core destabilizes near amplified resonance loops.",
-        img: "images/quest/console-intel.jpg",
-        choices: [
-          { label: "Build a resonance amplifier", next: "device" },
-          { label: "Confront him with intel", next: "trap" }
-        ]
-      },
-      device: {
-        chapter: 3,
-        title: "Resonance Device Online",
-        text: "Your portable amplifier hums to life, harmonizing with the city’s grid. The air tastes like ozone.",
-        img: "images/quest/device-online.jpg",
-        choices: [
-          { label: "Deploy at the plaza", next: "minions_down" },
-          { label: "Track the Null King", next: "lair" }
-        ]
-      },
-      minions_down: {
-        chapter: 3,
-        title: "Drones Disabled",
-        text: "A radiant pulse explodes from your device. Drones clatter to the ground like rain. The grid steadies.",
-        img: "images/quest/drones-down.jpg",
-        choices: [
-          { label: "Pursue the Null King", next: "lair" },
-          { label: "Stabilize the grid", next: "stabilize" }
-        ]
-      },
-      evac: {
-        chapter: 3,
-        title: "Shield and Evacuate",
-        text: "You raise a dome of crackling light, guiding civilians to safety. The Null King’s signal intensifies.",
-        img: "images/quest/evac-shield.jpg",
-        choices: [
-          { label: "Chase the source", next: "lair" },
-          { label: "Hold position", next: "trap" }
-        ]
-      },
-      lair: {
-        chapter: 4,
-        title: "The Null Lair",
-        text: "Beneath the city, a cathedral of dead light. The Null King rises — a silhouette of absence framed by stolen energy.",
-        img: "images/quest/null-lair.jpg",
-        choices: [
-          { label: "Overload with resonance", next: "victory" },
-          { label: "Attempt risky parley", next: "trap" }
-        ]
-      },
-      stabilize: {
-        chapter: 4,
-        title: "Gridkeeper",
-        text: "You channel power back into the city. Lights bloom. Cheers echo from distant towers. But the Null King slips away.",
-        img: "images/quest/grid-stable.jpg",
-        choices: [
-          { label: "Hunt him down", next: "lair" }
-        ]
-      },
-      trap: {
-        chapter: 4,
-        title: "Ambush",
-        text: "A hush. Then — the floor fractures. Null cables whip up, binding your arms. Darkness surges.",
-        img: "images/quest/ambush.jpg",
-        choices: [
-          { label: "Try again", next: "start" }
-        ]
-      },
-      victory: {
-        chapter: 5,
-        title: "Voltaverse Restored",
-        text: "Your resonance floods the chamber. The Null core shatters like black glass, energy rushing home. The city sings. For now, the Voltaverse is safe.",
-        img: "images/quest/victory.jpg",
-        choices: [
-          { label: "Play again", next: "start" }
-        ]
-      }
+      start:{chapter:1,title:"Signal from the Voltaverse",text:"You are Voltan, guardian of the Voltaverse. A distress signal crackles...",img:"images/quest/plaza-signal.jpg",choices:[
+        {label:"Charge in ⚡",next:"plaza"},
+        {label:"Gather intel 🔎",next:"intel"}
+      ]},
+      plaza:{chapter:2,title:"Storm at the Plaza",text:"You land in the central plaza. Null drones swarm...",img:"images/quest/plaza-battle.jpg",choices:[
+        {label:"Arc burst attack",next:"minions_down"},
+        {label:"Create shield & evacuate",next:"evac"}
+      ]},
+      intel:{chapter:2,title:"The Hidden Weakness",text:"You trace the siphon signal...",img:"images/quest/console-intel.jpg",choices:[
+        {label:"Build a resonance amplifier",next:"device"},
+        {label:"Confront him with intel",next:"trap"}
+      ]},
+      device:{chapter:3,title:"Resonance Device Online",text:"Your portable amplifier hums...",img:"images/quest/device-online.jpg",choices:[
+        {label:"Deploy at the plaza",next:"minions_down"},
+        {label:"Track the Null King",next:"lair"}
+      ]},
+      minions_down:{chapter:3,title:"Drones Disabled",text:"A radiant pulse explodes...",img:"images/quest/drones-down.jpg",choices:[
+        {label:"Pursue the Null King",next:"lair"},
+        {label:"Stabilize the grid",next:"stabilize"}
+      ]},
+      evac:{chapter:3,title:"Shield and Evacuate",text:"You raise a dome...",img:"images/quest/evac-shield.jpg",choices:[
+        {label:"Chase the source",next:"lair"},
+        {label:"Hold position",next:"trap"}
+      ]},
+      lair:{chapter:4,title:"The Null Lair",text:"Beneath the city...",img:"images/quest/null-lair.jpg",choices:[
+        {label:"Overload with resonance",next:"victory"},
+        {label:"Attempt risky parley",next:"trap"}
+      ]},
+      stabilize:{chapter:4,title:"Gridkeeper",text:"You channel power...",img:"images/quest/grid-stable.jpg",choices:[
+        {label:"Hunt him down",next:"lair"}
+      ]},
+      trap:{chapter:4,title:"Ambush",text:"A hush. Then — the floor fractures...",img:"images/quest/ambush.jpg",choices:[
+        {label:"Try again",next:"start"}
+      ]},
+      victory:{chapter:5,title:"Voltaverse Restored",text:"Your resonance floods...",img:"images/quest/victory.jpg",choices:[
+        {label:"Play again",next:"start"}
+      ]}
     };
 
-    /* ========= SAVE / LOAD ========= */
+    /* SAVE / LOAD */
     const SAVE_KEY = "voltanquest_state_v3";
+    function loadState(){ try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{node:"start"};}catch{return{node:"start"}} }
+    function saveState(node){ localStorage.setItem(SAVE_KEY, JSON.stringify({node})); }
 
-    function loadState() {
-      try {
-        return JSON.parse(localStorage.getItem(SAVE_KEY)) || { node: "start" };
-      } catch {
-        return { node: "start" };
-      }
-    }
-
-    function saveState(node) {
-      localStorage.setItem(SAVE_KEY, JSON.stringify({ node }));
-    }
-
-    /* ========= BACKGROUND HANDLING ========= */
+    /* BACKGROUND HANDLING */
     const questBody = document.getElementById('questBody');
+    function setSceneArt(node){ questBody.style.setProperty("--scene-bg", `url('${node.img}')`); }
 
-    function setSceneArt(node) {
-      const src = node.img || "images/quest/plaza-signal.jpg";
-      questBody.style.setProperty("--scene-bg", `url('${src}')`);
-    }
+    /* RENDER */
+    const titleEl=document.getElementById("title");
+    const textEl=document.getElementById("text");
+    const choicesEl=document.getElementById("choices");
+    const chapterEl=document.getElementById("chapter");
+    const cardEl=document.getElementById("card");
 
-    /* ========= RENDER ENGINE ========= */
-    const titleEl    = document.getElementById("title");
-    const textEl     = document.getElementById("text");
-    const choicesEl  = document.getElementById("choices");
-    const chapterEl  = document.getElementById("chapter");
-    const cardEl     = document.getElementById("card");
-    const restartBtn = document.getElementById("restartBtn");
-
-    function render(nodeKey) {
-      const node = STORY[nodeKey] || STORY.start;
-
-      chapterEl.textContent = node.chapter || "?";
+    function render(key){
+      const node = STORY[key] || STORY.start;
+      chapterEl.textContent=node.chapter;
       setSceneArt(node);
 
-      // animate card
       cardEl.classList.add("fade-enter");
-      requestAnimationFrame(() => cardEl.classList.add("fade-enter-active"));
-      setTimeout(() => {
-        cardEl.classList.remove("fade-enter", "fade-enter-active");
-      }, 260);
+      requestAnimationFrame(()=>cardEl.classList.add("fade-enter-active"));
+      setTimeout(()=>cardEl.classList.remove("fade-enter","fade-enter-active"),280);
 
-      titleEl.textContent = node.title;
-      textEl.textContent  = node.text;
-      choicesEl.innerHTML = "";
+      titleEl.textContent=node.title;
+      textEl.textContent=node.text;
+      choicesEl.innerHTML="";
 
-      node.choices.forEach(choice => {
-        const btn = document.createElement("button");
-        btn.className = "btn-primary w-full py-3 rounded-xl text-base md:text-lg";
-        btn.textContent = choice.label;
-        btn.addEventListener("click", () => {
+      node.choices.forEach(choice=>{
+        const btn=document.createElement("button");
+        btn.className="btn-primary w-full py-3 rounded-xl text-base md:text-lg";
+        btn.textContent=choice.label;
+        btn.onclick=()=>{
           playBeep();
           saveState(choice.next);
           render(choice.next);
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        });
+          window.scrollTo({top:0,behavior:"smooth"});
+        };
         choicesEl.appendChild(btn);
       });
     }
 
-    restartBtn.addEventListener("click", () => {
+    document.getElementById("restartBtn").onclick=()=>{
       playBeep();
       saveState("start");
       render("start");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+      window.scrollTo({top:0,behavior:"smooth"});
+    };
 
-    // Init
+    /* INIT */
     const state = loadState();
-    render(state.node || "start");
+    render(state.node);
   </script>
 
 </body>
