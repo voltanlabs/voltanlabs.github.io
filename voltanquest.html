@@ -11,19 +11,28 @@
     body { font-family: 'Roboto', sans-serif; }
     h1,h2,h3 { font-family: 'Orbitron', sans-serif; }
 
-    /* full-page dynamic background */
-    #questBody::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      opacity: 0.35;               /* adjust scene visibility */
-      transition: background-image 0.6s ease, opacity 0.5s ease;
-      z-index: -1;
-    }
+  /* Full-page scene art */
+#questBody::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: var(--scene-bg);
+  background-size: cover;          /* fill screen */
+  background-position: center top; /* keep Voltan centered on mobile */
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  opacity: 0.45;                   /* a little stronger so you see the art */
+  transition: background-image 0.6s ease, opacity 0.5s ease;
+  z-index: -1;
+}
+
+/* Glassmorphism card */
+#card {
+  background: rgba(15, 23, 42, 0.78);             /* darker + more transparent */
+  backdrop-filter: blur(12px);                    /* stronger blur for readability */
+  border: 1px solid rgba(255, 255, 255, 0.08);    /* subtle outline */
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);    /* “floating” look */
+}
 
     /* card floats over background */
     #card {
