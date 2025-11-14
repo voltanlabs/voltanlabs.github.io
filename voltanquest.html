@@ -7,61 +7,50 @@
   <meta name="description" content="Choose-your-own-adventure featuring Voltan, guardian of the Voltaverse.">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
   <style>
     body { font-family: 'Roboto', sans-serif; }
     h1,h2,h3 { font-family: 'Orbitron', sans-serif; }
 
-  /* Full-page scene art */
-#questBody::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: var(--scene-bg);
-  background-size: cover;          /* fill screen */
-  background-position: center top; /* keep Voltan centered on mobile */
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  opacity: 0.45;                   /* a little stronger so you see the art */
-  transition: background-image 0.6s ease, opacity 0.5s ease;
-  z-index: -1;
-}
-
-/* Glassmorphism card */
-#card {
-  background: rgba(15, 23, 42, 0.78);             /* darker + more transparent */
-  backdrop-filter: blur(12px);                    /* stronger blur for readability */
-  border: 1px solid rgba(255, 255, 255, 0.08);    /* subtle outline */
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);    /* “floating” look */
-}
-
-    /* card floats over background */
-    #card {
-      background: rgba(44, 62, 80, 0.9);
-      backdrop-filter: blur(6px);
+    /* =======================
+       FULL-PAGE BACKGROUND
+       ======================= */
+    #questBody::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: var(--scene-bg);
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      opacity: 0.45;
+      transition: background-image 0.6s ease, opacity 0.5s ease;
+      z-index: -1;
     }
 
-    /* simple fade transition */
-    .fade-enter { opacity: 0; transform: translateY(6px); }
-    .fade-enter-active { opacity: 1; transform: translateY(0); transition: all .25s ease; }
+    /* =======================
+       GLASS CARD
+       ======================= */
+    #card {
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    /* Fade animation */
+    .fade-enter { opacity: 0; transform: translateY(8px); }
+    .fade-enter-active { opacity: 1; transform: translateY(0); transition: all 0.25s ease; }
 
     .btn-primary { background:#007BFF; color:#fff; }
     .btn-primary:hover { background:#005FCC; }
-
-    /* hide old inline art panel if present */
-    #artWrap { display:none; }
   </style>
-
-  <!-- Social/SEO (optional) -->
-  <link rel="icon" href="images/favicon.png">
-  <meta property="og:title" content="Voltan’s Quest — VoltanLabs">
-  <meta property="og:description" content="A mini choose-your-own-adventure set in the Voltaverse.">
-  <meta property="og:image" content="https://www.voltanlabs.com/images/og-card.png">
-  <meta property="og:url" content="https://www.voltanlabs.com/voltanquest.html">
-  <meta name="twitter:card" content="summary_large_image">
 </head>
-<body id="questBody" class="text-white min-h-screen flex flex-col relative">
 
-  <!-- Header -->
+<body id="questBody" class="text-white min-h-screen flex flex-col">
+
+  <!-- HEADER -->
   <header class="bg-[#2C3E50] text-white shadow-lg">
     <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
       <a href="index.html" class="flex items-center">
@@ -69,31 +58,30 @@
         <span class="text-xl font-bold">VoltanLabs</span>
       </a>
 
-      <!-- Desktop nav -->
+      <button id="navToggle" class="md:hidden p-2 rounded hover:bg-white/10">☰</button>
+
       <nav class="hidden md:flex items-center space-x-6">
         <a href="index.html" class="hover:text-[#FFD700]">Home</a>
         <a href="features.html" class="hover:text-[#FFD700]">Features</a>
         <a href="promptcraft.html" class="hover:text-[#FFD700]">PromptCraft</a>
         <a href="voltanquest.html" class="hover:text-[#FFD700] font-semibold">Voltan’s Quest</a>
       </nav>
-
-      <!-- Mobile burger -->
-      <button id="navToggle" class="md:hidden p-2 rounded hover:bg-white/10" aria-label="Open menu">☰</button>
     </div>
-    <!-- Mobile drawer -->
+
+    <!-- Mobile Menu -->
     <div id="mobileMenu" class="md:hidden hidden border-t border-white/10">
-      <nav class="px-4 py-3 space-y-2">
-        <a href="index.html" class="block py-2 hover:text-[#FFD700]">Home</a>
-        <a href="features.html" class="block py-2 hover:text-[#FFD700]">Features</a>
-        <a href="promptcraft.html" class="block py-2 hover:text-[#FFD700]">PromptCraft</a>
-        <a href="voltanquest.html" class="block py-2 hover:text-[#FFD700] font-semibold">Voltan’s Quest</a>
+      <nav class="px-4 py-3 space-y-3">
+        <a href="index.html" class="block hover:text-[#FFD700]">Home</a>
+        <a href="features.html" class="block hover:text-[#FFD700]">Features</a>
+        <a href="promptcraft.html" class="block hover:text-[#FFD700]">PromptCraft</a>
+        <a href="voltanquest.html" class="block hover:text-[#FFD700] font-semibold">Voltan’s Quest</a>
       </nav>
     </div>
   </header>
 
-  <!-- Game Container -->
+  <!-- MAIN GAME AREA -->
   <main class="flex-1">
-    <section class="max-w-3xl mx-auto px-4 py-8 md:py-12">
+    <section class="max-w-3xl mx-auto px-4 py-10">
 
       <!-- HUD -->
       <div class="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -102,102 +90,99 @@
         </div>
         <div class="flex items-center gap-4 text-sm">
           <label class="flex items-center gap-2">
-            <input id="sfxToggle" type="checkbox" class="accent-[#FFD700]">
-            SFX
+            <input id="sfxToggle" type="checkbox" class="accent-[#FFD700]"> SFX
           </label>
           <label class="flex items-center gap-2">
-            <input id="ambienceToggle" type="checkbox" class="accent-[#FFD700]" checked>
-            Ambience
+            <input id="ambienceToggle" type="checkbox" class="accent-[#FFD700]" checked> Ambience
           </label>
-          <button id="restartBtn" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg:white/20">Restart</button>
+          <button id="restartBtn" class="px-3 py-1.5 rounded bg-white/10 hover:bg-white/20">Restart</button>
         </div>
       </div>
 
-      <!-- Card -->
-      <div id="card" class="bg-[#2C3E50] rounded-2xl shadow-lg overflow-hidden">
-        <!-- (artWrap kept for backward compatibility, but hidden) -->
-        <figure id="artWrap">
-          <img id="artImg" src="images/quest/default-banner.jpg" alt="Scene art" loading="eager">
-        </figure>
-
-        <div class="p-6 md:p-8 space-y-4">
-          <h2 id="title" class="text-2xl md:text-3xl font-bold text-[#FFD700]"></h2>
-          <p id="text" class="text-lg leading-relaxed"></p>
-          <div id="choices" class="mt-6 grid grid-cols-1 gap-3"></div>
-        </div>
+      <!-- GAME CARD -->
+      <div id="card" class="rounded-2xl shadow-lg p-6 md:p-8 space-y-5">
+        <h2 id="title" class="text-3xl font-bold text-[#FFD700]"></h2>
+        <p id="text" class="text-lg leading-relaxed"></p>
+        <div id="choices" class="mt-6 grid grid-cols-1 gap-3"></div>
       </div>
+
     </section>
   </main>
 
-  <!-- Footer -->
+  <!-- FOOTER -->
   <footer class="bg-[#2C3E50] text-center text-sm py-6">
-    © 2025 VoltanLabs — VoltArcade Series
+    © 2025 VoltanLabs — VoltArcade
   </footer>
 
   <script>
-  /* ===== Header mobile toggle ===== */
+  /* ========== MOBILE NAV ========== */
   const navToggle = document.getElementById('navToggle');
   const mobileMenu = document.getElementById('mobileMenu');
-  if (navToggle) navToggle.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+  navToggle.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
 
-  /* ===== Simple click SFX ===== */
+  /* ========== CLICK SFX ========== */
   function playBeep() {
     if (!document.getElementById('sfxToggle').checked) return;
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = 'sine'; o.frequency.value = 520;
-      o.connect(g); g.connect(ctx.destination);
-      const t = ctx.currentTime;
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.05, t + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
-      o.start(); o.stop(t + 0.15);
-    } catch(_) {}
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = 520;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    const t = ctx.currentTime;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.05, t + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+    osc.start(t);
+    osc.stop(t + 0.15);
   }
 
-  /* ===== Ambient loop ===== */
+  /* ========== AMBIENCE LOOP ========== */
   let ambCtx = null, ambTimer = null;
   function startAmbience() {
     if (ambCtx) return;
     ambCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const master = ambCtx.createGain(); master.gain.value = 0.02; master.connect(ambCtx.destination);
+    const master = ambCtx.createGain();
+    master.gain.value = 0.02;
+    master.connect(ambCtx.destination);
+
     function whoosh() {
       const o = ambCtx.createOscillator();
       const g = ambCtx.createGain();
-      o.type = 'sawtooth'; o.frequency.value = 120 + Math.random()*40;
+      o.type = 'sawtooth';
+      o.frequency.value = 120 + Math.random() * 40;
       o.connect(g); g.connect(master);
       const now = ambCtx.currentTime;
       g.gain.setValueAtTime(0.0001, now);
       g.gain.exponentialRampToValueAtTime(0.1, now + 0.4);
       g.gain.exponentialRampToValueAtTime(0.0001, now + 2.2);
-      o.start(now); o.stop(now + 2.4);
+      o.start(now);
+      o.stop(now + 2.4);
     }
+
     ambTimer = setInterval(whoosh, 2600);
   }
+
   function stopAmbience() {
     if (ambTimer) clearInterval(ambTimer);
     ambTimer = null;
-    if (ambCtx) { try { ambCtx.close(); } catch(e){} }
+    if (ambCtx) ambCtx.close();
     ambCtx = null;
   }
-  const ambienceToggle = document.getElementById('ambienceToggle');
-  if (ambienceToggle) {
-    ambienceToggle.addEventListener('change', () => {
-      if (ambienceToggle.checked) startAmbience(); else stopAmbience();
-    });
-    startAmbience();
-  }
 
-  /* ===== STORY DATA ===== */
+  document.getElementById('ambienceToggle').addEventListener('change', (e) => {
+    e.target.checked ? startAmbience() : stopAmbience();
+  });
+  startAmbience();
+
+  /* ========== STORY CONTENT ========== */
   const STORY = {
     start: {
       chapter: 1,
       title: "Signal from the Voltaverse",
       text: "You are Voltan, guardian of the Voltaverse. A distress signal crackles through the aether — the Null King is siphoning energy from the city core. Do you surge in now or gather intel first?",
       img: "images/quest/plaza-signal.jpg",
-      alt: "Voltan overlooking a neon city with lightning in the sky",
       choices: [
         { label: "Charge in ⚡", next: "plaza" },
         { label: "Gather intel 🔎", next: "intel" }
@@ -206,12 +191,11 @@
     plaza: {
       chapter: 2,
       title: "Storm at the Plaza",
-      text: "You land in the central plaza. Null drones swarm, draining power from the grid. Sparks leap from your gauntlets as civilians scatter.",
+      text: "You land in the central plaza. Null drones swarm, draining power from the grid.",
       img: "images/quest/plaza-battle.jpg",
-      alt: "Voltan battling drones in a futuristic plaza",
       choices: [
         { label: "Arc burst attack", next: "minions_down" },
-        { label: "Create shield and evacuate", next: "evac" }
+        { label: "Create shield & evacuate", next: "evac" }
       ]
     },
     intel: {
@@ -219,7 +203,6 @@
       title: "The Hidden Weakness",
       text: "You trace the siphon signal to sub-channel 57. A weakness emerges: the Null King’s core destabilizes near amplified resonance loops.",
       img: "images/quest/console-intel.jpg",
-      alt: "Holographic console with glowing data streams",
       choices: [
         { label: "Build a resonance amplifier", next: "device" },
         { label: "Confront him with intel", next: "trap" }
@@ -228,20 +211,18 @@
     device: {
       chapter: 3,
       title: "Resonance Device Online",
-      text: "Your portable amplifier hums to life, harmonizing with the city’s grid. The air tastes like ozone.",
+      text: "Your portable amplifier hums to life. The air tastes like ozone.",
       img: "images/quest/device-online.jpg",
-      alt: "Compact resonance device glowing blue",
       choices: [
-        { label: "Deploy at the plaza", next: "minions_down" },
+        { label: "Deploy at plaza", next: "minions_down" },
         { label: "Track the Null King", next: "lair" }
       ]
     },
     minions_down: {
       chapter: 3,
       title: "Drones Disabled",
-      text: "A radiant pulse explodes from your device. Drones clatter to the ground like rain. The grid steadies.",
+      text: "A radiant pulse explodes from your device. Drones clatter to the ground.",
       img: "images/quest/drones-down.jpg",
-      alt: "City plaza with disabled drones scattered around",
       choices: [
         { label: "Pursue the Null King", next: "lair" },
         { label: "Stabilize the grid", next: "stabilize" }
@@ -250,9 +231,8 @@
     evac: {
       chapter: 3,
       title: "Shield and Evacuate",
-      text: "You raise a dome of crackling light, guiding civilians to safety. The Null King’s signal intensifies.",
+      text: "You raise a dome of crackling light, guiding civilians to safety.",
       img: "images/quest/evac-shield.jpg",
-      alt: "Golden energy shield protecting fleeing civilians",
       choices: [
         { label: "Chase the source", next: "lair" },
         { label: "Hold position", next: "trap" }
@@ -261,20 +241,18 @@
     lair: {
       chapter: 4,
       title: "The Null Lair",
-      text: "Beneath the city, a cathedral of dead light. The Null King rises — a silhouette of absence framed by stolen energy.",
+      text: "Beneath the city, a cathedral of dead light. The Null King rises.",
       img: "images/quest/null-lair.jpg",
-      alt: "Underground lair glowing with void energy",
       choices: [
         { label: "Overload with resonance", next: "victory" },
-        { label: "Attempt a risky parley", next: "trap" }
+        { label: "Attempt risky parley", next: "trap" }
       ]
     },
     stabilize: {
       chapter: 4,
       title: "Gridkeeper",
-      text: "You channel power back into the city. Lights bloom. Cheers echo from distant towers. But the Null King slips away.",
+      text: "You channel power back into the city. Lights bloom.",
       img: "images/quest/grid-stable.jpg",
-      alt: "City skyline slowly reactivating its lights",
       choices: [
         { label: "Hunt him down", next: "lair" }
       ]
@@ -282,9 +260,8 @@
     trap: {
       chapter: 4,
       title: "Ambush",
-      text: "A hush. Then — the floor fractures. Null cables whip up, binding your arms. Darkness surges.",
+      text: "Null cables whip up, binding your arms. Darkness surges.",
       img: "images/quest/ambush.jpg",
-      alt: "Tangled null cables in a dark chamber",
       choices: [
         { label: "Try again", next: "start" }
       ]
@@ -292,16 +269,15 @@
     victory: {
       chapter: 5,
       title: "Voltaverse Restored",
-      text: "Your resonance floods the chamber. The Null core shatters like black glass, energy rushing home. The city sings. For now, the Voltaverse is safe.",
+      text: "The Null core shatters. The city sings. The Voltaverse is safe.",
       img: "images/quest/victory.jpg",
-      alt: "Triumphant city bathed in golden-blue light",
       choices: [
         { label: "Play again", next: "start" }
       ]
     }
   };
 
-  /* ===== Save / Load ===== */
+  /* ========== STATE SAVE/LOAD ========== */
   const SAVE_KEY = "voltanquest_state_v3";
   function loadState() {
     try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || { node: "start" }; }
@@ -311,25 +287,15 @@
     localStorage.setItem(SAVE_KEY, JSON.stringify({ node }));
   }
 
-  /* ===== Background + preload ===== */
+  /* ========== BACKGROUND HANDLING ========== */
   const questBody = document.getElementById('questBody');
-  const preloadCache = new Set();
-  function preloadImage(src) {
-    if (!src || preloadCache.has(src)) return;
-    const im = new Image(); im.src = src;
-    preloadCache.add(src);
-  }
+
   function setSceneArt(node) {
     const src = node.img || "images/quest/default-banner.jpg";
-    questBody.style.backgroundImage = `url('${src}')`;
-
-    (node.choices || []).forEach(c => {
-      const nextNode = STORY[c.next];
-      if (nextNode && nextNode.img) preloadImage(nextNode.img);
-    });
+    questBody.style.setProperty("--scene-bg", `url('${src}')`);
   }
 
-  /* ===== Rendering ===== */
+  /* ========== RENDERER ========== */
   const titleEl = document.getElementById("title");
   const textEl = document.getElementById("text");
   const choicesEl = document.getElementById("choices");
@@ -339,29 +305,30 @@
 
   function render(nodeKey) {
     const node = STORY[nodeKey] || STORY.start;
-    chapterEl.textContent = node.chapter || "?";
+
+    chapterEl.textContent = node.chapter;
     setSceneArt(node);
 
     cardEl.classList.add("fade-enter");
-    requestAnimationFrame(() => {
-      cardEl.classList.add("fade-enter-active");
-      setTimeout(() => {
-        cardEl.classList.remove("fade-enter", "fade-enter-active");
-      }, 260);
-    });
+    requestAnimationFrame(() =>
+      cardEl.classList.add("fade-enter-active")
+    );
+    setTimeout(() => {
+      cardEl.classList.remove("fade-enter", "fade-enter-active");
+    }, 280);
 
     titleEl.textContent = node.title;
     textEl.textContent = node.text;
-    choicesEl.innerHTML = "";
 
-    (node.choices || []).forEach((c) => {
+    choicesEl.innerHTML = "";
+    node.choices.forEach(choice => {
       const btn = document.createElement("button");
-      btn.className = "btn-primary w-full py-3 rounded-xl transition";
-      btn.textContent = c.label;
+      btn.className = "btn-primary w-full py-3 rounded-xl";
+      btn.textContent = choice.label;
       btn.addEventListener("click", () => {
         playBeep();
-        saveState(c.next);
-        render(c.next);
+        saveState(choice.next);
+        render(choice.next);
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
       choicesEl.appendChild(btn);
@@ -372,11 +339,11 @@
     playBeep();
     saveState("start");
     render("start");
-    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
-  const state = loadState();
-  render(state.node || "start");
+  /* INIT */
+  render(loadState().node);
   </script>
+
 </body>
 </html>
