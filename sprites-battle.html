@@ -1,1 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Databyte Sprite Battle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #050816;
+      --card: #0b1020;
+      --accent: #31d7ff;
+      --accent-soft: rgba(49, 215, 255, 0.15);
+      --text: #f7fafc;
+      --muted: #a0aec0;
+      --danger: #ff5a5f;
+      --success: #68d391;
+      --border: rgba(255, 255, 255, 0.1);
+      --voltricity: #3b82f6;
+      --mystic: #a855f7;
+      --stained: #f97316;
+      --seismic: #facc15;
+    }
 
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .game-shell {
+      width: 100%;
+      max-width: 960px;
+      background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(15,23,42,0.98));
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.8);
+      padding: 20px 20px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-shell::before {
+      content: "";
+      position: absolute;
+      inset: -60%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(56,189,248,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(129,140,248,0.15), transparent 55%);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .game-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin: 0 0 4px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .top-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .select-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      background: rgba(15,23,42,0.85);
+      border-radius: 999px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    select {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      padding: 4px 6px;
+      outline: none;
+      font-size: 0.9rem;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      background: radial-gradient(circle at 0 0, var(--accent-soft), transparent);
+      color: var(--text);
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .arena {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .arena {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sprite-card {
+      background: radial-gradient(circle at top, rgba(15,23,42,0.9), rgba(15,23,42,0.98));
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      padding: 10px 12px 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sprite-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(148,163,184,0.2), transparent 60%);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .sprite-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+
+    .sprite-name {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .version-chip {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .type-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .type-pill {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+    }
+
+    .type-voltricity { border-color: var(--voltricity); color: #bfdbfe; }
+    .type-mystic { border-color: var(--mystic); color: #e9d5ff; }
+    .type-stained { border-color: var(--stained); color: #fed7aa; }
+    .type-seismic { border-color: var(--seismic); color: #fef3c7; }
+    .type-unstained { border-color: #38bdf8; color: #e0f2fe; }
+    .type-null { border-color: #94a3b8; color: #e2e8f0; }
+
+    .hp-row {
+      margin-bottom: 4px;
+    }
+
+    .hp-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .hp-bar {
+      margin-top: 2px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.85);
+      overflow: hidden;
+      border: 1px solid rgba(15,23,42,0.9);
+    }
+
+    .hp-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--success), #facc15, var(--danger));
+      transform-origin: left center;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .stat-pill {
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+    }
+
+    .moves {
+      border-top: 1px dashed rgba(148,163,184,0.3);
+      padding-top: 6px;
+      margin-top: 6px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .move-btn {
+      font-size: 0.8rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(15,23,42,0.95);
+      padding: 4px 8px;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .move-btn:hover:not(:disabled) {
+      border-color: var(--accent);
+    }
+
+    .move-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .log-panel {
+      background: rgba(15,23,42,0.95);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      max-height: 180px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+    }
+
+    .log-line {
+      margin-bottom: 3px;
+      color: var(--muted);
+    }
+
+    .log-line strong { color: var(--text); }
+
+    .log-line--system { color: var(--accent); }
+    .log-line--danger { color: var(--danger); }
+    .log-line--success { color: var(--success); }
+
+  </style>
+</head>
+<body>
+  <div class="game-shell">
+    <div class="game-content">
+      <h1>Databyte Sprite Arena</h1>
+      <div class="subtitle">
+        Choose your Admin, summon a sprite, and test your code in the Voltaverse.
+      </div>
+
+      <div class="top-row">
+        <div class="select-group">
+          <label for="adminSelect">Admin</label>
+          <select id="adminSelect">
+            <option value="vic">Vic • Voltricity</option>
+            <option value="daniel">Daniel • Mystic</option>
+            <option value="dennis">Dennis • Stained</option>
+          </select>
+        </div>
+
+        <button id="newBattleBtn" class="btn">
+          Start Battle
+        </button>
+      </div>
+
+      <div class="arena">
+        <div class="sprite-card" id="playerCard">
+          <!-- Filled by JS -->
+        </div>
+        <div class="sprite-card" id="enemyCard">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <div class="log-panel" id="logPanel"></div>
+    </div>
+  </div>
+
+  <script>
+    // --- DATA ---------------------------------------------------------------
+
+    const TYPE_COLORS = {
+      voltricity: "type-voltricity",
+      mystic: "type-mystic",
+      stained: "type-stained",
+      seismic: "type-seismic",
+      unstained: "type-unstained",
+      null: "type-null",
+    };
+
+    // Simple type effectiveness table: attackerType -> defenderType -> multiplier
+    const TYPE_EFFECTIVENESS = {
+      voltricity: { stained: 1.5 },
+      stained: { mystic: 1.5, flora: 1.5 },
+      mystic: { voltricity: 1.5, seismic: 1.5 },
+      seismic: { glacial: 1.5 },
+      flora: { seismic: 1.5, null: 1.5 }
+      // others default to 1
+    };
+
+    const SPRITES = {
+      leovolt: {
+        name: "Leovolt",
+        version: "Kilobyte",
+        types: ["voltricity", "unstained"],
+        maxHp: 45,
+        attack: 14,
+        defense: 10,
+        speed: 12,
+        moves: [
+          { name: "Static Pounce", power: 20, type: "voltricity" },
+          { name: "Byte Nibble", power: 15, type: "unstained" }
+        ]
+      },
+      crabician: {
+        name: "Crabician",
+        version: "Kilobyte",
+        types: ["mystic"],
+        maxHp: 40,
+        attack: 12,
+        defense: 13,
+        speed: 10,
+        moves: [
+          { name: "Arcane Bubble", power: 18, type: "mystic" },
+          { name: "Pebble Toss", power: 14, type: "seismic" }
+        ]
+      },
+      scorpyone: {
+        name: "Scorpyone",
+        version: "Kilobyte",
+        types: ["stained"],
+        maxHp: 42,
+        attack: 16,
+        defense: 9,
+        speed: 13,
+        moves: [
+          { name: "Stain Sting", power: 20, type: "stained" },
+          { name: "Data Scratch", power: 15, type: "null" }
+        ]
+      },
+      seismagoat: {
+        name: "SeismaGoat",
+        version: "Megabyte",
+        types: ["seismic"],
+        maxHp: 55,
+        attack: 15,
+        defense: 14,
+        speed: 9,
+        moves: [
+          { name: "Faultline Kick", power: 22, type: "seismic" },
+          { name: "Rock Spray", power: 16, type: "seismic" }
+        ]
+      }
+    };
+
+    const ADMIN_STARTERS = {
+      vic: "leovolt",
+      daniel: "crabician",
+      dennis: "scorpyone"
+    };
+
+    const ENEMY_POOL = ["scorpyone", "crabician", "seismagoat", "leovolt"];
+
+    // --- STATE --------------------------------------------------------------
+
+    let playerSprite = null;
+    let enemySprite = null;
+    let playerHp = 0;
+    let enemyHp = 0;
+    let playerTurn = true;
+    let battleActive = false;
+
+    const adminSelect = document.getElementById("adminSelect");
+    const newBattleBtn = document.getElementById("newBattleBtn");
+    const playerCard = document.getElementById("playerCard");
+    const enemyCard = document.getElementById("enemyCard");
+    const logPanel = document.getElementById("logPanel");
+
+    // --- HELPERS ------------------------------------------------------------
+
+    function cloneSprite(key) {
+      const s = SPRITES[key];
+      return JSON.parse(JSON.stringify(s));
+    }
+
+    function effectiveness(attackerType, defenderTypes) {
+      let mult = 1;
+      const row = TYPE_EFFECTIVENESS[attackerType] || {};
+      defenderTypes.forEach(t => {
+        if (row[t]) mult *= row[t];
+      });
+      return mult;
+    }
+
+    function log(message, level = "normal") {
+      const div = document.createElement("div");
+      div.classList.add("log-line");
+      if (level === "system") div.classList.add("log-line--system");
+      if (level === "danger") div.classList.add("log-line--danger");
+      if (level === "success") div.classList.add("log-line--success");
+      div.innerHTML = message;
+      logPanel.appendChild(div);
+      logPanel.scrollTop = logPanel.scrollHeight;
+    }
+
+    function renderSpriteCard(targetEl, sprite, hp, isPlayer) {
+      if (!sprite) {
+        targetEl.innerHTML = "<em>Waiting for battle...</em>";
+        return;
+      }
+      const hpPercent = Math.max(0, (hp / sprite.maxHp) * 100);
+
+      const movesHtml = sprite.moves
+        .map((m, idx) => {
+          const typeClass = TYPE_COLORS[m.type] || "";
+          const disabledAttr = !isPlayer || !battleActive || !playerTurn ? "disabled" : "";
+          return `
+            <button class="move-btn ${typeClass}" data-move-index="${idx}" ${disabledAttr}>
+              ${m.name}
+            </button>`;
+        })
+        .join("");
+
+      const typesHtml = sprite.types
+        .map(t => {
+          const cls = TYPE_COLORS[t] || "";
+          return `<span class="type-pill ${cls}">${t}</span>`;
+        })
+        .join("");
+
+      targetEl.innerHTML = `
+        <div class="sprite-header">
+          <div class="sprite-name">${sprite.name}</div>
+          <div class="version-chip">${sprite.version}</div>
+        </div>
+        <div class="type-row">${typesHtml}</div>
+        <div class="hp-row">
+          <div class="hp-label">
+            <span>HP</span>
+            <span>${Math.max(0, hp)} / ${sprite.maxHp}</span>
+          </div>
+          <div class="hp-bar">
+            <div class="hp-fill" style="transform: scaleX(${hpPercent/100});"></div>
+          </div>
+        </div>
+        <div class="stats-row">
+          <span class="stat-pill">ATK ${sprite.attack}</span>
+          <span class="stat-pill">DEF ${sprite.defense}</span>
+          <span class="stat-pill">SPD ${sprite.speed}</span>
+        </div>
+        <div class="moves">
+          ${movesHtml}
+        </div>
+      `;
+
+      if (isPlayer) {
+        targetEl.querySelectorAll(".move-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const idx = Number(btn.dataset.moveIndex);
+            if (battleActive && playerTurn) {
+              playerUseMove(idx);
+            }
+          });
+        });
+      }
+    }
+
+    function calculateDamage(attacker, defender, move) {
+      const base = move.power + attacker.attack - Math.floor(defender.defense / 2);
+      const eff = effectiveness(move.type, defender.types);
+      const rand = 0.85 + Math.random() * 0.3; // 0.85–1.15
+      const dmg = Math.max(1, Math.floor(base * eff * rand));
+      return { dmg, eff };
+    }
+
+    function endTurn() {
+      playerTurn = !playerTurn;
+      renderSpriteCard(playerCard, playerSprite, playerHp, true);
+      renderSpriteCard(enemyCard, enemySprite, enemyHp, false);
+
+      if (!battleActive) return;
+
+      if (!playerTurn) {
+        // small delay for enemy move
+        setTimeout(() => {
+          const idx = Math.floor(Math.random() * enemySprite.moves.length);
+          enemyUseMove(idx);
+        }, 600);
+      }
+    }
+
+    // --- BATTLE ACTIONS -----------------------------------------------------
+
+    function playerUseMove(moveIndex) {
+      if (!battleActive) return;
+      const move = playerSprite.moves[moveIndex];
+      const { dmg, eff } = calculateDamage(playerSprite, enemySprite, move);
+
+      enemyHp -= dmg;
+      let effText = "";
+      if (eff > 1.1) effText = " It's super effective!";
+      else if (eff < 0.9) effText = " It barely connects.";
+
+      log(`<strong>${playerSprite.name}</strong> used <strong>${move.name}</strong> for ${dmg} damage.${effText}`);
+
+      if (enemyHp <= 0) {
+        enemyHp = 0;
+        battleActive = false;
+        renderSpriteCard(enemyCard, enemySprite, enemyHp, false);
+        renderSpriteCard(playerCard, playerSprite, playerHp, true);
+        log(`<strong>${enemySprite.name}</strong> crashed!`, "danger");
+        log(`You earned <strong>12 bytecoins</strong> and XP toward your next version.`, "success");
+        return;
+      }
+
+      endTurn();
+    }
+
+    function enemyUseMove(moveIndex) {
+      if (!battleActive) return;
+      const move = enemySprite.moves[moveIndex];
+      const { dmg, eff } = calculateDamage(enemySprite, playerSprite, move);
+
+      playerHp -= dmg;
+      let effText = "";
+      if (eff > 1.1) effText = " It's super effective!";
+      else if (eff < 0.9) effText = " It barely connects.";
+
+      log(`<strong>${enemySprite.name}</strong> used <strong>${move.name}</strong> for ${dmg} damage.${effText}`);
+
+      if (playerHp <= 0) {
+        playerHp = 0;
+        battleActive = false;
+        renderSpriteCard(playerCard, playerSprite, playerHp, true);
+        renderSpriteCard(enemyCard, enemySprite, enemyHp, false);
+        log(`<strong>${playerSprite.name}</strong> was debugged...`, "danger");
+        log(`Your code fragment reboots. Try another battle to gain more data.`, "system");
+        return;
+      }
+
+      endTurn();
+    }
+
+    function startBattle() {
+      const admin = adminSelect.value;
+      const playerKey = ADMIN_STARTERS[admin];
+
+      playerSprite = cloneSprite(playerKey);
+      enemySprite = cloneSprite(
+        ENEMY_POOL[Math.floor(Math.random() * ENEMY_POOL.length)]
+      );
+
+      playerHp = playerSprite.maxHp;
+      enemyHp = enemySprite.maxHp;
+      battleActive = true;
+
+      // First turn decided by Speed
+      playerTurn = playerSprite.speed >= enemySprite.speed;
+
+      logPanel.innerHTML = "";
+      log(`Admin linked: <strong>${admin.toUpperCase()}</strong> — loading sprite code...`, "system");
+      log(`You deployed <strong>${playerSprite.name}</strong>! The system spawned an enemy <strong>${enemySprite.name}</strong>.`);
+
+      renderSpriteCard(playerCard, playerSprite, playerHp, true);
+      renderSpriteCard(enemyCard, enemySprite, enemyHp, false);
+
+      if (!playerTurn) {
+        log(`<strong>${enemySprite.name}</strong> acts first!`, "system");
+        setTimeout(() => {
+          const idx = Math.floor(Math.random() * enemySprite.moves.length);
+          enemyUseMove(idx);
+        }, 700);
+      } else {
+        log(`Your turn — choose a move.`, "system");
+      }
+    }
+
+    // --- WIRE UP ------------------------------------------------------------
+
+    newBattleBtn.addEventListener("click", startBattle);
+
+    // initial placeholder
+    renderSpriteCard(playerCard, null, 0, true);
+    renderSpriteCard(enemyCard, null, 0, false);
+    log("Welcome to the Databyte Sprite Arena. Pick an Admin and start a battle.");
+  </script>
+</body>
+</html>
