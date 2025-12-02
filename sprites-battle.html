@@ -256,7 +256,6 @@
       opacity: 1;
     }
 
-    /* highlight selected admin */
     .admin-card.selected {
       border-color: var(--accent-soft);
       box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.8), var(--shadow-soft);
@@ -419,22 +418,36 @@
       }
     }
 
-    /* sprite portrait on the left side of the battle panel */
     .battle-left {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
-    .sprite-portrait {
-      display: none; /* hidden until an admin is selected */
-      align-items: center;
-      justify-content: center;
-      padding: 8px;
+    /* NEW: sprite + enemy portraits row */
+    .portrait-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 4px 0 10px;
     }
 
-    .sprite-portrait img {
-      max-width: 180px;
+    .portrait-row > div {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+
+    .sprite-portrait {
+      display: none; /* shown once an admin is picked */
+    }
+
+    .sprite-portrait img,
+    .enemy-portrait img {
+      max-width: 160px;
       width: 100%;
       height: auto;
       image-rendering: crisp-edges;
@@ -567,9 +580,7 @@
           </div>
 
           <div class="admin-grid">
-            <!-- Add data-admin-id so JS knows who this is -->
-            <button class="admin-card" type="button"
-                    data-admin-id="vic">
+            <button class="admin-card" type="button" data-admin-id="vic">
               <div class="admin-title">
                 <span>Vic – Voltan</span>
                 <span class="admin-tag volt">Voltricity</span>
@@ -580,8 +591,7 @@
               </div>
             </button>
 
-            <button class="admin-card" type="button"
-                    data-admin-id="daniel">
+            <button class="admin-card" type="button" data-admin-id="daniel">
               <div class="admin-title">
                 <span>Daniel</span>
                 <span class="admin-tag mystic">Mystic</span>
@@ -592,8 +602,7 @@
               </div>
             </button>
 
-            <button class="admin-card" type="button"
-                    data-admin-id="dennis">
+            <button class="admin-card" type="button" data-admin-id="dennis">
               <div class="admin-title">
                 <span>Dennis</span>
                 <span class="admin-tag stained">Stained</span>
@@ -604,8 +613,7 @@
               </div>
             </button>
 
-            <button class="admin-card" type="button"
-                    data-admin-id="void">
+            <button class="admin-card" type="button" data-admin-id="void">
               <div class="admin-title">
                 <span>Stained Admin</span>
                 <span class="admin-tag stained">Void-Aligned</span>
@@ -640,7 +648,6 @@
           <span class="icon">←</span>
           Back to Home
         </a>
-        <!-- Give this button an id so JS can find it -->
         <button type="button" class="btn btn-primary" id="start-battle-btn">
           <span class="icon">⚡</span>
           Start Battle (Prototype)
@@ -651,10 +658,18 @@
       <section class="battle-panel" aria-label="Sprite battle simulator">
         <h2 class="battle-title">Battle Simulator</h2>
         <div class="battle-layout">
-          <!-- Left: sprite portrait + stats -->
+          <!-- Left: portraits + stats -->
           <div class="battle-left">
-            <div class="sprite-portrait" id="sprite-portrait">
-              <img id="sprite-image" src="" alt="Selected Databyte Sprite" />
+            <!-- NEW: Sprite vs Null Bot portraits -->
+            <div class="portrait-row">
+              <div class="sprite-portrait" id="sprite-portrait">
+                <img id="sprite-image" src="" alt="Selected Databyte Sprite" />
+              </div>
+              <div class="enemy-portrait">
+                <img id="enemy-image"
+                     src="assets/sprites/nullbot.png"
+                     alt="Null Drone (v0)" />
+              </div>
             </div>
 
             <div class="battle-stats">
@@ -727,7 +742,6 @@
       const spritePortrait = document.getElementById("sprite-portrait");
       const spriteImage = document.getElementById("sprite-image");
 
-      // Basic Admin data pulled from your lorebook
       const ADMINS = {
         vic: {
           name: "Vic – Voltan",
@@ -751,12 +765,11 @@
         }
       };
 
-      // Sprite image paths – adjust to match where you upload the PNGs
       const SPRITE_IMAGES = {
         vic: "assets/sprites/leovolt.png",
         daniel: "assets/sprites/crabician.png",
         dennis: "assets/sprites/scorpyone.png",
-        void: "assets/sprites/locked.png" // optional placeholder
+        void: "assets/sprites/locked.png"
       };
 
       let selectedAdminId = null;
@@ -811,7 +824,6 @@
         spriteLabel.textContent = admin.sprite;
         opponentLabel.textContent = "Null Drone (v0)";
 
-        // ensure sprite portrait is in sync when the battle starts
         updateSpriteArt(selectedAdminId);
 
         systemText.innerHTML =
@@ -892,7 +904,6 @@
 
         if (endBattleIfFinished()) return;
 
-        // Small delay for enemy turn so it feels like a sequence
         setTimeout(enemyTurn, 400);
       }
 
@@ -909,13 +920,11 @@
 
           const admin = ADMINS[id];
           if (admin) {
-            // update info text
             systemText.innerHTML =
               "System: Admin selected – <strong>" +
               admin.name +
               "</strong>. Press <strong>Start Battle</strong> to begin.";
 
-            // show the sprite art right away
             updateSpriteArt(id);
 
             adminLabel.textContent = admin.name;
@@ -924,14 +933,12 @@
         });
       });
 
-      // Start battle
       if (startButton) {
         startButton.addEventListener("click", function () {
           resetBattle();
         });
       }
 
-      // Moves
       moveButtons.forEach(function (btn) {
         btn.addEventListener("click", function () {
           const move = btn.getAttribute("data-move");
@@ -939,7 +946,6 @@
         });
       });
 
-      // Initialize HP UI
       updateHpUI();
     });
   </script>
