@@ -570,7 +570,7 @@
           <div class="battle-left">
             <div class="portrait-row">
               <div class="sprite-portrait" id="sprite-portrait">
-                <img id="sprite-image" src="" alt="Selected Databyte Sprite" />
+                <img id="sprite-image" src="assets/sprites/placeholder.png" alt="Selected Databyte Sprite" />
               </div>
               <div class="enemy-portrait">
                 <img id="enemy-image"
@@ -699,19 +699,21 @@
       }
 
       function updateSpriteArt(id) {
-        const admin = ADMINS[id];
-        const src = SPRITE_IMAGES[id];
+  const admin = ADMINS[id];
+  const src = SPRITE_IMAGES[id];
 
-        if (admin && src) {
-          spriteImage.src = src;
-          spriteImage.alt = admin.sprite + " sprite";
-          spritePortrait.style.display = "flex";
-        } else {
-          spriteImage.src = "";
-          spriteImage.alt = "No sprite selected";
-          spritePortrait.style.display = "none";
-        }
-      }
+  if (admin && src) {
+    spriteImage.src = src;
+    spriteImage.alt = admin.sprite + " sprite";
+    spriteImage.classList.remove("opacity-60");
+    spritePortrait.style.display = "flex";
+  } else {
+    spriteImage.src = "assets/sprites/unknown.png";
+    spriteImage.alt = "Unknown sprite";
+    spriteImage.classList.add("opacity-60");
+    spritePortrait.style.display = "flex";
+  }
+}
 
       function updateHpUI() {
         playerHp = Math.max(0, playerHp);
