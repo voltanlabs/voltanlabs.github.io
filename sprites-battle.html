@@ -16,6 +16,7 @@
       --accent: #38bdf8;
       --accent-soft: #0ea5e9;
       --accent-danger: #f97316;
+      --accent-mystic: #a855f7;
       --text-main: #e5e7eb;
       --text-muted: #9ca3af;
       --radius-lg: 16px;
@@ -120,6 +121,7 @@
       align-items: center;
       gap: 18px;
       font-size: 0.9rem;
+      flex-wrap: wrap;
     }
 
     .nav-links a {
@@ -259,8 +261,8 @@
 
     .admin-card.selected {
       border-color: var(--accent-soft);
-      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.7),
-        0 18px 40px rgba(56, 189, 248, 0.25);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.35),
+        0 18px 40px rgba(15, 23, 42, 0.9);
     }
 
     .admin-title {
@@ -287,7 +289,7 @@
     }
 
     .admin-tag.mystic {
-      border-color: #a855f7;
+      border-color: var(--accent-mystic);
       color: #e9d5ff;
     }
 
@@ -336,7 +338,7 @@
       background: var(--accent-soft);
     }
 
-    /* ACTIONS */
+    /* ACTION BUTTONS (top-level) */
 
     .arena-actions {
       margin-top: 18px;
@@ -356,7 +358,8 @@
       align-items: center;
       gap: 6px;
       text-decoration: none;
-      background: none;
+      background: transparent;
+      color: inherit;
     }
 
     .btn-primary {
@@ -391,194 +394,176 @@
       font-size: 1.1rem;
     }
 
-    .btn-sm {
-      padding: 7px 14px;
-      font-size: 0.78rem;
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      box-shadow: none;
     }
 
-    /* SYSTEM MESSAGE */
+    /* BATTLE CONSOLE */
 
-    .system-message {
-      margin-top: 10px;
-      font-size: 0.8rem;
-      color: var(--accent-soft);
-      min-height: 1em;
-    }
-
-    .system-message.error {
-      color: #fda4af;
-    }
-
-    /* BATTLE SECTION */
-
-    .battle {
-      margin-top: 26px;
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      background: radial-gradient(circle at top, #020617 0, #020617 65%);
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.7);
-      padding: 18px 16px 16px;
-      font-size: 0.82rem;
-    }
-
-    .battle-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      gap: 8px;
-    }
-
-    .battle-title {
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-
-    .battle-badge {
-      font-size: 0.7rem;
-      padding: 2px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.55);
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .battle-grid {
+    .battle-wrapper {
+      margin-top: 22px;
       display: grid;
       gap: 14px;
     }
 
     @media (min-width: 768px) {
-      .battle-grid {
+      .battle-wrapper {
+        grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.2fr);
+        align-items: stretch;
+      }
+    }
+
+    .battle-card {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-soft);
+      background: radial-gradient(circle at top, #020617 0, #020617 70%);
+      padding: 16px 14px 14px;
+      box-shadow: var(--shadow-soft);
+      font-size: 0.86rem;
+    }
+
+    .battle-headline {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .battle-meta {
+      display: grid;
+      row-gap: 6px;
+      column-gap: 12px;
+      grid-template-columns: minmax(0, 1fr);
+      margin-bottom: 10px;
+    }
+
+    @media (min-width: 480px) {
+      .battle-meta {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
-    .combatant-card {
-      border-radius: var(--radius-md);
-      border: 1px solid rgba(30, 64, 175, 0.7);
-      background: radial-gradient(circle at top, #0b1120 0, #020617 80%);
-      padding: 10px 11px 11px;
-    }
-
-    .combatant-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .combatant-name {
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .combatant-meta {
-      font-size: 0.72rem;
+    .battle-meta-row span.label {
       color: var(--text-muted);
-    }
-
-    .hp-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .hp-label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
-    .hp-bar {
-      position: relative;
-      flex: 1;
-      height: 8px;
-      border-radius: 999px;
-      background: #0f172a;
-      overflow: hidden;
-    }
-
-    .hp-fill {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      transform-origin: left center;
-      background: linear-gradient(to right, #22c55e, #eab308, #f97316);
-      transition: transform 150ms ease-out;
-    }
-
-    .hp-value {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      min-width: 60px;
-      text-align: right;
-    }
-
-    .moves-row {
-      margin-top: 4px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .moves-row .btn-sm {
-      flex: 1 1 32%;
-      justify-content: center;
-    }
-
-    .moves-row .btn-sm:nth-child(3) {
-      border-color: rgba(129, 140, 248, 0.8);
-      color: #c7d2fe;
-    }
-
-    .moves-row .btn-sm:nth-child(3):hover {
-      border-color: #a5b4fc;
-      color: #e0e7ff;
-    }
-
-    .moves-row .btn-sm.disabled {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    .battle-log {
-      margin-top: 14px;
-      border-radius: var(--radius-md);
-      border: 1px dashed rgba(148, 163, 184, 0.4);
-      padding: 10px 11px;
-      max-height: 160px;
-      overflow-y: auto;
-      background: rgba(15, 23, 42, 0.85);
-    }
-
-    .log-entry {
       font-size: 0.78rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: 2px;
     }
 
-    .log-entry strong {
+    .battle-meta-row span.value {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .value-accent {
       color: var(--accent-soft);
     }
 
-    .log-entry.system {
-      color: #a5b4fc;
+    .value-danger {
+      color: var(--accent-danger);
     }
 
-    .log-entry.win {
-      color: #4ade80;
+    .hp-row {
+      margin-bottom: 8px;
     }
 
-    .log-entry.lose {
-      color: #fb7185;
+    .hp-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.78rem;
+      margin-bottom: 4px;
+      color: var(--text-muted);
     }
 
-    .faint {
-      opacity: 0.6;
+    .hp-label strong {
+      color: var(--text-main);
+      font-size: 0.8rem;
+    }
+
+    .hp-track {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #0f172a;
+      overflow: hidden;
+      border: 1px solid #1f2937;
+    }
+
+    .hp-bar {
+      height: 100%;
+      border-radius: inherit;
+      transition: width 160ms ease-out;
+    }
+
+    .hp-bar.player {
+      background: linear-gradient(to right, #4ade80, #22c55e);
+    }
+
+    .hp-bar.enemy {
+      background: linear-gradient(to right, #fb7185, #f97316);
+    }
+
+    .battle-controls {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .battle-btn {
+      border-radius: 999px;
+      padding: 7px 13px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: #020617;
+      color: var(--text-main);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .battle-btn:hover {
+      border-color: var(--accent-soft);
+      color: var(--accent-soft);
+    }
+
+    .battle-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      border-color: rgba(148, 163, 184, 0.3);
+    }
+
+    .battle-log {
+      border-radius: var(--radius-lg);
+      border: 1px solid #1f2937;
+      background: #020617;
+      padding: 12px 12px 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .log-line {
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .log-line strong {
+      color: var(--text-main);
+    }
+
+    .log-line.system {
+      color: var(--accent-soft);
+    }
+
+    .log-line.warning {
+      color: var(--accent-danger);
     }
 
     /* FOOTER */
@@ -620,7 +605,7 @@
         <div class="hero-kicker">VoltArcade Series</div>
         <h1>Databyte Sprite Arena</h1>
         <p>
-          Choose your Admin, summon a Databyte Sprite, and test your code & strategy
+          Choose your Admin, summon a Databyte Sprite, and test your code &amp; strategy
           in the Voltaverse. This is where Voltricity, Mystic, and Stained powers clash.
         </p>
       </section>
@@ -635,7 +620,7 @@
           </div>
 
           <div class="admin-grid">
-            <button class="admin-card" type="button" data-admin-id="vic">
+            <button class="admin-card" type="button" data-admin="vic">
               <div class="admin-title">
                 <span>Vic – Voltan</span>
                 <span class="admin-tag volt">Voltricity</span>
@@ -646,7 +631,7 @@
               </div>
             </button>
 
-            <button class="admin-card" type="button" data-admin-id="daniel">
+            <button class="admin-card" type="button" data-admin="daniel">
               <div class="admin-title">
                 <span>Daniel</span>
                 <span class="admin-tag mystic">Mystic</span>
@@ -657,7 +642,7 @@
               </div>
             </button>
 
-            <button class="admin-card" type="button" data-admin-id="dennis">
+            <button class="admin-card" type="button" data-admin="dennis">
               <div class="admin-title">
                 <span>Dennis</span>
                 <span class="admin-tag stained">Stained</span>
@@ -668,7 +653,7 @@
               </div>
             </button>
 
-            <button class="admin-card" type="button" data-admin-id="void">
+            <button class="admin-card" type="button" data-admin="void" disabled>
               <div class="admin-title">
                 <span>Stained Admin</span>
                 <span class="admin-tag stained">Void-Aligned</span>
@@ -679,22 +664,20 @@
               </div>
             </button>
           </div>
-
-          <div id="systemMessage" class="system-message"></div>
         </div>
 
         <!-- SIDE PANEL -->
         <aside class="side-panel">
-          <strong>How battles work (prototype)</strong>
+          <strong>How battles work (v1 prototype)</strong>
           <ul>
-            <li><span class="side-dot"></span> Pick an Admin & starter sprite.</li>
-            <li><span class="side-dot"></span> Use Strike, Guard, or Skill each turn.</li>
-            <li><span class="side-dot"></span> Apply status-like effects via Skills.</li>
-            <li><span class="side-dot"></span> Reduce the opponent’s HP to 0 to win.</li>
+            <li><span class="side-dot"></span> Pick an Admin &amp; starter sprite.</li>
+            <li><span class="side-dot"></span> Use <strong>Strike</strong>, <strong>Guard</strong>, or <strong>Skill</strong> each turn.</li>
+            <li><span class="side-dot"></span> Enemy makes a random move in reply.</li>
+            <li><span class="side-dot"></span> Drop enemy HP to zero to win.</li>
           </ul>
           <p style="margin-top: 6px;">
-            This is a prototype. Future versions will load your actual sprite artwork,
-            evolutions, and bytecoin rewards.
+            This screen is the prototype UI. Combat logic, animations, and sprite art
+            can plug into these controls as the VoltArcade evolves.
           </p>
         </aside>
       </section>
@@ -705,86 +688,77 @@
           <span class="icon">←</span>
           Back to Home
         </a>
-        <button type="button" id="startBattleBtn" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" id="startBattleBtn">
           <span class="icon">⚡</span>
           Start Battle (Prototype)
         </button>
       </div>
 
-      <!-- BATTLE PROTOTYPE -->
-      <section id="battleSection" class="battle" style="display:none;">
-        <div class="battle-header">
-          <div>
-            <div class="battle-title">Voltaverse Test Match</div>
-            <div style="font-size:0.78rem;color:var(--text-muted);">
-              Turn-based prototype — refine moves & stats later in the lorebook.
-            </div>
-          </div>
-          <div class="battle-badge" id="turnBadge">Your Turn</div>
-        </div>
+      <!-- BATTLE CONSOLE -->
+      <section class="battle-wrapper" aria-label="Battle Interface">
+        <!-- STATS / CONTROLS -->
+        <div class="battle-card">
+          <div class="battle-headline">Battle Status</div>
 
-        <div class="battle-grid">
-          <!-- PLAYER -->
-          <div id="playerCard" class="combatant-card">
-            <div class="combatant-header">
-              <div>
-                <div class="combatant-name" id="playerName">Admin</div>
-                <div class="combatant-meta" id="playerSprite">Sprite</div>
-              </div>
-              <div class="combatant-meta">You · Admin</div>
+          <div class="battle-meta">
+            <div class="battle-meta-row">
+              <span class="label">Admin</span>
+              <span class="value value-accent" id="adminName">–</span>
             </div>
-
-            <div class="hp-row">
-              <div class="hp-label">HP</div>
-              <div class="hp-bar">
-                <div id="playerHpFill" class="hp-fill"></div>
-              </div>
-              <div id="playerHpValue" class="hp-value">100 / 100</div>
+            <div class="battle-meta-row">
+              <span class="label">Sprite</span>
+              <span class="value" id="spriteName">–</span>
             </div>
-
-            <div class="moves-row">
-              <button type="button" class="btn btn-ghost btn-sm" data-move="strike">
-                Strike
-              </button>
-              <button type="button" class="btn btn-ghost btn-sm" data-move="guard">
-                Guard
-              </button>
-              <button type="button" class="btn btn-ghost btn-sm" data-move="skill">
-                Skill
-              </button>
+            <div class="battle-meta-row">
+              <span class="label">Opponent</span>
+              <span class="value value-danger" id="enemyName">
+                Null Drone (v0)
+              </span>
+            </div>
+            <div class="battle-meta-row">
+              <span class="label">State</span>
+              <span class="value" id="battleState">Idle – select an Admin</span>
             </div>
           </div>
 
-          <!-- ENEMY -->
-          <div id="enemyCard" class="combatant-card">
-            <div class="combatant-header">
-              <div>
-                <div class="combatant-name" id="enemyName">Null Test Sprite</div>
-                <div class="combatant-meta">Training Node · Stained</div>
-              </div>
-              <div class="combatant-meta">CPU</div>
+          <div class="hp-row">
+            <div class="hp-label">
+              <strong>Your HP</strong>
+              <span id="playerHpText">100 / 100</span>
             </div>
+            <div class="hp-track">
+              <div class="hp-bar player" id="playerHpBar" style="width: 100%;"></div>
+            </div>
+          </div>
 
-            <div class="hp-row">
-              <div class="hp-label">HP</div>
-              <div class="hp-bar">
-                <div id="enemyHpFill" class="hp-fill"></div>
-              </div>
-              <div id="enemyHpValue" class="hp-value">100 / 100</div>
+          <div class="hp-row">
+            <div class="hp-label">
+              <strong>Enemy HP</strong>
+              <span id="enemyHpText">100 / 100</span>
             </div>
+            <div class="hp-track">
+              <div class="hp-bar enemy" id="enemyHpBar" style="width: 100%;"></div>
+            </div>
+          </div>
 
-            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">
-              Prototype foe representing a low-level NullKing process.
-            </div>
+          <div class="battle-controls">
+            <button type="button" class="battle-btn" id="strikeBtn" disabled>
+              <span>🗡️</span> Strike
+            </button>
+            <button type="button" class="battle-btn" id="guardBtn" disabled>
+              <span>🛡️</span> Guard
+            </button>
+            <button type="button" class="battle-btn" id="skillBtn" disabled>
+              <span>✨</span> Skill
+            </button>
           </div>
         </div>
 
-        <div class="battle-log" id="battleLog"></div>
-
-        <div style="margin-top:10px;display:flex;justify-content:flex-end;gap:8px;">
-          <button type="button" id="resetBattleBtn" class="btn btn-ghost btn-sm">
-            Reset Battle
-          </button>
+        <!-- LOG -->
+        <div class="battle-log" id="battleLog" aria-live="polite">
+          <div class="log-line system">
+            System: Select an Admin above and press <strong>Start Battle</strong>.
+          </div>
         </div>
       </section>
     </div>
@@ -795,19 +769,35 @@
   </footer>
 
   <script>
-    // --- DATA MODEL ---------------------------------------------------------
+    (function () {
+      const adminConfig = {
+        vic: {
+          name: "Vic – Voltan",
+          sprite: "Leovolt",
+          skillName: "Volt Shock",
+          skillDesc: "A high-voltage burst that deals heavy damage."
+        },
+        daniel: {
+          name: "Daniel",
+          sprite: "Crabician",
+          skillName: "Mystic Ward",
+          skillDesc: "Creates a barrier that partially heals you."
+        },
+        dennis: {
+          name: "Dennis",
+          sprite: "Scorpyone",
+          skillName: "Corrupt Sting",
+          skillDesc: "A risky strike that hits harder but may backfire."
+        }
+      };
 
-    const ADMINS = {
-      vic: {
-        id: "vic",
-        adminName: "Vic – Voltan",
-        spriteName: "Leovolt",
-        power: "Voltricity",
-        skillName: "Volt Shock"
-      },
-      daniel: {
-        id: "daniel",
-        adminName: "Daniel",
-        spriteName: "Crabician",
-        power: "Mystic",
-        
+      let selectedAdminKey = null;
+      let inBattle = false;
+      let playerMaxHp = 100;
+      let enemyMaxHp = 100;
+      let playerHp = playerMaxHp;
+      let enemyHp = enemyMaxHp;
+      let guardActive = false;
+
+      const adminCards = Array.from(document.querySelectorAll(".admin-card"));
+      const 
