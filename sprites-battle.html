@@ -419,6 +419,29 @@
       }
     }
 
+    /* sprite portrait on the left side of the battle panel */
+    .battle-left {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sprite-portrait {
+      display: none; /* hidden until an admin is selected */
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+
+    .sprite-portrait img {
+      max-width: 180px;
+      width: 100%;
+      height: auto;
+      image-rendering: crisp-edges;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 12px 25px rgba(15,23,42,0.9));
+    }
+
     .battle-stats {
       display: grid;
       gap: 8px;
@@ -628,32 +651,38 @@
       <section class="battle-panel" aria-label="Sprite battle simulator">
         <h2 class="battle-title">Battle Simulator</h2>
         <div class="battle-layout">
-          <!-- Left: stats -->
-          <div class="battle-stats">
-            <div class="battle-row">
-              <span class="battle-label">Admin</span>
-              <span class="battle-value" id="battle-admin">–</span>
+          <!-- Left: sprite portrait + stats -->
+          <div class="battle-left">
+            <div class="sprite-portrait" id="sprite-portrait">
+              <img id="sprite-image" src="" alt="Selected Databyte Sprite" />
             </div>
-            <div class="battle-row">
-              <span class="battle-label">Sprite</span>
-              <span class="battle-value" id="battle-sprite">–</span>
-            </div>
-            <div class="battle-row">
-              <span class="battle-label">Opponent</span>
-              <span class="battle-value" id="battle-opponent">Null Drone (v0)</span>
-            </div>
-            <div class="battle-row">
-              <span class="battle-label">Your HP</span>
-              <span class="battle-value" id="player-hp-text">100 / 100</span>
-              <div class="hp-bar-outer">
-                <div class="hp-bar-inner" id="player-hp-bar"></div>
+
+            <div class="battle-stats">
+              <div class="battle-row">
+                <span class="battle-label">Admin</span>
+                <span class="battle-value" id="battle-admin">–</span>
               </div>
-            </div>
-            <div class="battle-row">
-              <span class="battle-label">Enemy HP</span>
-              <span class="battle-value" id="enemy-hp-text">100 / 100</span>
-              <div class="hp-bar-outer">
-                <div class="hp-bar-inner" id="enemy-hp-bar"></div>
+              <div class="battle-row">
+                <span class="battle-label">Sprite</span>
+                <span class="battle-value" id="battle-sprite">–</span>
+              </div>
+              <div class="battle-row">
+                <span class="battle-label">Opponent</span>
+                <span class="battle-value" id="battle-opponent">Null Drone (v0)</span>
+              </div>
+              <div class="battle-row">
+                <span class="battle-label">Your HP</span>
+                <span class="battle-value" id="player-hp-text">100 / 100</span>
+                <div class="hp-bar-outer">
+                  <div class="hp-bar-inner" id="player-hp-bar"></div>
+                </div>
+              </div>
+              <div class="battle-row">
+                <span class="battle-label">Enemy HP</span>
+                <span class="battle-value" id="enemy-hp-text">100 / 100</span>
+                <div class="hp-bar-outer">
+                  <div class="hp-bar-inner" id="enemy-hp-bar"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -695,6 +724,9 @@
       const playerHpBar = document.getElementById("player-hp-bar");
       const enemyHpBar = document.getElementById("enemy-hp-bar");
 
+      const spritePortrait = document.getElementById("sprite-portrait");
+      const spriteImage = document.getElementById("sprite-image");
+
       // Basic Admin data pulled from your lorebook
       const ADMINS = {
         vic: {
@@ -719,6 +751,14 @@
         }
       };
 
+      // Sprite image paths – adjust to match where you upload the PNGs
+      const SPRITE_IMAGES = {
+        vic: "assets/sprites/leovolt.png",
+        daniel: "assets/sprites/crabician.png",
+        dennis: "assets/sprites/scorpyone.png",
+        void: "assets/sprites/locked.png" // optional placeholder
+      };
+
       let selectedAdminId = null;
       let battleActive = false;
       let playerHp = 100;
@@ -726,6 +766,21 @@
 
       function randomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function updateSpriteArt(id) {
+        const admin = ADMINS[id];
+        const src = SPRITE_IMAGES[id];
+
+        if (admin && src) {
+          spriteImage.src = src;
+          spriteImage.alt = admin.sprite + " sprite";
+          spritePortrait.style.display = "flex";
+        } else {
+          spriteImage.src = "";
+          spriteImage.alt = "No sprite selected";
+          spritePortrait.style.display = "none";
+        }
       }
 
       function updateHpUI() {
@@ -755,6 +810,9 @@
         adminLabel.textContent = admin.name;
         spriteLabel.textContent = admin.sprite;
         opponentLabel.textContent = "Null Drone (v0)";
+
+        // ensure sprite portrait is in sync when the battle starts
+        updateSpriteArt(selectedAdminId);
 
         systemText.innerHTML =
           "System: Battle started! " +
@@ -851,10 +909,17 @@
 
           const admin = ADMINS[id];
           if (admin) {
+            // update info text
             systemText.innerHTML =
               "System: Admin selected – <strong>" +
               admin.name +
               "</strong>. Press <strong>Start Battle</strong> to begin.";
+
+            // show the sprite art right away
+            updateSpriteArt(id);
+
+            adminLabel.textContent = admin.name;
+            spriteLabel.textContent = admin.sprite;
           }
         });
       });
