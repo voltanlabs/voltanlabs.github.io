@@ -374,16 +374,19 @@
     .sprite-portrait {
       display: none;
     }
-
     .sprite-portrait img,
     .enemy-portrait img {
-      max-width: 160px;
-      width: 100%;
-      height: auto;
-      image-rendering: crisp-edges;
-      image-rendering: pixelated;
-      filter: drop-shadow(0 12px 25px rgba(15,23,42,0.9));
-    }
+     max-width: 160px;
+     width: 100%;
+     height: auto;
+     image-rendering: crisp-edges;
+     image-rendering: pixelated;
+     filter: drop-shadow(0 12px 25px rgba(15,23,42,0.9));
+     margin-top: 18px;        /* move sprites down */
+  /* or use transform if you prefer:
+     transform: translateY(12px);
+  */
+}
 
     .battle-stats {
       display: grid;
