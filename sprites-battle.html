@@ -34,14 +34,20 @@
       padding: 0;
     }
 
-    body {font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
       'Roboto', sans-serif;
-      h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
+      /* headings font */
+      --orbitron: 'Orbitron', sans-serif;
       background: radial-gradient(circle at top, #1d283a 0, var(--bg-bottom) 55%);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--orbitron);
     }
 
     a {
@@ -326,12 +332,35 @@
       gap: 10px;
     }
 
+    /* NEW: battle stage background wrapper */
+    .battle-stage {
+      border-radius: var(--radius-md);
+      padding: 10px 12px 14px;
+      background-image: url('assets/backgrounds/volt-training-room.png'); /* <-- update path if needed */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .battle-stage::before {
+      /* subtle dark overlay so sprites pop */
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(15,23,42,0.2), rgba(15,23,42,0.65));
+      pointer-events: none;
+    }
+
     .portrait-row {
+      position: relative; /* keep sprites above overlay */
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
       gap: 12px;
       padding: 4px 0 10px;
+      z-index: 1;
     }
 
     .portrait-row > div {
@@ -445,7 +474,7 @@
     <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
       <a href="index.html" class="flex items-center">
         <img src="images/voltanlabs_icon.png" alt="VoltanLabs Logo" class="h-10 w-10 mr-2">
-       <h1><span class="text-2xl font-bold text-white">VoltanLabs</span></h1>
+        <h1><span class="text-2xl font-bold text-white">VoltanLabs</span></h1>
       </a>
 
       <button id="navToggle" class="md:hidden p-2 rounded hover:bg-white/10" aria-label="Open menu">☰</button>
@@ -568,14 +597,17 @@
         <div class="battle-layout">
           <!-- Left: portraits + stats -->
           <div class="battle-left">
-            <div class="portrait-row">
-              <div class="sprite-portrait" id="sprite-portrait">
-                <img id="sprite-image" src="assets/sprites/placeholder.png" alt="Selected Databyte Sprite" />
-              </div>
-              <div class="enemy-portrait">
-                <img id="enemy-image"
-                     src="assets/sprites/nullbot.png"
-                     alt="Null Drone (v0)" />
+            <!-- NEW wrapper with training-room background -->
+            <div class="battle-stage">
+              <div class="portrait-row">
+                <div class="sprite-portrait" id="sprite-portrait">
+                  <img id="sprite-image" src="assets/sprites/placeholder.png" alt="Selected Databyte Sprite" />
+                </div>
+                <div class="enemy-portrait">
+                  <img id="enemy-image"
+                       src="assets/sprites/nullbot.png"
+                       alt="Null Drone (v0)" />
+                </div>
               </div>
             </div>
 
@@ -699,21 +731,21 @@
       }
 
       function updateSpriteArt(id) {
-  const admin = ADMINS[id];
-  const src = SPRITE_IMAGES[id];
+        const admin = ADMINS[id];
+        const src = SPRITE_IMAGES[id];
 
-  if (admin && src) {
-    spriteImage.src = src;
-    spriteImage.alt = admin.sprite + " sprite";
-    spriteImage.classList.remove("opacity-60");
-    spritePortrait.style.display = "flex";
-  } else {
-    spriteImage.src = "assets/sprites/unknown.png";
-    spriteImage.alt = "Unknown sprite";
-    spriteImage.classList.add("opacity-60");
-    spritePortrait.style.display = "flex";
-  }
-}
+        if (admin && src) {
+          spriteImage.src = src;
+          spriteImage.alt = admin.sprite + " sprite";
+          spriteImage.classList.remove("opacity-60");
+          spritePortrait.style.display = "flex";
+        } else {
+          spriteImage.src = "assets/sprites/unknown.png";
+          spriteImage.alt = "Unknown sprite";
+          spriteImage.classList.add("opacity-60");
+          spritePortrait.style.display = "flex";
+        }
+      }
 
       function updateHpUI() {
         playerHp = Math.max(0, playerHp);
