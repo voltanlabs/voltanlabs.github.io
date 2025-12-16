@@ -297,14 +297,16 @@
     off.height = h;
     const offCtx = off.getContext("2d");
 
-    const gif = new GIF({
-      workers: Math.min(4, navigator.hardwareConcurrency || 2),
-      quality,
-      width: w,
-      height: h,
-      repeat: loopForever ? 0 : -1,
-      workerScript: "https://unpkg.com/gif.js.optimized/dist/gif.worker.js",
-    });
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+const gif = new GIF({
+  workers: isMobile ? 1 : Math.min(4, navigator.hardwareConcurrency || 2),
+  quality,
+  width: w,
+  height: h,
+  repeat: loopForever ? 0 : -1,
+  workerScript: "https://unpkg.com/gif.js.optimized/dist/gif.worker.js",
+});
 
     for (let idx = 0; idx < frames.length; idx++) {
       const f = frames[idx];
