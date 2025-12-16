@@ -372,7 +372,7 @@
 
   // ---------- EVENTS ----------
   // Clicking dropZone opens file picker
-  dropZone.addEventListener("click", () => fileInput.click());
+  //(dropZone.addEventListener("click", () => fileInput.click());)
 
   fileInput.addEventListener("change", async (e) => {
     await addFiles(e.target.files);
