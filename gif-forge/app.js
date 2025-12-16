@@ -167,8 +167,7 @@
       const thumb = document.createElement("img");
       thumb.src = f.url;
       thumb.alt = f.name;
-      thumb.className =
-        "h-12 w-12 object-cover rounded-xl border border-zinc-800 bg-black";
+      thumb.className = "h-12 w-12 object-cover rounded-xl border border-zinc-800 bg-black";
 
       const meta = document.createElement("div");
       meta.className = "min-w-0";
@@ -276,18 +275,23 @@
     clearResult();
   };
 
+  // ---------- EXPORT ----------
   const forgeGif = async () => {
-    if (frames.length === 0) return;
+    if (frames.length < 2) {
+      setStatus("Add at least 2 frames to make an animated GIF.");
+      return;
+    }
 
     stopPlayback();
     clearResult();
 
-    const delay = Math.max(10, parseInt(delayInput.value, 10) || 120);
+    const delay = Math.max(50, parseInt(delayInput.value, 10) || 120); // safer minimum for viewers
     const quality = Math.max(1, Math.min(30, parseInt(qualityInput.value, 10) || 10));
     const loopForever = !!loopInput.checked;
 
     const { w, h } = normalizeTargetSize();
 
+    // Mobile memory safety clamp
     let targetW = w;
     let targetH = h;
     if (isMobile) {
@@ -320,7 +324,7 @@
     let sawProgress = false;
     const watchdog = setTimeout(() => {
       if (!sawProgress) {
-        setStatus("Stuck at 0% — worker didn't start. Add gif-forge/gif.worker.js (same folder).");
+        setStatus("Stuck at 0% — worker didn't start. Ensure gif-forge/gif.worker.js exists.");
         exportBtn.disabled = false;
         enableControls();
       }
@@ -343,7 +347,8 @@
       offCtx.imageSmoothingQuality = "high";
       offCtx.drawImage(f.img, dx, dy, dw, dh);
 
-      gif.addFrame(off, { delay });
+      // CRITICAL FIX: copy pixels now so frames don't collapse / stack
+      gif.addFrame(off, { copy: true, delay });
     }
 
     gif.on("progress", (p) => {
@@ -361,7 +366,12 @@
       if (lastGifBlobUrl) URL.revokeObjectURL(lastGifBlobUrl);
       lastGifBlobUrl = URL.createObjectURL(blob);
 
-      resultImg.src = lastGifBlobUrl;
+      // Force refresh in some viewers
+      resultImg.src = "";
+      requestAnimationFrame(() => {
+        resultImg.src = lastGifBlobUrl;
+      });
+
       downloadLink.href = lastGifBlobUrl;
 
       resultArea.classList.remove("hidden");
@@ -389,7 +399,7 @@
 
   // ---------- EVENTS ----------
   fileInput.addEventListener("change", async () => {
-    // Android picker stability delay (prevents “select twice”)
+    // Android picker stability delay
     await new Promise((r) => setTimeout(r, 60));
     if (!fileInput.files || fileInput.files.length === 0) {
       await new Promise((r) => setTimeout(r, 120));
@@ -460,6 +470,7 @@
 
   exportBtn.addEventListener("click", forgeGif);
 
+  // Initial UI state
   enableControls();
   setStatus("Idle.");
 })();
