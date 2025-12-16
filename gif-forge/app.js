@@ -279,46 +279,124 @@
 
   // ---------- EXPORT (patched for mobile reliability) ----------
   const forgeGif = async () => {
-    if (frames.length === 0) return;
+  if (frames.length === 0) return;
 
-    stopPlayback();
-    clearResult();
+  stopPlayback();
+  clearResult();
 
-    const delay = Math.max(10, parseInt(delayInput.value, 10) || 120);
-    const quality = Math.max(1, Math.min(30, parseInt(qualityInput.value, 10) || 10));
-    const loopForever = !!loopInput.checked;
+  const delay = Math.max(10, parseInt(delayInput.value, 10) || 120);
+  const quality = Math.max(1, Math.min(30, parseInt(qualityInput.value, 10) || 10));
+  const loopForever = !!loopInput.checked;
 
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    const { w, h } = normalizeTargetSize();
+  const { w, h } = normalizeTargetSize();
 
-    // Mobile memory safety clamp (prevents "render failed" OOM crashes)
-    let targetW = w;
-    let targetH = h;
-    if (isMobile) {
-      const MAX = 512; // safe-ish default for mobile browsers
-      const scale = Math.min(1, MAX / Math.max(w, h));
-      targetW = Math.max(1, Math.round(w * scale));
-      targetH = Math.max(1, Math.round(h * scale));
+  // Mobile memory safety clamp (prevents crashes)
+  let targetW = w;
+  let targetH = h;
+  if (isMobile) {
+    const MAX = 512;
+    const scale = Math.min(1, MAX / Math.max(w, h));
+    targetW = Math.max(1, Math.round(w * scale));
+    targetH = Math.max(1, Math.round(h * scale));
+  }
+
+  exportBtn.disabled = true;
+  setProgress(0);
+  setStatus("Forging GIF…");
+
+  const off = document.createElement("canvas");
+  off.width = targetW;
+  off.height = targetH;
+  const offCtx = off.getContext("2d");
+
+  // IMPORTANT: Use same-origin worker for reliability on mobile/GitHub Pages
+  const WORKER_PATH = "./gif.worker.js";
+
+  const gif = new GIF({
+    workers: isMobile ? 1 : Math.min(4, navigator.hardwareConcurrency || 2),
+    quality,
+    width: targetW,
+    height: targetH,
+    repeat: loopForever ? 0 : -1,
+    workerScript: WORKER_PATH,
+  });
+
+  // Watchdog: if worker never starts, tell the user what to fix
+  let sawProgress = false;
+  const watchdog = setTimeout(() => {
+    if (!sawProgress) {
+      setStatus("Stuck at 0% — worker didn't start. Make sure gif-forge/gif.worker.js exists.");
+      exportBtn.disabled = false;
+      enableControls();
     }
+  }, 4000);
 
-    exportBtn.disabled = true;
-    setProgress(0);
-    setStatus(isMobile ? "Forging GIF… (mobile-safe mode)" : "Forging GIF…");
+  for (let idx = 0; idx < frames.length; idx++) {
+    const f = frames[idx];
 
-    const off = document.createElement("canvas");
-    off.width = targetW;
-    off.height = targetH;
-    const offCtx = off.getContext("2d");
+    offCtx.clearRect(0, 0, targetW, targetH);
+    offCtx.fillStyle = "#000";
+    offCtx.fillRect(0, 0, targetW, targetH);
 
-    // CRITICAL: workers=0 for Android reliability. Remove workerScript entirely.
-    const gif = new GIF({
-      workers: 0,
-      quality,
-      width: targetW,
-      height: targetH,
-      repeat: loopForever ? 0 : -1,
-    });
+    const scale = Math.min(targetW / f.w, targetH / f.h);
+    const dw = Math.round(f.w * scale);
+    const dh = Math.round(f.h * scale);
+    const dx = Math.round((targetW - dw) / 2);
+    const dy = Math.round((targetH - dh) / 2);
+
+    offCtx.imageSmoothingEnabled = true;
+    offCtx.imageSmoothingQuality = "high";
+    offCtx.drawImage(f.img, dx, dy, dw, dh);
+
+    gif.addFrame(off, { delay });
+
+    if (frames.length >= 30 && idx % 10 === 0) {
+      setStatus(`Queued ${idx + 1}/${frames.length} frames…`);
+    }
+  }
+
+  gif.on("progress", (p) => {
+    sawProgress = true;
+    setProgress(p);
+    setStatus(`Rendering… ${Math.round(p * 100)}%`);
+  });
+
+  gif.on("finished", (blob) => {
+    clearTimeout(watchdog);
+
+    setProgress(1);
+    setStatus("Done! GIF is ready.");
+
+    if (lastGifBlobUrl) URL.revokeObjectURL(lastGifBlobUrl);
+    lastGifBlobUrl = URL.createObjectURL(blob);
+
+    resultImg.src = lastGifBlobUrl;
+    downloadLink.href = lastGifBlobUrl;
+
+    resultArea.classList.remove("hidden");
+    exportBtn.disabled = false;
+    enableControls();
+  });
+
+  gif.on("abort", () => {
+    clearTimeout(watchdog);
+    setStatus("Render aborted.");
+    exportBtn.disabled = false;
+    enableControls();
+  });
+
+  try {
+    gif.render();
+  } catch (e) {
+    clearTimeout(watchdog);
+    console.error("GIF render error:", e);
+    setStatus("Error: GIF render failed. Try fewer frames or smaller size.");
+    exportBtn.disabled = false;
+    enableControls();
+  }
+};
 
     for (let idx = 0; idx < frames.length; idx++) {
       const f = frames[idx];
