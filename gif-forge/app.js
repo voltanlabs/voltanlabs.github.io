@@ -28,6 +28,9 @@
   const qualityInput = document.getElementById("qualityInput");
   const loopInput = document.getElementById("loopInput");
 
+  // NEW (optional checkbox in index.html)
+  const transparentInput = document.getElementById("transparentInput");
+
   const exportBtn = document.getElementById("exportBtn");
   const progressBar = document.getElementById("progressBar");
   const statusText = document.getElementById("statusText");
@@ -37,7 +40,7 @@
   const downloadLink = document.getElementById("downloadLink");
 
   // ---------- GUARDS ----------
-  if (!fileInput || !dropZone) {
+  if (!fileInput || !dropZone || !previewCanvas) {
     console.error("Gif Forge: missing required DOM elements. Check index.html IDs.");
     return;
   }
@@ -61,6 +64,30 @@
   const setProgress = (p01) => {
     const pct = Math.max(0, Math.min(1, p01));
     progressBar.style.width = `${Math.round(pct * 100)}%`;
+  };
+
+  const wantsTransparentBg = () => {
+    // If checkbox exists, follow it; otherwise default false (black)
+    return transparentInput ? !!transparentInput.checked : false;
+  };
+
+  const applyPreviewBackdrop = () => {
+    // Checkerboard behind the canvas when transparent mode is ON
+    if (!previewCanvas) return;
+
+    if (wantsTransparentBg()) {
+      previewCanvas.style.backgroundImage =
+        "linear-gradient(45deg, rgba(255,255,255,.10) 25%, transparent 25%)," +
+        "linear-gradient(-45deg, rgba(255,255,255,.10) 25%, transparent 25%)," +
+        "linear-gradient(45deg, transparent 75%, rgba(255,255,255,.10) 75%)," +
+        "linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.10) 75%)";
+      previewCanvas.style.backgroundSize = "16px 16px";
+      previewCanvas.style.backgroundPosition = "0 0, 0 8px, 8px -8px, -8px 0px";
+    } else {
+      previewCanvas.style.backgroundImage = "";
+      previewCanvas.style.backgroundSize = "";
+      previewCanvas.style.backgroundPosition = "";
+    }
   };
 
   const clearResult = () => {
@@ -104,13 +131,20 @@
 
     const { w, h } = normalizeTargetSize();
 
+    // Resize buffer
     previewCanvas.width = w;
     previewCanvas.height = h;
 
+    // Clear (transparent by default)
     ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0, 0, w, h);
 
+    // Optional solid background
+    if (!wantsTransparentBg()) {
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    // Contain
     const scale = Math.min(w / frame.w, h / frame.h);
     const dw = Math.round(frame.w * scale);
     const dh = Math.round(frame.h * scale);
@@ -152,6 +186,38 @@
     enableControls();
   };
 
+  const removeFrameAt = (idx) => {
+    if (idx < 0 || idx >= frames.length) return;
+
+    // stop playback if needed
+    if (isPlaying) stopPlayback();
+
+    const victim = frames[idx];
+    if (victim && victim.url) URL.revokeObjectURL(victim.url);
+
+    frames.splice(idx, 1);
+
+    // Adjust selection
+    if (frames.length === 0) {
+      selectedIndex = -1;
+      ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+      clearResult();
+      setStatus("All frames removed.");
+    } else {
+      if (selectedIndex === idx) {
+        selectedIndex = Math.min(idx, frames.length - 1);
+      } else if (selectedIndex > idx) {
+        selectedIndex -= 1;
+      }
+      drawFrameToCanvas(frames[selectedIndex]);
+      clearResult();
+      setStatus("Frame removed.");
+    }
+
+    renderFrameList();
+    enableControls();
+  };
+
   const renderFrameList = () => {
     frameListEl.innerHTML = "";
 
@@ -164,13 +230,14 @@
           ? "border-zinc-400 bg-zinc-950/60"
           : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900");
 
+      // thumb
       const thumb = document.createElement("img");
       thumb.src = f.url;
       thumb.alt = f.name;
       thumb.className = "h-12 w-12 object-cover rounded-xl border border-zinc-800 bg-black";
 
       const meta = document.createElement("div");
-      meta.className = "min-w-0";
+      meta.className = "min-w-0 flex-1";
 
       const title = document.createElement("div");
       title.className = "text-sm text-zinc-200 truncate";
@@ -183,8 +250,22 @@
       meta.appendChild(title);
       meta.appendChild(sub);
 
+      // NEW: delete button per frame
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className =
+        "ml-auto shrink-0 px-3 py-2 rounded-xl border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 text-xs text-zinc-300";
+      del.textContent = "✕";
+      del.title = "Remove frame";
+      del.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        removeFrameAt(idx);
+      });
+
       item.appendChild(thumb);
       item.appendChild(meta);
+      item.appendChild(del);
 
       item.addEventListener("click", () => {
         selectedIndex = idx;
@@ -285,7 +366,7 @@
     stopPlayback();
     clearResult();
 
-    const delay = Math.max(50, parseInt(delayInput.value, 10) || 120); // safer minimum for viewers
+    const delay = Math.max(50, parseInt(delayInput.value, 10) || 120);
     const quality = Math.max(1, Math.min(30, parseInt(qualityInput.value, 10) || 10));
     const loopForever = !!loopInput.checked;
 
@@ -330,12 +411,18 @@
       }
     }, 4000);
 
+    const transparent = wantsTransparentBg();
+
     for (let idx = 0; idx < frames.length; idx++) {
       const f = frames[idx];
 
       offCtx.clearRect(0, 0, targetW, targetH);
-      offCtx.fillStyle = "#000";
-      offCtx.fillRect(0, 0, targetW, targetH);
+
+      // Only fill when NOT transparent
+      if (!transparent) {
+        offCtx.fillStyle = "#000";
+        offCtx.fillRect(0, 0, targetW, targetH);
+      }
 
       const s = Math.min(targetW / f.w, targetH / f.h);
       const dw = Math.round(f.w * s);
@@ -347,7 +434,7 @@
       offCtx.imageSmoothingQuality = "high";
       offCtx.drawImage(f.img, dx, dy, dw, dh);
 
-      // CRITICAL FIX: copy pixels now so frames don't collapse / stack
+      // CRITICAL: copy pixels so frames don't collapse/stack
       gif.addFrame(off, { copy: true, delay });
     }
 
@@ -409,6 +496,7 @@
     fileInput.value = "";
   });
 
+  // Drag & drop handling (desktop)
   ["dragenter", "dragover"].forEach((evt) => {
     dropZone.addEventListener(evt, (e) => {
       e.preventDefault();
@@ -468,9 +556,18 @@
   qualityInput.addEventListener("input", clearResult);
   loopInput.addEventListener("change", clearResult);
 
+  if (transparentInput) {
+    transparentInput.addEventListener("change", () => {
+      applyPreviewBackdrop();
+      if (selectedIndex >= 0) drawFrameToCanvas(frames[selectedIndex]);
+      clearResult();
+    });
+  }
+
   exportBtn.addEventListener("click", forgeGif);
 
   // Initial UI state
+  applyPreviewBackdrop();
   enableControls();
   setStatus("Idle.");
 })();
