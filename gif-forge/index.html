@@ -140,14 +140,34 @@
                    class="mt-1 w-full px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-100" />
           </label>
 
-          <label class="flex items-center gap-2 col-span-2 text-xs text-zinc-300">
-            <input id="loopInput" type="checkbox" checked class="accent-zinc-50" />
-            Loop forever
-          </label>
-          <label class="flex items-center gap-2 col-span-2 text-xs text-zinc-300">
-          <input id="transparentInput" type="checkbox" checked class="accent-zinc-50" />
-          Transparent background (sprite mode)
-          </label>
+          <!-- Better Toggles (Option A) -->
+          <div class="col-span-2 space-y-3 mt-1">
+
+            <!-- Loop Forever -->
+            <label class="flex items-center justify-between rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 cursor-pointer">
+              <div>
+                <div class="text-sm font-medium text-zinc-200">Loop Forever</div>
+                <div class="text-xs text-zinc-400">Repeat animation</div>
+              </div>
+              <input id="loopInput" type="checkbox" class="peer sr-only" checked />
+              <div class="relative w-12 h-6 rounded-full bg-zinc-700 peer-checked:bg-emerald-400 transition">
+                <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-black rounded-full transition peer-checked:translate-x-6"></div>
+              </div>
+            </label>
+
+            <!-- Transparent Background -->
+            <label class="flex items-center justify-between rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 cursor-pointer">
+              <div>
+                <div class="text-sm font-medium text-zinc-200">Transparent Background</div>
+                <div class="text-xs text-zinc-400">Sprite / PNG mode</div>
+              </div>
+              <input id="transparentInput" type="checkbox" class="peer sr-only" checked />
+              <div class="relative w-12 h-6 rounded-full bg-zinc-700 peer-checked:bg-emerald-400 transition">
+                <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-black rounded-full transition peer-checked:translate-x-6"></div>
+              </div>
+            </label>
+
+          </div>
         </div>
 
         <div class="mt-4">
@@ -183,6 +203,6 @@
     </footer>
   </div>
 
-  <script src="./app.js?v=4"></script>
+  <script src="./app.js?v=5"></script>
 </body>
 </html>
