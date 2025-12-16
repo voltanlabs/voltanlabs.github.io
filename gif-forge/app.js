@@ -277,6 +277,7 @@
     clearResult();
   };
 
+  // ---------- EXPORT (patched for mobile reliability) ----------
   const forgeGif = async () => {
     if (frames.length === 0) return;
 
@@ -286,45 +287,59 @@
     const delay = Math.max(10, parseInt(delayInput.value, 10) || 120);
     const quality = Math.max(1, Math.min(30, parseInt(qualityInput.value, 10) || 10));
     const loopForever = !!loopInput.checked;
-    const { w, h } = normalizeTargetSize();
-
-    exportBtn.disabled = true;
-    setProgress(0);
-    setStatus("Forging GIF…");
-
-    const off = document.createElement("canvas");
-    off.width = w;
-    off.height = h;
-    const offCtx = off.getContext("2d");
 
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-const gif = new GIF({
-  workers: isMobile ? 1 : Math.min(4, navigator.hardwareConcurrency || 2),
-  quality,
-  width: w,
-  height: h,
-  repeat: loopForever ? 0 : -1,
-  workerScript: "https://unpkg.com/gif.js.optimized/dist/gif.worker.js",
-});
+    const { w, h } = normalizeTargetSize();
+
+    // Mobile memory safety clamp (prevents "render failed" OOM crashes)
+    let targetW = w;
+    let targetH = h;
+    if (isMobile) {
+      const MAX = 512; // safe-ish default for mobile browsers
+      const scale = Math.min(1, MAX / Math.max(w, h));
+      targetW = Math.max(1, Math.round(w * scale));
+      targetH = Math.max(1, Math.round(h * scale));
+    }
+
+    exportBtn.disabled = true;
+    setProgress(0);
+    setStatus(isMobile ? "Forging GIF… (mobile-safe mode)" : "Forging GIF…");
+
+    const off = document.createElement("canvas");
+    off.width = targetW;
+    off.height = targetH;
+    const offCtx = off.getContext("2d");
+
+    // CRITICAL: workers=0 for Android reliability. Remove workerScript entirely.
+    const gif = new GIF({
+      workers: 0,
+      quality,
+      width: targetW,
+      height: targetH,
+      repeat: loopForever ? 0 : -1,
+    });
 
     for (let idx = 0; idx < frames.length; idx++) {
       const f = frames[idx];
 
-      offCtx.clearRect(0, 0, w, h);
-      offCtx.fillStyle = "#000";
-      offCtx.fillRect(0, 0, w, h);
+      offCtx.clearRect(0, 0, targetW, targetH);
 
-      const scale = Math.min(w / f.w, h / f.h);
+      // Background: keep black for now (matches your preview). For sprite transparency later, we can remove this.
+      offCtx.fillStyle = "#000";
+      offCtx.fillRect(0, 0, targetW, targetH);
+
+      const scale = Math.min(targetW / f.w, targetH / f.h);
       const dw = Math.round(f.w * scale);
       const dh = Math.round(f.h * scale);
-      const dx = Math.round((w - dw) / 2);
-      const dy = Math.round((h - dh) / 2);
+      const dx = Math.round((targetW - dw) / 2);
+      const dy = Math.round((targetH - dh) / 2);
 
       offCtx.imageSmoothingEnabled = true;
       offCtx.imageSmoothingQuality = "high";
       offCtx.drawImage(f.img, dx, dy, dw, dh);
 
+      // IMPORTANT: pass the canvas element
       gif.addFrame(off, { delay });
 
       if (frames.length >= 30 && idx % 10 === 0) {
@@ -361,7 +376,7 @@ const gif = new GIF({
     try {
       gif.render();
     } catch (e) {
-      console.error(e);
+      console.error("GIF render error:", e);
       setStatus("Error: GIF render failed. Try fewer frames or smaller size.");
       exportBtn.disabled = false;
       enableControls();
@@ -370,24 +385,17 @@ const gif = new GIF({
 
   // ---------- EVENTS ----------
   // IMPORTANT: Do NOT call fileInput.click() here; your <label> already opens the picker on mobile.
-  // Leaving this out prevents the "select twice" / double-trigger behavior on Android.
 
-  fileInput.addEventListener("change", async (e) => {
-    // Android picker quirk fix:
-    // Wait a tick so the provider fully finalizes the selection before reading files.
+  fileInput.addEventListener("change", async () => {
+    // Android picker quirk fix: wait a tick so files are stable
     await new Promise((r) => setTimeout(r, 60));
 
-    // Read from input after the delay (more reliable than using a captured FileList)
     const stableFiles = fileInput.files;
-
-    // If still empty, wait one more short tick
     if (!stableFiles || stableFiles.length === 0) {
       await new Promise((r) => setTimeout(r, 120));
     }
 
     await addFiles(fileInput.files);
-
-    // Allow re-selecting the same images
     fileInput.value = "";
   });
 
