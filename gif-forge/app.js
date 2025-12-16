@@ -35,6 +35,12 @@
   const resultImg = document.getElementById("resultImg");
   const downloadLink = document.getElementById("downloadLink");
 
+  // ---------- GUARDS ----------
+  if (!fileInput || !dropZone) {
+    console.error("Gif Forge: missing required DOM elements. Check index.html IDs.");
+    return;
+  }
+
   // ---------- STATE ----------
   /** @type {{name:string, file:File, img:HTMLImageElement, url:string, w:number, h:number}[]} */
   let frames = [];
@@ -54,6 +60,18 @@
     progressBar.style.width = `${Math.round(pct * 100)}%`;
   };
 
+  const clearResult = () => {
+    resultArea.classList.add("hidden");
+    resultImg.src = "";
+    downloadLink.href = "#";
+    setProgress(0);
+
+    if (lastGifBlobUrl) {
+      URL.revokeObjectURL(lastGifBlobUrl);
+      lastGifBlobUrl = null;
+    }
+  };
+
   const enableControls = () => {
     const hasFrames = frames.length > 0;
     frameCountEl.textContent = String(frames.length);
@@ -67,24 +85,18 @@
 
     playBtn.disabled = frames.length < 2;
     stopBtn.disabled = !isPlaying;
-
-    // Hide result area when frames change
   };
 
   const normalizeTargetSize = () => {
-    // User overrides
     const w = parseInt(widthInput.value, 10);
     const h = parseInt(heightInput.value, 10);
 
     if (Number.isFinite(w) && w > 0 && Number.isFinite(h) && h > 0) {
       return { w, h };
     }
-
-    // Auto: use first frame size if available
     if (frames.length > 0) {
       return { w: frames[0].w, h: frames[0].h };
     }
-
     return { w: 300, h: 300 };
   };
 
@@ -93,11 +105,9 @@
 
     const { w, h } = normalizeTargetSize();
 
-    // Resize canvas buffer to target
     previewCanvas.width = w;
     previewCanvas.height = h;
 
-    // Draw with "contain" behavior (no cropping)
     ctx.clearRect(0, 0, w, h);
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, w, h);
@@ -143,18 +153,6 @@
     enableControls();
   };
 
-  const clearResult = () => {
-    resultArea.classList.add("hidden");
-    resultImg.src = "";
-    downloadLink.href = "#";
-    setProgress(0);
-
-    if (lastGifBlobUrl) {
-      URL.revokeObjectURL(lastGifBlobUrl);
-      lastGifBlobUrl = null;
-    }
-  };
-
   const renderFrameList = () => {
     frameListEl.innerHTML = "";
 
@@ -167,11 +165,11 @@
           ? "border-zinc-400 bg-zinc-950/60"
           : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900");
 
-      // thumb
       const thumb = document.createElement("img");
       thumb.src = f.url;
       thumb.alt = f.name;
-      thumb.className = "h-12 w-12 object-cover rounded-xl border border-zinc-800 bg-black";
+      thumb.className =
+        "h-12 w-12 object-cover rounded-xl border border-zinc-800 bg-black";
 
       const meta = document.createElement("div");
       meta.className = "min-w-0";
@@ -203,22 +201,25 @@
     frameCountEl.textContent = String(frames.length);
   };
 
+  const filterImageFiles = (fileList) => {
+    return Array.from(fileList || []).filter((f) => {
+      const typeOk = (f.type || "").startsWith("image/");
+      const nameOk = /\.(png|jpe?g|webp|gif|heic|heif)$/i.test(f.name || "");
+      return typeOk || nameOk;
+    });
+  };
+
   const addFiles = async (fileList) => {
-    const files = Array.from(fileList || []).filter((f) => {
-  const typeOk = (f.type || "").startsWith("image/");
-  const nameOk = /\.(png|jpe?g|webp|gif|heic|heif)$/i.test(f.name || "");
-  return typeOk || nameOk; // some pickers give blank MIME, so name check helps
-});
+    const files = filterImageFiles(fileList);
 
     if (files.length === 0) {
-      setStatus("No valid images found. Use PNG/JPG.");
+      setStatus("No valid images found. Try PNG/JPG/WEBP (or choose from Files).");
       return;
     }
 
     setStatus(`Loading ${files.length} image(s)…`);
     clearResult();
 
-    // Load sequentially to keep memory sane on mobile
     for (const file of files) {
       const url = URL.createObjectURL(file);
 
@@ -226,15 +227,17 @@
       img.decoding = "async";
       img.loading = "eager";
 
-      await new Promise((resolve, reject) => {
-        img.onload = () => resolve();
-        img.onerror = () => reject(new Error(`Failed to load: ${file.name}`));
+      const ok = await new Promise((resolve) => {
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
         img.src = url;
-      }).catch((err) => {
-        console.warn(err);
-        URL.revokeObjectURL(url);
-        return;
       });
+
+      if (!ok) {
+        console.warn("Failed to load image:", file.name);
+        URL.revokeObjectURL(url);
+        continue;
+      }
 
       frames.push({
         name: file.name,
@@ -246,7 +249,6 @@
       });
     }
 
-    // Select first frame if none selected
     if (frames.length > 0 && (selectedIndex < 0 || selectedIndex >= frames.length)) {
       selectedIndex = 0;
       drawFrameToCanvas(frames[0]);
@@ -290,13 +292,11 @@
     setProgress(0);
     setStatus("Forging GIF…");
 
-    // Create offscreen canvas for consistent sizing
     const off = document.createElement("canvas");
     off.width = w;
     off.height = h;
     const offCtx = off.getContext("2d");
 
-    // IMPORTANT: workerScript must be explicitly set when using CDN
     const gif = new GIF({
       workers: Math.min(4, navigator.hardwareConcurrency || 2),
       quality,
@@ -306,11 +306,9 @@
       workerScript: "https://unpkg.com/gif.js.optimized/dist/gif.worker.js",
     });
 
-    // Add frames
     for (let idx = 0; idx < frames.length; idx++) {
       const f = frames[idx];
 
-      // Draw "contain" into offscreen buffer
       offCtx.clearRect(0, 0, w, h);
       offCtx.fillStyle = "#000";
       offCtx.fillRect(0, 0, w, h);
@@ -325,10 +323,8 @@
       offCtx.imageSmoothingQuality = "high";
       offCtx.drawImage(f.img, dx, dy, dw, dh);
 
-      // Add canvas frame
       gif.addFrame(offCtx, { copy: true, delay });
 
-      // Small UI feedback for long sets
       if (frames.length >= 30 && idx % 10 === 0) {
         setStatus(`Queued ${idx + 1}/${frames.length} frames…`);
       }
@@ -371,16 +367,29 @@
   };
 
   // ---------- EVENTS ----------
-  // Clicking dropZone opens file picker
-  //(dropZone.addEventListener("click", () => fileInput.click());)
+  // IMPORTANT: Do NOT call fileInput.click() here; your <label> already opens the picker on mobile.
+  // Leaving this out prevents the "select twice" / double-trigger behavior on Android.
 
   fileInput.addEventListener("change", async (e) => {
-    await addFiles(e.target.files);
-    // reset input so same files can be re-added if needed
+    // Android picker quirk fix:
+    // Wait a tick so the provider fully finalizes the selection before reading files.
+    await new Promise((r) => setTimeout(r, 60));
+
+    // Read from input after the delay (more reliable than using a captured FileList)
+    const stableFiles = fileInput.files;
+
+    // If still empty, wait one more short tick
+    if (!stableFiles || stableFiles.length === 0) {
+      await new Promise((r) => setTimeout(r, 120));
+    }
+
+    await addFiles(fileInput.files);
+
+    // Allow re-selecting the same images
     fileInput.value = "";
   });
 
-  // Drag & drop handling
+  // Drag & drop handling (desktop)
   ["dragenter", "dragover"].forEach((evt) => {
     dropZone.addEventListener(evt, (e) => {
       e.preventDefault();
@@ -405,7 +414,6 @@
 
   clearBtn.addEventListener("click", () => {
     stopPlayback();
-    // cleanup object URLs
     frames.forEach((f) => {
       if (f.url) URL.revokeObjectURL(f.url);
     });
@@ -425,7 +433,6 @@
   playBtn.addEventListener("click", startPlayback);
   stopBtn.addEventListener("click", stopPlayback);
 
-  // If settings change, redraw current preview
   [widthInput, heightInput].forEach((el) =>
     el.addEventListener("input", () => {
       if (selectedIndex >= 0) drawFrameToCanvas(frames[selectedIndex]);
