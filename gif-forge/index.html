@@ -1,1 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VoltanLabs Gif Forge</title>
 
+  <!-- Tailwind (CDN for quick MVP) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- gif.js (optimized build) -->
+  <script src="https://unpkg.com/gif.js.optimized/dist/gif.js"></script>
+</head>
+
+<body class="min-h-screen bg-zinc-950 text-zinc-100">
+  <div class="max-w-5xl mx-auto p-4 sm:p-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between gap-3 mb-6">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">
+          VoltanLabs <span class="text-zinc-300">Gif Forge</span>
+        </h1>
+        <p class="text-zinc-400 text-sm mt-1">
+          Turn image frames into an animated GIF — all in your browser.
+        </p>
+      </div>
+      <div class="px-3 py-2 rounded-2xl bg-zinc-900 border border-zinc-800 text-xs text-zinc-300">
+        ⚡ Local-only • No uploads
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- Left: Upload & Frames -->
+      <section class="lg:col-span-1 rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
+        <h2 class="text-lg font-medium mb-3">Frames</h2>
+
+        <label class="block">
+          <input id="fileInput" type="file" accept="image/jpeg,image/png,image/jpg" multiple class="hidden" />
+          <div id="dropZone"
+               class="cursor-pointer select-none rounded-2xl border border-dashed border-zinc-700 bg-zinc-950/40 p-4 text-center">
+            <div class="text-sm text-zinc-300">Drop images here</div>
+            <div class="text-xs text-zinc-500 mt-1">or tap to browse</div>
+          </div>
+        </label>
+
+        <div class="flex items-center justify-between mt-3">
+          <div class="text-xs text-zinc-400">
+            <span id="frameCount">0</span> frame(s)
+          </div>
+          <button id="clearBtn"
+                  class="text-xs px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 hover:bg-zinc-900 disabled:opacity-40"
+                  disabled>
+            Clear
+          </button>
+        </div>
+
+        <div class="mt-3 flex gap-2">
+          <button id="moveUpBtn"
+                  class="flex-1 text-xs px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 hover:bg-zinc-900 disabled:opacity-40"
+                  disabled>
+            Move Up
+          </button>
+          <button id="moveDownBtn"
+                  class="flex-1 text-xs px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 hover:bg-zinc-900 disabled:opacity-40"
+                  disabled>
+            Move Down
+          </button>
+        </div>
+
+        <div class="mt-3">
+          <div class="text-xs text-zinc-400 mb-2">Tap a frame to select it:</div>
+          <div id="frameList" class="max-h-80 overflow-auto space-y-2 pr-1"></div>
+        </div>
+      </section>
+
+      <!-- Middle: Preview -->
+      <section class="lg:col-span-1 rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
+        <h2 class="text-lg font-medium mb-3">Preview</h2>
+
+        <div class="rounded-2xl bg-zinc-950 border border-zinc-800 p-3">
+          <canvas id="previewCanvas" class="w-full h-auto rounded-xl bg-black"></canvas>
+        </div>
+
+        <div class="flex items-center gap-2 mt-3">
+          <button id="playBtn"
+                  class="flex-1 px-3 py-2 rounded-xl bg-zinc-50 text-zinc-950 font-medium hover:opacity-90 disabled:opacity-40"
+                  disabled>
+            Play
+          </button>
+          <button id="stopBtn"
+                  class="flex-1 px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 hover:bg-zinc-900 disabled:opacity-40"
+                  disabled>
+            Stop
+          </button>
+        </div>
+
+        <div class="mt-3 text-xs text-zinc-400">
+          Tip: If your frames are different sizes, set Width/Height on the right to normalize.
+        </div>
+      </section>
+
+      <!-- Right: Settings & Export -->
+      <section class="lg:col-span-1 rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
+        <h2 class="text-lg font-medium mb-3">Settings</h2>
+
+        <div class="grid grid-cols-2 gap-3">
+          <label class="block text-xs text-zinc-400">
+            Width
+            <input id="widthInput" type="number" min="1" placeholder="auto"
+                   class="mt-1 w-full px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-100" />
+          </label>
+
+          <label class="block text-xs text-zinc-400">
+            Height
+            <input id="heightInput" type="number" min="1" placeholder="auto"
+                   class="mt-1 w-full px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-100" />
+          </label>
+
+          <label class="block text-xs text-zinc-400 col-span-2">
+            Frame delay (ms)
+            <input id="delayInput" type="number" min="10" value="120"
+                   class="mt-1 w-full px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-100" />
+          </label>
+
+          <label class="block text-xs text-zinc-400 col-span-2">
+            Quality (lower = better quality, bigger file)
+            <input id="qualityInput" type="number" min="1" max="30" value="10"
+                   class="mt-1 w-full px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-100" />
+          </label>
+
+          <label class="flex items-center gap-2 col-span-2 text-xs text-zinc-300">
+            <input id="loopInput" type="checkbox" checked class="accent-zinc-50" />
+            Loop forever
+          </label>
+        </div>
+
+        <div class="mt-4">
+          <button id="exportBtn"
+                  class="w-full px-4 py-3 rounded-2xl bg-emerald-400 text-zinc-950 font-semibold hover:opacity-90 disabled:opacity-40"
+                  disabled>
+            Forge GIF
+          </button>
+
+          <div class="mt-3">
+            <div class="h-2 rounded-full bg-zinc-950 border border-zinc-800 overflow-hidden">
+              <div id="progressBar" class="h-full w-0 bg-emerald-400"></div>
+            </div>
+            <div id="statusText" class="mt-2 text-xs text-zinc-400">Idle.</div>
+          </div>
+
+          <div id="resultArea" class="mt-4 hidden">
+            <div class="text-xs text-zinc-400 mb-2">Result:</div>
+            <img id="resultImg" class="w-full rounded-2xl border border-zinc-800 bg-zinc-950" alt="Result GIF" />
+            <a id="downloadLink"
+               class="mt-3 inline-flex w-full justify-center px-4 py-3 rounded-2xl bg-zinc-50 text-zinc-950 font-semibold hover:opacity-90"
+               download="voltanlabs-gif-forge.gif"
+               href="#">
+              Download GIF
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="mt-8 text-center text-xs text-zinc-500">
+      VoltanLabs Gif Forge ⚡ Built client-side. Your images never leave your device.
+    </footer>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
