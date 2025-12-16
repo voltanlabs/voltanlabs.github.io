@@ -1,6 +1,7 @@
 /* VoltanLabs Gif Forge - app.js
    Requires:
    - gif.js.optimized loaded in index.html
+   - gif.worker.js placed locally at: gif-forge/gif.worker.js
 */
 
 (() => {
@@ -53,6 +54,8 @@
   let lastGifBlobUrl = null;
 
   // ---------- HELPERS ----------
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
   const setStatus = (msg) => (statusText.textContent = msg);
 
   const setProgress = (p01) => {
@@ -277,139 +280,69 @@
     clearResult();
   };
 
-  // ---------- EXPORT (patched for mobile reliability) ----------
+  // ---------- EXPORT (single clean implementation) ----------
   const forgeGif = async () => {
-  if (frames.length === 0) return;
+    if (frames.length === 0) return;
 
-  stopPlayback();
-  clearResult();
+    stopPlayback();
+    clearResult();
 
-  const delay = Math.max(10, parseInt(delayInput.value, 10) || 120);
-  const quality = Math.max(1, Math.min(30, parseInt(qualityInput.value, 10) || 10));
-  const loopForever = !!loopInput.checked;
+    const delay = Math.max(10, parseInt(delayInput.value, 10) || 120);
+    const quality = Math.max(1, Math.min(30, parseInt(qualityInput.value, 10) || 10));
+    const loopForever = !!loopInput.checked;
 
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const { w, h } = normalizeTargetSize();
 
-  const { w, h } = normalizeTargetSize();
-
-  // Mobile memory safety clamp (prevents crashes)
-  let targetW = w;
-  let targetH = h;
-  if (isMobile) {
-    const MAX = 512;
-    const scale = Math.min(1, MAX / Math.max(w, h));
-    targetW = Math.max(1, Math.round(w * scale));
-    targetH = Math.max(1, Math.round(h * scale));
-  }
-
-  exportBtn.disabled = true;
-  setProgress(0);
-  setStatus("Forging GIF…");
-
-  const off = document.createElement("canvas");
-  off.width = targetW;
-  off.height = targetH;
-  const offCtx = off.getContext("2d");
-
-  // IMPORTANT: Use same-origin worker for reliability on mobile/GitHub Pages
-  const WORKER_PATH = "./gif.worker.js";
-
-  const gif = new GIF({
-    workers: isMobile ? 1 : Math.min(4, navigator.hardwareConcurrency || 2),
-    quality,
-    width: targetW,
-    height: targetH,
-    repeat: loopForever ? 0 : -1,
-    workerScript: WORKER_PATH,
-  });
-
-  // Watchdog: if worker never starts, tell the user what to fix
-  let sawProgress = false;
-  const watchdog = setTimeout(() => {
-    if (!sawProgress) {
-      setStatus("Stuck at 0% — worker didn't start. Make sure gif-forge/gif.worker.js exists.");
-      exportBtn.disabled = false;
-      enableControls();
+    // Mobile memory safety clamp
+    let targetW = w;
+    let targetH = h;
+    if (isMobile) {
+      const MAX = 512;
+      const s = Math.min(1, MAX / Math.max(w, h));
+      targetW = Math.max(1, Math.round(w * s));
+      targetH = Math.max(1, Math.round(h * s));
     }
-  }, 4000);
 
-  for (let idx = 0; idx < frames.length; idx++) {
-    const f = frames[idx];
+    exportBtn.disabled = true;
+    setProgress(0);
+    setStatus("Forging GIF…");
 
-    offCtx.clearRect(0, 0, targetW, targetH);
-    offCtx.fillStyle = "#000";
-    offCtx.fillRect(0, 0, targetW, targetH);
+    const off = document.createElement("canvas");
+    off.width = targetW;
+    off.height = targetH;
+    const offCtx = off.getContext("2d");
 
-    const scale = Math.min(targetW / f.w, targetH / f.h);
-    const dw = Math.round(f.w * scale);
-    const dh = Math.round(f.h * scale);
-    const dx = Math.round((targetW - dw) / 2);
-    const dy = Math.round((targetH - dh) / 2);
+    // IMPORTANT: Same-folder worker file is required
+    const WORKER_PATH = "./gif.worker.js";
 
-    offCtx.imageSmoothingEnabled = true;
-    offCtx.imageSmoothingQuality = "high";
-    offCtx.drawImage(f.img, dx, dy, dw, dh);
+    const gif = new GIF({
+      workers: isMobile ? 1 : Math.min(4, navigator.hardwareConcurrency || 2),
+      quality,
+      width: targetW,
+      height: targetH,
+      repeat: loopForever ? 0 : -1,
+      workerScript: WORKER_PATH,
+    });
 
-    gif.addFrame(off, { delay });
-
-    if (frames.length >= 30 && idx % 10 === 0) {
-      setStatus(`Queued ${idx + 1}/${frames.length} frames…`);
-    }
-  }
-
-  gif.on("progress", (p) => {
-    sawProgress = true;
-    setProgress(p);
-    setStatus(`Rendering… ${Math.round(p * 100)}%`);
-  });
-
-  gif.on("finished", (blob) => {
-    clearTimeout(watchdog);
-
-    setProgress(1);
-    setStatus("Done! GIF is ready.");
-
-    if (lastGifBlobUrl) URL.revokeObjectURL(lastGifBlobUrl);
-    lastGifBlobUrl = URL.createObjectURL(blob);
-
-    resultImg.src = lastGifBlobUrl;
-    downloadLink.href = lastGifBlobUrl;
-
-    resultArea.classList.remove("hidden");
-    exportBtn.disabled = false;
-    enableControls();
-  });
-
-  gif.on("abort", () => {
-    clearTimeout(watchdog);
-    setStatus("Render aborted.");
-    exportBtn.disabled = false;
-    enableControls();
-  });
-
-  try {
-    gif.render();
-  } catch (e) {
-    clearTimeout(watchdog);
-    console.error("GIF render error:", e);
-    setStatus("Error: GIF render failed. Try fewer frames or smaller size.");
-    exportBtn.disabled = false;
-    enableControls();
-  }
-};
+    let sawProgress = false;
+    const watchdog = setTimeout(() => {
+      if (!sawProgress) {
+        setStatus("Stuck at 0% — worker didn't start. Add gif-forge/gif.worker.js (same folder).");
+        exportBtn.disabled = false;
+        enableControls();
+      }
+    }, 4000);
 
     for (let idx = 0; idx < frames.length; idx++) {
       const f = frames[idx];
 
       offCtx.clearRect(0, 0, targetW, targetH);
-
-      // Background: keep black for now (matches your preview). For sprite transparency later, we can remove this.
       offCtx.fillStyle = "#000";
       offCtx.fillRect(0, 0, targetW, targetH);
 
-      const scale = Math.min(targetW / f.w, targetH / f.h);
-      const dw = Math.round(f.w * scale);
-      const dh = Math.round(f.h * scale);
+      const s = Math.min(targetW / f.w, targetH / f.h);
+      const dw = Math.round(f.w * s);
+      const dh = Math.round(f.h * s);
       const dx = Math.round((targetW - dw) / 2);
       const dy = Math.round((targetH - dh) / 2);
 
@@ -417,7 +350,6 @@
       offCtx.imageSmoothingQuality = "high";
       offCtx.drawImage(f.img, dx, dy, dw, dh);
 
-      // IMPORTANT: pass the canvas element
       gif.addFrame(off, { delay });
 
       if (frames.length >= 30 && idx % 10 === 0) {
@@ -426,11 +358,14 @@
     }
 
     gif.on("progress", (p) => {
+      sawProgress = true;
       setProgress(p);
       setStatus(`Rendering… ${Math.round(p * 100)}%`);
     });
 
     gif.on("finished", (blob) => {
+      clearTimeout(watchdog);
+
       setProgress(1);
       setStatus("Done! GIF is ready.");
 
@@ -446,6 +381,7 @@
     });
 
     gif.on("abort", () => {
+      clearTimeout(watchdog);
       setStatus("Render aborted.");
       exportBtn.disabled = false;
       enableControls();
@@ -454,6 +390,7 @@
     try {
       gif.render();
     } catch (e) {
+      clearTimeout(watchdog);
       console.error("GIF render error:", e);
       setStatus("Error: GIF render failed. Try fewer frames or smaller size.");
       exportBtn.disabled = false;
@@ -462,14 +399,12 @@
   };
 
   // ---------- EVENTS ----------
-  // IMPORTANT: Do NOT call fileInput.click() here; your <label> already opens the picker on mobile.
+  // Do NOT call fileInput.click(); your <label> already opens picker on mobile.
 
   fileInput.addEventListener("change", async () => {
-    // Android picker quirk fix: wait a tick so files are stable
+    // Android picker stability delay
     await new Promise((r) => setTimeout(r, 60));
-
-    const stableFiles = fileInput.files;
-    if (!stableFiles || stableFiles.length === 0) {
+    if (!fileInput.files || fileInput.files.length === 0) {
       await new Promise((r) => setTimeout(r, 120));
     }
 
