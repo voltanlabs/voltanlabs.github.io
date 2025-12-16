@@ -10,64 +10,64 @@
 
   <style>
     body {
-  font-family: 'Roboto', sans-serif;
-  background-color: #020617; /* dark fallback so no white flash */
-  color: #fff;
-}
+      font-family: 'Roboto', sans-serif;
+      background-color: #020617; /* dark fallback so no white flash */
+      color: #fff;
+    }
     h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
 
     /* Root background */
     #questBody {
-  --scene-bg: url('images/quest/plaza-signal.jpg');
-  min-height: 100vh;
-  color: #fff;
-  position: relative;
-  background-color: #020617; /* backup behind the pseudo-element */
-}
+      --scene-bg: url('images/quest/plaza-signal.jpg');
+      min-height: 100vh;
+      color: #fff;
+      position: relative;
+      background-color: #020617; /* backup behind the pseudo-element */
+    }
 
     /* Full-strength background layer */
     #questBody::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: var(--scene-bg);
-  background-size: cover;
-  background-position: center 30%;
-  background-repeat: no-repeat;
-  /* background-attachment: fixed;  <-- remove to avoid mobile repaint weirdness */
-  background-color: #020617; /* what shows while new image loads */
-  opacity: 1;
-  /* remove background-image transition; it causes flicker */
-  z-index: -1;
-}
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: var(--scene-bg);
+      background-size: cover;
+      background-position: center 30%;
+      background-repeat: no-repeat;
+      /* background-attachment: fixed;  <-- remove to avoid mobile repaint weirdness */
+      background-color: #020617; /* what shows while new image loads */
+      opacity: 1;
+      /* remove background-image transition; it causes flicker */
+      z-index: -1;
+    }
 
     /* STORY CARD — transparent with glow */
     #card {
-  background: rgba(0, 0, 0, 0.03) !important;
-  border-radius: 1.5rem;
+      background: rgba(0, 0, 0, 0.03) !important;
+      border-radius: 1.5rem;
 
-  /* thin, bright electric-blue border */
-  border: 2px solid rgba(0, 180, 255, 0.85);
+      /* thin, bright electric-blue border */
+      border: 2px solid rgba(0, 180, 255, 0.85);
 
-  /* layered glow system */
-  box-shadow:
-    /* outer wide glow */
-    0 0 40px rgba(0, 160, 255, 0.45),
-    0 0 80px rgba(0, 160, 255, 0.25),
+      /* layered glow system */
+      box-shadow:
+        /* outer wide glow */
+        0 0 40px rgba(0, 160, 255, 0.45),
+        0 0 80px rgba(0, 160, 255, 0.25),
 
-    /* rim glow hugging the border */
-    0 0 12px rgba(0, 200, 255, 0.9) inset,
+        /* rim glow hugging the border */
+        0 0 12px rgba(0, 200, 255, 0.9) inset,
 
-    /* inner subtle haze */
-    0 0 20px rgba(0, 140, 255, 0.35) inset,
+        /* inner subtle haze */
+        0 0 20px rgba(0, 140, 255, 0.35) inset,
 
-    /* drop shadow for depth */
-    0 18px 45px rgba(0, 0, 0, 0.5);
+        /* drop shadow for depth */
+        0 18px 45px rgba(0, 0, 0, 0.5);
 
-  padding: 2rem;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
+      padding: 2rem;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
 
     /* Divider under title */
     .divider {
@@ -97,28 +97,56 @@
 
 <body id="questBody" class="flex flex-col">
 
-  <!-- HEADER -->
+  <!-- HEADER (Hamburger dropdown - consistent site nav) -->
   <header class="bg-[#2C3E50] text-white shadow-lg">
     <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="index.html" class="flex items-center">
-        <img src="images/voltanlabs_icon.png" alt="VoltanLabs Logo" class="h-10 w-10 mr-2">
-         <h1><span class="text-2xl font-bold text-white">VoltanLabs</span></h1>
+      <!-- Brand -->
+      <a href="index.html" class="flex items-center gap-2">
+        <img src="images/voltanlabs_icon.png" alt="VoltanLabs Logo" class="h-10 w-10">
+        <div>
+          <div class="text-2xl font-bold leading-tight">VoltanLabs</div>
+          <div class="text-xs text-white/70 -mt-0.5">Voltan’s Quest</div>
+        </div>
       </a>
 
-      <button id="navToggle" class="md:hidden p-2 rounded hover:bg-white/10" aria-label="Open menu">☰</button>
+      <!-- Hamburger button -->
+      <button
+        id="menuBtn"
+        class="inline-flex items-center justify-center w-12 h-12 rounded-xl border border-white/20 bg-black/20 hover:bg-black/30 transition md:hidden"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="siteMenu">
+        ☰
+      </button>
 
+      <!-- Desktop links -->
       <nav class="hidden md:flex items-center space-x-6 text-sm">
         <a href="index.html" class="hover:text-[#FFD700]">Home</a>
         <a href="features.html" class="hover:text-[#FFD700]">Features</a>
-        <a href="sprites-battle.html" class="hover:text-[#FFD700] font-semibold">DataSprite Battle!</a>
+        <a href="tools.html" class="hover:text-[#FFD700]">Tools</a>
+        <a href="voltanquest.html" class="hover:text-[#FFD700] font-semibold">Voltan’s Quest</a>
+        <a href="sprites-battle.html" class="hover:text-[#FFD700] font-semibold">Sprite Arena</a>
       </nav>
     </div>
 
-    <div id="mobileMenu" class="md:hidden hidden border-t border-white/10">
-      <nav class="px-4 py-3 space-y-2 text-sm">
-        <a href="index.html" class="block py-2 hover:text-[#FFD700]">Home</a>
-        <a href="features.html" class="block py-2 hover:text-[#FFD700]">Features</a>
-        <a href="sprites-battle.html" class="block py-2 hover:text-[#FFD700] font-semibold">DataByte Sprite Arena</a>
+    <!-- Dropdown panel (mobile) -->
+    <div id="siteMenu" class="hidden md:hidden border-t border-white/10 bg-black/20">
+      <nav class="max-w-6xl mx-auto px-4 py-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+        <a href="index.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition">Home</a>
+        <a href="features.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition">Features</a>
+        <a href="tools.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition">Tools</a>
+        <a href="about.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition">About</a>
+        <a href="contact.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition">Contact</a>
+
+        <a href="voltanquest.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition font-semibold text-[#FFD700]">
+          Voltan’s Quest
+        </a>
+        <a href="sprites-battle.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition font-semibold text-[#FFD700]">
+          DataByte Sprite Arena
+        </a>
+
+        <a href="gif-forge/index.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition">Gif Forge</a>
+        <a href="promptcraft.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition">VoltPromptCraft</a>
       </nav>
     </div>
   </header>
@@ -161,10 +189,41 @@
   </footer>
 
   <script>
-    /* MOBILE NAV */
-    const navToggle = document.getElementById('navToggle');
-    const mobileMenu = document.getElementById('mobileMenu');
-    navToggle.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); });
+    /* =========================
+       HAMBURGER NAV (Dropdown)
+       ========================= */
+    const menuBtn = document.getElementById("menuBtn");
+    const siteMenu = document.getElementById("siteMenu");
+
+    function setMenu(open) {
+      if (!siteMenu || !menuBtn) return;
+      if (open) {
+        siteMenu.classList.remove("hidden");
+        menuBtn.setAttribute("aria-expanded", "true");
+      } else {
+        siteMenu.classList.add("hidden");
+        menuBtn.setAttribute("aria-expanded", "false");
+      }
+    }
+
+    if (menuBtn && siteMenu) {
+      menuBtn.addEventListener("click", () => {
+        const isHidden = siteMenu.classList.contains("hidden");
+        setMenu(isHidden);
+      });
+
+      // close on outside click
+      document.addEventListener("click", (e) => {
+        if (siteMenu.classList.contains("hidden")) return;
+        const within = siteMenu.contains(e.target) || menuBtn.contains(e.target);
+        if (!within) setMenu(false);
+      });
+
+      // close on Escape
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") setMenu(false);
+      });
+    }
 
     /* BEEP SFX */
     function playBeep() {
