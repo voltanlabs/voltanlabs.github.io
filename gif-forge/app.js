@@ -94,12 +94,8 @@
     const w = parseInt(widthInput.value, 10);
     const h = parseInt(heightInput.value, 10);
 
-    if (Number.isFinite(w) && w > 0 && Number.isFinite(h) && h > 0) {
-      return { w, h };
-    }
-    if (frames.length > 0) {
-      return { w: frames[0].w, h: frames[0].h };
-    }
+    if (Number.isFinite(w) && w > 0 && Number.isFinite(h) && h > 0) return { w, h };
+    if (frames.length > 0) return { w: frames[0].w, h: frames[0].h };
     return { w: 300, h: 300 };
   };
 
@@ -280,7 +276,6 @@
     clearResult();
   };
 
-  // ---------- EXPORT (single clean implementation) ----------
   const forgeGif = async () => {
     if (frames.length === 0) return;
 
@@ -293,7 +288,6 @@
 
     const { w, h } = normalizeTargetSize();
 
-    // Mobile memory safety clamp
     let targetW = w;
     let targetH = h;
     if (isMobile) {
@@ -312,7 +306,6 @@
     off.height = targetH;
     const offCtx = off.getContext("2d");
 
-    // IMPORTANT: Same-folder worker file is required
     const WORKER_PATH = "./gif.worker.js";
 
     const gif = new GIF({
@@ -351,10 +344,6 @@
       offCtx.drawImage(f.img, dx, dy, dw, dh);
 
       gif.addFrame(off, { delay });
-
-      if (frames.length >= 30 && idx % 10 === 0) {
-        setStatus(`Queued ${idx + 1}/${frames.length} frames…`);
-      }
     }
 
     gif.on("progress", (p) => {
@@ -399,10 +388,8 @@
   };
 
   // ---------- EVENTS ----------
-  // Do NOT call fileInput.click(); your <label> already opens picker on mobile.
-
   fileInput.addEventListener("change", async () => {
-    // Android picker stability delay
+    // Android picker stability delay (prevents “select twice”)
     await new Promise((r) => setTimeout(r, 60));
     if (!fileInput.files || fileInput.files.length === 0) {
       await new Promise((r) => setTimeout(r, 120));
@@ -412,7 +399,6 @@
     fileInput.value = "";
   });
 
-  // Drag & drop handling (desktop)
   ["dragenter", "dragover"].forEach((evt) => {
     dropZone.addEventListener(evt, (e) => {
       e.preventDefault();
@@ -437,9 +423,7 @@
 
   clearBtn.addEventListener("click", () => {
     stopPlayback();
-    frames.forEach((f) => {
-      if (f.url) URL.revokeObjectURL(f.url);
-    });
+    frames.forEach((f) => f.url && URL.revokeObjectURL(f.url));
     frames = [];
     selectedIndex = -1;
     frameListEl.innerHTML = "";
@@ -476,7 +460,6 @@
 
   exportBtn.addEventListener("click", forgeGif);
 
-  // Initial UI state
   enableControls();
   setStatus("Idle.");
 })();
