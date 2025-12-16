@@ -31,6 +31,9 @@
   // NEW (optional checkbox in index.html)
   const transparentInput = document.getElementById("transparentInput");
 
+  // NEW (optional filename input in index.html)
+  const filenameInput = document.getElementById("filenameInput");
+
   const exportBtn = document.getElementById("exportBtn");
   const progressBar = document.getElementById("progressBar");
   const statusText = document.getElementById("statusText");
@@ -69,6 +72,23 @@
   const wantsTransparentBg = () => {
     // If checkbox exists, follow it; otherwise default false (black)
     return transparentInput ? !!transparentInput.checked : false;
+  };
+
+  // NEW: build a safe filename for downloading
+  const getSafeGifFilename = () => {
+    // default if no input exists or user left it blank
+    const raw = (filenameInput?.value || "").trim() || "voltanlabs-gif";
+
+    // strip illegal characters (Windows/Android safe), collapse spaces
+    const cleaned = raw
+      .replace(/[\\/:*?"<>|]+/g, "-")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^\.+/, "") // avoid weird hidden filenames like ".gif"
+      .slice(0, 80); // keep it reasonable
+
+    const base = cleaned || "voltanlabs-gif";
+    return base.toLowerCase().endsWith(".gif") ? base : `${base}.gif`;
   };
 
   const applyPreviewBackdrop = () => {
@@ -234,7 +254,8 @@
       const thumb = document.createElement("img");
       thumb.src = f.url;
       thumb.alt = f.name;
-      thumb.className = "h-12 w-12 object-cover rounded-xl border border-zinc-800 bg-black";
+      thumb.className =
+        "h-12 w-12 object-cover rounded-xl border border-zinc-800 bg-black";
 
       const meta = document.createElement("div");
       meta.className = "min-w-0 flex-1";
@@ -326,6 +347,11 @@
         w: img.naturalWidth || img.width,
         h: img.naturalHeight || img.height,
       });
+    }
+
+    // NEW: if filename input exists and is empty, auto-fill from the first frame name
+    if (filenameInput && !filenameInput.value && frames.length > 0) {
+      filenameInput.value = (frames[0].name || "voltanlabs-gif").replace(/\.[^.]+$/, "");
     }
 
     if (frames.length > 0 && (selectedIndex < 0 || selectedIndex >= frames.length)) {
@@ -460,6 +486,9 @@
       });
 
       downloadLink.href = lastGifBlobUrl;
+
+      // NEW: set the download filename based on user input (or default)
+      downloadLink.download = getSafeGifFilename();
 
       resultArea.classList.remove("hidden");
       exportBtn.disabled = false;
