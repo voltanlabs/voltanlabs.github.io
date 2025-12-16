@@ -204,9 +204,11 @@
   };
 
   const addFiles = async (fileList) => {
-    const files = Array.from(fileList || []).filter((f) =>
-      ["image/jpeg", "image/png"].includes(f.type) || /\.jpe?g$|\.png$/i.test(f.name)
-    );
+    const files = Array.from(fileList || []).filter((f) => {
+  const typeOk = (f.type || "").startsWith("image/");
+  const nameOk = /\.(png|jpe?g|webp|gif|heic|heif)$/i.test(f.name || "");
+  return typeOk || nameOk; // some pickers give blank MIME, so name check helps
+});
 
     if (files.length === 0) {
       setStatus("No valid images found. Use PNG/JPG.");
