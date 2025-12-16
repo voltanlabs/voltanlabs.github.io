@@ -325,7 +325,7 @@ const gif = new GIF({
       offCtx.imageSmoothingQuality = "high";
       offCtx.drawImage(f.img, dx, dy, dw, dh);
 
-      gif.addFrame(offCtx, { copy: true, delay });
+      gif.addFrame(off, { delay });
 
       if (frames.length >= 30 && idx % 10 === 0) {
         setStatus(`Queued ${idx + 1}/${frames.length} frames…`);
