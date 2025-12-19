@@ -17,7 +17,7 @@
   const moveDownBtn = document.getElementById("moveDownBtn");
 
   const previewCanvas = document.getElementById("previewCanvas");
-  const ctx = previewCanvas.getContext("2d");
+  const ctx = previewCanvas.getContext("2d", { alpha: true });
 
   const playBtn = document.getElementById("playBtn");
   const stopBtn = document.getElementById("stopBtn");
@@ -28,10 +28,7 @@
   const qualityInput = document.getElementById("qualityInput");
   const loopInput = document.getElementById("loopInput");
 
-  // NEW (optional checkbox in index.html)
   const transparentInput = document.getElementById("transparentInput");
-
-  // NEW (optional filename input in index.html)
   const filenameInput = document.getElementById("filenameInput");
 
   const exportBtn = document.getElementById("exportBtn");
@@ -70,43 +67,57 @@
   };
 
   const wantsTransparentBg = () => {
-    // If checkbox exists, follow it; otherwise default false (black)
     return transparentInput ? !!transparentInput.checked : false;
   };
 
-  // NEW: build a safe filename for downloading
   const getSafeGifFilename = () => {
-    // default if no input exists or user left it blank
     const raw = (filenameInput?.value || "").trim() || "voltanlabs-gif";
-
-    // strip illegal characters (Windows/Android safe), collapse spaces
     const cleaned = raw
       .replace(/[\\/:*?"<>|]+/g, "-")
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-")
-      .replace(/^\.+/, "") // avoid weird hidden filenames like ".gif"
-      .slice(0, 80); // keep it reasonable
+      .replace(/^\.+/, "")
+      .slice(0, 80);
 
     const base = cleaned || "voltanlabs-gif";
     return base.toLowerCase().endsWith(".gif") ? base : `${base}.gif`;
   };
 
-  const applyPreviewBackdrop = () => {
-    // Checkerboard behind the canvas when transparent mode is ON
-    if (!previewCanvas) return;
+  const applyCheckerboard = (el) => {
+    if (!el) return;
+    el.style.backgroundImage =
+      "linear-gradient(45deg, rgba(255,255,255,.10) 25%, transparent 25%)," +
+      "linear-gradient(-45deg, rgba(255,255,255,.10) 25%, transparent 25%)," +
+      "linear-gradient(45deg, transparent 75%, rgba(255,255,255,.10) 75%)," +
+      "linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.10) 75%)";
+    el.style.backgroundSize = "16px 16px";
+    el.style.backgroundPosition = "0 0, 0 8px, 8px -8px, -8px 0px";
+  };
 
+  const clearBackdrop = (el) => {
+    if (!el) return;
+    el.style.backgroundImage = "";
+    el.style.backgroundSize = "";
+    el.style.backgroundPosition = "";
+  };
+
+  const applyPreviewBackdrop = () => {
+    if (!previewCanvas) return;
     if (wantsTransparentBg()) {
-      previewCanvas.style.backgroundImage =
-        "linear-gradient(45deg, rgba(255,255,255,.10) 25%, transparent 25%)," +
-        "linear-gradient(-45deg, rgba(255,255,255,.10) 25%, transparent 25%)," +
-        "linear-gradient(45deg, transparent 75%, rgba(255,255,255,.10) 75%)," +
-        "linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.10) 75%)";
-      previewCanvas.style.backgroundSize = "16px 16px";
-      previewCanvas.style.backgroundPosition = "0 0, 0 8px, 8px -8px, -8px 0px";
+      applyCheckerboard(previewCanvas);
     } else {
-      previewCanvas.style.backgroundImage = "";
-      previewCanvas.style.backgroundSize = "";
-      previewCanvas.style.backgroundPosition = "";
+      clearBackdrop(previewCanvas);
+    }
+  };
+
+  const applyResultBackdrop = () => {
+    if (!resultImg) return;
+    if (wantsTransparentBg()) {
+      applyCheckerboard(resultImg);
+      resultImg.style.backgroundColor = "transparent";
+    } else {
+      clearBackdrop(resultImg);
+      resultImg.style.backgroundColor = "#000";
     }
   };
 
@@ -115,6 +126,7 @@
     resultImg.src = "";
     downloadLink.href = "#";
     setProgress(0);
+    applyResultBackdrop();
 
     if (lastGifBlobUrl) {
       URL.revokeObjectURL(lastGifBlobUrl);
@@ -151,20 +163,16 @@
 
     const { w, h } = normalizeTargetSize();
 
-    // Resize buffer
     previewCanvas.width = w;
     previewCanvas.height = h;
 
-    // Clear (transparent by default)
     ctx.clearRect(0, 0, w, h);
 
-    // Optional solid background
     if (!wantsTransparentBg()) {
       ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, w, h);
     }
 
-    // Contain
     const scale = Math.min(w / frame.w, h / frame.h);
     const dw = Math.round(frame.w * scale);
     const dh = Math.round(frame.h * scale);
@@ -209,7 +217,6 @@
   const removeFrameAt = (idx) => {
     if (idx < 0 || idx >= frames.length) return;
 
-    // stop playback if needed
     if (isPlaying) stopPlayback();
 
     const victim = frames[idx];
@@ -217,7 +224,6 @@
 
     frames.splice(idx, 1);
 
-    // Adjust selection
     if (frames.length === 0) {
       selectedIndex = -1;
       ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
@@ -250,12 +256,10 @@
           ? "border-zinc-400 bg-zinc-950/60"
           : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900");
 
-      // thumb
       const thumb = document.createElement("img");
       thumb.src = f.url;
       thumb.alt = f.name;
-      thumb.className =
-        "h-12 w-12 object-cover rounded-xl border border-zinc-800 bg-black";
+      thumb.className = "h-12 w-12 object-cover rounded-xl border border-zinc-800 bg-black";
 
       const meta = document.createElement("div");
       meta.className = "min-w-0 flex-1";
@@ -271,7 +275,6 @@
       meta.appendChild(title);
       meta.appendChild(sub);
 
-      // NEW: delete button per frame
       const del = document.createElement("button");
       del.type = "button";
       del.className =
@@ -349,7 +352,6 @@
       });
     }
 
-    // NEW: if filename input exists and is empty, auto-fill from the first frame name
     if (filenameInput && !filenameInput.value && frames.length > 0) {
       filenameInput.value = (frames[0].name || "voltanlabs-gif").replace(/\.[^.]+$/, "");
     }
@@ -398,7 +400,6 @@
 
     const { w, h } = normalizeTargetSize();
 
-    // Mobile memory safety clamp
     let targetW = w;
     let targetH = h;
     if (isMobile) {
@@ -412,13 +413,19 @@
     setProgress(0);
     setStatus("Forging GIF…");
 
+    // Offscreen canvas MUST be alpha-enabled to carry transparency
     const off = document.createElement("canvas");
     off.width = targetW;
     off.height = targetH;
-    const offCtx = off.getContext("2d");
+    const offCtx = off.getContext("2d", { alpha: true });
 
     const WORKER_PATH = "./gif.worker.js";
 
+    const transparent = wantsTransparentBg();
+
+    // gif.js transparency is palette-based. Tell it which color to treat as transparent.
+    // We use 0x000000 as the "transparent key" and do NOT paint it when transparent==true.
+    // When transparent==false, we DO paint #000 so it stays black.
     const gif = new GIF({
       workers: isMobile ? 1 : Math.min(4, navigator.hardwareConcurrency || 2),
       quality,
@@ -426,6 +433,10 @@
       height: targetH,
       repeat: loopForever ? 0 : -1,
       workerScript: WORKER_PATH,
+
+      // These two help gif.js keep transparency when frames include alpha
+      transparent: transparent ? 0x000000 : null,
+      background: transparent ? 0x000000 : 0x000000,
     });
 
     let sawProgress = false;
@@ -437,11 +448,10 @@
       }
     }, 4000);
 
-    const transparent = wantsTransparentBg();
-
     for (let idx = 0; idx < frames.length; idx++) {
       const f = frames[idx];
 
+      // Clear to transparent
       offCtx.clearRect(0, 0, targetW, targetH);
 
       // Only fill when NOT transparent
@@ -460,8 +470,7 @@
       offCtx.imageSmoothingQuality = "high";
       offCtx.drawImage(f.img, dx, dy, dw, dh);
 
-      // CRITICAL: copy pixels so frames don't collapse/stack
-      gif.addFrame(off, { copy: true, delay });
+      gif.addFrame(offCtx, { copy: true, delay });
     }
 
     gif.on("progress", (p) => {
@@ -479,15 +488,14 @@
       if (lastGifBlobUrl) URL.revokeObjectURL(lastGifBlobUrl);
       lastGifBlobUrl = URL.createObjectURL(blob);
 
-      // Force refresh in some viewers
+      applyResultBackdrop();
+
       resultImg.src = "";
       requestAnimationFrame(() => {
         resultImg.src = lastGifBlobUrl;
       });
 
       downloadLink.href = lastGifBlobUrl;
-
-      // NEW: set the download filename based on user input (or default)
       downloadLink.download = getSafeGifFilename();
 
       resultArea.classList.remove("hidden");
@@ -515,7 +523,6 @@
 
   // ---------- EVENTS ----------
   fileInput.addEventListener("change", async () => {
-    // Android picker stability delay
     await new Promise((r) => setTimeout(r, 60));
     if (!fileInput.files || fileInput.files.length === 0) {
       await new Promise((r) => setTimeout(r, 120));
@@ -525,7 +532,6 @@
     fileInput.value = "";
   });
 
-  // Drag & drop handling (desktop)
   ["dragenter", "dragover"].forEach((evt) => {
     dropZone.addEventListener(evt, (e) => {
       e.preventDefault();
@@ -588,6 +594,7 @@
   if (transparentInput) {
     transparentInput.addEventListener("change", () => {
       applyPreviewBackdrop();
+      applyResultBackdrop();
       if (selectedIndex >= 0) drawFrameToCanvas(frames[selectedIndex]);
       clearResult();
     });
@@ -597,6 +604,7 @@
 
   // Initial UI state
   applyPreviewBackdrop();
+  applyResultBackdrop();
   enableControls();
   setStatus("Idle.");
 })();
