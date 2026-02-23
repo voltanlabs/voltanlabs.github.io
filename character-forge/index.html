@@ -8,8 +8,8 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- ✅ Model Viewer (usually not blocked like unpkg) -->
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <!-- model-viewer (use jsDelivr to avoid unpkg blocks) -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer/dist/model-viewer.min.js"></script>
 
   <style>
     model-viewer {
@@ -17,6 +17,11 @@
       height: 520px;
       background: #070a12;
       border-radius: 16px;
+      outline: none;
+    }
+    /* A subtle drag-over glow */
+    .drop-glow {
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.35), 0 0 60px rgba(0, 123, 255, 0.25);
     }
   </style>
 </head>
@@ -27,11 +32,20 @@
   <main class="max-w-6xl mx-auto px-4 py-6">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
       <div>
-        <h1 class="text-2xl font-semibold">Character Forge (3D)</h1>
-        <p class="text-sm text-zinc-400">
-          Prototype: load a 3D character model, inspect it, and prep for posing/customization.
+        <div class="flex items-center gap-3">
+          <h1 class="text-2xl font-semibold">Character Forge (3D)</h1>
+          <span class="text-[11px] px-3 py-1 rounded-full bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/40 tracking-wide uppercase">
+            Prototype
+          </span>
+        </div>
+
+        <p class="text-sm text-zinc-400 mt-1">
+          Load a 3D model, inspect it, and prep for posing/customization.
         </p>
-        <div id="status" class="text-sm text-zinc-400 mt-2">Idle. Upload a .glb to view.</div>
+
+        <div id="status" class="text-sm text-zinc-400 mt-2">
+          Idle. Upload a .glb to view.
+        </div>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
@@ -44,21 +58,34 @@
           class="px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
           Reset View
         </button>
+
+        <button id="clearBtn"
+          class="px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
+          Clear
+        </button>
       </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
       <section class="lg:col-span-3 rounded-2xl border border-white/10 bg-black/30 p-3">
-        <model-viewer
-          id="mv"
-          camera-controls
-          touch-action="pan-y"
-          exposure="1"
-          shadow-intensity="0.8"
-          environment-image="neutral"
-          alt="3D model preview"
-        >
-        </model-viewer>
+        <div id="dropZone" class="rounded-2xl border border-white/10 bg-black/20 p-3">
+          <div class="text-xs text-zinc-400 mb-2">
+            Tip: drag & drop a <span class="text-zinc-200">.glb</span> here (desktop) or tap Upload (mobile).
+          </div>
+
+          <model-viewer
+            id="mv"
+            camera-controls
+            touch-action="pan-y"
+            environment-image="neutral"
+            shadow-intensity="0.8"
+            exposure="1"
+            alt="3D model preview"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+          >
+          </model-viewer>
+        </div>
       </section>
 
       <aside class="lg:col-span-1 rounded-2xl border border-white/10 bg-black/30 p-4">
@@ -75,8 +102,13 @@
             <input id="exposureSlider" type="range" min="0" max="2" step="0.05" value="1" class="w-full" />
           </label>
 
+          <label class="block">
+            <span class="text-zinc-300">Shadow</span>
+            <input id="shadowSlider" type="range" min="0" max="1" step="0.05" value="0.8" class="w-full" />
+          </label>
+
           <div class="pt-2 text-xs text-zinc-400 leading-relaxed">
-            Note: for easiest uploads, use <span class="text-zinc-200">.glb</span> (single file).
+            Next upgrades: VRM posing, morph sliders (face/body), outfit/texture swaps, export pose.
           </div>
         </div>
       </aside>
@@ -91,8 +123,11 @@
     const fileInput = document.getElementById("fileInput");
     const mv = document.getElementById("mv");
     const resetBtn = document.getElementById("resetViewBtn");
+    const clearBtn = document.getElementById("clearBtn");
     const autoRotateToggle = document.getElementById("autoRotateToggle");
     const exposureSlider = document.getElementById("exposureSlider");
+    const shadowSlider = document.getElementById("shadowSlider");
+    const dropZone = document.getElementById("dropZone");
 
     let currentUrl = null;
 
@@ -100,28 +135,52 @@
       statusEl.textContent = msg;
     }
 
-    fileInput.addEventListener("change", (e) => {
-      const file = e.target.files && e.target.files[0];
+    async function loadGlbFile(file) {
       if (!file) return;
-
       if (!file.name.toLowerCase().endsWith(".glb")) {
         setStatus("Please upload a .glb file (single-file model).");
-        e.target.value = "";
         return;
       }
 
       if (currentUrl) URL.revokeObjectURL(currentUrl);
       currentUrl = URL.createObjectURL(file);
 
+      setStatus(`Loading: ${file.name} ...`);
       mv.src = currentUrl;
-      setStatus(`Loaded: ${file.name}`);
+
+      // When model finishes loading, frame it nicely
+      mv.addEventListener("load", () => {
+        // Let model-viewer compute a good framing
+        try {
+          mv.cameraOrbit = "auto auto auto";
+          mv.cameraTarget = "auto auto auto";
+          mv.fieldOfView = "30deg";
+        } catch {}
+        setStatus(`Loaded: ${file.name}`);
+      }, { once: true });
+    }
+
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      loadGlbFile(file);
       e.target.value = "";
     });
 
     resetBtn.addEventListener("click", () => {
-      // reset camera
-      mv.cameraOrbit = "0deg 75deg 3m";
-      mv.fieldOfView = "30deg";
+      // Re-frame current model
+      try {
+        mv.cameraOrbit = "auto auto auto";
+        mv.cameraTarget = "auto auto auto";
+        mv.fieldOfView = "30deg";
+      } catch {}
+    });
+
+    clearBtn.addEventListener("click", () => {
+      if (currentUrl) URL.revokeObjectURL(currentUrl);
+      currentUrl = null;
+      mv.removeAttribute("src");
+      setStatus("Cleared. Upload a .glb to view.");
     });
 
     autoRotateToggle.addEventListener("change", (e) => {
@@ -132,9 +191,31 @@
       mv.exposure = Number(e.target.value);
     });
 
-    // default view
-    mv.cameraOrbit = "0deg 75deg 3m";
-    mv.fieldOfView = "30deg";
+    shadowSlider.addEventListener("input", (e) => {
+      mv.shadowIntensity = Number(e.target.value);
+    });
+
+    // Drag/drop support (desktop)
+    ["dragenter","dragover"].forEach(evt => {
+      dropZone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.add("drop-glow");
+      });
+    });
+
+    ["dragleave","drop"].forEach(evt => {
+      dropZone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove("drop-glow");
+      });
+    });
+
+    dropZone.addEventListener("drop", (e) => {
+      const file = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) loadGlbFile(file);
+    });
   </script>
 </body>
 </html>
