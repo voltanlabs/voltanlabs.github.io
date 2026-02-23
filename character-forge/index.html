@@ -11,7 +11,7 @@
   <style>
     html, body { height: 100%; }
     body { margin: 0; }
-    canvas { display: block; }
+    canvas { display:block; }
   </style>
 </head>
 
@@ -26,10 +26,6 @@
           Prototype: load a 3D character model, inspect it, and prep for posing/customization.
         </p>
         <div id="status" class="text-sm text-zinc-400 mt-2">Booting…</div>
-
-        <div id="log"
-             class="mt-3 hidden text-xs whitespace-pre-wrap rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-red-200">
-        </div>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
@@ -47,7 +43,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
       <section class="lg:col-span-3 rounded-2xl border border-white/10 bg-black/30 overflow-hidden">
-        <div id="viewport" style="height:60vh; min-height:520px;"></div>
+        <div id="viewport" class="w-full min-h-[520px]"></div>
       </section>
 
       <aside class="lg:col-span-1 rounded-2xl border border-white/10 bg-black/30 p-4">
@@ -70,7 +66,8 @@
           </label>
 
           <div class="pt-2 text-xs text-zinc-400 leading-relaxed">
-            Next upgrades: VRM posing, morph sliders (face/body), outfit/texture swaps, export pose.
+            Tip: for uploads, <span class="text-zinc-200">.glb</span> works best (single file).
+            Many <span class="text-zinc-200">.gltf</span> models need external texture files.
           </div>
         </div>
       </aside>
@@ -80,75 +77,66 @@
   <div id="vl-footer"></div>
   <script src="/assets/includes.js"></script>
 
-  <!-- ✅ NON-MODULE Three.js -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-  <!-- IMPORTANT: OrbitControls here defines a GLOBAL OrbitControls() -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/DRACOLoader.js"></script>
-
-  <script>
-    const viewport = document.getElementById("viewport");
+  <script type="module">
     const statusEl = document.getElementById("status");
-    const logEl = document.getElementById("log");
+    const viewport = document.getElementById("viewport");
 
     function setStatus(msg) {
-      statusEl.textContent = msg;
+      if (statusEl) statusEl.textContent = msg;
       console.log("[Character Forge]", msg);
     }
-    function logError(msg) {
-      logEl.classList.remove("hidden");
-      logEl.textContent += msg + "\n";
-      console.error(msg);
+
+    // Dynamic imports so we can show a clean error if CDN fails.
+    let THREE, OrbitControls, GLTFLoader, DRACOLoader;
+
+    try {
+      setStatus("Loading 3D engine…");
+
+      // Use a single CDN family for consistency (unpkg).
+      THREE = await import("https://unpkg.com/three@0.160.0/build/three.module.js");
+      ({ OrbitControls } = await import("https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js"));
+      ({ GLTFLoader } = await import("https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js"));
+      ({ DRACOLoader } = await import("https://unpkg.com/three@0.160.0/examples/jsm/loaders/DRACOLoader.js"));
+
+      setStatus("Engine loaded. Ready.");
+    } catch (err) {
+      console.error(err);
+      setStatus("Failed to load 3D engine files (CDN blocked/offline).");
+      // Show a visible error card
+      const box = document.createElement("div");
+      box.className = "mt-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-100";
+      box.innerHTML = `
+        <div class="font-semibold mb-1">3D Engine failed to load</div>
+        <div class="text-red-100/80">This page couldn’t download Three.js / OrbitControls from the CDN.</div>
+        <div class="text-xs text-red-100/70 mt-2">Open DevTools → Console for details.</div>
+      `;
+      statusEl?.parentElement?.appendChild(box);
+      throw err;
     }
 
-    window.addEventListener("error", (e) => logError("JS Error: " + (e.message || e.error || "Unknown")));
-    window.addEventListener("unhandledrejection", (e) => logError("Promise Rejection: " + (e.reason || "Unknown")));
-
-    if (!window.THREE) {
-      setStatus("THREE failed to load.");
-      logError("THREE is missing. CDN blocked or script failed to load.");
-      throw new Error("THREE missing");
-    }
-    if (typeof OrbitControls !== "function") {
-      setStatus("OrbitControls failed to load.");
-      logError("OrbitControls is missing. The controls script didn’t load correctly.");
-      throw new Error("OrbitControls missing");
-    }
-
-    function getSize() {
-      const w = Math.max(1, viewport.clientWidth || 1);
-      const h = Math.max(520, viewport.clientHeight || 520);
-      return { w, h };
-    }
-
+    // --- Three.js setup ---
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.outputEncoding = THREE.sRGBEncoding;
-    renderer.setClearColor(0x070a12, 1);
-
-    const { w: startW, h: startH } = getSize();
-    renderer.setSize(startW, startH);
-    renderer.domElement.style.width = "100%";
-    renderer.domElement.style.height = "100%";
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
     viewport.appendChild(renderer.domElement);
 
     // Scene
     const scene = new THREE.Scene();
+    scene.background = new THREE.Color("#070a12");
 
     // Camera
-    const camera = new THREE.PerspectiveCamera(45, startW / startH, 0.1, 2000);
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 2000);
     camera.position.set(0, 1.35, 3.2);
 
-    // ✅ Controls (GLOBAL OrbitControls)
+    // Controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.target.set(0, 1.2, 0);
     controls.update();
 
     // Lights
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x223355, 0.8);
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x223355, 0.6);
     scene.add(hemi);
 
     const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
@@ -162,26 +150,15 @@
     // Ground + grid
     const ground = new THREE.Mesh(
       new THREE.CircleGeometry(3, 64),
-      new THREE.MeshStandardMaterial({ color: 0x0b1020, roughness: 0.95, metalness: 0 })
+      new THREE.MeshStandardMaterial({ color: 0x0b1020, roughness: 0.9, metalness: 0.0 })
     );
     ground.rotation.x = -Math.PI / 2;
+    ground.position.y = 0;
     scene.add(ground);
 
     const grid = new THREE.GridHelper(6, 18, 0x1f2a44, 0x101827);
     grid.position.y = 0.001;
     scene.add(grid);
-
-    // ✅ Test cube so you can confirm the renderer works immediately
-    const testCube = new THREE.Mesh(
-      new THREE.BoxGeometry(0.4, 0.4, 0.4),
-      new THREE.MeshStandardMaterial({ color: 0x00a0ff, roughness: 0.35, metalness: 0.2 })
-    );
-    testCube.position.set(0, 1.0, 0);
-    scene.add(testCube);
-
-    const axes = new THREE.AxesHelper(1.25);
-    axes.position.set(0, 0.01, 0);
-    scene.add(axes);
 
     // Model holder
     let currentModel = null;
@@ -191,9 +168,9 @@
       scene.remove(currentModel);
       currentModel.traverse((obj) => {
         if (obj.isMesh) {
-          if (obj.geometry) obj.geometry.dispose();
-          const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
-          mats.forEach((m) => m && m.dispose && m.dispose());
+          obj.geometry?.dispose?.();
+          if (Array.isArray(obj.material)) obj.material.forEach((m) => m.dispose?.());
+          else obj.material?.dispose?.();
         }
       });
       currentModel = null;
@@ -210,10 +187,11 @@
 
       const maxDim = Math.max(size.x, size.y, size.z);
       if (!isFinite(maxDim) || maxDim <= 0) {
-        setStatus("Model loaded but has no visible bounds.");
+        setStatus("Model loaded, but it has no visible geometry.");
         return;
       }
 
+      // Center at origin and sit on ground
       obj.position.sub(center);
       obj.position.y += size.y / 2;
       obj.updateMatrixWorld(true);
@@ -233,20 +211,39 @@
       currentModel.traverse((obj) => {
         if (obj.isMesh && obj.material) {
           const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
-          mats.forEach((m) => { m.wireframe = enabled; });
+          mats.forEach((m) => (m.wireframe = enabled));
         }
       });
     }
 
-    // Loader + DRACO
-    const loader = new THREE.GLTFLoader();
-    const dracoLoader = new THREE.DRACOLoader();
-    dracoLoader.setDecoderPath("https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/libs/draco/");
+    // GLTF Loader + DRACO
+    const loader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
+    // DRACO decoder files live here for jsm
+    dracoLoader.setDecoderPath("https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/");
     loader.setDRACOLoader(dracoLoader);
 
-    setStatus("Viewer ready. (You should see a rotating blue cube)");
+    // Default model (optional)
+    async function tryLoadDefault() {
+      try {
+        setStatus("Idle. (Upload a .glb/.gltf)");
+        // If you add: /character-forge/assets/starter.glb
+        // uncomment below to auto-load it:
+        // setStatus("Loading default model…");
+        // const gltf = await loader.loadAsync("/character-forge/assets/starter.glb");
+        // clearModel();
+        // currentModel = gltf.scene;
+        // scene.add(currentModel);
+        // frameObject(currentModel);
+        // setWireframe(document.getElementById("wireframeToggle").checked);
+        // setStatus("Default model loaded.");
+      } catch {
+        setStatus("Idle. (Upload a .glb/.gltf)");
+      }
+    }
+    tryLoadDefault();
 
-    // UI
+    // UI wiring
     document.getElementById("wireframeToggle").addEventListener("change", (e) => {
       setWireframe(e.target.checked);
     });
@@ -269,59 +266,68 @@
       }
     });
 
+    // Upload handler
     document.getElementById("fileInput").addEventListener("change", (e) => {
-      const file = e.target.files && e.target.files[0];
+      const file = e.target.files?.[0];
       if (!file) return;
 
-      const lower = file.name.toLowerCase();
-      if (!(lower.endsWith(".glb") || lower.endsWith(".gltf"))) {
-        setStatus("Unsupported file type. Use .glb or .gltf");
+      const name = file.name.toLowerCase();
+      if (!(name.endsWith(".glb") || name.endsWith(".gltf"))) {
+        setStatus(`Unsupported file: ${file.name} (use .glb or .gltf)`);
         e.target.value = "";
         return;
       }
 
-      setStatus("Loading: " + file.name + " …");
-      const blobUrl = URL.createObjectURL(file);
+      setStatus(`Loading: ${file.name} …`);
+      const url = URL.createObjectURL(file);
 
       loader.load(
-        blobUrl,
+        url,
         (gltf) => {
           clearModel();
           currentModel = gltf.scene;
-
-          testCube.visible = false;
-
           scene.add(currentModel);
+
           frameObject(currentModel);
           setWireframe(document.getElementById("wireframeToggle").checked);
 
-          setStatus("Loaded: " + file.name);
-          URL.revokeObjectURL(blobUrl);
+          setStatus(`Loaded: ${file.name}`);
+          URL.revokeObjectURL(url);
           e.target.value = "";
         },
-        undefined,
+        (xhr) => {
+          if (xhr.total) {
+            const pct = Math.round((xhr.loaded / xhr.total) * 100);
+            setStatus(`Loading: ${file.name} (${pct}%)`);
+          }
+        },
         (err) => {
-          logError("GLTF load failed: " + (err && err.message ? err.message : String(err)));
-          setStatus("Failed to load model.");
-          URL.revokeObjectURL(blobUrl);
+          console.error(err);
+          setStatus(`Failed to load: ${file.name}. (Try .glb if this is .gltf)`);
+          URL.revokeObjectURL(url);
           e.target.value = "";
         }
       );
     });
 
-    function onResize() {
-      const { w, h } = getSize();
-      renderer.setSize(w, h);
+    // Resize (use ResizeObserver so it also works when header/footer changes height)
+    function resizeToContainer() {
+      const w = viewport.clientWidth;
+      const h = viewport.clientHeight;
+      if (w <= 0 || h <= 0) return;
+      renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
     }
-    window.addEventListener("resize", onResize);
-    requestAnimationFrame(onResize);
-    setTimeout(onResize, 50);
 
+    const ro = new ResizeObserver(resizeToContainer);
+    ro.observe(viewport);
+    window.addEventListener("resize", resizeToContainer);
+    resizeToContainer();
+
+    // Render loop
     function animate() {
       requestAnimationFrame(animate);
-      testCube.rotation.y += 0.01;
       controls.update();
       renderer.render(scene, camera);
     }
