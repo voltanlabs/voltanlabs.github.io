@@ -1,28 +1,83 @@
-
 <header class="bg-[#2C3E50] shadow-lg">
-  <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+  <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
     <!-- Brand -->
-    <a href="/index.html" class="flex items-center gap-3">
-      <img src="/images/voltanlabs_icon.png" alt="VoltanLabs Logo" class="h-10 w-10" />
-      <div class="leading-tight">
-        <div class="text-zinc-100 font-bold text-lg md:text-xl">VoltanLabs</div>
-        <div class="text-zinc-200/80 text-xs md:text-sm">Programs • Tools • Workflows • Learning</div>
+    <a href="/index.html" class="flex items-center gap-3 min-w-0">
+      <img src="/images/voltanlabs_icon.png" alt="VoltanLabs Logo" class="h-10 w-10 shrink-0" />
+      <div class="min-w-0">
+        <div class="text-zinc-100 font-bold text-lg md:text-xl truncate">VoltanLabs</div>
+        <div class="text-zinc-200/80 text-xs md:text-sm truncate">Programs • Tools • Workflows • Learning</div>
       </div>
     </a>
 
-    <!-- Nav -->
-    <nav class="flex flex-wrap gap-2 md:gap-3 text-sm">
+    <!-- Mobile hamburger -->
+    <button
+      id="vlMenuBtn"
+      class="inline-flex md:hidden items-center justify-center w-12 h-12 rounded-xl border border-white/20 bg-black/20 hover:bg-black/30 transition text-white"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="vlSiteMenu"
+      type="button"
+    >☰</button>
+
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex flex-wrap items-center gap-2 text-sm">
       <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/index.html">Home</a>
       <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/features.html">Programs</a>
       <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/tools.html">Lab Directory</a>
       <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/about.html">About</a>
       <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/contact.html">Contact</a>
 
-      <span class="mx-1 opacity-40 hidden md:inline">|</span>
+      <span class="mx-1 opacity-40">|</span>
 
       <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/gif-forge/index.html">Gif Forge</a>
       <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/voltanquest.html">Voltan’s Quest</a>
       <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/sprites-battle.html">Databyte Arena</a>
     </nav>
   </div>
+
+  <!-- Mobile dropdown -->
+  <div id="vlSiteMenu" class="hidden md:hidden border-t border-white/10 bg-black/20">
+    <nav class="max-w-6xl mx-auto px-4 py-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+      <a href="/index.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Home</a>
+      <a href="/features.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Programs</a>
+      <a href="/tools.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Lab Directory</a>
+      <a href="/about.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">About</a>
+      <a href="/contact.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Contact</a>
+
+      <a href="/gif-forge/index.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Gif Forge</a>
+      <a href="/voltanquest.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Voltan’s Quest</a>
+      <a href="/sprites-battle.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Databyte Arena</a>
+    </nav>
+  </div>
+
+  <script>
+    (function () {
+      // Ensure this runs even when injected
+      const btn = document.getElementById("vlMenuBtn");
+      const menu = document.getElementById("vlSiteMenu");
+      if (!btn || !menu) return;
+
+      function setOpen(isOpen) {
+        menu.classList.toggle("hidden", !isOpen);
+        btn.setAttribute("aria-expanded", String(isOpen));
+      }
+
+      // Toggle
+      btn.addEventListener("click", function () {
+        const isOpen = menu.classList.contains("hidden");
+        setOpen(isOpen);
+      });
+
+      // Close when clicking a link
+      menu.addEventListener("click", function (e) {
+        const target = e.target;
+        if (target && target.tagName === "A") setOpen(false);
+      });
+
+      // Close on Escape
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") setOpen(false);
+      });
+    })();
+  </script>
 </header>
