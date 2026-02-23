@@ -27,6 +27,7 @@
         <p class="text-sm text-zinc-400">
           Prototype: load a 3D character model, inspect it, and prep for posing/customization.
         </p>
+        <div id="status" class="text-sm text-zinc-400 mt-2">Idle.</div>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
@@ -82,8 +83,15 @@
     import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
     import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
     import { GLTFLoader } from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
+    import { DRACOLoader } from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/DRACOLoader.js";
 
     const viewport = document.getElementById("viewport");
+    const statusEl = document.getElementById("status");
+
+    function setStatus(msg) {
+      if (statusEl) statusEl.textContent = msg;
+      console.log("[Character Forge]", msg);
+    }
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -101,7 +109,7 @@
       45,
       viewport.clientWidth / viewport.clientHeight,
       0.1,
-      200
+      2000
     );
     camera.position.set(0, 1.35, 3.2);
 
@@ -131,7 +139,7 @@
     ground.position.y = 0;
     scene.add(ground);
 
-    // Grid helper (subtle)
+    // Grid helper
     const grid = new THREE.GridHelper(6, 18, 0x1f2a44, 0x101827);
     grid.position.y = 0.001;
     scene.add(grid);
@@ -153,19 +161,42 @@
     }
 
     function frameObject(obj) {
+      // Ensure world matrices are up to date
+      obj.updateMatrixWorld(true);
+
       const box = new THREE.Box3().setFromObject(obj);
       const size = new THREE.Vector3();
       const center = new THREE.Vector3();
       box.getSize(size);
       box.getCenter(center);
 
-      // Move object to "ground" and centered
+      const maxDim = Math.max(size.x, size.y, size.z);
+      if (!isFinite(maxDim) || maxDim <= 0) {
+        setStatus("Model loaded, but appears empty (no visible geometry).");
+        return;
+      }
+
+      // Reset transform before centering (prevents “drift” on multiple loads)
+      obj.position.set(0, 0, 0);
+      obj.rotation.set(0, 0, 0);
+      obj.scale.set(1, 1, 1);
+      obj.updateMatrixWorld(true);
+
+      // Recompute now that transform reset
+      const box2 = new THREE.Box3().setFromObject(obj);
+      box2.getSize(size);
+      box2.getCenter(center);
+
+      // Center model at origin and place on ground
       obj.position.sub(center);
       obj.position.y += size.y / 2;
+      obj.updateMatrixWorld(true);
 
       // Camera distance based on size
-      const maxDim = Math.max(size.x, size.y, size.z);
-      const dist = maxDim * 1.6;
+      const dist = maxDim * 1.8;
+      camera.near = Math.max(0.01, maxDim / 200);
+      camera.far = Math.max(2000, maxDim * 20);
+      camera.updateProjectionMatrix();
 
       camera.position.set(0, maxDim * 0.65, dist);
       controls.target.set(0, maxDim * 0.55, 0);
@@ -182,18 +213,25 @@
       });
     }
 
-    // Load a default model (optional)
-    // You can drop a starter model at /character-forge/assets/starter.glb
+    // GLTF Loader + DRACO support
     const loader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath("https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/");
+    loader.setDRACOLoader(dracoLoader);
+
+    // Load a default model (optional)
     async function tryLoadDefault() {
       try {
+        setStatus("Loading default model...");
         const gltf = await loader.loadAsync("/character-forge/assets/starter.glb");
         clearModel();
         currentModel = gltf.scene;
         scene.add(currentModel);
         frameObject(currentModel);
+        setWireframe(document.getElementById("wireframeToggle").checked);
+        setStatus("Default model loaded.");
       } catch {
-        // No default file yet — that's fine.
+        setStatus("Idle. (No default model found yet)");
       }
     }
     tryLoadDefault();
@@ -221,24 +259,48 @@
       }
     });
 
-    document.getElementById("fileInput").addEventListener("change", async (e) => {
+    // Upload handler with visible status + better errors
+    document.getElementById("fileInput").addEventListener("change", (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
 
-      const url = URL.createObjectURL(file);
-      try {
-        const gltf = await loader.loadAsync(url);
-        clearModel();
-        currentModel = gltf.scene;
-        scene.add(currentModel);
-        frameObject(currentModel);
-
-        // Apply current toggles
-        setWireframe(document.getElementById("wireframeToggle").checked);
-      } finally {
-        URL.revokeObjectURL(url);
+      const name = file.name.toLowerCase();
+      if (!(name.endsWith(".glb") || name.endsWith(".gltf"))) {
+        setStatus(`Unsupported file: ${file.name} (use .glb or .gltf)`);
         e.target.value = "";
+        return;
       }
+
+      setStatus(`Loading: ${file.name} ...`);
+      const url = URL.createObjectURL(file);
+
+      loader.load(
+        url,
+        (gltf) => {
+          clearModel();
+          currentModel = gltf.scene;
+          scene.add(currentModel);
+
+          frameObject(currentModel);
+          setWireframe(document.getElementById("wireframeToggle").checked);
+
+          setStatus(`Loaded: ${file.name}`);
+          URL.revokeObjectURL(url);
+          e.target.value = "";
+        },
+        (xhr) => {
+          if (xhr.total) {
+            const pct = Math.round((xhr.loaded / xhr.total) * 100);
+            setStatus(`Loading: ${file.name} (${pct}%)`);
+          }
+        },
+        (err) => {
+          console.error(err);
+          setStatus(`Failed to load: ${file.name}. Open DevTools Console for details.`);
+          URL.revokeObjectURL(url);
+          e.target.value = "";
+        }
+      );
     });
 
     // Resize
