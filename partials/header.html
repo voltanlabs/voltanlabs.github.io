@@ -49,35 +49,4 @@
       <a href="/sprites-battle.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Databyte Arena</a>
     </nav>
   </div>
-
-  <script>
-    (function () {
-      // Ensure this runs even when injected
-      const btn = document.getElementById("vlMenuBtn");
-      const menu = document.getElementById("vlSiteMenu");
-      if (!btn || !menu) return;
-
-      function setOpen(isOpen) {
-        menu.classList.toggle("hidden", !isOpen);
-        btn.setAttribute("aria-expanded", String(isOpen));
-      }
-
-      // Toggle
-      btn.addEventListener("click", function () {
-        const isOpen = menu.classList.contains("hidden");
-        setOpen(isOpen);
-      });
-
-      // Close when clicking a link
-      menu.addEventListener("click", function (e) {
-        const target = e.target;
-        if (target && target.tagName === "A") setOpen(false);
-      });
-
-      // Close on Escape
-      document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") setOpen(false);
-      });
-    })();
-  </script>
 </header>
