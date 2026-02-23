@@ -12,8 +12,12 @@
   <style>
     html, body { height: 100%; }
     body { margin: 0; }
-    #viewport { width: 100%; height: calc(100vh - 0px); }
+    /* IMPORTANT: do NOT rely on calc(100vh) here; viewport sizing must be stable */
+    #viewport { width: 100%; }
     canvas { display: block; }
+
+    /* Debug: uncomment temporarily to confirm canvas exists + size */
+    /* #viewport canvas { outline: 2px solid rgba(255,255,255,.12); } */
   </style>
 </head>
 
@@ -45,7 +49,8 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
       <section class="lg:col-span-3 rounded-2xl border border-white/10 bg-black/30 overflow-hidden">
-        <div id="viewport" class="min-h-[520px]"></div>
+        <!-- ✅ CRITICAL: force a real height so Three.js never sees 0px -->
+        <div id="viewport" style="height:60vh; min-height:520px;"></div>
       </section>
 
       <aside class="lg:col-span-1 rounded-2xl border border-white/10 bg-black/30 p-4">
@@ -93,10 +98,22 @@
       console.log("[Character Forge]", msg);
     }
 
+    // --- Safe sizing helper (prevents 0-height canvas on mobile) ---
+    function getSafeSize() {
+      const w = Math.max(1, viewport.clientWidth || 0);
+      const h = Math.max(520, viewport.clientHeight || 0); // fallback if layout returns 0
+      return { w, h };
+    }
+
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+
+    {
+      const { w, h } = getSafeSize();
+      renderer.setSize(w, h);
+    }
+
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     viewport.appendChild(renderer.domElement);
 
@@ -105,12 +122,8 @@
     scene.background = new THREE.Color("#070a12");
 
     // Camera
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      viewport.clientWidth / viewport.clientHeight,
-      0.1,
-      2000
-    );
+    const { w: startW, h: startH } = getSafeSize();
+    const camera = new THREE.PerspectiveCamera(45, startW / startH, 0.1, 2000);
     camera.position.set(0, 1.35, 3.2);
 
     // Controls
@@ -161,7 +174,6 @@
     }
 
     function frameObject(obj) {
-      // Ensure world matrices are up to date
       obj.updateMatrixWorld(true);
 
       const box = new THREE.Box3().setFromObject(obj);
@@ -176,13 +188,13 @@
         return;
       }
 
-      // Reset transform before centering (prevents “drift” on multiple loads)
+      // Reset transform before centering
       obj.position.set(0, 0, 0);
       obj.rotation.set(0, 0, 0);
       obj.scale.set(1, 1, 1);
       obj.updateMatrixWorld(true);
 
-      // Recompute now that transform reset
+      // Recompute after reset
       const box2 = new THREE.Box3().setFromObject(obj);
       box2.getSize(size);
       box2.getCenter(center);
@@ -192,7 +204,6 @@
       obj.position.y += size.y / 2;
       obj.updateMatrixWorld(true);
 
-      // Camera distance based on size
       const dist = maxDim * 1.8;
       camera.near = Math.max(0.01, maxDim / 200);
       camera.far = Math.max(2000, maxDim * 20);
@@ -219,7 +230,7 @@
     dracoLoader.setDecoderPath("https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/");
     loader.setDRACOLoader(dracoLoader);
 
-    // Load a default model (optional)
+    // Optional default model
     async function tryLoadDefault() {
       try {
         setStatus("Loading default model...");
@@ -259,7 +270,7 @@
       }
     });
 
-    // Upload handler with visible status + better errors
+    // Upload handler
     document.getElementById("fileInput").addEventListener("change", (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
@@ -303,15 +314,17 @@
       );
     });
 
-    // Resize
+    // Resize (safe)
     function onResize() {
-      const w = viewport.clientWidth;
-      const h = viewport.clientHeight;
+      const { w, h } = getSafeSize();
       renderer.setSize(w, h);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
     }
     window.addEventListener("resize", onResize);
+    // Also run once after layout settles (mobile browsers can report 0 initially)
+    requestAnimationFrame(onResize);
+    setTimeout(onResize, 50);
 
     // Render loop
     function animate() {
