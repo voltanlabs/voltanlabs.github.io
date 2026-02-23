@@ -34,9 +34,7 @@
       padding: 0;
     }
 
-    body
-    <div id="vl-header"></div>
-    {
+    body{
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
       'Roboto', sans-serif;
       /* headings font */
@@ -473,64 +471,9 @@
     }
   </style>
 </head>
-  <div id="vl-footer"></div>
 <script src="/assets/includes.js"></script>
 <body>
-
-  <!-- HEADER (Hamburger dropdown - consistent site nav) -->
-  <header class="bg-[#2C3E50] text-white shadow-lg">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-      <!-- Brand -->
-      <a href="index.html" class="flex items-center gap-2">
-        <img src="images/voltanlabs_icon.png" alt="VoltanLabs Logo" class="h-10 w-10">
-        <div>
-          <div class="text-2xl font-bold leading-tight">VoltanLabs</div>
-          <div class="text-xs text-white/70 -mt-0.5">DataByte Sprite Arena</div>
-        </div>
-      </a>
-
-      <!-- Hamburger button -->
-      <button
-        id="menuBtn"
-        class="inline-flex items-center justify-center w-12 h-12 rounded-xl border border-white/20 bg-black/20 hover:bg-black/30 transition md:hidden"
-        aria-label="Open menu"
-        aria-expanded="false"
-        aria-controls="siteMenu">
-        ☰
-      </button>
-
-      <!-- Desktop links -->
-      <nav class="hidden md:flex items-center space-x-6 text-sm">
-        <a href="index.html" class="hover:text-[#FFD700]">Home</a>
-        <a href="features.html" class="hover:text-[#FFD700]">Features</a>
-        <a href="tools.html" class="hover:text-[#FFD700]">Tools</a>
-        <a href="voltanquest.html" class="hover:text-[#FFD700] font-semibold">Voltan’s Quest</a>
-        <a href="sprites-battle.html" class="hover:text-[#FFD700] font-semibold">Sprite Arena</a>
-      </nav>
-    </div>
-
-    <!-- Dropdown panel (mobile) -->
-    <div id="siteMenu" class="hidden md:hidden border-t border-white/10 bg-black/20">
-      <nav class="max-w-6xl mx-auto px-4 py-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-        <a href="index.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition">Home</a>
-        <a href="features.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition">Features</a>
-        <a href="tools.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition">Tools</a>
-        <a href="about.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition">About</a>
-        <a href="contact.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition">Contact</a>
-
-        <a href="voltanquest.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition font-semibold text-[#FFD700]">
-          Voltan’s Quest
-        </a>
-        <a href="sprites-battle.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition font-semibold text-[#FFD700]">
-          DataByte Sprite Arena
-        </a>
-
-        <a href="gif-forge/index.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition">Gif Forge</a>
-        <a href="promptcraft.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition">VoltPromptCraft</a>
-      </nav>
-    </div>
-  </header>
-
+<div id="vl-header"></div>
   <main>
     <div class="page-shell">
       <!-- HERO TEXT -->
@@ -690,11 +633,11 @@
         </div>
       </section>
     </div>
+    <div id="vl-footer"></div>
+<script src="/assets/includes.js"></script>
   </main>
 
-  <footer>
-    © 2025 VoltanLabs — VoltArcade Series · Databyte Sprite Arena
-  </footer>
+  
 
   <!-- SIMPLE BATTLE LOGIC -->
   <script src="./sprites-battle.html?v=3"></script>
