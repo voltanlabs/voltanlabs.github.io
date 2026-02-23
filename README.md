@@ -1,2 +1,2 @@
 # voltanlabs.github.io
-Website
+VoltanLabs.com
