@@ -23,10 +23,17 @@ function initVoltanHeader() {
   if (btn.dataset.bound === "1") return;
   btn.dataset.bound = "1";
 
-  function setOpen(isOpen) {
-    menu.classList.toggle("hidden", !isOpen);
-    btn.setAttribute("aria-expanded", String(isOpen));
+  function setOpen(open) {
+  menu.classList.toggle("hidden", !open);
+  btn.setAttribute("aria-expanded", String(open));
+
+  // Highlight hamburger when open
+  if (open) {
+    btn.classList.add("bg-white/20", "border-[#FFD700]", "ring-2", "ring-[#FFD700]/60");
+  } else {
+    btn.classList.remove("bg-white/20", "border-[#FFD700]", "ring-2", "ring-[#FFD700]/60");
   }
+}
 
   btn.addEventListener("click", () => {
     const willOpen = menu.classList.contains("hidden");
