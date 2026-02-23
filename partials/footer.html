@@ -1,1 +1,44 @@
+<footer class="bg-zinc-950 border-t border-white/10">
+  <div class="max-w-6xl mx-auto px-4 py-10 text-zinc-300">
+    <div class="flex flex-col md:flex-row md:justify-between gap-8">
+      <div>
+        <div class="text-zinc-100 font-semibold text-lg">VoltanLabs</div>
+        <p class="text-sm mt-2 text-zinc-300/80 max-w-md">
+          A hands-on digital lab for creative tech: tools, programs, experiments, and learning resources — all in the browser.
+        </p>
+      </div>
 
+      <div class="grid grid-cols-2 gap-6 text-sm">
+        <div>
+          <div class="text-zinc-100 font-semibold mb-2">Explore</div>
+          <ul class="space-y-1">
+            <li><a class="hover:text-white" href="/tools.html">Lab Directory</a></li>
+            <li><a class="hover:text-white" href="/features.html">Programs</a></li>
+            <li><a class="hover:text-white" href="/about.html">About</a></li>
+            <li><a class="hover:text-white" href="/contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="text-zinc-100 font-semibold mb-2">Tools</div>
+          <ul class="space-y-1">
+            <li><a class="hover:text-white" href="/gif-forge/index.html">Gif Forge</a></li>
+            <li><a class="hover:text-white" href="/tools.html#coming-soon">Coming Soon</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10 pt-6 border-t border-white/10 flex flex-col md:flex-row md:justify-between gap-3 text-xs text-zinc-400">
+      <div>© <span id="vl-year"></span> VoltanLabs. All rights reserved.</div>
+      <div class="text-zinc-400/80">Built to learn. Built to build.</div>
+    </div>
+  </div>
+
+  <script>
+    // safe even if footer injected
+    (function(){
+      var el = document.getElementById("vl-year");
+      if (el) el.textContent = new Date().getFullYear();
+    })();
+  </script>
+</footer>
