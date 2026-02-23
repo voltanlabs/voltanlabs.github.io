@@ -1,1 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Character Forge (3D) — VoltanLabs</title>
+  <meta name="description" content="Browser-based 3D character sandbox (prototype) for VoltanLabs." />
 
+  <!-- Tailwind (optional, for UI layout) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    html, body { height: 100%; }
+    body { margin: 0; }
+    #viewport { width: 100%; height: calc(100vh - 0px); }
+    canvas { display: block; }
+  </style>
+</head>
+
+<body class="bg-zinc-950 text-zinc-100">
+  <div id="vl-header"></div>
+
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+      <div>
+        <h1 class="text-2xl font-semibold">Character Forge (3D)</h1>
+        <p class="text-sm text-zinc-400">
+          Prototype: load a 3D character model, inspect it, and prep for posing/customization.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <label class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 cursor-pointer">
+          <input id="fileInput" type="file" class="hidden" accept=".glb,.gltf" />
+          <span>Upload .glb/.gltf</span>
+        </label>
+
+        <button id="resetViewBtn"
+          class="px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
+          Reset View
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+      <section class="lg:col-span-3 rounded-2xl border border-white/10 bg-black/30 overflow-hidden">
+        <div id="viewport" class="min-h-[520px]"></div>
+      </section>
+
+      <aside class="lg:col-span-1 rounded-2xl border border-white/10 bg-black/30 p-4">
+        <div class="text-sm font-semibold mb-3">Quick Controls</div>
+
+        <div class="space-y-3 text-sm">
+          <label class="flex items-center justify-between gap-3">
+            <span class="text-zinc-300">Wireframe</span>
+            <input id="wireframeToggle" type="checkbox" class="accent-[#FFD700]" />
+          </label>
+
+          <label class="flex items-center justify-between gap-3">
+            <span class="text-zinc-300">Auto-rotate</span>
+            <input id="autoRotateToggle" type="checkbox" class="accent-[#FFD700]" />
+          </label>
+
+          <label class="block">
+            <span class="text-zinc-300">Light intensity</span>
+            <input id="lightSlider" type="range" min="0" max="3" step="0.05" value="1.2" class="w-full" />
+          </label>
+
+          <div class="pt-2 text-xs text-zinc-400 leading-relaxed">
+            Next upgrades: VRM posing, morph sliders (face/body), outfit/texture swaps, export pose.
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div id="vl-footer"></div>
+  <script src="/assets/includes.js"></script>
+
+  <!-- Three.js Prototype -->
+  <script type="module">
+    import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+    import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+    import { GLTFLoader } from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
+
+    const viewport = document.getElementById("viewport");
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    viewport.appendChild(renderer.domElement);
+
+    // Scene
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color("#070a12");
+
+    // Camera
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      viewport.clientWidth / viewport.clientHeight,
+      0.1,
+      200
+    );
+    camera.position.set(0, 1.35, 3.2);
+
+    // Controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.target.set(0, 1.2, 0);
+
+    // Lights
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x223355, 0.6);
+    scene.add(hemi);
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    keyLight.position.set(3, 6, 3);
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0x88ccff, 0.35);
+    fillLight.position.set(-4, 3, -2);
+    scene.add(fillLight);
+
+    // Ground
+    const ground = new THREE.Mesh(
+      new THREE.CircleGeometry(3, 64),
+      new THREE.MeshStandardMaterial({ color: 0x0b1020, roughness: 0.9, metalness: 0.0 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = 0;
+    scene.add(ground);
+
+    // Grid helper (subtle)
+    const grid = new THREE.GridHelper(6, 18, 0x1f2a44, 0x101827);
+    grid.position.y = 0.001;
+    scene.add(grid);
+
+    // Model holder
+    let currentModel = null;
+
+    function clearModel() {
+      if (!currentModel) return;
+      scene.remove(currentModel);
+      currentModel.traverse((obj) => {
+        if (obj.isMesh) {
+          obj.geometry?.dispose?.();
+          if (Array.isArray(obj.material)) obj.material.forEach((m) => m.dispose?.());
+          else obj.material?.dispose?.();
+        }
+      });
+      currentModel = null;
+    }
+
+    function frameObject(obj) {
+      const box = new THREE.Box3().setFromObject(obj);
+      const size = new THREE.Vector3();
+      const center = new THREE.Vector3();
+      box.getSize(size);
+      box.getCenter(center);
+
+      // Move object to "ground" and centered
+      obj.position.sub(center);
+      obj.position.y += size.y / 2;
+
+      // Camera distance based on size
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const dist = maxDim * 1.6;
+
+      camera.position.set(0, maxDim * 0.65, dist);
+      controls.target.set(0, maxDim * 0.55, 0);
+      controls.update();
+    }
+
+    function setWireframe(enabled) {
+      if (!currentModel) return;
+      currentModel.traverse((obj) => {
+        if (obj.isMesh && obj.material) {
+          const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+          mats.forEach((m) => { m.wireframe = enabled; });
+        }
+      });
+    }
+
+    // Load a default model (optional)
+    // You can drop a starter model at /character-forge/assets/starter.glb
+    const loader = new GLTFLoader();
+    async function tryLoadDefault() {
+      try {
+        const gltf = await loader.loadAsync("/character-forge/assets/starter.glb");
+        clearModel();
+        currentModel = gltf.scene;
+        scene.add(currentModel);
+        frameObject(currentModel);
+      } catch {
+        // No default file yet — that's fine.
+      }
+    }
+    tryLoadDefault();
+
+    // UI wiring
+    document.getElementById("wireframeToggle").addEventListener("change", (e) => {
+      setWireframe(e.target.checked);
+    });
+
+    document.getElementById("autoRotateToggle").addEventListener("change", (e) => {
+      controls.autoRotate = e.target.checked;
+      controls.autoRotateSpeed = 1.0;
+    });
+
+    document.getElementById("lightSlider").addEventListener("input", (e) => {
+      keyLight.intensity = Number(e.target.value);
+    });
+
+    document.getElementById("resetViewBtn").addEventListener("click", () => {
+      if (currentModel) frameObject(currentModel);
+      else {
+        camera.position.set(0, 1.35, 3.2);
+        controls.target.set(0, 1.2, 0);
+        controls.update();
+      }
+    });
+
+    document.getElementById("fileInput").addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const url = URL.createObjectURL(file);
+      try {
+        const gltf = await loader.loadAsync(url);
+        clearModel();
+        currentModel = gltf.scene;
+        scene.add(currentModel);
+        frameObject(currentModel);
+
+        // Apply current toggles
+        setWireframe(document.getElementById("wireframeToggle").checked);
+      } finally {
+        URL.revokeObjectURL(url);
+        e.target.value = "";
+      }
+    });
+
+    // Resize
+    function onResize() {
+      const w = viewport.clientWidth;
+      const h = viewport.clientHeight;
+      renderer.setSize(w, h);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    window.addEventListener("resize", onResize);
+
+    // Render loop
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
