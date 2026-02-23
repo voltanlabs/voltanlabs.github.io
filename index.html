@@ -65,45 +65,9 @@
         <p>Tools and media crafted to inspire your creativity.</p>
       </div>
     </div>
-  </section>
-
-  
+  </section>  
 <div id="vl-footer"></div>
 <script src="/assets/includes.js"></script>
-  <!-- Mobile Menu Script -->
-  <script>
-    const menuBtn = document.getElementById("menuBtn");
-    const mobileMenu = document.getElementById("mobileMenu");
-
-    function openMenu() {
-      mobileMenu.classList.remove("hidden");
-      menuBtn.setAttribute("aria-expanded", "true");
-    }
-    function closeMenu() {
-      mobileMenu.classList.add("hidden");
-      menuBtn.setAttribute("aria-expanded", "false");
-    }
-    function toggleMenu() {
-      const isOpen = !mobileMenu.classList.contains("hidden");
-      isOpen ? closeMenu() : openMenu();
-    }
-
-    menuBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      toggleMenu();
-    });
-
-    // Close when clicking outside
-    document.addEventListener("click", () => closeMenu());
-
-    // Prevent clicks inside menu from closing immediately
-    mobileMenu.addEventListener("click", (e) => e.stopPropagation());
-
-    // Close after tapping a link
-    mobileMenu.querySelectorAll("a").forEach((a) =>
-      a.addEventListener("click", () => closeMenu())
-    );
-  </script>
-
+  
 </body>
 </html>
