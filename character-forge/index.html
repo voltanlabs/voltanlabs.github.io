@@ -316,18 +316,233 @@
       camera.near = Math.max(0.01, maxDim / 200);
       camera.far = Math.max(2000, maxDim * 40);
       camera.updateProjectionMatrix();
+<script type="module">
+  import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+  import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+  import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
 
-      camera.position.set(0, maxDim * 0.65, dist);
-      controls.target.set(0, maxDim * 0.55, 0);
-      controls.update();
+  const statusEl = document.getElementById("status");
+  const viewport = document.getElementById("viewport");
+
+  // ✅ Force height in case CSS/layout collapses on mobile
+  viewport.style.minHeight = "540px";
+  viewport.style.height = "540px";
+
+  function setStatus(msg) {
+    statusEl.textContent = msg;
+    console.log("[Character Forge]", msg);
+  }
+
+  // ✅ Base path relative to /character-forge/index.html
+  const BASE_PATH = new URL("./assets/parts/", window.location.href).href;
+
+  const PARTS = {
+    body: "body_base.glb",
+    head: "head_01.glb",
+    hair: "hair_01.glb",
+    top: "top_01.glb",
+    pants: "pants_01.glb",
+    shoes: "shoes_01.glb",
+  };
+
+  // Wait one frame so viewport has real size
+  await new Promise(requestAnimationFrame);
+
+  // ---- Renderer ----
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  function safeSize() {
+    const w = Math.max(1, viewport.clientWidth);
+    const h = Math.max(1, viewport.clientHeight || 540);
+    renderer.setSize(w, h, false);
+    return { w, h };
+  }
+
+  const { w, h } = safeSize();
+  viewport.innerHTML = "";
+  viewport.appendChild(renderer.domElement);
+
+  // ---- Scene ----
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color("#070a12");
+
+  // ---- Camera ----
+  const camera = new THREE.PerspectiveCamera(45, w / h, 0.01, 5000);
+  camera.position.set(0, 1.4, 3.2);
+
+  // ---- Controls ----
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.target.set(0, 1.1, 0);
+  controls.update();
+
+  // ---- Lights ----
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x223355, 0.9));
+
+  const key = new THREE.DirectionalLight(0xffffff, 1.4);
+  key.position.set(3, 6, 3);
+  scene.add(key);
+
+  const fill = new THREE.DirectionalLight(0x88ccff, 0.45);
+  fill.position.set(-4, 3, -2);
+  scene.add(fill);
+
+  // ✅ Always-visible test cube (if you can't see this, it's layout/WebGL)
+  const testCube = new THREE.Mesh(
+    new THREE.BoxGeometry(0.35, 0.35, 0.35),
+    new THREE.MeshStandardMaterial({ color: 0x00ff66 })
+  );
+  testCube.position.set(0, 1.1, 0);
+  scene.add(testCube);
+
+  // ---- Ground/Grid ----
+  const ground = new THREE.Mesh(
+    new THREE.CircleGeometry(3, 64),
+    new THREE.MeshStandardMaterial({ color: 0x0b1020, roughness: 0.95, metalness: 0.0 })
+  );
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = 0;
+  scene.add(ground);
+
+  const grid = new THREE.GridHelper(6, 18, 0x1f2a44, 0x101827);
+  grid.position.y = 0.001;
+  scene.add(grid);
+
+  // ---- Character group ----
+  const characterRoot = new THREE.Group();
+  const character = new THREE.Group();
+  characterRoot.add(character);
+  scene.add(characterRoot);
+
+  const loaded = { body:null, head:null, hair:null, top:null, pants:null, shoes:null };
+  const loader = new GLTFLoader();
+
+  async function headCheck(url) {
+    try {
+      const r = await fetch(url, { method: "HEAD" });
+      return r.ok ? null : `HTTP ${r.status}`;
+    } catch {
+      return "Network/CORS";
+    }
+  }
+
+  function applyWireframe(enabled) {
+    character.traverse((obj) => {
+      if (obj.isMesh && obj.material) {
+        const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+        mats.forEach((m) => { m.wireframe = enabled; });
+      }
+    });
+  }
+
+  function applyToggles() {
+    const map = [
+      ["body","toggle_body"],
+      ["head","toggle_head"],
+      ["hair","toggle_hair"],
+      ["top","toggle_top"],
+      ["pants","toggle_pants"],
+      ["shoes","toggle_shoes"],
+    ];
+    map.forEach(([slot, id]) => {
+      const el = document.getElementById(id);
+      const on = el ? el.checked : true;
+      if (loaded[slot]) loaded[slot].visible = on;
+    });
+  }
+
+  function reframeObject(obj) {
+    characterRoot.position.set(0, 0, 0);
+    obj.updateMatrixWorld(true);
+
+    const box = new THREE.Box3().setFromObject(obj);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+
+    const maxDim = Math.max(size.x, size.y, size.z);
+    if (!isFinite(maxDim) || maxDim <= 0) {
+      setStatus("Loaded, but bounds are empty (no visible geometry).");
+      return;
     }
 
-    // ---- Upload test (to verify renderer works) ----
-    const uploadInput = document.getElementById("uploadGlb");
-    async function loadUserGlb(file) {
+    // center XZ + sit on ground
+    obj.position.x -= center.x;
+    obj.position.z -= center.z;
+    obj.position.y -= box.min.y;
+
+    const dist = maxDim * 1.9;
+    camera.near = Math.max(0.01, maxDim / 200);
+    camera.far = Math.max(2000, maxDim * 50);
+    camera.updateProjectionMatrix();
+
+    camera.position.set(0, maxDim * 0.7, dist);
+    controls.target.set(0, maxDim * 0.55, 0);
+    controls.update();
+
+    console.log("Bounds size:", size, "center:", center);
+  }
+
+  async function loadPart(slot, filename) {
+    const url = BASE_PATH + filename;
+
+    const headErr = await headCheck(url);
+    if (headErr) {
+      setStatus(`FAILED ${slot}: ${filename} (${headErr})`);
+      console.error("Missing file:", url);
+      return;
+    }
+
+    setStatus(`Loading ${slot}: ${filename} ...`);
+    try {
+      const gltf = await loader.loadAsync(url);
+
+      if (loaded[slot]) character.remove(loaded[slot]);
+      loaded[slot] = gltf.scene;
+
+      loaded[slot].position.set(0, 0, 0);
+      loaded[slot].rotation.set(0, 0, 0);
+      loaded[slot].scale.set(1, 1, 1);
+
+      character.add(loaded[slot]);
+
+      applyWireframe(document.getElementById("wireframeToggle")?.checked);
+      applyToggles();
+      setStatus(`Loaded ${slot}: ${filename}`);
+    } catch (err) {
+      console.error(err);
+      setStatus(`FAILED ${slot}: ${filename} (see console)`);
+    }
+  }
+
+  async function boot() {
+    setStatus("Booting…");
+    // Load all parts (even if one fails, keep going)
+    await loadPart("body", PARTS.body);
+    await loadPart("head", PARTS.head);
+    await loadPart("hair", PARTS.hair);
+    await loadPart("top", PARTS.top);
+    await loadPart("pants", PARTS.pants);
+    await loadPart("shoes", PARTS.shoes);
+
+    // Frame whatever is present
+    reframeObject(characterRoot);
+    setStatus("Ready. If you see the green cube, WebGL is working.");
+  }
+  await boot();
+
+  // ---- Upload test ----
+  const upload = document.getElementById("uploadGlb");
+  if (upload) {
+    upload.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
       if (!file) return;
       if (!file.name.toLowerCase().endsWith(".glb")) {
-        setStatus("Please upload a .glb file.");
+        setStatus("Upload a .glb file.");
+        e.target.value = "";
         return;
       }
 
@@ -336,92 +551,74 @@
       try {
         const gltf = await loader.loadAsync(url);
 
-        // remove all parts
+        // Clear assembled parts
         Object.keys(loaded).forEach((k) => {
           if (loaded[k]) character.remove(loaded[k]);
           loaded[k] = null;
         });
 
-        loaded.body = gltf.scene;
-        character.add(loaded.body);
+        const uploaded = gltf.scene;
+        uploaded.position.set(0, 0, 0);
+        uploaded.rotation.set(0, 0, 0);
+        uploaded.scale.set(1, 1, 1);
 
-        applyWireframe(document.getElementById("wireframeToggle").checked);
-        reframeCharacter();
+        character.add(uploaded);
+        applyWireframe(document.getElementById("wireframeToggle")?.checked);
+        reframeObject(characterRoot);
 
         setStatus(`Loaded upload: ${file.name}`);
       } catch (err) {
         console.error(err);
-        setStatus(`FAILED upload: ${file.name}`);
+        setStatus(`FAILED upload: ${file.name} (see console)`);
       } finally {
         URL.revokeObjectURL(url);
+        e.target.value = "";
       }
-    }
-
-    uploadInput.addEventListener("change", (e) => {
-      const file = e.target.files?.[0];
-      if (file) loadUserGlb(file);
-      e.target.value = "";
     });
+  }
 
-    // ---- UI wiring ----
-    document.getElementById("resetViewBtn").addEventListener("click", () => {
-      camera.position.set(0, 1.4, 3.2);
-      controls.target.set(0, 1.1, 0);
-      controls.update();
-    });
+  // ---- UI wiring ----
+  document.getElementById("resetViewBtn")?.addEventListener("click", () => {
+    camera.position.set(0, 1.4, 3.2);
+    controls.target.set(0, 1.1, 0);
+    controls.update();
+  });
 
-    document.getElementById("reframeBtn").addEventListener("click", () => reframeCharacter());
+  document.getElementById("reframeBtn")?.addEventListener("click", () => {
+    reframeObject(characterRoot);
+  });
 
-    document.getElementById("autoRotateToggle").addEventListener("change", (e) => {
-      controls.autoRotate = e.target.checked;
-      controls.autoRotateSpeed = 1.0;
-    });
+  document.getElementById("autoRotateToggle")?.addEventListener("change", (e) => {
+    controls.autoRotate = e.target.checked;
+    controls.autoRotateSpeed = 1.0;
+  });
 
-    document.getElementById("wireframeToggle").addEventListener("change", (e) => {
-      applyWireframe(e.target.checked);
-    });
+  document.getElementById("wireframeToggle")?.addEventListener("change", (e) => {
+    applyWireframe(e.target.checked);
+  });
 
-    ["toggle_body","toggle_head","toggle_hair","toggle_top","toggle_pants","toggle_shoes"]
-      .forEach(id => document.getElementById(id).addEventListener("change", applyToggles));
+  ["toggle_body","toggle_head","toggle_hair","toggle_top","toggle_pants","toggle_shoes"]
+    .forEach(id => document.getElementById(id)?.addEventListener("change", applyToggles));
 
-    document.getElementById("hairSelect").addEventListener("change", (e) => {
-      loadPart("hair", e.target.value);
-    });
+  document.getElementById("hairSelect")?.addEventListener("change", (e) => loadPart("hair", e.target.value));
+  document.getElementById("topSelect")?.addEventListener("change", (e) => loadPart("top", e.target.value));
 
-    document.getElementById("topSelect").addEventListener("change", (e) => {
-      loadPart("top", e.target.value);
-    });
+  // ---- Resize ----
+  function onResize() {
+    const { w, h } = safeSize();
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener("resize", onResize);
 
-    // ---- Boot ----
-    async function boot() {
-      setStatus("Booting…");
-      await loadPart("body", PARTS.body);
-      await loadPart("head", PARTS.head);
-      await loadPart("hair", PARTS.hair);
-      await loadPart("top", PARTS.top);
-      await loadPart("pants", PARTS.pants);
-      await loadPart("shoes", PARTS.shoes);
-
-      reframeCharacter(); // ✅ once after all parts load
-      setStatus("Ready. (Assembled default character)");
-    }
-    await boot();
-
-    // ---- Resize ----
-    function onResize() {
-      const { w, h } = safeSize();
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-    }
-    window.addEventListener("resize", onResize);
-
-    // ---- Render loop ----
-    function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
-    }
-    animate();
-  </script>
+  // ---- Render loop ----
+  function animate() {
+    requestAnimationFrame(animate);
+    testCube.rotation.y += 0.01; // ✅ makes it obvious it’s rendering
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
 </body>
 </html>
