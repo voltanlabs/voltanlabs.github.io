@@ -124,26 +124,12 @@
   <div id="vl-footer"></div>
   <script src="/assets/includes.js"></script>
 
-  <!-- On-screen error reporting -->
+  <!-- ✅ Load NON-module Three.js + helpers -->
+  <script src="./vendor/three/build/three.min.js"></script>
+  <script src="./vendor/three/examples/js/controls/OrbitControls.js"></script>
+  <script src="./vendor/three/examples/js/loaders/GLTFLoader.js"></script>
+
   <script>
-    window.addEventListener("error", (e) => {
-      const el = document.getElementById("status");
-      if (el) el.textContent = "JS Error: " + (e.message || e.error);
-      console.log(e);
-    });
-    window.addEventListener("unhandledrejection", (e) => {
-      const el = document.getElementById("status");
-      if (el) el.textContent = "Promise Error: " + (e.reason?.message || e.reason);
-      console.log(e);
-    });
-  </script>
-
-  <!-- Three.js Assembler (LOCAL vendor imports) -->
-  <script type="module">
-    import * as THREE from "./vendor/three/build/three.module.js";
-    import { OrbitControls } from "./vendor/three/examples/jsm/controls/OrbitControls.js";
-    import { GLTFLoader } from "./vendor/three/examples/jsm/loaders/GLTFLoader.js";
-
     const statusEl = document.getElementById("status");
     const viewport = document.getElementById("viewport");
 
@@ -152,9 +138,23 @@
       console.log("[Character Forge]", msg);
     }
 
-    // IMPORTANT: this assumes parts are at /character-forge/assets/parts/
-    const BASE_PATH = new URL("./assets/parts/", window.location.href).href;
+    // If these are missing, we’ll know immediately
+    if (!window.THREE) {
+      setStatus("Three.js failed to load (vendor path issue).");
+      throw new Error("THREE missing");
+    }
+    if (!THREE.OrbitControls) {
+      setStatus("OrbitControls failed to load (vendor path issue).");
+      throw new Error("OrbitControls missing");
+    }
+    if (!THREE.GLTFLoader) {
+      setStatus("GLTFLoader failed to load (vendor path issue).");
+      throw new Error("GLTFLoader missing");
+    }
 
+    setStatus("Booting…");
+
+    const BASE_PATH = new URL("./assets/parts/", window.location.href).href;
     const PARTS = {
       body: "body_base.glb",
       head: "head_01.glb",
@@ -164,10 +164,6 @@
       shoes: "shoes_01.glb",
     };
 
-    // wait a frame so viewport has size
-    await new Promise(requestAnimationFrame);
-
-    // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -178,24 +174,24 @@
       renderer.setSize(w, h, false);
       return { w, h };
     }
+
     const { w, h } = resize();
     viewport.innerHTML = "";
     viewport.appendChild(renderer.domElement);
 
-    // Scene / camera / controls
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#070a12");
 
     const camera = new THREE.PerspectiveCamera(45, w / h, 0.01, 5000);
     camera.position.set(0, 1.4, 3.2);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.target.set(0, 1.1, 0);
     controls.update();
 
-    // Lights
     scene.add(new THREE.HemisphereLight(0xffffff, 0x223355, 0.9));
+
     const key = new THREE.DirectionalLight(0xffffff, 1.4);
     key.position.set(3, 6, 3);
     scene.add(key);
@@ -204,7 +200,7 @@
     fill.position.set(-4, 3, -2);
     scene.add(fill);
 
-    // Test cube (if you see this, Three is working)
+    // ✅ Always-visible cube (proves renderer works)
     const testCube = new THREE.Mesh(
       new THREE.BoxGeometry(0.35, 0.35, 0.35),
       new THREE.MeshStandardMaterial({ color: 0x00ff66 })
@@ -212,7 +208,6 @@
     testCube.position.set(0, 1.1, 0);
     scene.add(testCube);
 
-    // Ground + grid
     const ground = new THREE.Mesh(
       new THREE.CircleGeometry(3, 64),
       new THREE.MeshStandardMaterial({ color: 0x0b1020, roughness: 0.95, metalness: 0.0 })
@@ -224,23 +219,13 @@
     grid.position.y = 0.001;
     scene.add(grid);
 
-    // Character root/group
     const characterRoot = new THREE.Group();
     const character = new THREE.Group();
     characterRoot.add(character);
     scene.add(characterRoot);
 
     const loaded = { body:null, head:null, hair:null, top:null, pants:null, shoes:null };
-    const loader = new GLTFLoader();
-
-    async function headCheck(url) {
-      try {
-        const r = await fetch(url, { method: "HEAD" });
-        return r.ok ? null : `HTTP ${r.status}`;
-      } catch {
-        return "Network/CORS";
-      }
-    }
+    const loader = new THREE.GLTFLoader();
 
     function applyWireframe(enabled) {
       character.traverse((obj) => {
@@ -289,33 +274,34 @@
       controls.update();
     }
 
-    async function loadPart(slot, filename) {
+    function loadPart(slot, filename) {
       const url = BASE_PATH + filename;
+      setStatus(`Loading ${slot}: ${filename} …`);
 
-      const headErr = await headCheck(url);
-      if (headErr) {
-        setStatus(`FAILED ${slot}: ${filename} (${headErr})`);
-        console.error("Missing file:", url);
-        return;
-      }
+      loader.load(
+        url,
+        (gltf) => {
+          if (loaded[slot]) character.remove(loaded[slot]);
+          loaded[slot] = gltf.scene;
 
-      setStatus(`Loading ${slot}: ${filename} ...`);
-      const gltf = await loader.loadAsync(url);
+          loaded[slot].position.set(0,0,0);
+          loaded[slot].rotation.set(0,0,0);
+          loaded[slot].scale.set(1,1,1);
 
-      if (loaded[slot]) character.remove(loaded[slot]);
-      loaded[slot] = gltf.scene;
+          character.add(loaded[slot]);
 
-      loaded[slot].position.set(0, 0, 0);
-      loaded[slot].rotation.set(0, 0, 0);
-      loaded[slot].scale.set(1, 1, 1);
+          applyWireframe(document.getElementById("wireframeToggle").checked);
+          applyToggles();
+          reframeObject(characterRoot);
 
-      character.add(loaded[slot]);
-
-      applyWireframe(document.getElementById("wireframeToggle").checked);
-      applyToggles();
-      reframeObject(characterRoot);
-
-      setStatus(`Loaded ${slot}: ${filename}`);
+          setStatus(`Loaded ${slot}: ${filename}`);
+        },
+        undefined,
+        (err) => {
+          console.error(err);
+          setStatus(`FAILED ${slot}: ${filename} (check assets/parts path)`);
+        }
+      );
     }
 
     // UI
@@ -341,50 +327,47 @@
     document.getElementById("topSelect").addEventListener("change", (e) => loadPart("top", e.target.value));
 
     // Upload test
-    document.getElementById("uploadGlb").addEventListener("change", async (e) => {
+    document.getElementById("uploadGlb").addEventListener("change", (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
 
-      setStatus(`Loading upload: ${file.name} ...`);
       const url = URL.createObjectURL(file);
+      setStatus(`Loading upload: ${file.name} …`);
 
-      try {
-        const gltf = await loader.loadAsync(url);
+      loader.load(
+        url,
+        (gltf) => {
+          Object.keys(loaded).forEach((k) => {
+            if (loaded[k]) character.remove(loaded[k]);
+            loaded[k] = null;
+          });
 
-        // clear assembled parts
-        Object.keys(loaded).forEach((k) => {
-          if (loaded[k]) character.remove(loaded[k]);
-          loaded[k] = null;
-        });
+          character.add(gltf.scene);
+          applyWireframe(document.getElementById("wireframeToggle").checked);
+          reframeObject(characterRoot);
 
-        character.add(gltf.scene);
-        applyWireframe(document.getElementById("wireframeToggle").checked);
-        reframeObject(characterRoot);
-
-        setStatus(`Loaded upload: ${file.name}`);
-      } catch (err) {
-        console.error(err);
-        setStatus(`FAILED upload: ${file.name}`);
-      } finally {
-        URL.revokeObjectURL(url);
-        e.target.value = "";
-      }
+          setStatus(`Loaded upload: ${file.name}`);
+          URL.revokeObjectURL(url);
+          e.target.value = "";
+        },
+        undefined,
+        (err) => {
+          console.error(err);
+          setStatus(`FAILED upload: ${file.name}`);
+          URL.revokeObjectURL(url);
+          e.target.value = "";
+        }
+      );
     });
 
-    // Boot
-    async function boot() {
-      setStatus("Booting… (if you see the green cube, Three.js is working)");
-      await loadPart("body", PARTS.body);
-      await loadPart("head", PARTS.head);
-      await loadPart("hair", PARTS.hair);
-      await loadPart("top", PARTS.top);
-      await loadPart("pants", PARTS.pants);
-      await loadPart("shoes", PARTS.shoes);
-      setStatus("Ready. (Assembled default character)");
-    }
-    boot();
+    // Boot load
+    loadPart("body", PARTS.body);
+    loadPart("head", PARTS.head);
+    loadPart("hair", PARTS.hair);
+    loadPart("top", PARTS.top);
+    loadPart("pants", PARTS.pants);
+    loadPart("shoes", PARTS.shoes);
 
-    // Resize + render loop
     window.addEventListener("resize", () => {
       const { w, h } = resize();
       camera.aspect = w / h;
@@ -398,6 +381,8 @@
       renderer.render(scene, camera);
     }
     animate();
+
+    setStatus("Ready. If you see the green cube, rendering is working.");
   </script>
 </body>
 </html>
