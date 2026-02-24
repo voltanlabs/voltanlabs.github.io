@@ -124,12 +124,26 @@
   <div id="vl-footer"></div>
   <script src="/assets/includes.js"></script>
 
-  <!-- ✅ Load NON-module Three.js + helpers -->
-  <script src="./vendor/three/build/three.min.js"></script>
-  <script src="./vendor/three/examples/js/controls/OrbitControls.js"></script>
-  <script src="./vendor/three/examples/js/loaders/GLTFLoader.js"></script>
-
+  <!-- Helpful: show the real error message on the page -->
   <script>
+    window.addEventListener("error", (e) => {
+      const el = document.getElementById("status");
+      if (el) el.textContent = "JS Error: " + (e.message || e.error);
+      console.log(e);
+    });
+    window.addEventListener("unhandledrejection", (e) => {
+      const el = document.getElementById("status");
+      if (el) el.textContent = "Promise Error: " + (e.reason?.message || e.reason);
+      console.log(e);
+    });
+  </script>
+
+  <!-- ✅ LOCAL MODULE THREE.JS (recommended) -->
+  <script type="module">
+    import * as THREE from "./vendor/three/build/three.module.js";
+    import { OrbitControls } from "./vendor/three/examples/jsm/controls/OrbitControls.js";
+    import { GLTFLoader } from "./vendor/three/examples/jsm/loaders/GLTFLoader.js";
+
     const statusEl = document.getElementById("status");
     const viewport = document.getElementById("viewport");
 
@@ -138,23 +152,11 @@
       console.log("[Character Forge]", msg);
     }
 
-    // If these are missing, we’ll know immediately
-    if (!window.THREE) {
-      setStatus("Three.js failed to load (vendor path issue).");
-      throw new Error("THREE missing");
-    }
-    if (!THREE.OrbitControls) {
-      setStatus("OrbitControls failed to load (vendor path issue).");
-      throw new Error("OrbitControls missing");
-    }
-    if (!THREE.GLTFLoader) {
-      setStatus("GLTFLoader failed to load (vendor path issue).");
-      throw new Error("GLTFLoader missing");
-    }
-
     setStatus("Booting…");
 
+    // Base path to your GLB parts folder (relative to /character-forge/index.html)
     const BASE_PATH = new URL("./assets/parts/", window.location.href).href;
+
     const PARTS = {
       body: "body_base.glb",
       head: "head_01.glb",
@@ -164,7 +166,10 @@
       shoes: "shoes_01.glb",
     };
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    // Wait 1 frame so viewport has real size on mobile
+    await new Promise(requestAnimationFrame);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
 
@@ -185,13 +190,12 @@
     const camera = new THREE.PerspectiveCamera(45, w / h, 0.01, 5000);
     camera.position.set(0, 1.4, 3.2);
 
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.target.set(0, 1.1, 0);
     controls.update();
 
     scene.add(new THREE.HemisphereLight(0xffffff, 0x223355, 0.9));
-
     const key = new THREE.DirectionalLight(0xffffff, 1.4);
     key.position.set(3, 6, 3);
     scene.add(key);
@@ -219,13 +223,14 @@
     grid.position.y = 0.001;
     scene.add(grid);
 
+    // Character container
     const characterRoot = new THREE.Group();
     const character = new THREE.Group();
     characterRoot.add(character);
     scene.add(characterRoot);
 
     const loaded = { body:null, head:null, hair:null, top:null, pants:null, shoes:null };
-    const loader = new THREE.GLTFLoader();
+    const loader = new GLTFLoader();
 
     function applyWireframe(enabled) {
       character.traverse((obj) => {
@@ -242,7 +247,7 @@
         ["top","toggle_top"], ["pants","toggle_pants"], ["shoes","toggle_shoes"],
       ];
       map.forEach(([slot, id]) => {
-        const on = document.getElementById(id).checked;
+        const on = document.getElementById(id)?.checked ?? true;
         if (loaded[slot]) loaded[slot].visible = on;
       });
     }
@@ -274,99 +279,94 @@
       controls.update();
     }
 
-    function loadPart(slot, filename) {
+    async function loadPart(slot, filename) {
       const url = BASE_PATH + filename;
       setStatus(`Loading ${slot}: ${filename} …`);
 
-      loader.load(
-        url,
-        (gltf) => {
-          if (loaded[slot]) character.remove(loaded[slot]);
-          loaded[slot] = gltf.scene;
+      try {
+        const gltf = await loader.loadAsync(url);
+        if (loaded[slot]) character.remove(loaded[slot]);
+        loaded[slot] = gltf.scene;
 
-          loaded[slot].position.set(0,0,0);
-          loaded[slot].rotation.set(0,0,0);
-          loaded[slot].scale.set(1,1,1);
+        loaded[slot].position.set(0,0,0);
+        loaded[slot].rotation.set(0,0,0);
+        loaded[slot].scale.set(1,1,1);
 
-          character.add(loaded[slot]);
+        character.add(loaded[slot]);
 
-          applyWireframe(document.getElementById("wireframeToggle").checked);
-          applyToggles();
-          reframeObject(characterRoot);
+        applyWireframe(document.getElementById("wireframeToggle")?.checked);
+        applyToggles();
+        reframeObject(characterRoot);
 
-          setStatus(`Loaded ${slot}: ${filename}`);
-        },
-        undefined,
-        (err) => {
-          console.error(err);
-          setStatus(`FAILED ${slot}: ${filename} (check assets/parts path)`);
-        }
-      );
+        setStatus(`Loaded ${slot}: ${filename}`);
+      } catch (err) {
+        console.error(err);
+        setStatus(`FAILED ${slot}: ${filename} (check assets/parts path + console)`);
+      }
     }
 
     // UI
-    document.getElementById("resetViewBtn").addEventListener("click", () => {
+    document.getElementById("resetViewBtn")?.addEventListener("click", () => {
       camera.position.set(0, 1.4, 3.2);
       controls.target.set(0, 1.1, 0);
       controls.update();
     });
 
-    document.getElementById("reframeBtn").addEventListener("click", () => reframeObject(characterRoot));
+    document.getElementById("reframeBtn")?.addEventListener("click", () => reframeObject(characterRoot));
 
-    document.getElementById("autoRotateToggle").addEventListener("change", (e) => {
+    document.getElementById("autoRotateToggle")?.addEventListener("change", (e) => {
       controls.autoRotate = e.target.checked;
       controls.autoRotateSpeed = 1.0;
     });
 
-    document.getElementById("wireframeToggle").addEventListener("change", (e) => applyWireframe(e.target.checked));
+    document.getElementById("wireframeToggle")?.addEventListener("change", (e) => applyWireframe(e.target.checked));
 
     ["toggle_body","toggle_head","toggle_hair","toggle_top","toggle_pants","toggle_shoes"]
-      .forEach(id => document.getElementById(id).addEventListener("change", applyToggles));
+      .forEach(id => document.getElementById(id)?.addEventListener("change", applyToggles));
 
-    document.getElementById("hairSelect").addEventListener("change", (e) => loadPart("hair", e.target.value));
-    document.getElementById("topSelect").addEventListener("change", (e) => loadPart("top", e.target.value));
+    document.getElementById("hairSelect")?.addEventListener("change", (e) => loadPart("hair", e.target.value));
+    document.getElementById("topSelect")?.addEventListener("change", (e) => loadPart("top", e.target.value));
 
-    // Upload test
-    document.getElementById("uploadGlb").addEventListener("change", (e) => {
+    // Upload test (loads a single model into the character group)
+    document.getElementById("uploadGlb")?.addEventListener("change", async (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
 
-      const url = URL.createObjectURL(file);
+      const blobUrl = URL.createObjectURL(file);
       setStatus(`Loading upload: ${file.name} …`);
 
-      loader.load(
-        url,
-        (gltf) => {
-          Object.keys(loaded).forEach((k) => {
-            if (loaded[k]) character.remove(loaded[k]);
-            loaded[k] = null;
-          });
+      try {
+        const gltf = await loader.loadAsync(blobUrl);
 
-          character.add(gltf.scene);
-          applyWireframe(document.getElementById("wireframeToggle").checked);
-          reframeObject(characterRoot);
+        // clear assembled parts
+        Object.keys(loaded).forEach((k) => {
+          if (loaded[k]) character.remove(loaded[k]);
+          loaded[k] = null;
+        });
 
-          setStatus(`Loaded upload: ${file.name}`);
-          URL.revokeObjectURL(url);
-          e.target.value = "";
-        },
-        undefined,
-        (err) => {
-          console.error(err);
-          setStatus(`FAILED upload: ${file.name}`);
-          URL.revokeObjectURL(url);
-          e.target.value = "";
-        }
-      );
+        character.add(gltf.scene);
+        applyWireframe(document.getElementById("wireframeToggle")?.checked);
+        reframeObject(characterRoot);
+
+        setStatus(`Loaded upload: ${file.name}`);
+      } catch (err) {
+        console.error(err);
+        setStatus(`FAILED upload: ${file.name} (see console)`);
+      } finally {
+        URL.revokeObjectURL(blobUrl);
+        e.target.value = "";
+      }
     });
 
     // Boot load
-    loadPart("body", PARTS.body);
-    loadPart("head", PARTS.head);
-    loadPart("hair", PARTS.hair);
-    loadPart("top", PARTS.top);
-    loadPart("pants", PARTS.pants);
-    loadPart("shoes", PARTS.shoes);
+    await loadPart("body", PARTS.body);
+    await loadPart("head", PARTS.head);
+    await loadPart("hair", PARTS.hair);
+    await loadPart("top", PARTS.top);
+    await loadPart("pants", PARTS.pants);
+    await loadPart("shoes", PARTS.shoes);
+
+    setStatus("Ready. If you see the green cube, rendering is working.");
 
     window.addEventListener("resize", () => {
       const { w, h } = resize();
@@ -381,8 +381,6 @@
       renderer.render(scene, camera);
     }
     animate();
-
-    setStatus("Ready. If you see the green cube, rendering is working.");
   </script>
 </body>
 </html>
