@@ -133,11 +133,23 @@
   <script src="/assets/includes.js"></script>
 
   <!-- Three.js Assembler -->
-  <script type="module">
-    import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
-    import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
-    import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
+  <script>
+  window.addEventListener("error", (e) => {
+    const el = document.getElementById("status");
+    if (el) el.textContent = "JS Error: " + (e.message || e.error);
+    console.log(e);
+  });
 
+  window.addEventListener("unhandledrejection", (e) => {
+    const el = document.getElementById("status");
+    if (el) el.textContent = "Promise Error: " + (e.reason?.message || e.reason);
+    console.log(e);
+  });
+  </script>
+  <script type="module">
+    import * as THREE from "./vendor/three/build/three.module.js";
+    import { OrbitControls } from "./vendor/three/examples/jsm/controls/OrbitControls.js";
+    import { GLTFLoader } from "./vendor/three/examples/jsm/loaders/GLTFLoader.js";
     const statusEl = document.getElementById("status");
     const viewport = document.getElementById("viewport");
 
