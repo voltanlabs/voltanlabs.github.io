@@ -162,6 +162,7 @@
     let poses = [];
     let selectedIndex = -1;
     let selectedPoseIndex = -1;
+    let ghostPoseIndex = -1;
     let dragging = false;
     let dragOffsetX = 0;
     let dragOffsetY = 0;
@@ -272,9 +273,9 @@
     };
 
     const drawSnapshotGhost = async () => {
-      if (!onionToggle.checked || selectedPoseIndex < 0 || !poses[selectedPoseIndex]) return;
+      if (!onionToggle.checked || ghostPoseIndex < 0 || !poses[ghostPoseIndex]) return;
 
-      const ghostLayers = await makeRenderableLayersFromSnapshot(poses[selectedPoseIndex].layers);
+      const ghostLayers = await makeRenderableLayersFromSnapshot(poses[ghostPoseIndex].layers);
       const alpha = Math.max(0.05, Math.min(0.7, Number(onionOpacity.value) / 100));
 
       ctx.save();
@@ -296,7 +297,7 @@
       const token = ++drawToken;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      if (onionToggle.checked && selectedPoseIndex >= 0) {
+      if (onionToggle.checked && ghostPoseIndex >= 0) {
         await drawSnapshotGhost();
         if (token !== drawToken) return;
       }
@@ -376,9 +377,11 @@
         const row = document.createElement("div");
         row.className =
           "rounded-xl border p-2 " +
-          (idx === selectedPoseIndex
-            ? "border-emerald-400 bg-emerald-400/10"
-            : "border-white/10 bg-zinc-950");
+          (idx === ghostPoseIndex
+            ? "border-sky-400 bg-sky-400/10"
+            : idx === selectedPoseIndex
+              ? "border-emerald-400 bg-emerald-400/10"
+              : "border-white/10 bg-zinc-950");
 
         const top = document.createElement("div");
         top.className = "flex items-center gap-2";
@@ -406,6 +409,7 @@
         del.addEventListener("click", () => {
           poses.splice(idx, 1);
           selectedPoseIndex = -1;
+          ghostPoseIndex = -1;
           renderPoseList();
           draw();
           setStatus("Pose deleted.");
@@ -427,10 +431,10 @@
 
         const ghost = document.createElement("button");
         ghost.type = "button";
-        ghost.className = "text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/5";
+        ghost.className = "text-xs px-2 py-1 rounded-lg border border-sky-400/30 bg-sky-400/10 text-sky-200";
         ghost.textContent = "Ghost";
         ghost.addEventListener("click", () => {
-          selectedPoseIndex = idx;
+          ghostPoseIndex = idx;
           onionToggle.checked = true;
           renderPoseList();
           draw();
@@ -602,7 +606,7 @@
     const saveProject = () => {
       const project = {
         app: "VoltanLabs Character Forge 2D",
-        version: 3,
+        version: 4,
         canvas: { width: canvas.width, height: canvas.height },
         layers: getLayerSnapshot(),
         poses,
@@ -636,6 +640,7 @@
         await restoreLayersFromSnapshot(project.layers);
         poses = Array.isArray(project.poses) ? project.poses : [];
         selectedPoseIndex = -1;
+        ghostPoseIndex = -1;
 
         await repairPoseThumbs();
 
@@ -735,6 +740,7 @@
       poses = [];
       selectedIndex = -1;
       selectedPoseIndex = -1;
+      ghostPoseIndex = -1;
       updateUI();
       setStatus("Cleared.");
     });
