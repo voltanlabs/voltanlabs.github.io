@@ -7,10 +7,13 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    canvas {
-      touch-action: none;
-      display: block;
-    }
+    <style>
+  canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+    </style>
   </style>
 </head>
 
@@ -31,11 +34,12 @@
       <section class="lg:col-span-3 rounded-2xl border border-white/10 bg-black/30 p-4">
         <div class="rounded-2xl border border-white/10 bg-zinc-900 overflow-auto">
           <style>
-  canvas {
-    display: block;
-    max-width: 100%;
-    height: auto;
-  }
+  <canvas
+  id="forgeCanvas"
+  width="900"
+  height="900"
+  class="bg-transparent mx-auto w-full max-w-[900px] h-auto touch-none rounded-2xl"
+></canvas>
 </style>
         </div>
 
