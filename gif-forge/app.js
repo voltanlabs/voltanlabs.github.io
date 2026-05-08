@@ -492,7 +492,7 @@
       offCtx.imageSmoothingQuality = "high";
       offCtx.drawImage(f.img, dx, dy, dw, dh);
 
-      gif.addFrame(offCtx, { copy: true, delay });
+      gif.addFrame(offCtx, { copy: true, delay: f.delay || delay });
     }
 
     gif.on("progress", (p) => {
