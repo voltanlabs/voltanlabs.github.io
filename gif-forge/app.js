@@ -52,6 +52,10 @@
 
   const setStatus = (msg) => (statusText.textContent = msg);
 
+  const getGlobalDelay = () => {
+    return Math.max(10, parseInt(delayInput.value, 10) || 120);
+  };
+
   const setProgress = (p01) => {
     const pct = Math.max(0, Math.min(1, p01));
     progressBar.style.width = `${Math.round(pct * 100)}%`;
@@ -178,33 +182,37 @@
 
   const stopPlayback = () => {
     isPlaying = false;
-    if (playTimer) clearInterval(playTimer);
+    if (playTimer) clearTimeout(playTimer);
     playTimer = null;
     stopBtn.disabled = true;
     playBtn.disabled = frames.length < 2;
     enableControls();
   };
 
+  const playNextFrame = () => {
+    if (!isPlaying || frames.length < 2) return;
+
+    drawFrameToCanvas(frames[playIndex]);
+
+    const frameDelay = Math.max(10, frames[playIndex].delay || getGlobalDelay());
+
+    playIndex = (playIndex + 1) % frames.length;
+
+    playTimer = setTimeout(playNextFrame, frameDelay);
+  };
+
   const startPlayback = () => {
     if (frames.length < 2) return;
 
-    const delay = Math.max(10, parseInt(delayInput.value, 10) || 120);
-
     isPlaying = true;
-    playIndex = 0;
+    playIndex = selectedIndex >= 0 ? selectedIndex : 0;
 
     playBtn.disabled = true;
     stopBtn.disabled = false;
 
-    drawFrameToCanvas(frames[playIndex]);
+    if (playTimer) clearTimeout(playTimer);
 
-    if (playTimer) clearInterval(playTimer);
-
-    playTimer = setInterval(() => {
-      playIndex = (playIndex + 1) % frames.length;
-      drawFrameToCanvas(frames[playIndex]);
-    }, delay);
-
+    playNextFrame();
     enableControls();
   };
 
@@ -250,6 +258,7 @@
       url: source.url,
       w: source.w,
       h: source.h,
+      delay: source.delay || getGlobalDelay(),
     };
 
     frames.splice(idx + 1, 0, copy);
@@ -290,8 +299,47 @@
       sub.className = "text-xs text-zinc-500";
       sub.textContent = `${f.w}×${f.h}`;
 
+      const delayWrap = document.createElement("label");
+      delayWrap.className = "mt-1 flex items-center gap-1 text-[11px] text-zinc-500";
+      delayWrap.textContent = "Delay";
+
+      const delayBox = document.createElement("input");
+      delayBox.type = "number";
+      delayBox.min = "10";
+      delayBox.step = "10";
+      delayBox.value = f.delay || getGlobalDelay();
+      delayBox.className =
+        "w-20 px-2 py-1 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-200 text-xs";
+
+      delayBox.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+
+      delayBox.addEventListener("input", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const val = Math.max(10, parseInt(delayBox.value, 10) || getGlobalDelay());
+        frames[idx].delay = val;
+
+        if (selectedIndex === idx && isPlaying) {
+          stopPlayback();
+          startPlayback();
+        }
+
+        clearResult();
+      });
+
+      const ms = document.createElement("span");
+      ms.textContent = "ms";
+
+      delayWrap.appendChild(delayBox);
+      delayWrap.appendChild(ms);
+
       meta.appendChild(title);
       meta.appendChild(sub);
+      meta.appendChild(delayWrap);
 
       const copyBtn = document.createElement("button");
       copyBtn.type = "button";
@@ -380,6 +428,7 @@
         url,
         w: img.naturalWidth || img.width,
         h: img.naturalHeight || img.height,
+        delay: getGlobalDelay(),
       });
     }
 
@@ -424,7 +473,7 @@
     stopPlayback();
     clearResult();
 
-    const delay = Math.max(50, parseInt(delayInput.value, 10) || 120);
+    const delay = getGlobalDelay();
     const quality = Math.max(1, Math.min(30, parseInt(qualityInput.value, 10) || 10));
     const loopForever = !!loopInput.checked;
 
@@ -611,11 +660,6 @@
   );
 
   delayInput.addEventListener("input", () => {
-    if (isPlaying) {
-      stopPlayback();
-      startPlayback();
-    }
-
     clearResult();
   });
 
