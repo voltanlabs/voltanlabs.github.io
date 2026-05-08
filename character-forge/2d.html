@@ -18,7 +18,7 @@
       <a href="./index.html" class="text-sm text-emerald-300 hover:underline">← Back to Character Forge</a>
       <h1 class="text-3xl font-semibold mt-2">Character Forge 2D</h1>
       <p class="text-sm text-zinc-400 mt-2">
-        Build sprite parts, save poses, export PNG frames, then animate them in Gif Forge.
+        Build sprite parts, save poses, preview motion with onion skin, export PNG frames, then animate them in Gif Forge.
       </p>
       <div id="statusText" class="text-sm text-zinc-400 mt-2">Idle.</div>
     </div>
@@ -97,6 +97,16 @@
         <section class="border-t border-white/10 pt-4">
           <h3 class="font-semibold mb-2">Pose Frames</h3>
 
+          <label class="flex items-center justify-between gap-2 text-xs text-zinc-300 rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 mb-3">
+            <span>Onion Skin</span>
+            <input id="onionToggle" type="checkbox" class="accent-emerald-400" />
+          </label>
+
+          <label class="block text-xs text-zinc-400 mb-3">
+            Onion Opacity
+            <input id="onionOpacity" type="range" min="5" max="70" value="25" class="w-full mt-1" />
+          </label>
+
           <div class="grid grid-cols-2 gap-2 mb-3">
             <button id="savePoseBtn" class="px-3 py-2 rounded-xl bg-emerald-400 text-zinc-950 font-semibold text-sm">
               Save Pose
@@ -106,7 +116,7 @@
             </button>
           </div>
 
-          <div id="poseList" class="space-y-2 max-h-52 overflow-auto"></div>
+          <div id="poseList" class="space-y-2 max-h-64 overflow-auto"></div>
         </section>
 
         <section class="border-t border-white/10 pt-4">
@@ -132,6 +142,8 @@
 
     const scaleInput = document.getElementById("scaleInput");
     const rotateInput = document.getElementById("rotateInput");
+    const onionToggle = document.getElementById("onionToggle");
+    const onionOpacity = document.getElementById("onionOpacity");
 
     const exportBtn = document.getElementById("exportBtn");
     const saveProjectBtn = document.getElementById("saveProjectBtn");
@@ -203,7 +215,7 @@
       }));
     };
 
-    const restoreLayersFromSnapshot = async (snapshot) => {
+    const makeRenderableLayersFromSnapshot = async (snapshot) => {
       const restored = [];
 
       for (const item of snapshot || []) {
@@ -224,7 +236,11 @@
         });
       }
 
-      layers = restored;
+      return restored;
+    };
+
+    const restoreLayersFromSnapshot = async (snapshot) => {
+      layers = await makeRenderableLayersFromSnapshot(snapshot);
       selectedIndex = layers.length ? layers.length - 1 : -1;
     };
 
@@ -255,7 +271,38 @@
       });
     };
 
-    const draw = () => drawLayersToContext(ctx, layers, true);
+    const drawSnapshotGhost = async () => {
+      if (!onionToggle.checked || selectedPoseIndex < 0 || !poses[selectedPoseIndex]) return;
+
+      const ghostLayers = await makeRenderableLayersFromSnapshot(poses[selectedPoseIndex].layers);
+      const alpha = Math.max(0.05, Math.min(0.7, Number(onionOpacity.value) / 100));
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.filter = "hue-rotate(150deg) saturate(1.5)";
+      ghostLayers.forEach((layer) => {
+        ctx.save();
+        ctx.translate(layer.x, layer.y);
+        ctx.rotate((layer.rotation * Math.PI) / 180);
+        ctx.scale(layer.flip ? -layer.scale : layer.scale, layer.scale);
+        ctx.drawImage(layer.img, -layer.w / 2, -layer.h / 2, layer.w, layer.h);
+        ctx.restore();
+      });
+      ctx.restore();
+    };
+
+    let drawToken = 0;
+    const draw = async () => {
+      const token = ++drawToken;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (onionToggle.checked && selectedPoseIndex >= 0) {
+        await drawSnapshotGhost();
+        if (token !== drawToken) return;
+      }
+
+      drawLayersToContext(ctx, layers, true);
+    };
 
     const syncControls = () => {
       const layer = getSelected();
@@ -297,6 +344,31 @@
       });
     };
 
+    const createPoseThumbnail = async (snapshot) => {
+      const thumbCanvas = document.createElement("canvas");
+      thumbCanvas.width = 180;
+      thumbCanvas.height = 180;
+      const thumbCtx = thumbCanvas.getContext("2d");
+
+      const renderable = await makeRenderableLayersFromSnapshot(snapshot);
+
+      thumbCtx.clearRect(0, 0, thumbCanvas.width, thumbCanvas.height);
+      thumbCtx.save();
+      thumbCtx.scale(thumbCanvas.width / canvas.width, thumbCanvas.height / canvas.height);
+
+      renderable.forEach((layer) => {
+        thumbCtx.save();
+        thumbCtx.translate(layer.x, layer.y);
+        thumbCtx.rotate((layer.rotation * Math.PI) / 180);
+        thumbCtx.scale(layer.flip ? -layer.scale : layer.scale, layer.scale);
+        thumbCtx.drawImage(layer.img, -layer.w / 2, -layer.h / 2, layer.w, layer.h);
+        thumbCtx.restore();
+      });
+
+      thumbCtx.restore();
+      return thumbCanvas.toDataURL("image/png");
+    };
+
     const renderPoseList = () => {
       poseList.innerHTML = "";
 
@@ -309,7 +381,11 @@
             : "border-white/10 bg-zinc-950");
 
         const top = document.createElement("div");
-        top.className = "flex items-center justify-between gap-2";
+        top.className = "flex items-center gap-2";
+
+        const img = document.createElement("img");
+        img.src = pose.thumb || "";
+        img.className = "w-14 h-14 object-contain rounded-lg bg-black border border-white/10";
 
         const title = document.createElement("button");
         title.type = "button";
@@ -331,11 +407,12 @@
           poses.splice(idx, 1);
           selectedPoseIndex = -1;
           renderPoseList();
+          draw();
           setStatus("Pose deleted.");
         });
 
         const actions = document.createElement("div");
-        actions.className = "grid grid-cols-2 gap-2 mt-2";
+        actions.className = "grid grid-cols-3 gap-2 mt-2";
 
         const load = document.createElement("button");
         load.type = "button";
@@ -348,6 +425,18 @@
           setStatus(`Loaded ${pose.name}.`);
         });
 
+        const ghost = document.createElement("button");
+        ghost.type = "button";
+        ghost.className = "text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/5";
+        ghost.textContent = "Ghost";
+        ghost.addEventListener("click", () => {
+          selectedPoseIndex = idx;
+          onionToggle.checked = true;
+          renderPoseList();
+          draw();
+          setStatus(`Onion skin set to ${pose.name}.`);
+        });
+
         const exportOne = document.createElement("button");
         exportOne.type = "button";
         exportOne.className = "text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/5";
@@ -356,9 +445,11 @@
           await exportPose(idx);
         });
 
+        top.appendChild(img);
         top.appendChild(title);
         top.appendChild(del);
         actions.appendChild(load);
+        actions.appendChild(ghost);
         actions.appendChild(exportOne);
         row.appendChild(top);
         row.appendChild(actions);
@@ -486,27 +577,32 @@
       setStatus(`Exported ${poses.length} pose frame(s).`);
     };
 
-    const savePose = () => {
+    const savePose = async () => {
       if (!layers.length) {
         setStatus("Add layers before saving a pose.");
         return;
       }
 
       const n = poses.length + 1;
+      const snapshot = getLayerSnapshot();
+      const thumb = await createPoseThumbnail(snapshot);
+
       poses.push({
         name: `Pose ${String(n).padStart(2, "0")}`,
-        layers: getLayerSnapshot(),
+        layers: snapshot,
+        thumb,
       });
 
       selectedPoseIndex = poses.length - 1;
       renderPoseList();
+      draw();
       setStatus(`Saved Pose ${String(n).padStart(2, "0")}.`);
     };
 
     const saveProject = () => {
       const project = {
         app: "VoltanLabs Character Forge 2D",
-        version: 2,
+        version: 3,
         canvas: { width: canvas.width, height: canvas.height },
         layers: getLayerSnapshot(),
         poses,
@@ -515,6 +611,14 @@
       const stamp = new Date().toISOString().slice(0, 10);
       downloadTextFile(`voltan-character-project-${stamp}.json`, JSON.stringify(project, null, 2));
       setStatus("Project JSON saved.");
+    };
+
+    const repairPoseThumbs = async () => {
+      for (let i = 0; i < poses.length; i++) {
+        if (!poses[i].thumb) {
+          poses[i].thumb = await createPoseThumbnail(poses[i].layers);
+        }
+      }
     };
 
     const loadProject = async (file) => {
@@ -532,6 +636,8 @@
         await restoreLayersFromSnapshot(project.layers);
         poses = Array.isArray(project.poses) ? project.poses : [];
         selectedPoseIndex = -1;
+
+        await repairPoseThumbs();
 
         updateUI();
         setStatus(`Project loaded: ${layers.length} layer(s), ${poses.length} pose(s).`);
@@ -590,6 +696,9 @@
     savePoseBtn.addEventListener("click", savePose);
     exportAllPosesBtn.addEventListener("click", exportAllPoses);
     exportBtn.addEventListener("click", () => exportCurrentPose());
+
+    onionToggle.addEventListener("change", () => draw());
+    onionOpacity.addEventListener("input", () => draw());
 
     scaleInput.addEventListener("input", () => {
       const layer = getSelected();
