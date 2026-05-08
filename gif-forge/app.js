@@ -47,6 +47,7 @@
   let playTimer = null;
   let playIndex = 0;
   let lastGifBlobUrl = null;
+  let dragIndex = null;
 
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
@@ -271,17 +272,90 @@
     setStatus("Frame copied.");
   };
 
+  const moveFrame = (from, to) => {
+    if (
+      from === to ||
+      from < 0 ||
+      to < 0 ||
+      from >= frames.length ||
+      to >= frames.length
+    ) {
+      return;
+    }
+
+    const [moved] = frames.splice(from, 1);
+    frames.splice(to, 0, moved);
+
+    selectedIndex = to;
+    dragIndex = to;
+
+    renderFrameList();
+    drawFrameToCanvas(frames[selectedIndex]);
+    clearResult();
+    enableControls();
+  };
+
   const renderFrameList = () => {
     frameListEl.innerHTML = "";
 
     frames.forEach((f, idx) => {
       const item = document.createElement("button");
       item.type = "button";
+      item.dataset.index = String(idx);
       item.className =
         "w-full flex items-center gap-3 rounded-2xl border p-2 text-left transition " +
         (idx === selectedIndex
           ? "border-zinc-400 bg-zinc-950/60"
           : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900");
+
+      const dragHandle = document.createElement("button");
+      dragHandle.type = "button";
+      dragHandle.className =
+        "shrink-0 px-3 py-2 rounded-xl border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 text-xs text-zinc-300 touch-none";
+      dragHandle.textContent = "☰";
+      dragHandle.title = "Drag to reorder";
+
+      dragHandle.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (isPlaying) stopPlayback();
+
+        dragIndex = idx;
+        dragHandle.setPointerCapture(e.pointerId);
+        item.classList.add("opacity-60", "scale-[0.98]");
+      });
+
+      dragHandle.addEventListener("pointermove", (e) => {
+        if (dragIndex === null) return;
+
+        const target = document.elementFromPoint(e.clientX, e.clientY);
+        const targetItem = target?.closest?.("[data-index]");
+
+        if (!targetItem) return;
+
+        const targetIndex = parseInt(targetItem.dataset.index, 10);
+
+        if (Number.isFinite(targetIndex) && targetIndex !== dragIndex) {
+          moveFrame(dragIndex, targetIndex);
+        }
+      });
+
+      dragHandle.addEventListener("pointerup", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        dragIndex = null;
+        renderFrameList();
+        enableControls();
+        setStatus("Frame order updated.");
+      });
+
+      dragHandle.addEventListener("pointercancel", () => {
+        dragIndex = null;
+        renderFrameList();
+        enableControls();
+      });
 
       const thumb = document.createElement("img");
       thumb.src = f.url;
@@ -365,6 +439,7 @@
         removeFrameAt(idx);
       });
 
+      item.appendChild(dragHandle);
       item.appendChild(thumb);
       item.appendChild(meta);
       item.appendChild(copyBtn);
