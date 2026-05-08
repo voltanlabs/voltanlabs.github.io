@@ -5,10 +5,8 @@
 */
 
 (() => {
-  // ---------- DOM ----------
   const fileInput = document.getElementById("fileInput");
   const dropZone = document.getElementById("dropZone");
-
   const frameCountEl = document.getElementById("frameCount");
   const frameListEl = document.getElementById("frameList");
 
@@ -27,7 +25,6 @@
   const delayInput = document.getElementById("delayInput");
   const qualityInput = document.getElementById("qualityInput");
   const loopInput = document.getElementById("loopInput");
-
   const transparentInput = document.getElementById("transparentInput");
   const filenameInput = document.getElementById("filenameInput");
 
@@ -39,23 +36,18 @@
   const resultImg = document.getElementById("resultImg");
   const downloadLink = document.getElementById("downloadLink");
 
-  // ---------- GUARDS ----------
   if (!fileInput || !dropZone || !previewCanvas) {
     console.error("Gif Forge: missing required DOM elements. Check index.html IDs.");
     return;
   }
 
-  // ---------- STATE ----------
   let frames = [];
   let selectedIndex = -1;
-
   let isPlaying = false;
   let playTimer = null;
   let playIndex = 0;
-
   let lastGifBlobUrl = null;
 
-  // ---------- HELPERS ----------
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   const setStatus = (msg) => (statusText.textContent = msg);
@@ -101,11 +93,8 @@
   };
 
   const applyPreviewBackdrop = () => {
-    if (wantsTransparentBg()) {
-      applyCheckerboard(previewCanvas);
-    } else {
-      clearBackdrop(previewCanvas);
-    }
+    if (wantsTransparentBg()) applyCheckerboard(previewCanvas);
+    else clearBackdrop(previewCanvas);
   };
 
   const applyResultBackdrop = () => {
@@ -156,9 +145,7 @@
       return { w, h };
     }
 
-    if (frames.length > 0) {
-      return { w: frames[0].w, h: frames[0].h };
-    }
+    if (frames.length > 0) return { w: frames[0].w, h: frames[0].h };
 
     return { w: 300, h: 300 };
   };
@@ -191,9 +178,7 @@
 
   const stopPlayback = () => {
     isPlaying = false;
-
     if (playTimer) clearInterval(playTimer);
-
     playTimer = null;
     stopBtn.disabled = true;
     playBtn.disabled = frames.length < 2;
@@ -228,9 +213,6 @@
 
     if (isPlaying) stopPlayback();
 
-    const victim = frames[idx];
-    if (victim && victim.url) URL.revokeObjectURL(victim.url);
-
     frames.splice(idx, 1);
 
     if (frames.length === 0) {
@@ -260,13 +242,12 @@
     if (isPlaying) stopPlayback();
 
     const source = frames[idx];
-    const copyUrl = URL.createObjectURL(source.file);
 
     const copy = {
       name: `${source.name} copy`,
       file: source.file,
       img: source.img,
-      url: copyUrl,
+      url: source.url,
       w: source.w,
       h: source.h,
     };
@@ -434,7 +415,6 @@
     clearResult();
   };
 
-  // ---------- EXPORT ----------
   const forgeGif = async () => {
     if (frames.length < 2) {
       setStatus("Add at least 2 frames to make an animated GIF.");
@@ -469,7 +449,6 @@
     off.height = targetH;
     const offCtx = off.getContext("2d", { alpha: true });
 
-    const WORKER_PATH = "./gif.worker.js";
     const transparent = wantsTransparentBg();
 
     const gif = new GIF({
@@ -478,9 +457,9 @@
       width: targetW,
       height: targetH,
       repeat: loopForever ? 0 : -1,
-      workerScript: WORKER_PATH,
+      workerScript: "./gif.worker.js",
       transparent: transparent ? 0x000000 : null,
-      background: transparent ? 0x000000 : 0x000000,
+      background: 0x000000,
     });
 
     let sawProgress = false;
@@ -565,7 +544,6 @@
     }
   };
 
-  // ---------- EVENTS ----------
   fileInput.addEventListener("change", async () => {
     await new Promise((r) => setTimeout(r, 60));
 
@@ -602,7 +580,9 @@
   clearBtn.addEventListener("click", () => {
     stopPlayback();
 
-    frames.forEach((f) => f.url && URL.revokeObjectURL(f.url));
+    [...new Set(frames.map((f) => f.url).filter(Boolean))].forEach((url) => {
+      URL.revokeObjectURL(url);
+    });
 
     frames = [];
     selectedIndex = -1;
@@ -655,7 +635,6 @@
 
   exportBtn.addEventListener("click", forgeGif);
 
-  // ---------- INIT ----------
   applyPreviewBackdrop();
   applyResultBackdrop();
   enableControls();
