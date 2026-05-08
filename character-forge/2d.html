@@ -5,13 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Character Forge 2D — VoltanLabs</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
   <style>
-    canvas {
-      display: block;
-      max-width: 100%;
-      height: auto;
-    }
+    canvas { display:block; max-width:100%; height:auto; }
   </style>
 </head>
 
@@ -23,7 +18,7 @@
       <a href="./index.html" class="text-sm text-emerald-300 hover:underline">← Back to Character Forge</a>
       <h1 class="text-3xl font-semibold mt-2">Character Forge 2D</h1>
       <p class="text-sm text-zinc-400 mt-2">
-        Upload PNG parts, move them into position, scale, rotate, reorder, save projects, and export poses.
+        Build sprite parts, save poses, export PNG frames, then animate them in Gif Forge.
       </p>
       <div id="statusText" class="text-sm text-zinc-400 mt-2">Idle.</div>
     </div>
@@ -46,7 +41,7 @@
           </label>
 
           <button id="exportBtn" class="px-4 py-2 rounded-xl bg-zinc-50 text-zinc-950 font-semibold">
-            Export PNG
+            Export Current PNG
           </button>
 
           <button id="saveProjectBtn" class="px-4 py-2 rounded-xl bg-sky-400 text-zinc-950 font-semibold">
@@ -72,43 +67,52 @@
         </div>
       </section>
 
-      <aside class="lg:col-span-1 rounded-2xl border border-white/10 bg-black/30 p-4">
-        <h2 class="font-semibold mb-3">Selected Layer</h2>
+      <aside class="lg:col-span-1 rounded-2xl border border-white/10 bg-black/30 p-4 space-y-5">
+        <section>
+          <h2 class="font-semibold mb-3">Selected Layer</h2>
 
-        <div class="space-y-3 text-sm">
-          <label class="block text-zinc-400">
-            Scale
-            <input id="scaleInput" type="range" min="10" max="300" value="100" class="w-full mt-1" />
-          </label>
+          <div class="space-y-3 text-sm">
+            <label class="block text-zinc-400">
+              Scale
+              <input id="scaleInput" type="range" min="10" max="300" value="100" class="w-full mt-1" />
+            </label>
 
-          <label class="block text-zinc-400">
-            Rotate
-            <input id="rotateInput" type="range" min="-180" max="180" value="0" class="w-full mt-1" />
-          </label>
+            <label class="block text-zinc-400">
+              Rotate
+              <input id="rotateInput" type="range" min="-180" max="180" value="0" class="w-full mt-1" />
+            </label>
 
-          <div class="grid grid-cols-2 gap-2">
-            <button id="flipBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
-              Flip
+            <div class="grid grid-cols-2 gap-2">
+              <button id="flipBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">Flip</button>
+              <button id="resetBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">Reset</button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <button id="frontBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">Front</button>
+              <button id="backBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">Back</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="border-t border-white/10 pt-4">
+          <h3 class="font-semibold mb-2">Pose Frames</h3>
+
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <button id="savePoseBtn" class="px-3 py-2 rounded-xl bg-emerald-400 text-zinc-950 font-semibold text-sm">
+              Save Pose
             </button>
-            <button id="resetBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
-              Reset
+            <button id="exportAllPosesBtn" class="px-3 py-2 rounded-xl bg-zinc-50 text-zinc-950 font-semibold text-sm">
+              Export All
             </button>
           </div>
 
-          <div class="grid grid-cols-2 gap-2">
-            <button id="frontBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
-              Front
-            </button>
-            <button id="backBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
-              Back
-            </button>
-          </div>
-        </div>
+          <div id="poseList" class="space-y-2 max-h-52 overflow-auto"></div>
+        </section>
 
-        <div class="border-t border-white/10 mt-5 pt-4">
+        <section class="border-t border-white/10 pt-4">
           <h3 class="font-semibold mb-2">Layers</h3>
-          <div id="layerList" class="space-y-2 max-h-80 overflow-auto"></div>
-        </div>
+          <div id="layerList" class="space-y-2 max-h-64 overflow-auto"></div>
+        </section>
       </aside>
     </div>
   </main>
@@ -123,6 +127,7 @@
     const partInput = document.getElementById("partInput");
     const loadProjectInput = document.getElementById("loadProjectInput");
     const layerList = document.getElementById("layerList");
+    const poseList = document.getElementById("poseList");
     const statusText = document.getElementById("statusText");
 
     const scaleInput = document.getElementById("scaleInput");
@@ -130,6 +135,9 @@
 
     const exportBtn = document.getElementById("exportBtn");
     const saveProjectBtn = document.getElementById("saveProjectBtn");
+    const savePoseBtn = document.getElementById("savePoseBtn");
+    const exportAllPosesBtn = document.getElementById("exportAllPosesBtn");
+
     const centerBtn = document.getElementById("centerBtn");
     const deleteBtn = document.getElementById("deleteBtn");
     const clearBtn = document.getElementById("clearBtn");
@@ -139,89 +147,120 @@
     const backBtn = document.getElementById("backBtn");
 
     let layers = [];
+    let poses = [];
     let selectedIndex = -1;
+    let selectedPoseIndex = -1;
     let dragging = false;
     let dragOffsetX = 0;
     let dragOffsetY = 0;
+    let exportCounter = 1;
 
-    const setStatus = (msg) => {
-      statusText.textContent = msg;
-    };
+    const setStatus = (msg) => statusText.textContent = msg;
+    const getSelected = () => selectedIndex >= 0 ? layers[selectedIndex] : null;
 
-    const getSelected = () => {
-      return selectedIndex >= 0 ? layers[selectedIndex] : null;
-    };
+    const readFileAsDataURL = (file) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
 
-    const readFileAsDataURL = (file) => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(reader.error);
-        reader.readAsDataURL(file);
-      });
-    };
-
-    const loadImageFromSrc = (src) => {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve(img);
-        img.onerror = () => resolve(null);
-        img.src = src;
-      });
-    };
+    const loadImageFromSrc = (src) => new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = src;
+    });
 
     const downloadTextFile = (filename, text) => {
       const blob = new Blob([text], { type: "application/json" });
       const url = URL.createObjectURL(blob);
-
       const a = document.createElement("a");
       a.href = url;
       a.download = filename;
       a.click();
-
       URL.revokeObjectURL(url);
     };
 
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const downloadDataURL = (filename, dataURL) => {
+      const a = document.createElement("a");
+      a.href = dataURL;
+      a.download = filename;
+      a.click();
+    };
 
-      layers.forEach((layer, idx) => {
-        ctx.save();
-        ctx.translate(layer.x, layer.y);
-        ctx.rotate((layer.rotation * Math.PI) / 180);
-        ctx.scale(layer.flip ? -layer.scale : layer.scale, layer.scale);
+    const getLayerSnapshot = () => {
+      return layers.map((layer) => ({
+        name: layer.name,
+        src: layer.src,
+        x: layer.x,
+        y: layer.y,
+        w: layer.w,
+        h: layer.h,
+        scale: layer.scale,
+        rotation: layer.rotation,
+        flip: layer.flip,
+      }));
+    };
 
-        ctx.drawImage(layer.img, -layer.w / 2, -layer.h / 2, layer.w, layer.h);
+    const restoreLayersFromSnapshot = async (snapshot) => {
+      const restored = [];
 
-        ctx.restore();
+      for (const item of snapshot || []) {
+        const img = await loadImageFromSrc(item.src);
+        if (!img) continue;
 
-        if (idx === selectedIndex) {
-          ctx.save();
-          ctx.strokeStyle = "#34d399";
-          ctx.lineWidth = 3;
-          ctx.setLineDash([8, 6]);
-          ctx.strokeRect(
+        restored.push({
+          name: item.name || "layer.png",
+          img,
+          src: item.src,
+          x: Number(item.x) || canvas.width / 2,
+          y: Number(item.y) || canvas.height / 2,
+          w: Number(item.w) || img.naturalWidth || img.width,
+          h: Number(item.h) || img.naturalHeight || img.height,
+          scale: Number(item.scale) || 1,
+          rotation: Number(item.rotation) || 0,
+          flip: !!item.flip,
+        });
+      }
+
+      layers = restored;
+      selectedIndex = layers.length ? layers.length - 1 : -1;
+    };
+
+    const drawLayersToContext = (targetCtx, targetLayers, includeSelection = false) => {
+      targetCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+      targetLayers.forEach((layer, idx) => {
+        targetCtx.save();
+        targetCtx.translate(layer.x, layer.y);
+        targetCtx.rotate((layer.rotation * Math.PI) / 180);
+        targetCtx.scale(layer.flip ? -layer.scale : layer.scale, layer.scale);
+        targetCtx.drawImage(layer.img, -layer.w / 2, -layer.h / 2, layer.w, layer.h);
+        targetCtx.restore();
+
+        if (includeSelection && idx === selectedIndex) {
+          targetCtx.save();
+          targetCtx.strokeStyle = "#34d399";
+          targetCtx.lineWidth = 3;
+          targetCtx.setLineDash([8, 6]);
+          targetCtx.strokeRect(
             layer.x - (layer.w * layer.scale) / 2,
             layer.y - (layer.h * layer.scale) / 2,
             layer.w * layer.scale,
             layer.h * layer.scale
           );
-          ctx.restore();
+          targetCtx.restore();
         }
       });
     };
 
+    const draw = () => drawLayersToContext(ctx, layers, true);
+
     const syncControls = () => {
       const layer = getSelected();
-
-      if (!layer) {
-        scaleInput.value = 100;
-        rotateInput.value = 0;
-        return;
-      }
-
-      scaleInput.value = Math.round(layer.scale * 100);
-      rotateInput.value = layer.rotation;
+      scaleInput.value = layer ? Math.round(layer.scale * 100) : 100;
+      rotateInput.value = layer ? layer.rotation : 0;
     };
 
     const renderLayerList = () => {
@@ -251,25 +290,91 @@
 
         btn.addEventListener("click", () => {
           selectedIndex = idx;
-          syncControls();
-          renderLayerList();
-          draw();
+          updateUI();
         });
 
         layerList.appendChild(btn);
       });
     };
 
+    const renderPoseList = () => {
+      poseList.innerHTML = "";
+
+      poses.forEach((pose, idx) => {
+        const row = document.createElement("div");
+        row.className =
+          "rounded-xl border p-2 " +
+          (idx === selectedPoseIndex
+            ? "border-emerald-400 bg-emerald-400/10"
+            : "border-white/10 bg-zinc-950");
+
+        const top = document.createElement("div");
+        top.className = "flex items-center justify-between gap-2";
+
+        const title = document.createElement("button");
+        title.type = "button";
+        title.className = "text-left text-xs text-zinc-200 truncate flex-1";
+        title.textContent = pose.name;
+
+        title.addEventListener("click", async () => {
+          selectedPoseIndex = idx;
+          await restoreLayersFromSnapshot(pose.layers);
+          updateUI();
+          setStatus(`Loaded ${pose.name}.`);
+        });
+
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "text-xs text-red-300 px-2 py-1 rounded-lg border border-red-400/30 bg-red-400/10";
+        del.textContent = "✕";
+        del.addEventListener("click", () => {
+          poses.splice(idx, 1);
+          selectedPoseIndex = -1;
+          renderPoseList();
+          setStatus("Pose deleted.");
+        });
+
+        const actions = document.createElement("div");
+        actions.className = "grid grid-cols-2 gap-2 mt-2";
+
+        const load = document.createElement("button");
+        load.type = "button";
+        load.className = "text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/5";
+        load.textContent = "Load";
+        load.addEventListener("click", async () => {
+          selectedPoseIndex = idx;
+          await restoreLayersFromSnapshot(pose.layers);
+          updateUI();
+          setStatus(`Loaded ${pose.name}.`);
+        });
+
+        const exportOne = document.createElement("button");
+        exportOne.type = "button";
+        exportOne.className = "text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/5";
+        exportOne.textContent = "Export";
+        exportOne.addEventListener("click", async () => {
+          await exportPose(idx);
+        });
+
+        top.appendChild(title);
+        top.appendChild(del);
+        actions.appendChild(load);
+        actions.appendChild(exportOne);
+        row.appendChild(top);
+        row.appendChild(actions);
+        poseList.appendChild(row);
+      });
+    };
+
     const updateUI = () => {
       syncControls();
       renderLayerList();
+      renderPoseList();
       draw();
     };
 
     const loadFiles = async (files) => {
-      const imageFiles = Array.from(files || []).filter((file) =>
-        (file.type || "").startsWith("image/")
-      );
+      const imageFiles = Array.from(files || []).filter((file) => (file.type || "").startsWith("image/"));
 
       if (!imageFiles.length) {
         setStatus("No valid image files selected.");
@@ -279,7 +384,6 @@
       for (const file of imageFiles) {
         const src = await readFileAsDataURL(file);
         const img = await loadImageFromSrc(src);
-
         if (!img) continue;
 
         const maxSize = 260;
@@ -313,49 +417,99 @@
         const halfW = (layer.w * layer.scale) / 2;
         const halfH = (layer.h * layer.scale) / 2;
 
-        if (
-          x >= layer.x - halfW &&
-          x <= layer.x + halfW &&
-          y >= layer.y - halfH &&
-          y <= layer.y + halfH
-        ) {
+        if (x >= layer.x - halfW && x <= layer.x + halfW && y >= layer.y - halfH && y <= layer.y + halfH) {
           return i;
         }
       }
-
       return -1;
     };
 
     const pointerPos = (e) => {
       const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-
       return {
-        x: (e.clientX - rect.left) * scaleX,
-        y: (e.clientY - rect.top) * scaleY,
+        x: (e.clientX - rect.left) * (canvas.width / rect.width),
+        y: (e.clientY - rect.top) * (canvas.height / rect.height),
       };
+    };
+
+    const exportCurrentPose = (filename = null) => {
+      const exportCanvas = document.createElement("canvas");
+      exportCanvas.width = canvas.width;
+      exportCanvas.height = canvas.height;
+      const exportCtx = exportCanvas.getContext("2d");
+
+      drawLayersToContext(exportCtx, layers, false);
+
+      const num = String(exportCounter).padStart(3, "0");
+      const file = filename || `databyte-frame-${num}.png`;
+      exportCounter += 1;
+
+      downloadDataURL(file, exportCanvas.toDataURL("image/png"));
+      setStatus(`Exported ${file}.`);
+    };
+
+    const exportPose = async (poseIndex) => {
+      const pose = poses[poseIndex];
+      if (!pose) return;
+
+      const oldLayers = layers;
+      const oldSelected = selectedIndex;
+
+      await restoreLayersFromSnapshot(pose.layers);
+
+      const exportCanvas = document.createElement("canvas");
+      exportCanvas.width = canvas.width;
+      exportCanvas.height = canvas.height;
+      const exportCtx = exportCanvas.getContext("2d");
+      drawLayersToContext(exportCtx, layers, false);
+
+      const num = String(poseIndex + 1).padStart(3, "0");
+      downloadDataURL(`databyte-frame-${num}.png`, exportCanvas.toDataURL("image/png"));
+
+      layers = oldLayers;
+      selectedIndex = oldSelected;
+      updateUI();
+      setStatus(`Exported ${pose.name}.`);
+    };
+
+    const exportAllPoses = async () => {
+      if (!poses.length) {
+        setStatus("No poses saved yet.");
+        return;
+      }
+
+      for (let i = 0; i < poses.length; i++) {
+        await exportPose(i);
+        await new Promise((r) => setTimeout(r, 250));
+      }
+
+      setStatus(`Exported ${poses.length} pose frame(s).`);
+    };
+
+    const savePose = () => {
+      if (!layers.length) {
+        setStatus("Add layers before saving a pose.");
+        return;
+      }
+
+      const n = poses.length + 1;
+      poses.push({
+        name: `Pose ${String(n).padStart(2, "0")}`,
+        layers: getLayerSnapshot(),
+      });
+
+      selectedPoseIndex = poses.length - 1;
+      renderPoseList();
+      setStatus(`Saved Pose ${String(n).padStart(2, "0")}.`);
     };
 
     const saveProject = () => {
       const project = {
         app: "VoltanLabs Character Forge 2D",
-        version: 1,
-        canvas: {
-          width: canvas.width,
-          height: canvas.height,
-        },
-        layers: layers.map((layer) => ({
-          name: layer.name,
-          src: layer.src,
-          x: layer.x,
-          y: layer.y,
-          w: layer.w,
-          h: layer.h,
-          scale: layer.scale,
-          rotation: layer.rotation,
-          flip: layer.flip,
-        })),
+        version: 2,
+        canvas: { width: canvas.width, height: canvas.height },
+        layers: getLayerSnapshot(),
+        poses,
       };
 
       const stamp = new Date().toISOString().slice(0, 10);
@@ -370,36 +524,17 @@
         const text = await file.text();
         const project = JSON.parse(text);
 
-        if (!project.layers || !Array.isArray(project.layers)) {
+        if (!Array.isArray(project.layers)) {
           setStatus("Invalid project file.");
           return;
         }
 
-        const restored = [];
-
-        for (const item of project.layers) {
-          const img = await loadImageFromSrc(item.src);
-          if (!img) continue;
-
-          restored.push({
-            name: item.name || "layer.png",
-            img,
-            src: item.src,
-            x: Number(item.x) || canvas.width / 2,
-            y: Number(item.y) || canvas.height / 2,
-            w: Number(item.w) || img.naturalWidth || img.width,
-            h: Number(item.h) || img.naturalHeight || img.height,
-            scale: Number(item.scale) || 1,
-            rotation: Number(item.rotation) || 0,
-            flip: !!item.flip,
-          });
-        }
-
-        layers = restored;
-        selectedIndex = layers.length ? layers.length - 1 : -1;
+        await restoreLayersFromSnapshot(project.layers);
+        poses = Array.isArray(project.poses) ? project.poses : [];
+        selectedPoseIndex = -1;
 
         updateUI();
-        setStatus(`Project loaded: ${layers.length} layer(s).`);
+        setStatus(`Project loaded: ${layers.length} layer(s), ${poses.length} pose(s).`);
       } catch (err) {
         console.error(err);
         setStatus("Could not load project JSON.");
@@ -427,7 +562,6 @@
 
     canvas.addEventListener("pointermove", (e) => {
       if (!dragging || selectedIndex < 0) return;
-
       e.preventDefault();
 
       const pos = pointerPos(e);
@@ -439,13 +573,8 @@
       draw();
     });
 
-    canvas.addEventListener("pointerup", () => {
-      dragging = false;
-    });
-
-    canvas.addEventListener("pointercancel", () => {
-      dragging = false;
-    });
+    canvas.addEventListener("pointerup", () => dragging = false);
+    canvas.addEventListener("pointercancel", () => dragging = false);
 
     partInput.addEventListener("change", async () => {
       await loadFiles(partInput.files);
@@ -458,11 +587,13 @@
     });
 
     saveProjectBtn.addEventListener("click", saveProject);
+    savePoseBtn.addEventListener("click", savePose);
+    exportAllPosesBtn.addEventListener("click", exportAllPoses);
+    exportBtn.addEventListener("click", () => exportCurrentPose());
 
     scaleInput.addEventListener("input", () => {
       const layer = getSelected();
       if (!layer) return;
-
       layer.scale = Math.max(0.1, parseInt(scaleInput.value, 10) / 100);
       draw();
     });
@@ -470,7 +601,6 @@
     rotateInput.addEventListener("input", () => {
       const layer = getSelected();
       if (!layer) return;
-
       layer.rotation = parseInt(rotateInput.value, 10) || 0;
       draw();
     });
@@ -478,7 +608,6 @@
     centerBtn.addEventListener("click", () => {
       const layer = getSelected();
       if (!layer) return;
-
       layer.x = canvas.width / 2;
       layer.y = canvas.height / 2;
       draw();
@@ -486,17 +615,17 @@
 
     deleteBtn.addEventListener("click", () => {
       if (selectedIndex < 0) return;
-
       layers.splice(selectedIndex, 1);
       selectedIndex = layers.length ? Math.min(selectedIndex, layers.length - 1) : -1;
-
       updateUI();
       setStatus("Layer deleted.");
     });
 
     clearBtn.addEventListener("click", () => {
       layers = [];
+      poses = [];
       selectedIndex = -1;
+      selectedPoseIndex = -1;
       updateUI();
       setStatus("Cleared.");
     });
@@ -504,7 +633,6 @@
     flipBtn.addEventListener("click", () => {
       const layer = getSelected();
       if (!layer) return;
-
       layer.flip = !layer.flip;
       draw();
     });
@@ -512,7 +640,6 @@
     resetBtn.addEventListener("click", () => {
       const layer = getSelected();
       if (!layer) return;
-
       layer.scale = 1;
       layer.rotation = 0;
       layer.flip = false;
@@ -522,7 +649,6 @@
 
     frontBtn.addEventListener("click", () => {
       if (selectedIndex < 0) return;
-
       const [layer] = layers.splice(selectedIndex, 1);
       layers.push(layer);
       selectedIndex = layers.length - 1;
@@ -531,36 +657,10 @@
 
     backBtn.addEventListener("click", () => {
       if (selectedIndex < 0) return;
-
       const [layer] = layers.splice(selectedIndex, 1);
       layers.unshift(layer);
       selectedIndex = 0;
       updateUI();
-    });
-
-    exportBtn.addEventListener("click", () => {
-      const exportCanvas = document.createElement("canvas");
-      exportCanvas.width = canvas.width;
-      exportCanvas.height = canvas.height;
-      const exportCtx = exportCanvas.getContext("2d");
-
-      layers.forEach((layer) => {
-        exportCtx.save();
-        exportCtx.translate(layer.x, layer.y);
-        exportCtx.rotate((layer.rotation * Math.PI) / 180);
-        exportCtx.scale(layer.flip ? -layer.scale : layer.scale, layer.scale);
-        exportCtx.drawImage(layer.img, -layer.w / 2, -layer.h / 2, layer.w, layer.h);
-        exportCtx.restore();
-      });
-
-      const url = exportCanvas.toDataURL("image/png");
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "voltan-character-pose.png";
-      a.click();
-
-      setStatus("PNG exported.");
     });
 
     updateUI();
