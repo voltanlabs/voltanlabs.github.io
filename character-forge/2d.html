@@ -30,7 +30,13 @@
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
       <section class="lg:col-span-3 rounded-2xl border border-white/10 bg-black/30 p-4">
         <div class="rounded-2xl border border-white/10 bg-zinc-900 overflow-auto">
-          <canvas id="forgeCanvas" width="900" height="900" class="bg-transparent mx-auto"></canvas>
+          <style>
+  canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+</style>
         </div>
 
         <div class="flex flex-wrap gap-2 mt-4">
