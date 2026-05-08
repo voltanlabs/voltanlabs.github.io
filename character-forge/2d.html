@@ -280,7 +280,7 @@
 
       ctx.save();
       ctx.globalAlpha = alpha;
-      ctx.filter = "hue-rotate(150deg) saturate(1.5)";
+      ctx.filter = "sepia(1) saturate(8) hue-rotate(300deg) brightness(1.4)";
       ghostLayers.forEach((layer) => {
         ctx.save();
         ctx.translate(layer.x, layer.y);
