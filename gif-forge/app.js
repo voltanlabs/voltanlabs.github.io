@@ -46,7 +46,6 @@
   }
 
   // ---------- STATE ----------
-  /** @type {{name:string, file:File, img:HTMLImageElement, url:string, w:number, h:number}[]} */
   let frames = [];
   let selectedIndex = -1;
 
@@ -102,7 +101,6 @@
   };
 
   const applyPreviewBackdrop = () => {
-    if (!previewCanvas) return;
     if (wantsTransparentBg()) {
       applyCheckerboard(previewCanvas);
     } else {
@@ -112,6 +110,7 @@
 
   const applyResultBackdrop = () => {
     if (!resultImg) return;
+
     if (wantsTransparentBg()) {
       applyCheckerboard(resultImg);
       resultImg.style.backgroundColor = "transparent";
@@ -153,8 +152,14 @@
     const w = parseInt(widthInput.value, 10);
     const h = parseInt(heightInput.value, 10);
 
-    if (Number.isFinite(w) && w > 0 && Number.isFinite(h) && h > 0) return { w, h };
-    if (frames.length > 0) return { w: frames[0].w, h: frames[0].h };
+    if (Number.isFinite(w) && w > 0 && Number.isFinite(h) && h > 0) {
+      return { w, h };
+    }
+
+    if (frames.length > 0) {
+      return { w: frames[0].w, h: frames[0].h };
+    }
+
     return { w: 300, h: 300 };
   };
 
@@ -186,7 +191,9 @@
 
   const stopPlayback = () => {
     isPlaying = false;
+
     if (playTimer) clearInterval(playTimer);
+
     playTimer = null;
     stopBtn.disabled = true;
     playBtn.disabled = frames.length < 2;
@@ -195,6 +202,7 @@
 
   const startPlayback = () => {
     if (frames.length < 2) return;
+
     const delay = Math.max(10, parseInt(delayInput.value, 10) || 120);
 
     isPlaying = true;
@@ -206,6 +214,7 @@
     drawFrameToCanvas(frames[playIndex]);
 
     if (playTimer) clearInterval(playTimer);
+
     playTimer = setInterval(() => {
       playIndex = (playIndex + 1) % frames.length;
       drawFrameToCanvas(frames[playIndex]);
@@ -235,6 +244,7 @@
       } else if (selectedIndex > idx) {
         selectedIndex -= 1;
       }
+
       drawFrameToCanvas(frames[selectedIndex]);
       clearResult();
       setStatus("Frame removed.");
@@ -242,6 +252,33 @@
 
     renderFrameList();
     enableControls();
+  };
+
+  const duplicateFrameAt = (idx) => {
+    if (idx < 0 || idx >= frames.length) return;
+
+    if (isPlaying) stopPlayback();
+
+    const source = frames[idx];
+    const copyUrl = URL.createObjectURL(source.file);
+
+    const copy = {
+      name: `${source.name} copy`,
+      file: source.file,
+      img: source.img,
+      url: copyUrl,
+      w: source.w,
+      h: source.h,
+    };
+
+    frames.splice(idx + 1, 0, copy);
+    selectedIndex = idx + 1;
+
+    renderFrameList();
+    drawFrameToCanvas(frames[selectedIndex]);
+    clearResult();
+    enableControls();
+    setStatus("Frame copied.");
   };
 
   const renderFrameList = () => {
@@ -275,10 +312,22 @@
       meta.appendChild(title);
       meta.appendChild(sub);
 
+      const copyBtn = document.createElement("button");
+      copyBtn.type = "button";
+      copyBtn.className =
+        "shrink-0 px-3 py-2 rounded-xl border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 text-xs text-zinc-300";
+      copyBtn.textContent = "Copy";
+      copyBtn.title = "Duplicate frame";
+      copyBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        duplicateFrameAt(idx);
+      });
+
       const del = document.createElement("button");
       del.type = "button";
       del.className =
-        "ml-auto shrink-0 px-3 py-2 rounded-xl border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 text-xs text-zinc-300";
+        "shrink-0 px-3 py-2 rounded-xl border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 text-xs text-zinc-300";
       del.textContent = "✕";
       del.title = "Remove frame";
       del.addEventListener("click", (e) => {
@@ -289,6 +338,7 @@
 
       item.appendChild(thumb);
       item.appendChild(meta);
+      item.appendChild(copyBtn);
       item.appendChild(del);
 
       item.addEventListener("click", () => {
@@ -316,7 +366,7 @@
     const files = filterImageFiles(fileList);
 
     if (files.length === 0) {
-      setStatus("No valid images found. Try PNG/JPG/WEBP (or choose from Files).");
+      setStatus("No valid images found. Try PNG/JPG/WEBP.");
       return;
     }
 
@@ -402,6 +452,7 @@
 
     let targetW = w;
     let targetH = h;
+
     if (isMobile) {
       const MAX = 512;
       const s = Math.min(1, MAX / Math.max(w, h));
@@ -413,19 +464,14 @@
     setProgress(0);
     setStatus("Forging GIF…");
 
-    // Offscreen canvas MUST be alpha-enabled to carry transparency
     const off = document.createElement("canvas");
     off.width = targetW;
     off.height = targetH;
     const offCtx = off.getContext("2d", { alpha: true });
 
     const WORKER_PATH = "./gif.worker.js";
-
     const transparent = wantsTransparentBg();
 
-    // gif.js transparency is palette-based. Tell it which color to treat as transparent.
-    // We use 0x000000 as the "transparent key" and do NOT paint it when transparent==true.
-    // When transparent==false, we DO paint #000 so it stays black.
     const gif = new GIF({
       workers: isMobile ? 1 : Math.min(4, navigator.hardwareConcurrency || 2),
       quality,
@@ -433,13 +479,12 @@
       height: targetH,
       repeat: loopForever ? 0 : -1,
       workerScript: WORKER_PATH,
-
-      // These two help gif.js keep transparency when frames include alpha
       transparent: transparent ? 0x000000 : null,
       background: transparent ? 0x000000 : 0x000000,
     });
 
     let sawProgress = false;
+
     const watchdog = setTimeout(() => {
       if (!sawProgress) {
         setStatus("Stuck at 0% — worker didn't start. Ensure gif-forge/gif.worker.js exists.");
@@ -451,10 +496,8 @@
     for (let idx = 0; idx < frames.length; idx++) {
       const f = frames[idx];
 
-      // Clear to transparent
       offCtx.clearRect(0, 0, targetW, targetH);
 
-      // Only fill when NOT transparent
       if (!transparent) {
         offCtx.fillStyle = "#000";
         offCtx.fillRect(0, 0, targetW, targetH);
@@ -491,6 +534,7 @@
       applyResultBackdrop();
 
       resultImg.src = "";
+
       requestAnimationFrame(() => {
         resultImg.src = lastGifBlobUrl;
       });
@@ -524,6 +568,7 @@
   // ---------- EVENTS ----------
   fileInput.addEventListener("change", async () => {
     await new Promise((r) => setTimeout(r, 60));
+
     if (!fileInput.files || fileInput.files.length === 0) {
       await new Promise((r) => setTimeout(r, 120));
     }
@@ -556,12 +601,17 @@
 
   clearBtn.addEventListener("click", () => {
     stopPlayback();
+
     frames.forEach((f) => f.url && URL.revokeObjectURL(f.url));
+
     frames = [];
     selectedIndex = -1;
+
     frameListEl.innerHTML = "";
     frameCountEl.textContent = "0";
+
     ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+
     clearResult();
     enableControls();
     setStatus("Cleared.");
@@ -585,6 +635,7 @@
       stopPlayback();
       startPlayback();
     }
+
     clearResult();
   });
 
@@ -595,14 +646,16 @@
     transparentInput.addEventListener("change", () => {
       applyPreviewBackdrop();
       applyResultBackdrop();
+
       if (selectedIndex >= 0) drawFrameToCanvas(frames[selectedIndex]);
+
       clearResult();
     });
   }
 
   exportBtn.addEventListener("click", forgeGif);
 
-  // Initial UI state
+  // ---------- INIT ----------
   applyPreviewBackdrop();
   applyResultBackdrop();
   enableControls();
