@@ -1,1 +1,465 @@
-hey
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Character Forge 2D — VoltanLabs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    canvas {
+      touch-action: none;
+      display: block;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-zinc-950 text-zinc-100">
+  <div id="vl-header"></div>
+
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <div class="mb-5">
+      <a href="./index.html" class="text-sm text-emerald-300 hover:underline">← Back to Character Forge</a>
+      <h1 class="text-3xl font-semibold mt-2">Character Forge 2D</h1>
+      <p class="text-sm text-zinc-400 mt-2">
+        Upload PNG parts, move them into position, scale, rotate, reorder, and export your pose as a PNG.
+      </p>
+      <div id="statusText" class="text-sm text-zinc-400 mt-2">Idle.</div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+      <section class="lg:col-span-3 rounded-2xl border border-white/10 bg-black/30 p-4">
+        <div class="rounded-2xl border border-white/10 bg-zinc-900 overflow-auto">
+          <canvas id="forgeCanvas" width="900" height="900" class="bg-transparent mx-auto"></canvas>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mt-4">
+          <label class="px-4 py-2 rounded-xl bg-emerald-400 text-zinc-950 font-semibold cursor-pointer">
+            Upload Parts
+            <input id="partInput" type="file" accept="image/*" multiple class="hidden" />
+          </label>
+
+          <button id="exportBtn" class="px-4 py-2 rounded-xl bg-zinc-50 text-zinc-950 font-semibold">
+            Export PNG
+          </button>
+
+          <button id="centerBtn" class="px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
+            Center Selected
+          </button>
+
+          <button id="deleteBtn" class="px-4 py-2 rounded-xl border border-red-400/30 bg-red-400/10 text-red-200 hover:bg-red-400/20">
+            Delete Selected
+          </button>
+
+          <button id="clearBtn" class="px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
+            Clear All
+          </button>
+        </div>
+      </section>
+
+      <aside class="lg:col-span-1 rounded-2xl border border-white/10 bg-black/30 p-4">
+        <h2 class="font-semibold mb-3">Selected Layer</h2>
+
+        <div class="space-y-3 text-sm">
+          <label class="block text-zinc-400">
+            Scale
+            <input id="scaleInput" type="range" min="10" max="300" value="100" class="w-full mt-1" />
+          </label>
+
+          <label class="block text-zinc-400">
+            Rotate
+            <input id="rotateInput" type="range" min="-180" max="180" value="0" class="w-full mt-1" />
+          </label>
+
+          <div class="grid grid-cols-2 gap-2">
+            <button id="flipBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
+              Flip
+            </button>
+            <button id="resetBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
+              Reset
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <button id="frontBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
+              Front
+            </button>
+            <button id="backBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
+              Back
+            </button>
+          </div>
+        </div>
+
+        <div class="border-t border-white/10 mt-5 pt-4">
+          <h3 class="font-semibold mb-2">Layers</h3>
+          <div id="layerList" class="space-y-2 max-h-80 overflow-auto"></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div id="vl-footer"></div>
+  <script src="/assets/includes.js"></script>
+
+  <script>
+    const canvas = document.getElementById("forgeCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const partInput = document.getElementById("partInput");
+    const layerList = document.getElementById("layerList");
+    const statusText = document.getElementById("statusText");
+
+    const scaleInput = document.getElementById("scaleInput");
+    const rotateInput = document.getElementById("rotateInput");
+
+    const exportBtn = document.getElementById("exportBtn");
+    const centerBtn = document.getElementById("centerBtn");
+    const deleteBtn = document.getElementById("deleteBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const flipBtn = document.getElementById("flipBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const frontBtn = document.getElementById("frontBtn");
+    const backBtn = document.getElementById("backBtn");
+
+    let layers = [];
+    let selectedIndex = -1;
+    let dragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+
+    const setStatus = (msg) => {
+      statusText.textContent = msg;
+    };
+
+    const getSelected = () => {
+      return selectedIndex >= 0 ? layers[selectedIndex] : null;
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      layers.forEach((layer, idx) => {
+        ctx.save();
+
+        ctx.translate(layer.x, layer.y);
+        ctx.rotate((layer.rotation * Math.PI) / 180);
+        ctx.scale(layer.flip ? -layer.scale : layer.scale, layer.scale);
+
+        ctx.drawImage(
+          layer.img,
+          -layer.w / 2,
+          -layer.h / 2,
+          layer.w,
+          layer.h
+        );
+
+        ctx.restore();
+
+        if (idx === selectedIndex) {
+          ctx.save();
+          ctx.strokeStyle = "#34d399";
+          ctx.lineWidth = 3;
+          ctx.setLineDash([8, 6]);
+          ctx.strokeRect(
+            layer.x - (layer.w * layer.scale) / 2,
+            layer.y - (layer.h * layer.scale) / 2,
+            layer.w * layer.scale,
+            layer.h * layer.scale
+          );
+          ctx.restore();
+        }
+      });
+    };
+
+    const syncControls = () => {
+      const layer = getSelected();
+
+      if (!layer) {
+        scaleInput.value = 100;
+        rotateInput.value = 0;
+        return;
+      }
+
+      scaleInput.value = Math.round(layer.scale * 100);
+      rotateInput.value = layer.rotation;
+    };
+
+    const renderLayerList = () => {
+      layerList.innerHTML = "";
+
+      [...layers].reverse().forEach((layer, reverseIdx) => {
+        const idx = layers.length - 1 - reverseIdx;
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className =
+          "w-full flex items-center gap-2 rounded-xl border px-2 py-2 text-left " +
+          (idx === selectedIndex
+            ? "border-emerald-400 bg-emerald-400/10"
+            : "border-white/10 bg-zinc-950 hover:bg-zinc-900");
+
+        const thumb = document.createElement("img");
+        thumb.src = layer.url;
+        thumb.className = "w-10 h-10 object-contain rounded-lg bg-black border border-white/10";
+
+        const name = document.createElement("div");
+        name.className = "text-xs text-zinc-300 truncate";
+        name.textContent = layer.name;
+
+        btn.appendChild(thumb);
+        btn.appendChild(name);
+
+        btn.addEventListener("click", () => {
+          selectedIndex = idx;
+          syncControls();
+          renderLayerList();
+          draw();
+        });
+
+        layerList.appendChild(btn);
+      });
+    };
+
+    const updateUI = () => {
+      syncControls();
+      renderLayerList();
+      draw();
+    };
+
+    const loadFiles = async (files) => {
+      const imageFiles = Array.from(files || []).filter((file) =>
+        (file.type || "").startsWith("image/")
+      );
+
+      if (!imageFiles.length) {
+        setStatus("No valid image files selected.");
+        return;
+      }
+
+      for (const file of imageFiles) {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+
+        const ok = await new Promise((resolve) => {
+          img.onload = () => resolve(true);
+          img.onerror = () => resolve(false);
+          img.src = url;
+        });
+
+        if (!ok) {
+          URL.revokeObjectURL(url);
+          continue;
+        }
+
+        const maxSize = 260;
+        const naturalW = img.naturalWidth || img.width;
+        const naturalH = img.naturalHeight || img.height;
+        const fit = Math.min(1, maxSize / Math.max(naturalW, naturalH));
+
+        layers.push({
+          name: file.name,
+          img,
+          url,
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          w: Math.round(naturalW * fit),
+          h: Math.round(naturalH * fit),
+          scale: 1,
+          rotation: 0,
+          flip: false,
+        });
+
+        selectedIndex = layers.length - 1;
+      }
+
+      setStatus(`Loaded ${imageFiles.length} part(s).`);
+      updateUI();
+    };
+
+    const hitTest = (x, y) => {
+      for (let i = layers.length - 1; i >= 0; i--) {
+        const layer = layers[i];
+        const halfW = (layer.w * layer.scale) / 2;
+        const halfH = (layer.h * layer.scale) / 2;
+
+        if (
+          x >= layer.x - halfW &&
+          x <= layer.x + halfW &&
+          y >= layer.y - halfH &&
+          y <= layer.y + halfH
+        ) {
+          return i;
+        }
+      }
+
+      return -1;
+    };
+
+    const pointerPos = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY,
+      };
+    };
+
+    canvas.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+
+      const pos = pointerPos(e);
+      const idx = hitTest(pos.x, pos.y);
+
+      selectedIndex = idx;
+
+      if (idx >= 0) {
+        const layer = layers[idx];
+        dragging = true;
+        dragOffsetX = pos.x - layer.x;
+        dragOffsetY = pos.y - layer.y;
+        canvas.setPointerCapture(e.pointerId);
+      }
+
+      updateUI();
+    });
+
+    canvas.addEventListener("pointermove", (e) => {
+      if (!dragging || selectedIndex < 0) return;
+
+      e.preventDefault();
+
+      const pos = pointerPos(e);
+      const layer = getSelected();
+
+      layer.x = pos.x - dragOffsetX;
+      layer.y = pos.y - dragOffsetY;
+
+      draw();
+    });
+
+    canvas.addEventListener("pointerup", () => {
+      dragging = false;
+    });
+
+    canvas.addEventListener("pointercancel", () => {
+      dragging = false;
+    });
+
+    partInput.addEventListener("change", async () => {
+      await loadFiles(partInput.files);
+      partInput.value = "";
+    });
+
+    scaleInput.addEventListener("input", () => {
+      const layer = getSelected();
+      if (!layer) return;
+
+      layer.scale = Math.max(0.1, parseInt(scaleInput.value, 10) / 100);
+      draw();
+    });
+
+    rotateInput.addEventListener("input", () => {
+      const layer = getSelected();
+      if (!layer) return;
+
+      layer.rotation = parseInt(rotateInput.value, 10) || 0;
+      draw();
+    });
+
+    centerBtn.addEventListener("click", () => {
+      const layer = getSelected();
+      if (!layer) return;
+
+      layer.x = canvas.width / 2;
+      layer.y = canvas.height / 2;
+      draw();
+    });
+
+    deleteBtn.addEventListener("click", () => {
+      if (selectedIndex < 0) return;
+
+      const removed = layers.splice(selectedIndex, 1)[0];
+      if (removed?.url) URL.revokeObjectURL(removed.url);
+
+      selectedIndex = layers.length ? Math.min(selectedIndex, layers.length - 1) : -1;
+      updateUI();
+      setStatus("Layer deleted.");
+    });
+
+    clearBtn.addEventListener("click", () => {
+      layers.forEach((layer) => layer.url && URL.revokeObjectURL(layer.url));
+      layers = [];
+      selectedIndex = -1;
+      updateUI();
+      setStatus("Cleared.");
+    });
+
+    flipBtn.addEventListener("click", () => {
+      const layer = getSelected();
+      if (!layer) return;
+
+      layer.flip = !layer.flip;
+      draw();
+    });
+
+    resetBtn.addEventListener("click", () => {
+      const layer = getSelected();
+      if (!layer) return;
+
+      layer.scale = 1;
+      layer.rotation = 0;
+      layer.flip = false;
+      syncControls();
+      draw();
+    });
+
+    frontBtn.addEventListener("click", () => {
+      if (selectedIndex < 0) return;
+
+      const [layer] = layers.splice(selectedIndex, 1);
+      layers.push(layer);
+      selectedIndex = layers.length - 1;
+      updateUI();
+    });
+
+    backBtn.addEventListener("click", () => {
+      if (selectedIndex < 0) return;
+
+      const [layer] = layers.splice(selectedIndex, 1);
+      layers.unshift(layer);
+      selectedIndex = 0;
+      updateUI();
+    });
+
+    exportBtn.addEventListener("click", () => {
+      const exportCanvas = document.createElement("canvas");
+      exportCanvas.width = canvas.width;
+      exportCanvas.height = canvas.height;
+      const exportCtx = exportCanvas.getContext("2d");
+
+      layers.forEach((layer) => {
+        exportCtx.save();
+        exportCtx.translate(layer.x, layer.y);
+        exportCtx.rotate((layer.rotation * Math.PI) / 180);
+        exportCtx.scale(layer.flip ? -layer.scale : layer.scale, layer.scale);
+        exportCtx.drawImage(layer.img, -layer.w / 2, -layer.h / 2, layer.w, layer.h);
+        exportCtx.restore();
+      });
+
+      const url = exportCanvas.toDataURL("image/png");
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "voltan-character-pose.png";
+      a.click();
+
+      setStatus("PNG exported.");
+    });
+
+    updateUI();
+    setStatus("Ready.");
+  </script>
+</body>
+</html>
