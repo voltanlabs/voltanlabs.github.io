@@ -24,7 +24,7 @@
       <a href="./index.html" class="text-sm text-fuchsia-300 hover:underline">← Back to Character Forge</a>
       <h1 class="text-3xl font-semibold mt-2">Draw Parts</h1>
       <p class="text-sm text-zinc-400 mt-2">
-        Draw transparent PNG sprite parts for Character Forge 2D.
+        Draw transparent PNG sprite parts with layers, references, brush, eraser, undo, and flattened export.
       </p>
       <div id="statusText" class="text-sm text-zinc-400 mt-2">Ready.</div>
     </div>
@@ -49,8 +49,12 @@
             Undo
           </button>
 
-          <button id="clearBtn" class="px-4 py-2 rounded-xl border border-red-400/30 bg-red-400/10 text-red-200 hover:bg-red-400/20">
-            Clear
+          <button id="clearLayerBtn" class="px-4 py-2 rounded-xl border border-red-400/30 bg-red-400/10 text-red-200 hover:bg-red-400/20">
+            Clear Layer
+          </button>
+
+          <button id="clearAllBtn" class="px-4 py-2 rounded-xl border border-red-400/30 bg-red-400/10 text-red-200 hover:bg-red-400/20">
+            Clear All
           </button>
 
           <label class="px-4 py-2 rounded-xl bg-sky-400 text-zinc-950 font-semibold cursor-pointer">
@@ -98,6 +102,36 @@
         </section>
 
         <section class="border-t border-white/10 pt-4">
+          <h3 class="font-semibold mb-3">Layers</h3>
+
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <button id="addLayerBtn" class="px-3 py-2 rounded-xl bg-fuchsia-400 text-zinc-950 font-semibold text-sm">
+              Add
+            </button>
+            <button id="duplicateLayerBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm">
+              Duplicate
+            </button>
+            <button id="mergeDownBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm">
+              Merge Down
+            </button>
+            <button id="deleteLayerBtn" class="px-3 py-2 rounded-xl border border-red-400/30 bg-red-400/10 text-red-200 text-sm">
+              Delete
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <button id="moveLayerUpBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm">
+              Up
+            </button>
+            <button id="moveLayerDownBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm">
+              Down
+            </button>
+          </div>
+
+          <div id="layerList" class="space-y-2 max-h-64 overflow-auto"></div>
+        </section>
+
+        <section class="border-t border-white/10 pt-4">
           <h3 class="font-semibold mb-3">Canvas</h3>
 
           <div class="grid grid-cols-2 gap-2">
@@ -119,13 +153,6 @@
             <input id="referenceOpacity" type="range" min="5" max="100" value="35" class="w-full mt-1" />
           </label>
         </section>
-
-        <section class="border-t border-white/10 pt-4">
-          <h3 class="font-semibold mb-2">Tips</h3>
-          <p class="text-xs text-zinc-400 leading-relaxed">
-            Exported PNGs keep a transparent background. Import them into Character Forge 2D as movable parts.
-          </p>
-        </section>
       </aside>
     </div>
   </main>
@@ -138,7 +165,6 @@
     const ctx = canvas.getContext("2d");
 
     const statusText = document.getElementById("statusText");
-
     const colorInput = document.getElementById("colorInput");
     const sizeInput = document.getElementById("sizeInput");
     const opacityInput = document.getElementById("opacityInput");
@@ -147,10 +173,10 @@
 
     const brushBtn = document.getElementById("brushBtn");
     const eraserBtn = document.getElementById("eraserBtn");
-
     const exportBtn = document.getElementById("exportBtn");
     const undoBtn = document.getElementById("undoBtn");
-    const clearBtn = document.getElementById("clearBtn");
+    const clearLayerBtn = document.getElementById("clearLayerBtn");
+    const clearAllBtn = document.getElementById("clearAllBtn");
 
     const referenceInput = document.getElementById("referenceInput");
     const removeReferenceBtn = document.getElementById("removeReferenceBtn");
@@ -160,6 +186,14 @@
     const smallBtn = document.getElementById("smallBtn");
     const largeBtn = document.getElementById("largeBtn");
 
+    const addLayerBtn = document.getElementById("addLayerBtn");
+    const duplicateLayerBtn = document.getElementById("duplicateLayerBtn");
+    const mergeDownBtn = document.getElementById("mergeDownBtn");
+    const deleteLayerBtn = document.getElementById("deleteLayerBtn");
+    const moveLayerUpBtn = document.getElementById("moveLayerUpBtn");
+    const moveLayerDownBtn = document.getElementById("moveLayerDownBtn");
+    const layerList = document.getElementById("layerList");
+
     let drawing = false;
     let lastX = 0;
     let lastY = 0;
@@ -167,33 +201,109 @@
     let undoStack = [];
     let referenceImg = null;
 
+    let layers = [];
+    let selectedLayerIndex = 0;
+    let layerCounter = 1;
+
     const setStatus = (msg) => statusText.textContent = msg;
 
+    const makeLayer = (name = null) => {
+      const layerCanvas = document.createElement("canvas");
+      layerCanvas.width = canvas.width;
+      layerCanvas.height = canvas.height;
+
+      return {
+        name: name || `Layer ${layerCounter++}`,
+        canvas: layerCanvas,
+        visible: true,
+      };
+    };
+
+    const getActiveLayer = () => layers[selectedLayerIndex] || null;
+
+    const compositeLayers = (targetCtx, includeReference = true) => {
+      targetCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (includeReference && referenceImg && showReferenceToggle.checked) {
+        const alpha = Math.max(0.05, Math.min(1, Number(referenceOpacity.value) / 100));
+
+        targetCtx.save();
+        targetCtx.globalAlpha = alpha;
+
+        const scale = Math.min(canvas.width / referenceImg.width, canvas.height / referenceImg.height);
+        const w = referenceImg.width * scale;
+        const h = referenceImg.height * scale;
+        const x = (canvas.width - w) / 2;
+        const y = (canvas.height - h) / 2;
+
+        targetCtx.drawImage(referenceImg, x, y, w, h);
+        targetCtx.restore();
+      }
+
+      layers.forEach((layer) => {
+        if (layer.visible) targetCtx.drawImage(layer.canvas, 0, 0);
+      });
+    };
+
+    const redraw = () => {
+      compositeLayers(ctx, true);
+    };
+
+    const renderLayerList = () => {
+      layerList.innerHTML = "";
+
+      [...layers].reverse().forEach((layer, reverseIdx) => {
+        const idx = layers.length - 1 - reverseIdx;
+
+        const row = document.createElement("div");
+        row.className =
+          "rounded-xl border px-2 py-2 flex items-center gap-2 " +
+          (idx === selectedLayerIndex
+            ? "border-fuchsia-400 bg-fuchsia-400/10"
+            : "border-white/10 bg-zinc-950");
+
+        const select = document.createElement("button");
+        select.type = "button";
+        select.className = "flex-1 text-left text-xs text-zinc-200 truncate";
+        select.textContent = layer.name;
+        select.addEventListener("click", () => {
+          selectedLayerIndex = idx;
+          renderLayerList();
+          redraw();
+          setStatus(`${layer.name} selected.`);
+        });
+
+        const vis = document.createElement("button");
+        vis.type = "button";
+        vis.className = "text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/5";
+        vis.textContent = layer.visible ? "👁" : "—";
+        vis.title = "Toggle visibility";
+        vis.addEventListener("click", () => {
+          layer.visible = !layer.visible;
+          renderLayerList();
+          redraw();
+        });
+
+        row.appendChild(select);
+        row.appendChild(vis);
+        layerList.appendChild(row);
+      });
+    };
+
     const saveUndo = () => {
+      const active = getActiveLayer();
+      if (!active) return;
+
       try {
-        undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-        if (undoStack.length > 20) undoStack.shift();
+        undoStack.push({
+          layerIndex: selectedLayerIndex,
+          imageData: active.canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height),
+        });
+
+        if (undoStack.length > 30) undoStack.shift();
       } catch (err) {
         console.warn("Undo save failed", err);
       }
-    };
-
-    const redrawReference = () => {
-      if (!referenceImg || !showReferenceToggle.checked) return;
-
-      const alpha = Math.max(0.05, Math.min(1, Number(referenceOpacity.value) / 100));
-
-      ctx.save();
-      ctx.globalAlpha = alpha;
-
-      const scale = Math.min(canvas.width / referenceImg.width, canvas.height / referenceImg.height);
-      const w = referenceImg.width * scale;
-      const h = referenceImg.height * scale;
-      const x = (canvas.width - w) / 2;
-      const y = (canvas.height - h) / 2;
-
-      ctx.drawImage(referenceImg, x, y, w, h);
-      ctx.restore();
     };
 
     const pointerPos = (e) => {
@@ -205,27 +315,32 @@
     };
 
     const drawLine = (x1, y1, x2, y2) => {
-      ctx.save();
+      const active = getActiveLayer();
+      if (!active) return;
 
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
-      ctx.lineWidth = Number(sizeInput.value);
-      ctx.globalAlpha = Number(opacityInput.value) / 100;
+      const layerCtx = active.canvas.getContext("2d");
+
+      layerCtx.save();
+      layerCtx.lineCap = "round";
+      layerCtx.lineJoin = "round";
+      layerCtx.lineWidth = Number(sizeInput.value);
+      layerCtx.globalAlpha = Number(opacityInput.value) / 100;
 
       if (tool === "eraser") {
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.strokeStyle = "rgba(0,0,0,1)";
+        layerCtx.globalCompositeOperation = "destination-out";
+        layerCtx.strokeStyle = "rgba(0,0,0,1)";
       } else {
-        ctx.globalCompositeOperation = "source-over";
-        ctx.strokeStyle = colorInput.value;
+        layerCtx.globalCompositeOperation = "source-over";
+        layerCtx.strokeStyle = colorInput.value;
       }
 
-      ctx.beginPath();
-      ctx.moveTo(x1, y1);
-      ctx.lineTo(x2, y2);
-      ctx.stroke();
+      layerCtx.beginPath();
+      layerCtx.moveTo(x1, y1);
+      layerCtx.lineTo(x2, y2);
+      layerCtx.stroke();
+      layerCtx.restore();
 
-      ctx.restore();
+      redraw();
     };
 
     canvas.addEventListener("pointerdown", (e) => {
@@ -253,13 +368,8 @@
       lastY = pos.y;
     });
 
-    canvas.addEventListener("pointerup", () => {
-      drawing = false;
-    });
-
-    canvas.addEventListener("pointercancel", () => {
-      drawing = false;
-    });
+    canvas.addEventListener("pointerup", () => drawing = false);
+    canvas.addEventListener("pointercancel", () => drawing = false);
 
     brushBtn.addEventListener("click", () => {
       tool = "brush";
@@ -275,30 +385,43 @@
       setStatus("Eraser selected.");
     });
 
-    sizeInput.addEventListener("input", () => {
-      sizeText.textContent = sizeInput.value;
-    });
-
-    opacityInput.addEventListener("input", () => {
-      opacityText.textContent = opacityInput.value;
-    });
+    sizeInput.addEventListener("input", () => sizeText.textContent = sizeInput.value);
+    opacityInput.addEventListener("input", () => opacityText.textContent = opacityInput.value);
 
     undoBtn.addEventListener("click", () => {
       const last = undoStack.pop();
-      if (!last) {
+
+      if (!last || !layers[last.layerIndex]) {
         setStatus("Nothing to undo.");
         return;
       }
 
-      ctx.putImageData(last, 0, 0);
+      const layerCtx = layers[last.layerIndex].canvas.getContext("2d");
+      layerCtx.putImageData(last.imageData, 0, 0);
+
+      selectedLayerIndex = last.layerIndex;
+      renderLayerList();
+      redraw();
       setStatus("Undo.");
     });
 
-    clearBtn.addEventListener("click", () => {
+    clearLayerBtn.addEventListener("click", () => {
+      const active = getActiveLayer();
+      if (!active) return;
+
       saveUndo();
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      redrawReference();
-      setStatus("Canvas cleared.");
+      active.canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+      redraw();
+      setStatus("Layer cleared.");
+    });
+
+    clearAllBtn.addEventListener("click", () => {
+      saveUndo();
+      layers.forEach((layer) => {
+        layer.canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+      });
+      redraw();
+      setStatus("All layers cleared.");
     });
 
     exportBtn.addEventListener("click", () => {
@@ -307,14 +430,14 @@
       exportCanvas.height = canvas.height;
       const exportCtx = exportCanvas.getContext("2d");
 
-      exportCtx.drawImage(canvas, 0, 0);
+      compositeLayers(exportCtx, false);
 
       const a = document.createElement("a");
       a.href = exportCanvas.toDataURL("image/png");
       a.download = "databyte-part.png";
       a.click();
 
-      setStatus("PNG exported.");
+      setStatus("Flattened transparent PNG exported.");
     });
 
     referenceInput.addEventListener("change", () => {
@@ -326,8 +449,8 @@
 
       img.onload = () => {
         referenceImg = img;
-        redrawReference();
         URL.revokeObjectURL(url);
+        redraw();
         setStatus("Reference imported.");
       };
 
@@ -342,36 +465,123 @@
 
     removeReferenceBtn.addEventListener("click", () => {
       referenceImg = null;
+      redraw();
       setStatus("Reference removed.");
     });
 
-    showReferenceToggle.addEventListener("change", () => {
-      setStatus("Reference visibility changed.");
+    showReferenceToggle.addEventListener("change", redraw);
+    referenceOpacity.addEventListener("input", redraw);
+
+    addLayerBtn.addEventListener("click", () => {
+      layers.push(makeLayer());
+      selectedLayerIndex = layers.length - 1;
+      renderLayerList();
+      redraw();
+      setStatus("Layer added.");
     });
 
-    referenceOpacity.addEventListener("input", () => {
-      setStatus("Reference opacity changed.");
+    duplicateLayerBtn.addEventListener("click", () => {
+      const active = getActiveLayer();
+      if (!active) return;
+
+      const copy = makeLayer(`${active.name} copy`);
+      copy.canvas.getContext("2d").drawImage(active.canvas, 0, 0);
+
+      layers.splice(selectedLayerIndex + 1, 0, copy);
+      selectedLayerIndex += 1;
+
+      renderLayerList();
+      redraw();
+      setStatus("Layer duplicated.");
+    });
+
+    deleteLayerBtn.addEventListener("click", () => {
+      if (layers.length <= 1) {
+        setStatus("Keep at least one layer.");
+        return;
+      }
+
+      layers.splice(selectedLayerIndex, 1);
+      selectedLayerIndex = Math.min(selectedLayerIndex, layers.length - 1);
+
+      renderLayerList();
+      redraw();
+      setStatus("Layer deleted.");
+    });
+
+    mergeDownBtn.addEventListener("click", () => {
+      if (selectedLayerIndex <= 0) {
+        setStatus("No layer below to merge into.");
+        return;
+      }
+
+      const active = layers[selectedLayerIndex];
+      const below = layers[selectedLayerIndex - 1];
+
+      below.canvas.getContext("2d").drawImage(active.canvas, 0, 0);
+      layers.splice(selectedLayerIndex, 1);
+      selectedLayerIndex -= 1;
+
+      renderLayerList();
+      redraw();
+      setStatus("Layer merged down.");
+    });
+
+    moveLayerUpBtn.addEventListener("click", () => {
+      if (selectedLayerIndex >= layers.length - 1) return;
+
+      const tmp = layers[selectedLayerIndex];
+      layers[selectedLayerIndex] = layers[selectedLayerIndex + 1];
+      layers[selectedLayerIndex + 1] = tmp;
+      selectedLayerIndex += 1;
+
+      renderLayerList();
+      redraw();
+    });
+
+    moveLayerDownBtn.addEventListener("click", () => {
+      if (selectedLayerIndex <= 0) return;
+
+      const tmp = layers[selectedLayerIndex];
+      layers[selectedLayerIndex] = layers[selectedLayerIndex - 1];
+      layers[selectedLayerIndex - 1] = tmp;
+      selectedLayerIndex -= 1;
+
+      renderLayerList();
+      redraw();
     });
 
     const resizeCanvas = (size) => {
-      saveUndo();
-      const old = document.createElement("canvas");
-      old.width = canvas.width;
-      old.height = canvas.height;
-      old.getContext("2d").drawImage(canvas, 0, 0);
+      const oldLayers = layers.map((layer) => {
+        const old = document.createElement("canvas");
+        old.width = layer.canvas.width;
+        old.height = layer.canvas.height;
+        old.getContext("2d").drawImage(layer.canvas, 0, 0);
+        return { ...layer, oldCanvas: old };
+      });
 
       canvas.width = size;
       canvas.height = size;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(old, 0, 0, size, size);
+      layers = oldLayers.map((layer) => {
+        const resized = makeLayer(layer.name);
+        resized.visible = layer.visible;
+        resized.canvas.getContext("2d").drawImage(layer.oldCanvas, 0, 0, size, size);
+        return resized;
+      });
 
+      renderLayerList();
+      redraw();
       setStatus(`Canvas set to ${size}×${size}.`);
     };
 
     smallBtn.addEventListener("click", () => resizeCanvas(512));
     largeBtn.addEventListener("click", () => resizeCanvas(900));
 
+    layers.push(makeLayer("Line Art"));
+    selectedLayerIndex = 0;
+    renderLayerList();
+    redraw();
     setStatus("Ready.");
   </script>
 </body>
