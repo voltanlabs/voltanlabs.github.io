@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Character Forge — VoltanLabs</title>
-  <meta name="description" content="Character Forge hub for 2D sprite building and 3D character assembly." />
+  <meta name="description" content="Character Forge hub for drawing sprite parts, building 2D sprites, and 3D character assembly." />
 
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -22,20 +22,42 @@
       </div>
 
       <p class="text-sm sm:text-base text-zinc-400 mt-3 max-w-3xl">
-        Build characters, sprites, poses, and modular assets for VoltanLabs projects.
-        Start with the 2D forge for PNG layer building, or enter the 3D forge for GLB character assembly.
+        Create sprite parts, assemble characters, save poses, export animation frames, and experiment with modular character workflows.
       </p>
     </section>
 
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-5">
-      <!-- 2D Forge Card -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <a href="./draw.html"
+         class="group rounded-3xl border border-fuchsia-400/30 bg-gradient-to-br from-fuchsia-400/10 to-zinc-900 p-6 hover:border-fuchsia-300 transition shadow-lg shadow-black/30">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-semibold text-fuchsia-200">Draw Parts</h2>
+            <p class="text-sm text-zinc-400 mt-2">
+              Draw transparent PNG parts like heads, arms, weapons, effects, and accessories.
+            </p>
+          </div>
+          <div class="text-4xl">✏️</div>
+        </div>
+
+        <div class="mt-5 grid grid-cols-2 gap-2 text-xs text-zinc-300">
+          <div class="rounded-xl bg-black/30 border border-white/10 px-3 py-2">Brush</div>
+          <div class="rounded-xl bg-black/30 border border-white/10 px-3 py-2">Eraser</div>
+          <div class="rounded-xl bg-black/30 border border-white/10 px-3 py-2">Undo</div>
+          <div class="rounded-xl bg-black/30 border border-white/10 px-3 py-2">PNG export</div>
+        </div>
+
+        <div class="mt-6 inline-flex px-4 py-2 rounded-xl bg-fuchsia-400 text-zinc-950 font-semibold group-hover:opacity-90">
+          Open Draw Tool
+        </div>
+      </a>
+
       <a href="./2d.html"
          class="group rounded-3xl border border-emerald-400/30 bg-gradient-to-br from-emerald-400/10 to-zinc-900 p-6 hover:border-emerald-300 transition shadow-lg shadow-black/30">
         <div class="flex items-center justify-between gap-4">
           <div>
             <h2 class="text-2xl font-semibold text-emerald-200">Character Forge 2D</h2>
             <p class="text-sm text-zinc-400 mt-2">
-              Upload PNG parts as layers, move them, resize them, rotate them, and export final poses.
+              Upload PNG parts as layers, move them, save poses, onion-skin, and export frames.
             </p>
           </div>
           <div class="text-4xl">🧩</div>
@@ -43,9 +65,9 @@
 
         <div class="mt-5 grid grid-cols-2 gap-2 text-xs text-zinc-300">
           <div class="rounded-xl bg-black/30 border border-white/10 px-3 py-2">PNG layers</div>
-          <div class="rounded-xl bg-black/30 border border-white/10 px-3 py-2">Move parts</div>
+          <div class="rounded-xl bg-black/30 border border-white/10 px-3 py-2">Pose frames</div>
+          <div class="rounded-xl bg-black/30 border border-white/10 px-3 py-2">Onion skin</div>
           <div class="rounded-xl bg-black/30 border border-white/10 px-3 py-2">Export PNG</div>
-          <div class="rounded-xl bg-black/30 border border-white/10 px-3 py-2">Sprite poses</div>
         </div>
 
         <div class="mt-6 inline-flex px-4 py-2 rounded-xl bg-emerald-400 text-zinc-950 font-semibold group-hover:opacity-90">
@@ -53,7 +75,6 @@
         </div>
       </a>
 
-      <!-- 3D Forge Card -->
       <a href="./3d.html"
          class="group rounded-3xl border border-sky-400/30 bg-gradient-to-br from-sky-400/10 to-zinc-900 p-6 hover:border-sky-300 transition shadow-lg shadow-black/30">
         <div class="flex items-center justify-between gap-4">
@@ -82,14 +103,13 @@
     <section class="mt-8 rounded-3xl border border-white/10 bg-black/30 p-5">
       <h3 class="text-lg font-semibold">Recommended workflow</h3>
       <p class="text-sm text-zinc-400 mt-2">
-        Use Character Forge 2D to build pose frames, export PNGs, then bring those PNGs into Gif Forge to animate them.
-        The 3D Forge can stay experimental while the 2D Forge becomes the practical sprite creation tool.
+        Draw custom transparent parts in Draw Parts, assemble and pose them in Character Forge 2D,
+        then export pose frames into Gif Forge to create animations for Databyte Sprites.
       </p>
     </section>
   </main>
 
   <div id="vl-footer"></div>
-
   <script src="/assets/includes.js"></script>
 </body>
 </html>
