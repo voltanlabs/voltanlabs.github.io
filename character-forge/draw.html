@@ -1,1 +1,378 @@
-hu
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Draw Parts — VoltanLabs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    canvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      touch-action: none;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-zinc-950 text-zinc-100">
+  <div id="vl-header"></div>
+
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <div class="mb-5">
+      <a href="./index.html" class="text-sm text-fuchsia-300 hover:underline">← Back to Character Forge</a>
+      <h1 class="text-3xl font-semibold mt-2">Draw Parts</h1>
+      <p class="text-sm text-zinc-400 mt-2">
+        Draw transparent PNG sprite parts for Character Forge 2D.
+      </p>
+      <div id="statusText" class="text-sm text-zinc-400 mt-2">Ready.</div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+      <section class="lg:col-span-3 rounded-2xl border border-white/10 bg-black/30 p-4">
+        <div class="rounded-2xl border border-white/10 bg-zinc-900 overflow-auto">
+          <canvas
+            id="drawCanvas"
+            width="900"
+            height="900"
+            class="mx-auto w-full max-w-[900px] rounded-2xl"
+          ></canvas>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mt-4">
+          <button id="exportBtn" class="px-4 py-2 rounded-xl bg-fuchsia-400 text-zinc-950 font-semibold">
+            Export PNG
+          </button>
+
+          <button id="undoBtn" class="px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
+            Undo
+          </button>
+
+          <button id="clearBtn" class="px-4 py-2 rounded-xl border border-red-400/30 bg-red-400/10 text-red-200 hover:bg-red-400/20">
+            Clear
+          </button>
+
+          <label class="px-4 py-2 rounded-xl bg-sky-400 text-zinc-950 font-semibold cursor-pointer">
+            Import Reference
+            <input id="referenceInput" type="file" accept="image/*" class="hidden" />
+          </label>
+
+          <button id="removeReferenceBtn" class="px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
+            Remove Reference
+          </button>
+        </div>
+      </section>
+
+      <aside class="lg:col-span-1 rounded-2xl border border-white/10 bg-black/30 p-4 space-y-5">
+        <section>
+          <h2 class="font-semibold mb-3">Brush</h2>
+
+          <div class="space-y-3 text-sm">
+            <label class="block text-zinc-400">
+              Color
+              <input id="colorInput" type="color" value="#38bdf8" class="w-full h-10 mt-1 rounded-xl bg-zinc-950 border border-white/10" />
+            </label>
+
+            <label class="block text-zinc-400">
+              Size
+              <input id="sizeInput" type="range" min="1" max="80" value="12" class="w-full mt-1" />
+              <div class="text-xs text-zinc-500 mt-1"><span id="sizeText">12</span> px</div>
+            </label>
+
+            <label class="block text-zinc-400">
+              Opacity
+              <input id="opacityInput" type="range" min="5" max="100" value="100" class="w-full mt-1" />
+              <div class="text-xs text-zinc-500 mt-1"><span id="opacityText">100</span>%</div>
+            </label>
+
+            <div class="grid grid-cols-2 gap-2">
+              <button id="brushBtn" class="px-3 py-2 rounded-xl bg-fuchsia-400 text-zinc-950 font-semibold">
+                Brush
+              </button>
+              <button id="eraserBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10">
+                Eraser
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="border-t border-white/10 pt-4">
+          <h3 class="font-semibold mb-3">Canvas</h3>
+
+          <div class="grid grid-cols-2 gap-2">
+            <button id="smallBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm">
+              512
+            </button>
+            <button id="largeBtn" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm">
+              900
+            </button>
+          </div>
+
+          <label class="flex items-center justify-between gap-2 text-xs text-zinc-300 rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 mt-3">
+            <span>Show Reference</span>
+            <input id="showReferenceToggle" type="checkbox" checked class="accent-fuchsia-400" />
+          </label>
+
+          <label class="block text-xs text-zinc-400 mt-3">
+            Reference Opacity
+            <input id="referenceOpacity" type="range" min="5" max="100" value="35" class="w-full mt-1" />
+          </label>
+        </section>
+
+        <section class="border-t border-white/10 pt-4">
+          <h3 class="font-semibold mb-2">Tips</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Exported PNGs keep a transparent background. Import them into Character Forge 2D as movable parts.
+          </p>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <div id="vl-footer"></div>
+  <script src="/assets/includes.js"></script>
+
+  <script>
+    const canvas = document.getElementById("drawCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const statusText = document.getElementById("statusText");
+
+    const colorInput = document.getElementById("colorInput");
+    const sizeInput = document.getElementById("sizeInput");
+    const opacityInput = document.getElementById("opacityInput");
+    const sizeText = document.getElementById("sizeText");
+    const opacityText = document.getElementById("opacityText");
+
+    const brushBtn = document.getElementById("brushBtn");
+    const eraserBtn = document.getElementById("eraserBtn");
+
+    const exportBtn = document.getElementById("exportBtn");
+    const undoBtn = document.getElementById("undoBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    const referenceInput = document.getElementById("referenceInput");
+    const removeReferenceBtn = document.getElementById("removeReferenceBtn");
+    const showReferenceToggle = document.getElementById("showReferenceToggle");
+    const referenceOpacity = document.getElementById("referenceOpacity");
+
+    const smallBtn = document.getElementById("smallBtn");
+    const largeBtn = document.getElementById("largeBtn");
+
+    let drawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    let tool = "brush";
+    let undoStack = [];
+    let referenceImg = null;
+
+    const setStatus = (msg) => statusText.textContent = msg;
+
+    const saveUndo = () => {
+      try {
+        undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        if (undoStack.length > 20) undoStack.shift();
+      } catch (err) {
+        console.warn("Undo save failed", err);
+      }
+    };
+
+    const redrawReference = () => {
+      if (!referenceImg || !showReferenceToggle.checked) return;
+
+      const alpha = Math.max(0.05, Math.min(1, Number(referenceOpacity.value) / 100));
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+
+      const scale = Math.min(canvas.width / referenceImg.width, canvas.height / referenceImg.height);
+      const w = referenceImg.width * scale;
+      const h = referenceImg.height * scale;
+      const x = (canvas.width - w) / 2;
+      const y = (canvas.height - h) / 2;
+
+      ctx.drawImage(referenceImg, x, y, w, h);
+      ctx.restore();
+    };
+
+    const pointerPos = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (e.clientX - rect.left) * (canvas.width / rect.width),
+        y: (e.clientY - rect.top) * (canvas.height / rect.height),
+      };
+    };
+
+    const drawLine = (x1, y1, x2, y2) => {
+      ctx.save();
+
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.lineWidth = Number(sizeInput.value);
+      ctx.globalAlpha = Number(opacityInput.value) / 100;
+
+      if (tool === "eraser") {
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.strokeStyle = "rgba(0,0,0,1)";
+      } else {
+        ctx.globalCompositeOperation = "source-over";
+        ctx.strokeStyle = colorInput.value;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+
+      ctx.restore();
+    };
+
+    canvas.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      const pos = pointerPos(e);
+
+      saveUndo();
+
+      drawing = true;
+      lastX = pos.x;
+      lastY = pos.y;
+
+      canvas.setPointerCapture(e.pointerId);
+      drawLine(lastX, lastY, pos.x + 0.1, pos.y + 0.1);
+    });
+
+    canvas.addEventListener("pointermove", (e) => {
+      if (!drawing) return;
+      e.preventDefault();
+
+      const pos = pointerPos(e);
+      drawLine(lastX, lastY, pos.x, pos.y);
+
+      lastX = pos.x;
+      lastY = pos.y;
+    });
+
+    canvas.addEventListener("pointerup", () => {
+      drawing = false;
+    });
+
+    canvas.addEventListener("pointercancel", () => {
+      drawing = false;
+    });
+
+    brushBtn.addEventListener("click", () => {
+      tool = "brush";
+      brushBtn.className = "px-3 py-2 rounded-xl bg-fuchsia-400 text-zinc-950 font-semibold";
+      eraserBtn.className = "px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10";
+      setStatus("Brush selected.");
+    });
+
+    eraserBtn.addEventListener("click", () => {
+      tool = "eraser";
+      eraserBtn.className = "px-3 py-2 rounded-xl bg-fuchsia-400 text-zinc-950 font-semibold";
+      brushBtn.className = "px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10";
+      setStatus("Eraser selected.");
+    });
+
+    sizeInput.addEventListener("input", () => {
+      sizeText.textContent = sizeInput.value;
+    });
+
+    opacityInput.addEventListener("input", () => {
+      opacityText.textContent = opacityInput.value;
+    });
+
+    undoBtn.addEventListener("click", () => {
+      const last = undoStack.pop();
+      if (!last) {
+        setStatus("Nothing to undo.");
+        return;
+      }
+
+      ctx.putImageData(last, 0, 0);
+      setStatus("Undo.");
+    });
+
+    clearBtn.addEventListener("click", () => {
+      saveUndo();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      redrawReference();
+      setStatus("Canvas cleared.");
+    });
+
+    exportBtn.addEventListener("click", () => {
+      const exportCanvas = document.createElement("canvas");
+      exportCanvas.width = canvas.width;
+      exportCanvas.height = canvas.height;
+      const exportCtx = exportCanvas.getContext("2d");
+
+      exportCtx.drawImage(canvas, 0, 0);
+
+      const a = document.createElement("a");
+      a.href = exportCanvas.toDataURL("image/png");
+      a.download = "databyte-part.png";
+      a.click();
+
+      setStatus("PNG exported.");
+    });
+
+    referenceInput.addEventListener("change", () => {
+      const file = referenceInput.files?.[0];
+      if (!file) return;
+
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+
+      img.onload = () => {
+        referenceImg = img;
+        redrawReference();
+        URL.revokeObjectURL(url);
+        setStatus("Reference imported.");
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        setStatus("Reference failed to load.");
+      };
+
+      img.src = url;
+      referenceInput.value = "";
+    });
+
+    removeReferenceBtn.addEventListener("click", () => {
+      referenceImg = null;
+      setStatus("Reference removed.");
+    });
+
+    showReferenceToggle.addEventListener("change", () => {
+      setStatus("Reference visibility changed.");
+    });
+
+    referenceOpacity.addEventListener("input", () => {
+      setStatus("Reference opacity changed.");
+    });
+
+    const resizeCanvas = (size) => {
+      saveUndo();
+      const old = document.createElement("canvas");
+      old.width = canvas.width;
+      old.height = canvas.height;
+      old.getContext("2d").drawImage(canvas, 0, 0);
+
+      canvas.width = size;
+      canvas.height = size;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(old, 0, 0, size, size);
+
+      setStatus(`Canvas set to ${size}×${size}.`);
+    };
+
+    smallBtn.addEventListener("click", () => resizeCanvas(512));
+    largeBtn.addEventListener("click", () => resizeCanvas(900));
+
+    setStatus("Ready.");
+  </script>
+</body>
+</html>
