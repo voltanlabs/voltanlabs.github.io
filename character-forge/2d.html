@@ -163,6 +163,7 @@
     let selectedIndex = -1;
     let selectedPoseIndex = -1;
     let ghostPoseIndex = -1;
+    let ghostRenderableLayers = [];
     let dragging = false;
     let dragOffsetX = 0;
     let dragOffsetY = 0;
@@ -202,19 +203,17 @@
       a.click();
     };
 
-    const getLayerSnapshot = () => {
-      return layers.map((layer) => ({
-        name: layer.name,
-        src: layer.src,
-        x: layer.x,
-        y: layer.y,
-        w: layer.w,
-        h: layer.h,
-        scale: layer.scale,
-        rotation: layer.rotation,
-        flip: layer.flip,
-      }));
-    };
+    const getLayerSnapshot = () => layers.map((layer) => ({
+      name: layer.name,
+      src: layer.src,
+      x: layer.x,
+      y: layer.y,
+      w: layer.w,
+      h: layer.h,
+      scale: layer.scale,
+      rotation: layer.rotation,
+      flip: layer.flip,
+    }));
 
     const makeRenderableLayersFromSnapshot = async (snapshot) => {
       const restored = [];
@@ -272,16 +271,16 @@
       });
     };
 
-    const drawSnapshotGhost = async () => {
-      if (!onionToggle.checked || ghostPoseIndex < 0 || !poses[ghostPoseIndex]) return;
+    const drawSnapshotGhost = () => {
+      if (!onionToggle.checked || ghostPoseIndex < 0 || !ghostRenderableLayers.length) return;
 
-      const ghostLayers = await makeRenderableLayersFromSnapshot(poses[ghostPoseIndex].layers);
       const alpha = Math.max(0.05, Math.min(0.7, Number(onionOpacity.value) / 100));
 
       ctx.save();
       ctx.globalAlpha = alpha;
       ctx.filter = "sepia(1) saturate(8) hue-rotate(300deg) brightness(1.4)";
-      ghostLayers.forEach((layer) => {
+
+      ghostRenderableLayers.forEach((layer) => {
         ctx.save();
         ctx.translate(layer.x, layer.y);
         ctx.rotate((layer.rotation * Math.PI) / 180);
@@ -289,17 +288,15 @@
         ctx.drawImage(layer.img, -layer.w / 2, -layer.h / 2, layer.w, layer.h);
         ctx.restore();
       });
+
       ctx.restore();
     };
 
-    let drawToken = 0;
-    const draw = async () => {
-      const token = ++drawToken;
+    const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       if (onionToggle.checked && ghostPoseIndex >= 0) {
-        await drawSnapshotGhost();
-        if (token !== drawToken) return;
+        drawSnapshotGhost();
       }
 
       drawLayersToContext(ctx, layers, true);
@@ -410,6 +407,7 @@
           poses.splice(idx, 1);
           selectedPoseIndex = -1;
           ghostPoseIndex = -1;
+          ghostRenderableLayers = [];
           renderPoseList();
           draw();
           setStatus("Pose deleted.");
@@ -433,8 +431,9 @@
         ghost.type = "button";
         ghost.className = "text-xs px-2 py-1 rounded-lg border border-sky-400/30 bg-sky-400/10 text-sky-200";
         ghost.textContent = "Ghost";
-        ghost.addEventListener("click", () => {
+        ghost.addEventListener("click", async () => {
           ghostPoseIndex = idx;
+          ghostRenderableLayers = await makeRenderableLayersFromSnapshot(poses[ghostPoseIndex].layers);
           onionToggle.checked = true;
           renderPoseList();
           draw();
@@ -516,6 +515,7 @@
           return i;
         }
       }
+
       return -1;
     };
 
@@ -606,7 +606,7 @@
     const saveProject = () => {
       const project = {
         app: "VoltanLabs Character Forge 2D",
-        version: 4,
+        version: 5,
         canvas: { width: canvas.width, height: canvas.height },
         layers: getLayerSnapshot(),
         poses,
@@ -641,6 +641,7 @@
         poses = Array.isArray(project.poses) ? project.poses : [];
         selectedPoseIndex = -1;
         ghostPoseIndex = -1;
+        ghostRenderableLayers = [];
 
         await repairPoseThumbs();
 
@@ -673,6 +674,7 @@
 
     canvas.addEventListener("pointermove", (e) => {
       if (!dragging || selectedIndex < 0) return;
+
       e.preventDefault();
 
       const pos = pointerPos(e);
@@ -741,6 +743,7 @@
       selectedIndex = -1;
       selectedPoseIndex = -1;
       ghostPoseIndex = -1;
+      ghostRenderableLayers = [];
       updateUI();
       setStatus("Cleared.");
     });
