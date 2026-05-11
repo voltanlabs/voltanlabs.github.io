@@ -24,7 +24,7 @@
       <a href="./index.html" class="text-sm text-fuchsia-300 hover:underline">← Back to Character Forge</a>
       <h1 class="text-3xl font-semibold mt-2">Draw Parts</h1>
       <p class="text-sm text-zinc-400 mt-2">
-        Draw transparent PNG sprite parts with layers, references, brush, eraser, undo, and flattened export.
+        Draw transparent PNG sprite parts with layers, opacity, references, brush, eraser, undo, and flattened export.
       </p>
       <div id="statusText" class="text-sm text-zinc-400 mt-2">Ready.</div>
     </div>
@@ -85,7 +85,7 @@
             </label>
 
             <label class="block text-zinc-400">
-              Opacity
+              Brush Opacity
               <input id="opacityInput" type="range" min="5" max="100" value="100" class="w-full mt-1" />
               <div class="text-xs text-zinc-500 mt-1"><span id="opacityText">100</span>%</div>
             </label>
@@ -128,7 +128,7 @@
             </button>
           </div>
 
-          <div id="layerList" class="space-y-2 max-h-64 overflow-auto"></div>
+          <div id="layerList" class="space-y-2 max-h-72 overflow-auto"></div>
         </section>
 
         <section class="border-t border-white/10 pt-4">
@@ -216,6 +216,7 @@
         name: name || `Layer ${layerCounter++}`,
         canvas: layerCanvas,
         visible: true,
+        opacity: 1,
       };
     };
 
@@ -241,7 +242,12 @@
       }
 
       layers.forEach((layer) => {
-        if (layer.visible) targetCtx.drawImage(layer.canvas, 0, 0);
+        if (!layer.visible) return;
+
+        targetCtx.save();
+        targetCtx.globalAlpha = layer.opacity ?? 1;
+        targetCtx.drawImage(layer.canvas, 0, 0);
+        targetCtx.restore();
       });
     };
 
@@ -257,10 +263,13 @@
 
         const row = document.createElement("div");
         row.className =
-          "rounded-xl border px-2 py-2 flex items-center gap-2 " +
+          "rounded-xl border p-2 " +
           (idx === selectedLayerIndex
             ? "border-fuchsia-400 bg-fuchsia-400/10"
             : "border-white/10 bg-zinc-950");
+
+        const top = document.createElement("div");
+        top.className = "flex items-center gap-2";
 
         const select = document.createElement("button");
         select.type = "button";
@@ -284,8 +293,29 @@
           redraw();
         });
 
-        row.appendChild(select);
-        row.appendChild(vis);
+        const opacityLabel = document.createElement("label");
+        opacityLabel.className = "block text-[11px] text-zinc-500 mt-2";
+        opacityLabel.textContent = `Opacity ${Math.round((layer.opacity ?? 1) * 100)}%`;
+
+        const opacitySlider = document.createElement("input");
+        opacitySlider.type = "range";
+        opacitySlider.min = "0";
+        opacitySlider.max = "100";
+        opacitySlider.value = Math.round((layer.opacity ?? 1) * 100);
+        opacitySlider.className = "w-full mt-1 accent-fuchsia-400";
+        opacitySlider.addEventListener("input", (e) => {
+          e.stopPropagation();
+          layer.opacity = Number(opacitySlider.value) / 100;
+          opacityLabel.textContent = `Opacity ${opacitySlider.value}%`;
+          redraw();
+        });
+
+        top.appendChild(select);
+        top.appendChild(vis);
+
+        row.appendChild(top);
+        row.appendChild(opacityLabel);
+        row.appendChild(opacitySlider);
         layerList.appendChild(row);
       });
     };
@@ -485,6 +515,8 @@
       if (!active) return;
 
       const copy = makeLayer(`${active.name} copy`);
+      copy.visible = active.visible;
+      copy.opacity = active.opacity ?? 1;
       copy.canvas.getContext("2d").drawImage(active.canvas, 0, 0);
 
       layers.splice(selectedLayerIndex + 1, 0, copy);
@@ -517,8 +549,13 @@
 
       const active = layers[selectedLayerIndex];
       const below = layers[selectedLayerIndex - 1];
+      const belowCtx = below.canvas.getContext("2d");
 
-      below.canvas.getContext("2d").drawImage(active.canvas, 0, 0);
+      belowCtx.save();
+      belowCtx.globalAlpha = active.opacity ?? 1;
+      belowCtx.drawImage(active.canvas, 0, 0);
+      belowCtx.restore();
+
       layers.splice(selectedLayerIndex, 1);
       selectedLayerIndex -= 1;
 
@@ -566,10 +603,12 @@
       layers = oldLayers.map((layer) => {
         const resized = makeLayer(layer.name);
         resized.visible = layer.visible;
+        resized.opacity = layer.opacity ?? 1;
         resized.canvas.getContext("2d").drawImage(layer.oldCanvas, 0, 0, size, size);
         return resized;
       });
 
+      selectedLayerIndex = Math.min(selectedLayerIndex, layers.length - 1);
       renderLayerList();
       redraw();
       setStatus(`Canvas set to ${size}×${size}.`);
