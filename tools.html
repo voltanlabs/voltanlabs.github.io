@@ -20,6 +20,7 @@
 
   <section class="py-20 text-center bg-gradient-to-b from-[#2C3E50] to-[#1A1A1A]">
     <h1 class="text-5xl font-bold mb-4 text-[#007BFF]">Lab Tools</h1>
+
     <p class="text-lg text-gray-300 max-w-3xl mx-auto px-6">
       Privacy-first creator tools built by VoltanLabs. Most tools run locally in your browser — no uploads, no server dependency.
     </p>
@@ -32,7 +33,7 @@
   </section>
 
   <section class="py-16">
-    <div class="max-w-6xl mx-auto px-6">
+    <div class="max-w-7xl mx-auto px-6">
       <div class="mb-8">
         <h2 class="text-3xl font-bold text-[#FFD700]">Active Creator Tools</h2>
         <p class="text-gray-300 mt-2">
@@ -40,10 +41,13 @@
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+
+        <!-- GIF FORGE -->
         <div class="bg-[#2C3E50] p-6 rounded-2xl shadow-lg">
           <div class="flex items-center gap-3 mb-2">
             <h3 class="text-2xl font-bold text-[#FFD700]">VoltanLabs Gif Forge</h3>
+
             <span class="text-[11px] px-3 py-1 rounded-full bg-emerald-400/10 text-emerald-200 border border-emerald-200/40 tracking-wide uppercase">
               Working
             </span>
@@ -60,15 +64,17 @@
             <span class="px-3 py-1 rounded-full bg-black/20 border border-white/10">Mobile ready</span>
           </div>
 
-          <a href="gif-forge/index.html"
+          <a href="/gif-forge/index.html"
              class="inline-block px-6 py-2 border border-white rounded-xl hover:bg-white hover:text-[#1A1A1A] transition">
             Open Gif Forge
           </a>
         </div>
 
+        <!-- CHARACTER FORGE -->
         <div class="bg-[#2C3E50] p-6 rounded-2xl shadow-lg">
           <div class="flex items-center gap-3 mb-2">
             <h3 class="text-2xl font-bold text-[#FFD700]">Character Forge</h3>
+
             <span class="text-[11px] px-3 py-1 rounded-full bg-emerald-400/10 text-emerald-200 border border-emerald-200/40 tracking-wide uppercase">
               Working
             </span>
@@ -90,6 +96,34 @@
             Open Character Forge
           </a>
         </div>
+
+        <!-- SPRITE SHEET FORGE -->
+        <div class="bg-[#2C3E50] p-6 rounded-2xl shadow-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <h3 class="text-2xl font-bold text-[#FFD700]">Sprite Sheet Forge</h3>
+
+            <span class="text-[11px] px-3 py-1 rounded-full bg-emerald-400/10 text-emerald-200 border border-emerald-200/40 tracking-wide uppercase">
+              Working
+            </span>
+          </div>
+
+          <p class="mb-4 text-gray-200">
+            Build transparent sprite sheets from PNG animation frames with grid layouts, animation previews, and JSON export support.
+          </p>
+
+          <div class="flex flex-wrap gap-2 mb-5 text-xs text-gray-300">
+            <span class="px-3 py-1 rounded-full bg-black/20 border border-white/10">Sprite sheets</span>
+            <span class="px-3 py-1 rounded-full bg-black/20 border border-white/10">Grid layouts</span>
+            <span class="px-3 py-1 rounded-full bg-black/20 border border-white/10">Animation preview</span>
+            <span class="px-3 py-1 rounded-full bg-black/20 border border-white/10">JSON export</span>
+          </div>
+
+          <a href="/sprite-sheet-forge/index.html"
+             class="inline-block px-6 py-2 border border-white rounded-xl hover:bg-white hover:text-[#1A1A1A] transition">
+            Open Sprite Sheet Forge
+          </a>
+        </div>
+
       </div>
     </div>
   </section>
@@ -98,15 +132,18 @@
     <div class="max-w-6xl mx-auto px-6">
       <div class="mb-8">
         <h2 class="text-3xl font-bold text-[#FFD700]">Recommended Workflow</h2>
+
         <p class="text-gray-300 mt-2">
           Start with parts, build poses, then animate the result.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+
         <div class="bg-[#2C3E50] p-5 rounded-2xl border border-white/10">
           <div class="text-4xl mb-3">✏️</div>
           <h3 class="text-xl font-bold text-[#FFD700]">1. Draw Parts</h3>
+
           <p class="text-gray-300 mt-2">
             Create transparent PNG parts like heads, arms, effects, weapons, and accessories.
           </p>
@@ -115,6 +152,7 @@
         <div class="bg-[#2C3E50] p-5 rounded-2xl border border-white/10">
           <div class="text-4xl mb-3">🧩</div>
           <h3 class="text-xl font-bold text-[#FFD700]">2. Build Poses</h3>
+
           <p class="text-gray-300 mt-2">
             Assemble parts in Character Forge 2D, save poses, and use onion skin for motion continuity.
           </p>
@@ -123,10 +161,21 @@
         <div class="bg-[#2C3E50] p-5 rounded-2xl border border-white/10">
           <div class="text-4xl mb-3">🎞️</div>
           <h3 class="text-xl font-bold text-[#FFD700]">3. Animate GIFs</h3>
+
           <p class="text-gray-300 mt-2">
-            Export pose frames and bring them into Gif Forge to create sprite animations.
+            Export pose frames and animate them in Gif Forge.
           </p>
         </div>
+
+        <div class="bg-[#2C3E50] p-5 rounded-2xl border border-white/10">
+          <div class="text-4xl mb-3">🗂️</div>
+          <h3 class="text-xl font-bold text-[#FFD700]">4. Build Sheets</h3>
+
+          <p class="text-gray-300 mt-2">
+            Convert animation frames into sprite sheets ready for games and engines.
+          </p>
+        </div>
+
       </div>
     </div>
   </section>
@@ -135,22 +184,27 @@
     <div class="max-w-6xl mx-auto px-6">
       <div class="mb-8">
         <h2 class="text-3xl font-bold text-[#FFD700]">Future Lab Tools</h2>
+
         <p class="text-gray-300 mt-2">
           Planned tools that can expand the VoltanLabs creator suite later.
         </p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
         <div class="bg-[#2C3E50] p-6 rounded-2xl shadow-lg opacity-80">
           <div class="flex items-center gap-3 mb-2">
             <h3 class="text-2xl font-bold text-gray-200">VoltPromptCraft</h3>
+
             <span class="text-[11px] px-3 py-1 rounded-full bg-white/10 text-gray-300 border border-white/20 tracking-wide uppercase">
               Planned
             </span>
           </div>
+
           <p class="mb-4 text-gray-300">
             Generate strong prompt templates for images, stories, characters, and content workflows.
           </p>
+
           <span class="inline-block px-6 py-2 border border-gray-300/40 text-gray-300 rounded-xl cursor-not-allowed">
             Coming Soon
           </span>
@@ -159,48 +213,22 @@
         <div class="bg-[#2C3E50] p-6 rounded-2xl shadow-lg opacity-80">
           <div class="flex items-center gap-3 mb-2">
             <h3 class="text-2xl font-bold text-gray-200">3D Forge</h3>
+
             <span class="text-[11px] px-3 py-1 rounded-full bg-sky-400/10 text-sky-200 border border-sky-200/40 tracking-wide uppercase">
               Prototype
             </span>
           </div>
+
           <p class="mb-4 text-gray-300">
             A future 3D sandbox for GLB character parts, model viewing, posing, and experimentation.
           </p>
+
           <a href="/character-forge/3d.html"
              class="inline-block px-6 py-2 border border-white rounded-xl hover:bg-white hover:text-[#1A1A1A] transition">
             View Prototype
           </a>
         </div>
 
-        <div class="bg-[#2C3E50] p-6 rounded-2xl shadow-lg opacity-70">
-          <div class="flex items-center gap-3 mb-2">
-            <h3 class="text-2xl font-bold text-gray-200">Sprite Utilities</h3>
-            <span class="text-[11px] px-3 py-1 rounded-full bg-white/10 text-gray-300 border border-white/20 tracking-wide uppercase">
-              Planned
-            </span>
-          </div>
-          <p class="mb-4 text-gray-300">
-            Resize, trim transparent edges, palette optimize, mirror frames, and batch export sprite assets.
-          </p>
-          <span class="inline-block px-6 py-2 border border-gray-300/40 text-gray-300 rounded-xl cursor-not-allowed">
-            Coming Soon
-          </span>
-        </div>
-
-        <div class="bg-[#2C3E50] p-6 rounded-2xl shadow-lg opacity-70">
-          <div class="flex items-center gap-3 mb-2">
-            <h3 class="text-2xl font-bold text-gray-200">Audio Forge</h3>
-            <span class="text-[11px] px-3 py-1 rounded-full bg-white/10 text-gray-300 border border-white/20 tracking-wide uppercase">
-              Planned
-            </span>
-          </div>
-          <p class="mb-4 text-gray-300">
-            Quick SFX trimming, looping, volume cleanup, and export tools for games and web projects.
-          </p>
-          <span class="inline-block px-6 py-2 border border-gray-300/40 text-gray-300 rounded-xl cursor-not-allowed">
-            Coming Soon
-          </span>
-        </div>
       </div>
     </div>
   </section>
