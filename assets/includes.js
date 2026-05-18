@@ -18,7 +18,35 @@ function initVoltanHeader() {
   const btn = document.getElementById("vlMenuBtn");
   const menu = document.getElementById("vlSiteMenu");
   if (!btn || !menu) return;
+ 
+  function highlightActiveNav() {
+  const current = window.location.pathname;
 
+  document.querySelectorAll("nav a").forEach((link) => {
+    const href = link.getAttribute("href");
+    if (!href) return;
+
+    const normalizedHref = href.replace("/index.html", "/");
+
+    const normalizedCurrent =
+      current === "/index.html"
+        ? "/"
+        : current;
+
+    if (
+      normalizedCurrent === normalizedHref ||
+      normalizedCurrent.startsWith(normalizedHref.replace(".html", ""))
+    ) {
+      link.classList.add(
+        "bg-white/15",
+        "text-[#FFD700]",
+        "border",
+        "border-[#FFD700]/40"
+      );
+    }
+  });
+}
+  
   // Prevent double-binding if this runs more than once
   if (btn.dataset.bound === "1") return;
   btn.dataset.bound = "1";
@@ -54,5 +82,8 @@ function initVoltanHeader() {
   const footerInjected = await inject("#vl-footer", "/partials/footer.html");
 
   // Only init after header exists in the DOM
-  if (headerInjected) initVoltanHeader();
+  if (headerInjected) {
+  initVoltanHeader();
+  highlightActiveNav();
+}
 })();
