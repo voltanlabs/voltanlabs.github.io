@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -23,7 +22,7 @@
       <a href="/tools.html" class="text-sm text-emerald-300 hover:underline">← Back to Lab Tools</a>
       <h1 class="text-3xl font-semibold mt-2">Sprite Sheet Forge</h1>
       <p class="text-sm text-zinc-400 mt-2">
-        Upload PNG frames, arrange them into a transparent sprite sheet, preview animation, and export game-ready assets.
+        Upload PNG frames, reorder, duplicate, trim transparent space, preview animation, export sprite sheets and JSON.
       </p>
       <div id="statusText" class="text-sm text-zinc-400 mt-2">Ready.</div>
     </div>
@@ -31,12 +30,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
       <section class="lg:col-span-3 rounded-2xl border border-white/10 bg-black/30 p-4">
         <div class="rounded-2xl border border-white/10 bg-zinc-900 overflow-auto p-3">
-          <canvas
-            id="sheetCanvas"
-            width="900"
-            height="300"
-            class="mx-auto rounded-2xl bg-transparent"
-          ></canvas>
+          <canvas id="sheetCanvas" width="900" height="300" class="mx-auto rounded-2xl bg-transparent"></canvas>
         </div>
 
         <div class="flex flex-wrap gap-2 mt-4">
@@ -53,6 +47,10 @@
             Export JSON
           </button>
 
+          <button id="trimBtn" class="px-4 py-2 rounded-xl bg-purple-400 text-zinc-950 font-semibold">
+            Trim Transparent
+          </button>
+
           <button id="clearBtn" class="px-4 py-2 rounded-xl border border-red-400/30 bg-red-400/10 text-red-200">
             Clear
           </button>
@@ -60,6 +58,7 @@
 
         <div class="mt-5 rounded-2xl border border-white/10 bg-zinc-950 p-4">
           <h2 class="font-semibold mb-3">Animation Preview</h2>
+
           <div class="flex flex-wrap items-center gap-3">
             <canvas id="previewCanvas" width="160" height="160" class="rounded-xl border border-white/10 bg-black"></canvas>
 
@@ -74,9 +73,15 @@
               </div>
 
               <label class="block text-sm text-zinc-400">
-                Speed
+                Global Speed
                 <input id="speedInput" type="range" min="30" max="1000" value="120" class="w-full mt-1" />
                 <span class="text-xs text-zinc-500"><span id="speedText">120</span> ms/frame</span>
+              </label>
+
+              <label class="block text-sm text-zinc-400">
+                Preview Zoom
+                <input id="previewZoomInput" type="range" min="1" max="5" value="1" step="0.25" class="w-full mt-1" />
+                <span class="text-xs text-zinc-500"><span id="previewZoomText">1</span>x</span>
               </label>
             </div>
           </div>
@@ -114,13 +119,13 @@
 
             <label class="block text-zinc-400">
               Frame Width
-              <input id="frameWidthInput" type="number" min="1" value="0" class="w-full mt-1 rounded-xl bg-zinc-950 border border-white/10 px-3 py-2 text-zinc-100" />
+              <input id="frameWidthInput" type="number" min="0" value="0" class="w-full mt-1 rounded-xl bg-zinc-950 border border-white/10 px-3 py-2 text-zinc-100" />
               <span class="text-xs text-zinc-500">0 = auto</span>
             </label>
 
             <label class="block text-zinc-400">
               Frame Height
-              <input id="frameHeightInput" type="number" min="1" value="0" class="w-full mt-1 rounded-xl bg-zinc-950 border border-white/10 px-3 py-2 text-zinc-100" />
+              <input id="frameHeightInput" type="number" min="0" value="0" class="w-full mt-1 rounded-xl bg-zinc-950 border border-white/10 px-3 py-2 text-zinc-100" />
               <span class="text-xs text-zinc-500">0 = auto</span>
             </label>
           </div>
@@ -128,7 +133,8 @@
 
         <section class="border-t border-white/10 pt-4">
           <h3 class="font-semibold mb-2">Frames</h3>
-          <div id="frameList" class="space-y-2 max-h-80 overflow-auto"></div>
+          <p class="text-xs text-zinc-500 mb-3">Use ↑ / ↓ to reorder. Delay is included in JSON export.</p>
+          <div id="frameList" class="space-y-2 max-h-96 overflow-auto"></div>
         </section>
       </aside>
     </div>
@@ -141,6 +147,7 @@
     const frameInput = document.getElementById("frameInput");
     const sheetCanvas = document.getElementById("sheetCanvas");
     const sheetCtx = sheetCanvas.getContext("2d");
+
     const previewCanvas = document.getElementById("previewCanvas");
     const previewCtx = previewCanvas.getContext("2d");
 
@@ -156,43 +163,62 @@
 
     const exportSheetBtn = document.getElementById("exportSheetBtn");
     const exportJsonBtn = document.getElementById("exportJsonBtn");
+    const trimBtn = document.getElementById("trimBtn");
     const clearBtn = document.getElementById("clearBtn");
 
     const playBtn = document.getElementById("playBtn");
     const stopBtn = document.getElementById("stopBtn");
     const speedInput = document.getElementById("speedInput");
     const speedText = document.getElementById("speedText");
+    const previewZoomInput = document.getElementById("previewZoomInput");
+    const previewZoomText = document.getElementById("previewZoomText");
 
     let frames = [];
     let sheetMeta = [];
     let playing = false;
     let playIndex = 0;
     let playTimer = null;
+    let frameIdCounter = 1;
 
     const setStatus = (msg) => statusText.textContent = msg;
 
-    const loadImageFromFile = (file) => {
+    const loadImageFromSrc = (src) => {
       return new Promise((resolve) => {
-        const url = URL.createObjectURL(file);
         const img = new Image();
-
-        img.onload = () => {
-          resolve({
-            name: file.name,
-            img,
-            url,
-            w: img.naturalWidth || img.width,
-            h: img.naturalHeight || img.height,
-          });
-        };
-
-        img.onerror = () => {
-          URL.revokeObjectURL(url);
-          resolve(null);
-        };
-
-        img.src = url;
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = src;
       });
+    };
+
+    const fileToDataUrl = (file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+    };
+
+    const loadImageFromFile = async (file) => {
+      try {
+        const src = await fileToDataUrl(file);
+        const img = await loadImageFromSrc(src);
+
+        if (!img) return null;
+
+        return {
+          id: frameIdCounter++,
+          name: file.name,
+          src,
+          img,
+          w: img.naturalWidth || img.width,
+          h: img.naturalHeight || img.height,
+          delay: Number(speedInput.value) || 120,
+        };
+      } catch {
+        return null;
+      }
     };
 
     const getSettings = () => {
@@ -209,15 +235,24 @@
       };
     };
 
+    const refreshAll = () => {
+      renderFrameList();
+      drawSheet();
+      drawPreviewFrame(Math.min(playIndex, Math.max(0, frames.length - 1)));
+    };
+
     const renderFrameList = () => {
       frameList.innerHTML = "";
 
       frames.forEach((frame, idx) => {
         const row = document.createElement("div");
-        row.className = "rounded-xl border border-white/10 bg-zinc-950 p-2 flex items-center gap-2";
+        row.className = "rounded-xl border border-white/10 bg-zinc-950 p-2";
+
+        const top = document.createElement("div");
+        top.className = "flex items-center gap-2";
 
         const img = document.createElement("img");
-        img.src = frame.url;
+        img.src = frame.src;
         img.className = "w-10 h-10 object-contain rounded-lg bg-black border border-white/10";
 
         const name = document.createElement("div");
@@ -232,17 +267,97 @@
         del.className = "text-xs text-red-300 px-2 py-1 rounded-lg border border-red-400/30 bg-red-400/10";
         del.textContent = "✕";
         del.addEventListener("click", () => {
-          URL.revokeObjectURL(frame.url);
           frames.splice(idx, 1);
-          drawSheet();
-          renderFrameList();
-          drawPreviewFrame(0);
+          refreshAll();
           setStatus("Frame removed.");
         });
 
-        row.appendChild(img);
-        row.appendChild(name);
-        row.appendChild(del);
+        top.appendChild(img);
+        top.appendChild(name);
+        top.appendChild(del);
+
+        const controls = document.createElement("div");
+        controls.className = "grid grid-cols-4 gap-2 mt-2";
+
+        const up = document.createElement("button");
+        up.type = "button";
+        up.className = "text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/5";
+        up.textContent = "↑";
+        up.disabled = idx === 0;
+        up.addEventListener("click", () => {
+          if (idx <= 0) return;
+          const tmp = frames[idx];
+          frames[idx] = frames[idx - 1];
+          frames[idx - 1] = tmp;
+          refreshAll();
+        });
+
+        const down = document.createElement("button");
+        down.type = "button";
+        down.className = "text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/5";
+        down.textContent = "↓";
+        down.disabled = idx === frames.length - 1;
+        down.addEventListener("click", () => {
+          if (idx >= frames.length - 1) return;
+          const tmp = frames[idx];
+          frames[idx] = frames[idx + 1];
+          frames[idx + 1] = tmp;
+          refreshAll();
+        });
+
+        const copy = document.createElement("button");
+        copy.type = "button";
+        copy.className = "text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/5";
+        copy.textContent = "Copy";
+        copy.addEventListener("click", async () => {
+          const imgCopy = await loadImageFromSrc(frame.src);
+          if (!imgCopy) return;
+
+          frames.splice(idx + 1, 0, {
+            ...frame,
+            id: frameIdCounter++,
+            name: `${frame.name} copy`,
+            img: imgCopy,
+          });
+
+          refreshAll();
+          setStatus("Frame duplicated.");
+        });
+
+        const preview = document.createElement("button");
+        preview.type = "button";
+        preview.className = "text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/5";
+        preview.textContent = "View";
+        preview.addEventListener("click", () => {
+          playIndex = idx;
+          drawPreviewFrame(idx);
+          setStatus(`Previewing frame ${idx + 1}.`);
+        });
+
+        controls.appendChild(up);
+        controls.appendChild(down);
+        controls.appendChild(copy);
+        controls.appendChild(preview);
+
+        const delayWrap = document.createElement("label");
+        delayWrap.className = "block text-[11px] text-zinc-500 mt-2";
+        delayWrap.textContent = "Frame Delay";
+
+        const delayInput = document.createElement("input");
+        delayInput.type = "number";
+        delayInput.min = "10";
+        delayInput.step = "10";
+        delayInput.value = frame.delay || Number(speedInput.value) || 120;
+        delayInput.className = "w-full mt-1 rounded-lg bg-zinc-900 border border-white/10 px-2 py-1 text-xs text-zinc-100";
+        delayInput.addEventListener("input", () => {
+          frame.delay = Math.max(10, parseInt(delayInput.value, 10) || 120);
+        });
+
+        row.appendChild(top);
+        row.appendChild(controls);
+        row.appendChild(delayWrap);
+        row.appendChild(delayInput);
+
         frameList.appendChild(row);
       });
     };
@@ -288,15 +403,12 @@
 
         sheetMeta.push({
           name: frame.name,
+          id: frame.id,
           index: idx,
-          x,
-          y,
-          w: s.frameW,
-          h: s.frameH,
-          drawX: dx,
-          drawY: dy,
-          drawW: dw,
-          drawH: dh,
+          delay: frame.delay || Number(speedInput.value) || 120,
+          frame: { x, y, w: s.frameW, h: s.frameH },
+          drawn: { x: dx, y: dy, w: dw, h: dh },
+          source: { w: frame.w, h: frame.h },
         });
       });
 
@@ -309,12 +421,16 @@
       const frame = frames[idx];
       if (!frame) return;
 
-      const scale = Math.min(previewCanvas.width / frame.w, previewCanvas.height / frame.h);
+      const zoom = Number(previewZoomInput.value) || 1;
+      const baseScale = Math.min(previewCanvas.width / frame.w, previewCanvas.height / frame.h);
+      const scale = baseScale * zoom;
+
       const w = frame.w * scale;
       const h = frame.h * scale;
       const x = (previewCanvas.width - w) / 2;
       const y = (previewCanvas.height - h) / 2;
 
+      previewCtx.imageSmoothingEnabled = false;
       previewCtx.drawImage(frame.img, x, y, w, h);
     };
 
@@ -322,9 +438,68 @@
       if (!playing || !frames.length) return;
 
       drawPreviewFrame(playIndex);
+      const delay = frames[playIndex]?.delay || Number(speedInput.value) || 120;
       playIndex = (playIndex + 1) % frames.length;
 
-      playTimer = setTimeout(playLoop, Number(speedInput.value));
+      playTimer = setTimeout(playLoop, delay);
+    };
+
+    const trimCanvasToContent = (sourceCanvas) => {
+      const sourceCtx = sourceCanvas.getContext("2d");
+      const data = sourceCtx.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height);
+      const pixels = data.data;
+
+      let minX = sourceCanvas.width;
+      let minY = sourceCanvas.height;
+      let maxX = -1;
+      let maxY = -1;
+
+      for (let y = 0; y < sourceCanvas.height; y++) {
+        for (let x = 0; x < sourceCanvas.width; x++) {
+          const alpha = pixels[(y * sourceCanvas.width + x) * 4 + 3];
+
+          if (alpha > 0) {
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x);
+            maxY = Math.max(maxY, y);
+          }
+        }
+      }
+
+      if (maxX < minX || maxY < minY) return null;
+
+      const w = maxX - minX + 1;
+      const h = maxY - minY + 1;
+
+      const trimmed = document.createElement("canvas");
+      trimmed.width = w;
+      trimmed.height = h;
+      trimmed.getContext("2d").drawImage(sourceCanvas, minX, minY, w, h, 0, 0, w, h);
+
+      return trimmed;
+    };
+
+    const trimFrame = async (frame) => {
+      const temp = document.createElement("canvas");
+      temp.width = frame.w;
+      temp.height = frame.h;
+      temp.getContext("2d").drawImage(frame.img, 0, 0);
+
+      const trimmed = trimCanvasToContent(temp);
+      if (!trimmed) return frame;
+
+      const src = trimmed.toDataURL("image/png");
+      const img = await loadImageFromSrc(src);
+      if (!img) return frame;
+
+      return {
+        ...frame,
+        src,
+        img,
+        w: trimmed.width,
+        h: trimmed.height,
+      };
     };
 
     frameInput.addEventListener("change", async () => {
@@ -338,15 +513,22 @@
       }
 
       frameInput.value = "";
-      renderFrameList();
-      drawSheet();
-      drawPreviewFrame(0);
+      refreshAll();
       setStatus(`Loaded ${files.length} frame(s).`);
     });
 
     [layoutSelect, columnsInput, paddingInput, spacingInput, frameWidthInput, frameHeightInput].forEach((el) => {
       el.addEventListener("input", drawSheet);
       el.addEventListener("change", drawSheet);
+    });
+
+    speedInput.addEventListener("input", () => {
+      speedText.textContent = speedInput.value;
+    });
+
+    previewZoomInput.addEventListener("input", () => {
+      previewZoomText.textContent = previewZoomInput.value;
+      drawPreviewFrame(playIndex);
     });
 
     exportSheetBtn.addEventListener("click", () => {
@@ -373,11 +555,21 @@
 
       drawSheet();
 
+      const s = getSettings();
+
       const data = {
         app: "VoltanLabs Sprite Sheet Forge",
-        version: 1,
+        version: 2,
         image: "databyte-sprite-sheet.png",
         frameCount: frames.length,
+        layout: s.layout,
+        columns: s.columns,
+        padding: s.padding,
+        spacing: s.spacing,
+        frameSize: {
+          w: s.frameW,
+          h: s.frameH,
+        },
         frames: sheetMeta,
       };
 
@@ -393,12 +585,33 @@
       setStatus("JSON exported.");
     });
 
+    trimBtn.addEventListener("click", async () => {
+      if (!frames.length) {
+        setStatus("Upload frames first.");
+        return;
+      }
+
+      setStatus("Trimming transparent edges...");
+
+      const trimmedFrames = [];
+      for (const frame of frames) {
+        trimmedFrames.push(await trimFrame(frame));
+      }
+
+      frames = trimmedFrames;
+      refreshAll();
+      setStatus("Transparent edges trimmed.");
+    });
+
     clearBtn.addEventListener("click", () => {
-      frames.forEach((f) => URL.revokeObjectURL(f.url));
       frames = [];
       sheetMeta = [];
-      renderFrameList();
-      drawSheet();
+      playing = false;
+
+      if (playTimer) clearTimeout(playTimer);
+      playTimer = null;
+
+      refreshAll();
       previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
       setStatus("Cleared.");
     });
@@ -418,13 +631,11 @@
 
     stopBtn.addEventListener("click", () => {
       playing = false;
+
       if (playTimer) clearTimeout(playTimer);
+
       playTimer = null;
       setStatus("Preview stopped.");
-    });
-
-    speedInput.addEventListener("input", () => {
-      speedText.textContent = speedInput.value;
     });
 
     drawSheet();
