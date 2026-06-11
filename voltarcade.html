@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoltArcade - VoltanLabs</title>
+  <meta name="description" content="VoltArcade is the VoltanLabs hub for browser games and playable prototypes." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Roboto', sans-serif; }
+    h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
+  </style>
+</head>
+<body class="bg-[#1A1A1A] text-white">
+  <div id="vl-header"></div>
+
+  <main>
+    <section class="py-20 text-center bg-gradient-to-b from-[#2C3E50] to-[#1A1A1A] px-6">
+      <p class="text-[#FFD700] uppercase tracking-[0.3em] text-xs mb-4">VoltanLabs Game Hub</p>
+      <h1 class="text-5xl md:text-7xl font-bold text-[#007BFF] mb-5">VoltArcade</h1>
+      <p class="text-lg text-gray-300 max-w-3xl mx-auto">
+        Browser-based games, playable lore experiments, and DataByteSprites experiences built inside VoltanLabs.
+      </p>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <article class="bg-[#2C3E50] p-6 rounded-3xl border border-[#007BFF]/40 shadow-2xl">
+        <div class="text-5xl mb-4">📡</div>
+        <h2 class="text-2xl font-bold text-[#FFD700] mb-3">DataByteSprites: Data Discovery</h2>
+        <p class="text-gray-300 mb-6">Discover sprites through real-world codes, capture them in ByteCoins, and begin the path toward Admin status.</p>
+        <a href="/databyte-admin-briefing.html" class="inline-block px-6 py-3 rounded-xl bg-[#007BFF] hover:bg-[#005FCC] transition font-bold">Open Data Discovery</a>
+      </article>
+
+      <article class="bg-[#2C3E50] p-6 rounded-3xl border border-white/10 shadow-2xl">
+        <div class="text-5xl mb-4">⚔️</div>
+        <h2 class="text-2xl font-bold text-[#FFD700] mb-3">Databyte Arena</h2>
+        <p class="text-gray-300 mb-6">Test early DataByte Sprite battle concepts with Admins, starter sprites, and combat experiments.</p>
+        <a href="/sprites-battle.html" class="inline-block px-6 py-3 rounded-xl border border-white hover:bg-white hover:text-[#1A1A1A] transition font-bold">Enter Arena</a>
+      </article>
+
+      <article class="bg-[#2C3E50] p-6 rounded-3xl border border-white/10 shadow-2xl">
+        <div class="text-5xl mb-4">⚡</div>
+        <h2 class="text-2xl font-bold text-[#FFD700] mb-3">Voltan's Quest</h2>
+        <p class="text-gray-300 mb-6">Explore the interactive story side of VoltanLabs, where choices, lore, and the Volteverse connect.</p>
+        <a href="/voltanquest.html" class="inline-block px-6 py-3 rounded-xl border border-white hover:bg-white hover:text-[#1A1A1A] transition font-bold">Begin Quest</a>
+      </article>
+    </section>
+  </main>
+
+  <div id="vl-footer"></div>
+  <script src="/assets/includes.js"></script>
+</body>
+</html>
