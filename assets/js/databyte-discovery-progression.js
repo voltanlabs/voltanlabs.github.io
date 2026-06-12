@@ -72,34 +72,54 @@
     return readCollection().filter((sprite) => sprite && sprite.name === name).length;
   }
 
-  function unlockedGroup(group) {
-    if (group.length <= 1) return group.slice();
-
-    const unlocked = [group[0]];
-
-    for (let i = 1; i < group.length; i++) {
+  function isStageUnlocked(group, stageIndex) {
+    if (stageIndex === 0) return true;
+    for (let i = 1; i <= stageIndex; i++) {
       const priorName = canonNames[group[i - 1]];
-      if (captureCount(priorName) >= REQUIRED_CAPTURES) unlocked.push(group[i]);
-      else break;
+      if (captureCount(priorName) < REQUIRED_CAPTURES) return false;
     }
-
-    return unlocked;
+    return true;
   }
 
-  function nextUnlock() {
-    for (const group of baseGroups) {
-      for (let i = 1; i < group.length; i++) {
-        const priorName = canonNames[group[i - 1]];
-        const targetName = canonNames[group[i]];
-        const count = captureCount(priorName);
-        const alreadyUnlocked = captureCount(priorName) >= REQUIRED_CAPTURES;
-        const previousStagesOpen = i === 1 || captureCount(canonNames[group[i - 2]]) >= REQUIRED_CAPTURES;
-        if (!alreadyUnlocked && previousStagesOpen) {
-          return { priorName, targetName, count, required: REQUIRED_CAPTURES };
-        }
+  function unlockedGroup(group) {
+    return group.filter((_, index) => isStageUnlocked(group, index));
+  }
+
+  function familyProgress(group) {
+    const stages = group.map((index, stageIndex) => {
+      const name = canonNames[index];
+      const count = captureCount(name);
+      const unlocked = isStageUnlocked(group, stageIndex);
+      const nextName = canonNames[group[stageIndex + 1]] || null;
+      const unlocksNext = Boolean(nextName);
+      return { name, count, unlocked, unlocksNext, nextName, stageIndex };
+    });
+
+    let activeGoal = null;
+    for (let i = 0; i < stages.length - 1; i++) {
+      if (stages[i].unlocked && !stages[i + 1].unlocked) {
+        activeGoal = {
+          priorName: stages[i].name,
+          targetName: stages[i + 1].name,
+          count: stages[i].count,
+          required: REQUIRED_CAPTURES
+        };
+        break;
       }
     }
-    return null;
+
+    return {
+      root: stages[0]?.name || "Unknown",
+      stages,
+      activeGoal,
+      complete: stages.length <= 1 || stages.every((stage) => stage.unlocked)
+    };
+  }
+
+  function allFamilyProgress() {
+    return baseGroups
+      .filter((group) => group.length > 1)
+      .map(familyProgress);
   }
 
   function applyProgression() {
@@ -115,37 +135,58 @@
     };
 
     window.DD_PROGRESSION_READY = true;
-    window.DD_NEXT_UNLOCK = nextUnlock();
+    window.DD_FAMILY_PROGRESS = allFamilyProgress();
   }
 
-  function addProgressionBadge() {
+  function addProgressionPanel() {
     if (document.getElementById("progressionBadge")) return;
     const adminCard = document.getElementById("adminCard");
     if (!adminCard) return;
 
-    const badge = document.createElement("div");
-    badge.id = "progressionBadge";
-    badge.className = "mt-4 bg-black/25 border border-white/10 rounded-2xl p-4 text-sm";
-    adminCard.appendChild(badge);
+    const panel = document.createElement("div");
+    panel.id = "progressionBadge";
+    panel.className = "mt-4 bg-black/25 border border-white/10 rounded-2xl p-4 text-sm";
+    adminCard.appendChild(panel);
+  }
+
+  function progressBar(count) {
+    const clamped = Math.min(count, REQUIRED_CAPTURES);
+    return "█".repeat(clamped) + "░".repeat(REQUIRED_CAPTURES - clamped);
   }
 
   function renderProgressionBadge() {
     applyProgression();
-    addProgressionBadge();
+    addProgressionPanel();
 
-    const badge = document.getElementById("progressionBadge");
-    if (!badge) return;
+    const panel = document.getElementById("progressionBadge");
+    if (!panel) return;
 
-    const next = window.DD_NEXT_UNLOCK;
-    if (!next) {
-      badge.innerHTML = `<div class="text-[#FFD700] font-bold">Evolution Progress</div><p class="text-gray-300 mt-1">All current upgrade paths are unlocked.</p>`;
-      return;
-    }
+    const families = window.DD_FAMILY_PROGRESS || [];
+    const active = families.filter((family) => family.activeGoal);
+    const completeCount = families.filter((family) => family.complete).length;
 
-    badge.innerHTML = `
-      <div class="text-[#FFD700] font-bold">Next Evolution Unlock</div>
-      <p class="text-gray-300 mt-1">Capture <strong>${next.priorName}</strong> ${next.required} times to unlock <strong>${next.targetName}</strong>.</p>
-      <div class="mt-2 text-xs text-sky-200">Progress: ${Math.min(next.count, next.required)}/${next.required}</div>`;
+    panel.innerHTML = `
+      <div class="text-[#FFD700] font-bold">Evolution Progress</div>
+      <p class="text-gray-300 mt-1 text-xs">Each sprite family unlocks separately. Capture 3 of the prior stage to unlock the next stage.</p>
+      <div class="mt-3 text-xs text-sky-200">Families complete: ${completeCount}/${families.length}</div>
+      <div class="mt-3 grid gap-2 max-h-72 overflow-auto pr-1">
+        ${families.map((family) => {
+          if (!family.activeGoal) {
+            return `<div class="bg-black/20 rounded-xl p-3 border border-emerald-300/20"><div class="flex justify-between gap-3"><strong>${family.root}</strong><span class="text-emerald-200 text-xs">Unlocked</span></div></div>`;
+          }
+
+          const goal = family.activeGoal;
+          return `
+            <div class="bg-black/20 rounded-xl p-3 border border-white/10">
+              <div class="flex justify-between gap-3">
+                <strong>${family.root}</strong>
+                <span class="text-[#FFD700] text-xs">${Math.min(goal.count, goal.required)}/${goal.required}</span>
+              </div>
+              <p class="text-gray-300 text-xs mt-1">Capture <strong>${goal.priorName}</strong> to unlock <strong>${goal.targetName}</strong>.</p>
+              <div class="text-[#FFD700] tracking-widest mt-2">${progressBar(goal.count)}</div>
+            </div>`;
+        }).join("")}
+      </div>`;
   }
 
   function bootProgression() {
