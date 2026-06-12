@@ -15,12 +15,14 @@
     <section class="py-16 text-center bg-gradient-to-b from-[#2C3E50] to-[#1A1A1A] px-6">
       <p class="text-[#FFD700] uppercase tracking-[0.3em] text-xs mb-4">VoltArcade Canon Database</p>
       <h1 class="text-5xl md:text-7xl font-bold text-[#007BFF] mb-5">DataByteDex</h1>
-      <p class="text-gray-300 text-lg max-w-3xl mx-auto">The first canon roster for DataByteSprites, built from the Rev 5 lore book and ready to power Data Discovery, Databyte Arena, and future VoltanLabs games.</p>
+      <p class="text-gray-300 text-lg max-w-3xl mx-auto">The canon roster for DataByteSprites. Captured status now reads your local Data Discovery ByteCoin collection.</p>
+      <div class="mt-6 flex flex-wrap gap-3 justify-center"><a href="/databyte-admin-briefing.html" class="px-5 py-3 rounded-xl bg-[#007BFF] hover:bg-[#005FCC] font-bold">Play Data Discovery</a><a href="/voltarcade.html" class="px-5 py-3 rounded-xl border border-white hover:bg-white hover:text-[#1A1A1A] font-bold">Back to VoltArcade</a></div>
     </section>
     <section class="max-w-7xl mx-auto px-6 pb-20">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div class="bg-[#2C3E50] rounded-2xl p-5 border border-white/10"><div class="text-sm text-gray-300">Canon Entries</div><div id="totalCount" class="text-3xl font-bold text-[#FFD700]">0</div></div>
-        <div class="bg-[#2C3E50] rounded-2xl p-5 border border-white/10"><div class="text-sm text-gray-300">Founding Lines</div><div class="text-3xl font-bold text-[#FFD700]">3</div></div>
+        <div class="bg-[#2C3E50] rounded-2xl p-5 border border-white/10"><div class="text-sm text-gray-300">Seen</div><div id="seenCount" class="text-3xl font-bold text-[#FFD700]">0</div></div>
+        <div class="bg-[#2C3E50] rounded-2xl p-5 border border-white/10"><div class="text-sm text-gray-300">Captured</div><div id="capturedCount" class="text-3xl font-bold text-[#FFD700]">0</div></div>
         <div class="bg-[#2C3E50] rounded-2xl p-5 border border-white/10"><div class="text-sm text-gray-300">Current Source</div><div class="text-3xl font-bold text-[#FFD700]">Rev 5</div></div>
       </div>
       <div class="bg-[#2C3E50] rounded-3xl border border-white/10 p-5 mb-8">
@@ -33,16 +35,13 @@
   <div id="vl-footer"></div>
   <script src="/assets/includes.js"></script>
   <script>
+    const COLLECTION_KEY='vl_databyte_discovery_collection_v2';
     const dex=[
       ['001','Leovolt','Voltricity / Unstained','Kilobyte','Lion cub with blue electric fur, circuit lines, and a lightning bolt tail.'],
       ['002','Leothor','Voltricity / Unstained','Megabyte','Adolescent lion with blue electric fur, circuit lines, and a lightning bolt tail.'],
       ['003','Leozues','Voltricity / Unstained','Gigabyte','Full grown lion with blue electric fur, charged mane, and a larger lightning bolt tail.'],
-      ['004','Crabician','Mystic','Kilobyte','Apprentice mage crab.'],
-      ['005','Crabizard','Mystic / Stained','Megabyte','Full fledged wizard crab.'],
-      ['006','Crabzaster','Mystic / Stained','Gigabyte','Sorcerer supreme master crab.'],
-      ['007','Scorpyone','Stained','Kilobyte','One-eyed orange robotic stained configuration scorpion.'],
-      ['008','Scorpytwo','Stained / Unstained','Megabyte','Robotic scorpion duo: one unstained and one stained configuration.'],
-      ['009','Scorpyus','Stained / Unstained','Gigabyte','Robotic combined form of the stained and unstained scorpion duo.'],
+      ['004','Crabician','Mystic','Kilobyte','Apprentice mage crab.'],['005','Crabizard','Mystic / Stained','Megabyte','Full fledged wizard crab.'],['006','Crabzaster','Mystic / Stained','Gigabyte','Sorcerer supreme master crab.'],
+      ['007','Scorpyone','Stained','Kilobyte','One-eyed orange robotic stained configuration scorpion.'],['008','Scorpytwo','Stained / Unstained','Megabyte','Robotic scorpion duo: one unstained and one stained configuration.'],['009','Scorpyus','Stained / Unstained','Gigabyte','Robotic combined form of the stained and unstained scorpion duo.'],
       ['010','SeismaGoat','Seismic','Kilobyte','Seismic goat line base form.'],['011','GigantaGoat','Flora / Seismic','Megabyte','Flora and seismic goat upgrade.'],['012','TitantaGoat','Flora / Seismic','Gigabyte','Titan-level flora and seismic goat upgrade.'],
       ['013','SwimPig','Aquatic','Kilobyte','Aquatic pig line base form.'],['014','DiveSwine','Aquatic','Megabyte','Aquatic swine upgrade.'],['015','PorkFloat','Aquatic','Gigabyte','Aquatic floating pig upgrade.'],
       ['016','ByteBull','Signal','Kilobyte','Bull-themed data sprite.'],['017','Crowupt','Stained / Signal','Kilobyte','Crow corruption line base form.'],['018','Crowuption','Stained / Signal','Megabyte','Crow corruption line upgrade.'],['019','Crowtastrophe','Stained / Signal','Gigabyte','Crow corruption catastrophe form.'],
@@ -58,8 +57,15 @@
       ['048','Compressaur','Tech','Kilobyte','Compression dinosaur data sprite.'],['049','Pixelpigeon','Signal / Pixel','Kilobyte','Pixel bird data sprite.'],['050','Binarybear','Binary / Tech','Kilobyte','Binary bear data sprite.'],['051','Proxentity','Proxy / Signal','Megabyte','Proxy entity data sprite.'],['052','Proxsentience','Proxy / Signal','Gigabyte','Sentient proxy data sprite.']
     ];
     const grid=document.getElementById('dexGrid'), search=document.getElementById('dexSearch');
-    document.getElementById('totalCount').textContent=dex.length;
-    function render(q=''){const term=q.toLowerCase();grid.innerHTML=dex.filter(s=>s.join(' ').toLowerCase().includes(term)).map(s=>`<article class="bg-[#2C3E50] border border-white/10 rounded-3xl p-5 shadow-lg"><p class="text-xs tracking-[0.25em] text-[#FFD700] mb-2">#${s[0]} • ${s[3]}</p><h2 class="text-2xl font-bold text-white">${s[1]}</h2><p class="text-sky-200 text-sm mt-1">${s[2]}</p><p class="text-gray-300 text-sm mt-4">${s[4]}</p><div class="mt-4 text-xs text-gray-400">Seen: future save data • Captured: future save data</div></article>`).join('')||'<div class="text-gray-300">No matching sprites found.</div>'}
+    function collection(){try{return JSON.parse(localStorage.getItem(COLLECTION_KEY))||[]}catch{return[]}}
+    function capturedNames(){return new Set(collection().map(s=>s.name))}
+    function seenNames(){return capturedNames()}
+    function render(q=''){
+      const term=q.toLowerCase(), captured=capturedNames(), seen=seenNames();
+      document.getElementById('totalCount').textContent=dex.length;
+      document.getElementById('seenCount').textContent=seen.size;
+      document.getElementById('capturedCount').textContent=captured.size;
+      grid.innerHTML=dex.filter(s=>s.join(' ').toLowerCase().includes(term)).map(s=>{const isCap=captured.has(s[1]);const isSeen=seen.has(s[1]);return `<article class="bg-[#2C3E50] border ${isCap?'border-[#FFD700]/60':'border-white/10'} rounded-3xl p-5 shadow-lg"><p class="text-xs tracking-[0.25em] text-[#FFD700] mb-2">#${s[0]} • ${s[3]}</p><h2 class="text-2xl font-bold text-white">${s[1]}</h2><p class="text-sky-200 text-sm mt-1">${s[2]}</p><p class="text-gray-300 text-sm mt-4">${s[4]}</p><div class="mt-4 grid grid-cols-2 gap-2 text-xs"><span class="px-3 py-2 rounded-xl ${isSeen?'bg-emerald-400/15 text-emerald-200':'bg-black/25 text-gray-400'}">Seen: ${isSeen?'✓':'—'}</span><span class="px-3 py-2 rounded-xl ${isCap?'bg-[#FFD700]/15 text-[#FFD700]':'bg-black/25 text-gray-400'}">Captured: ${isCap?'✓':'—'}</span></div></article>`}).join('')||'<div class="text-gray-300">No matching sprites found.</div>'}
     search.addEventListener('input',e=>render(e.target.value)); render();
   </script>
 </body>
