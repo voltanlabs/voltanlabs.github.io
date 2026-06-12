@@ -112,9 +112,10 @@ function initDataDiscoveryPatchHook() {
     [42],[43,44],[45,46],[47],[48],[49],[50,51]
   ];
   window.DD_STAGE_WEIGHTS = { one:[100], two:[80,20], three:[70,25,5] };
+  window.DD_WEIGHTED_PREP_READY = true;
 }
 
-window.VOLTAN_INCLUDES_VERSION = "2026-06-12-c";
+window.VOLTAN_INCLUDES_VERSION = "2026-06-12-c2";
 
 (async function boot() {
   const headerInjected = await inject(
