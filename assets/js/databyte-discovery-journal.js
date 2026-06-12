@@ -21,7 +21,8 @@
     ["Financialfish", "LoanShark", "AFKWHALE"],
     ["Landline", "Octocable", "Fiberoptopus"],
     ["Technoblin", "Technomoly", "Technareality"],
-    ["Screensavior", "Monitorman", "Displaydevil", "Mirrormaster"],
+    ["Screensavior", "Monitorman"],
+    ["Displaydevil", "Mirrormaster"],
     ["Proxentity", "Proxsentience"]
   ];
 
