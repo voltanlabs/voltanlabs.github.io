@@ -103,6 +103,8 @@ function highlightActiveNav() {
   });
 }
 
+window.VOLTAN_INCLUDES_VERSION = "2026-06-12-a";
+
 (async function boot() {
   const headerInjected = await inject(
     "#vl-header",
