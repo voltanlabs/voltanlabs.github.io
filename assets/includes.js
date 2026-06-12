@@ -103,7 +103,12 @@ function highlightActiveNav() {
   });
 }
 
-window.VOLTAN_INCLUDES_VERSION = "2026-06-12-a";
+function initDataDiscoveryPatchHook() {
+  if (!window.location.pathname.includes("databyte-discovery")) return;
+  window.DD_PATCH_HOOK_READY = true;
+}
+
+window.VOLTAN_INCLUDES_VERSION = "2026-06-12-b";
 
 (async function boot() {
   const headerInjected = await inject(
@@ -121,4 +126,6 @@ window.VOLTAN_INCLUDES_VERSION = "2026-06-12-a";
     initVoltanHeader();
     highlightActiveNav();
   }
+
+  initDataDiscoveryPatchHook();
 })();
