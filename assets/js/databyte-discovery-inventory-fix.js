@@ -3,9 +3,14 @@
 
 (function () {
   const COLLECTION_KEY = "vl_databyte_discovery_collection_v2";
+  const SPECIAL_NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
 
   function readCollection() {
     try { return JSON.parse(localStorage.getItem(COLLECTION_KEY)) || []; } catch { return []; }
+  }
+
+  function isSpecial(sprite) {
+    return SPECIAL_NAMES.has(sprite?.name);
   }
 
   function fillDexModal(sprite) {
@@ -34,14 +39,18 @@
     collectionList.innerHTML = "";
 
     collection.slice().reverse().forEach((sprite) => {
+      const special = isSpecial(sprite);
       const card = document.createElement("article");
-      card.className = "text-left bg-black/25 border border-white/10 hover:border-[#FFD700]/60 rounded-2xl p-4 transition";
+      card.className = special
+        ? "text-left bg-purple-500/10 border border-purple-300/60 hover:border-purple-200 rounded-2xl p-4 transition shadow-[0_0_24px_rgba(192,132,252,.22)]"
+        : "text-left bg-black/25 border border-white/10 hover:border-[#FFD700]/60 rounded-2xl p-4 transition";
       card.innerHTML = `
         <div class="flex justify-between gap-3">
           <div>
-            <p class="text-[10px] uppercase tracking-[0.25em] text-[#FFD700]">${sprite.byteCoin || "BC-????"} • #${sprite.dex || "???"} • ${sprite.rarity || "Unknown"}</p>
+            <p class="text-[10px] uppercase tracking-[0.25em] ${special ? "text-purple-200" : "text-[#FFD700]"}">${sprite.byteCoin || "BC-????"} • #${sprite.dex || "???"} • ${sprite.rarity || "Unknown"}</p>
             <h3 class="text-xl font-bold text-white mt-1">${sprite.name || "Unknown Sprite"}</h3>
             <p class="text-sm text-gray-300">${sprite.type || "Unknown"}</p>
+            ${special ? `<p class="inline-block mt-2 px-2 py-1 rounded-full bg-purple-300/15 border border-purple-200/40 text-purple-100 text-[10px] uppercase tracking-[0.2em]">Special Signal</p>` : ""}
             <p class="text-[10px] text-gray-500 mt-1">HP ${sprite.hp ?? "?"} • ATK ${sprite.atk ?? "?"} • DEF ${sprite.def ?? "?"}</p>
           </div>
           <div class="text-4xl">${sprite.icon || "◈"}</div>
