@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataByteSprites: Data Discovery - VoltanLabs</title>
+  <meta name="description" content="Scan real-world codes, discover DataByteSprites, and capture them in ByteCoins." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: Roboto, sans-serif; }
+    h1, h2, h3 { font-family: Orbitron, sans-serif; }
+    .scan-bg {
+      background-image:
+        linear-gradient(rgba(0,123,255,.16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,123,255,.16) 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+    .scan-line { animation: scan 2.4s linear infinite; }
+    @keyframes scan {
+      from { transform: translateY(-20px); opacity: .2; }
+      50% { opacity: 1; }
+      to { transform: translateY(270px); opacity: .2; }
+    }
+    .reveal-pop { animation: pop .45s ease-out; }
+    @keyframes pop {
+      0% { transform: scale(.65); opacity: .35; }
+      70% { transform: scale(1.12); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="bg-[#1A1A1A] text-white min-h-screen">
+  <div id="vl-header"></div>
+
+  <main>
+    <section class="py-14 text-center bg-gradient-to-b from-[#2C3E50] to-[#1A1A1A] px-6">
+      <p class="text-[#FFD700] uppercase tracking-[0.3em] text-xs mb-4">Scanner Candidate Evaluation</p>
+      <h1 class="text-4xl md:text-6xl font-bold text-[#007BFF] mb-4">DataByteSprites:<br class="md:hidden" /> Data Discovery</h1>
+      <p id="welcomeLine" class="text-lg text-gray-300 max-w-3xl mx-auto">Register your Admin profile, choose a partner sprite, then scan real-world codes to discover DataByte Sprites.</p>
+    </section>
+
+    <section id="registrationPanel" class="max-w-5xl mx-auto px-6 pb-16">
+      <div class="bg-[#2C3E50] rounded-3xl border border-[#FFD700]/30 shadow-2xl p-6 md:p-8">
+        <h2 class="text-3xl font-bold text-[#FFD700] mb-3">Admin Registration</h2>
+        <p class="text-gray-300 mb-6">Enter your Scanner Candidate name, then choose your first partner sprite.</p>
+        <label class="block text-sm text-gray-300 mb-2" for="adminNameInput">Admin Name</label>
+        <input id="adminNameInput" class="w-full px-4 py-4 rounded-2xl bg-black/30 border border-white/15 text-white outline-none focus:border-[#FFD700]" placeholder="Example: Dennis" />
+
+        <h3 class="text-2xl font-bold text-[#FFD700] mt-8 mb-4">Choose First Partner</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <button class="starterBtn text-left bg-black/25 hover:bg-black/40 border border-white/10 hover:border-[#FFD700] rounded-2xl p-5" data-starter="Leovolt">
+            <div class="text-5xl mb-3">🦁</div>
+            <strong class="text-xl text-[#FFD700]">Leovolt</strong>
+            <p class="text-sm text-gray-300 mt-2">Voltricity / Unstained.</p>
+          </button>
+          <button class="starterBtn text-left bg-black/25 hover:bg-black/40 border border-white/10 hover:border-[#FFD700] rounded-2xl p-5" data-starter="Crabician">
+            <div class="text-5xl mb-3">🦀</div>
+            <strong class="text-xl text-[#FFD700]">Crabician</strong>
+            <p class="text-sm text-gray-300 mt-2">Mystic.</p>
+          </button>
+          <button class="starterBtn text-left bg-black/25 hover:bg-black/40 border border-white/10 hover:border-[#FFD700] rounded-2xl p-5" data-starter="Scorpyone">
+            <div class="text-5xl mb-3">🦂</div>
+            <strong class="text-xl text-[#FFD700]">Scorpyone</strong>
+            <p class="text-sm text-gray-300 mt-2">Stained.</p>
+          </button>
+        </div>
+        <p id="registrationMessage" class="text-sm text-gray-300 mt-4"></p>
+      </div>
+    </section>
+
+    <section id="gamePanel" class="hidden max-w-7xl mx-auto px-6 pb-16 grid grid-cols-1 xl:grid-cols-[1.05fr_0.95fr] gap-8">
+      <div class="bg-[#2C3E50] rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
+        <div class="p-5 border-b border-white/10 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-2xl font-bold text-[#FFD700]">Discovery Scanner</h2>
+            <p class="text-sm text-gray-300">Now scanning the full Rev 5 canon roster.</p>
+          </div>
+          <span class="text-[11px] px-3 py-1 rounded-full bg-sky-400/10 text-sky-200 border border-sky-200/40 uppercase tracking-wide">v0.40</span>
+        </div>
+
+        <div class="p-6 grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-6">
+          <div class="relative min-h-[300px] rounded-3xl bg-black/40 border border-[#007BFF]/40 overflow-hidden scan-bg flex items-center justify-center">
+            <div class="absolute inset-x-0 top-0 h-1 bg-[#FFD700] shadow-[0_0_25px_rgba(255,215,0,.85)] scan-line"></div>
+            <div class="absolute inset-6 border-2 border-dashed border-[#007BFF]/60 rounded-2xl"></div>
+            <div class="relative z-10 text-center px-6">
+              <div id="spriteOrb" class="mx-auto mb-5 w-32 h-32 rounded-full bg-[#007BFF]/20 border border-[#007BFF]/60 flex items-center justify-center text-6xl shadow-[0_0_40px_rgba(0,123,255,.35)]">?</div>
+              <p id="revealStage" class="text-[#FFD700] text-sm tracking-widest">SIGNAL WAITING</p>
+              <p id="scannerStatus" class="text-gray-300 text-sm mt-2">Enter a code to start discovery.</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-300 mb-2" for="codeInput">Discovery Code</label>
+            <input id="codeInput" class="w-full px-4 py-4 rounded-2xl bg-black/30 border border-white/15 text-white outline-none focus:border-[#FFD700]" placeholder="Example: 049000028911" />
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+              <button id="scanBtn" class="px-5 py-3 rounded-2xl bg-[#007BFF] hover:bg-blue-500 font-bold">Discover Sprite</button>
+              <button id="randomBtn" class="px-5 py-3 rounded-2xl border border-white/30 hover:bg-white hover:text-[#1A1A1A] font-bold">Test Random Code</button>
+            </div>
+
+            <div id="encounterCard" class="mt-6 hidden bg-black/25 border border-white/10 rounded-3xl p-5">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <p id="encounterRarity" class="text-xs uppercase tracking-[0.25em] text-[#FFD700] mb-2"></p>
+                  <h3 id="encounterName" class="text-3xl font-bold text-white"></h3>
+                  <p id="encounterType" class="text-gray-300 mt-1"></p>
+                </div>
+                <div id="encounterIcon" class="text-5xl">⚡</div>
+              </div>
+
+              <div class="grid grid-cols-3 gap-3 my-5 text-center">
+                <div class="bg-black/25 rounded-2xl p-3"><div class="text-xs text-gray-400">HP</div><div id="statHp" class="text-xl font-bold">0</div></div>
+                <div class="bg-black/25 rounded-2xl p-3"><div class="text-xs text-gray-400">ATK</div><div id="statAtk" class="text-xl font-bold">0</div></div>
+                <div class="bg-black/25 rounded-2xl p-3"><div class="text-xs text-gray-400">DEF</div><div id="statDef" class="text-xl font-bold">0</div></div>
+              </div>
+
+              <div class="bg-black/25 border border-white/10 rounded-2xl p-4 mb-5">
+                <div class="flex justify-between text-sm mb-2"><span class="text-gray-300">Signal Stability</span><strong id="stabilityText" class="text-[#FFD700]">0/0</strong></div>
+                <div id="stabilityBars" class="tracking-widest text-xl text-[#FFD700] mb-3">□□□□□</div>
+                <div class="flex justify-between text-sm"><span class="text-gray-300">ByteCoin Chance</span><strong id="chanceText" class="text-sky-200">0%</strong></div>
+              </div>
+
+              <p id="encounterLore" class="text-gray-300 text-sm mb-5"></p>
+              <button id="captureBtn" class="w-full px-5 py-3 rounded-2xl bg-[#FFD700] text-[#1A1A1A] hover:bg-yellow-300 font-bold">Throw ByteCoin</button>
+              <p id="captureResult" class="text-sm text-center mt-3 text-gray-300"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="grid gap-6 content-start">
+        <section class="bg-[#2C3E50] rounded-3xl border border-[#FFD700]/30 shadow-2xl overflow-hidden">
+          <div class="p-5 border-b border-white/10"><h2 class="text-2xl font-bold text-[#FFD700]">Admin Profile</h2><p class="text-sm text-gray-300">Saved locally in this browser.</p></div>
+          <div id="adminCard" class="p-5"></div>
+        </section>
+
+        <section class="bg-[#2C3E50] rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
+          <div class="p-5 border-b border-white/10 flex items-center justify-between gap-3">
+            <div><h2 class="text-2xl font-bold text-[#FFD700]">ByteCoin Collection</h2><p class="text-sm text-gray-300">Tap a captured sprite to open Codex data.</p></div>
+            <button id="resetBtn" class="text-xs px-3 py-2 rounded-xl border border-red-300/40 text-red-200 hover:bg-red-500/20">Reset</button>
+          </div>
+          <div id="collectionList" class="p-5 grid gap-4 max-h-[520px] overflow-auto"></div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <div id="dexModal" class="hidden fixed inset-0 z-50 bg-black/75 p-4 flex items-center justify-center">
+    <div class="w-full max-w-xl bg-[#2C3E50] border border-[#FFD700]/40 rounded-3xl shadow-2xl overflow-hidden">
+      <div class="p-5 border-b border-white/10 flex justify-between items-start gap-4">
+        <div><p id="modalDex" class="text-xs tracking-[0.25em] text-[#FFD700]"></p><h2 id="modalName" class="text-3xl font-bold text-white mt-1"></h2><p id="modalType" class="text-sky-200 text-sm mt-1"></p></div>
+        <button id="modalClose" class="px-3 py-2 rounded-xl bg-black/25 hover:bg-black/40 text-white">✕</button>
+      </div>
+      <div class="p-5">
+        <div id="modalIcon" class="text-7xl text-center mb-4"></div>
+        <p id="modalLore" class="text-gray-300 mb-5"></p>
+        <div class="grid grid-cols-3 gap-3 text-center">
+          <div class="bg-black/25 rounded-2xl p-3"><div class="text-xs text-gray-400">HP</div><strong id="modalHp"></strong></div>
+          <div class="bg-black/25 rounded-2xl p-3"><div class="text-xs text-gray-400">ATK</div><strong id="modalAtk"></strong></div>
+          <div class="bg-black/25 rounded-2xl p-3"><div class="text-xs text-gray-400">DEF</div><strong id="modalDef"></strong></div>
+        </div>
+        <a href="/databytedex.html" class="block mt-5 text-center px-5 py-3 rounded-xl bg-emerald-400/15 border border-emerald-300/40 text-emerald-200 font-bold">Open Full DataByteDex</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="vl-footer"></div>
+  <script src="/assets/includes.js"></script>
+  <script src="/assets/js/databyte-discovery.js"></script>
+</body>
+</html>
