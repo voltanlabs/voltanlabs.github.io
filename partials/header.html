@@ -10,38 +10,50 @@
     <button id="vlMenuBtn" class="inline-flex lg:hidden items-center justify-center w-12 h-12 rounded-xl border border-white/20 bg-black/20 hover:bg-black/30 transition text-white" aria-label="Open menu" aria-expanded="false" aria-controls="vlSiteMenu" type="button">☰</button>
     <nav class="hidden lg:flex flex-wrap items-center gap-1 text-sm">
       <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/index.html">Home</a>
-      <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/tools.html">Lab Tools</a>
-      <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/features.html">Programs</a>
       <a class="px-3 py-2 rounded-lg bg-[#FFD700]/15 border border-[#FFD700]/40 text-[#FFD700]" href="/voltarcade.html">VoltArcade</a>
-      <span class="mx-1 opacity-40">|</span>
-      <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/character-forge/index.html">Character Forge</a>
-      <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/gif-forge/index.html">Gif Forge</a>
-      <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/sprite-sheet-forge/index.html">Sheet Forge</a>
-      <span class="mx-1 opacity-40">|</span>
-      <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/voltanquest.html">Voltan’s Quest</a>
-      <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/sprites-battle.html">Databyte Arena</a>
       <a class="px-3 py-2 rounded-lg bg-[#007BFF]/20 border border-[#007BFF]/40 text-white" href="/databyte-admin-briefing.html">Data Discovery</a>
       <a class="px-3 py-2 rounded-lg bg-emerald-400/15 border border-emerald-300/40 text-emerald-200" href="/databytedex.html">DataByteDex</a>
+      <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/sprites-battle.html">Arena</a>
+      <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/voltanquest.html">Quest</a>
       <span class="mx-1 opacity-40">|</span>
+      <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/tools.html">Creator Suite</a>
+      <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/features.html">Programs</a>
       <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/about.html">About</a>
       <a class="px-3 py-2 rounded-lg hover:bg-white/10 text-zinc-100" href="/contact.html">Contact</a>
     </nav>
   </div>
   <div id="vlSiteMenu" class="hidden lg:hidden border-t border-white/10 bg-black/20">
-    <nav class="max-w-7xl mx-auto px-4 py-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-      <a href="/index.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Home</a>
-      <a href="/tools.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Lab Tools</a>
-      <a href="/features.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Programs</a>
-      <a href="/voltarcade.html" class="px-4 py-3 rounded-xl bg-[#FFD700]/15 border border-[#FFD700]/40 text-[#FFD700]">VoltArcade</a>
-      <a href="/character-forge/index.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Character Forge</a>
-      <a href="/gif-forge/index.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Gif Forge</a>
-      <a href="/sprite-sheet-forge/index.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Sprite Sheet Forge</a>
-      <a href="/voltanquest.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Voltan’s Quest</a>
-      <a href="/sprites-battle.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Databyte Arena</a>
-      <a href="/databyte-admin-briefing.html" class="px-4 py-3 rounded-xl bg-[#007BFF]/20 border border-[#007BFF]/40 text-white">Data Discovery</a>
-      <a href="/databytedex.html" class="px-4 py-3 rounded-xl bg-emerald-400/15 border border-emerald-300/40 text-emerald-200">DataByteDex</a>
-      <a href="/about.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">About</a>
-      <a href="/contact.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Contact</a>
+    <nav class="max-w-7xl mx-auto px-4 py-4 space-y-3 text-sm">
+      <a href="/index.html" class="block px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Home</a>
+      <details open class="rounded-2xl bg-black/20 border border-[#FFD700]/25 overflow-hidden">
+        <summary class="cursor-pointer px-4 py-3 text-[#FFD700] font-bold">🎮 VoltArcade</summary>
+        <div class="grid gap-2 p-3 pt-0">
+          <a href="/voltarcade.html" class="px-4 py-3 rounded-xl bg-[#FFD700]/15 border border-[#FFD700]/40 text-[#FFD700]">Game Hub</a>
+          <a href="/databyte-admin-briefing.html" class="px-4 py-3 rounded-xl bg-[#007BFF]/20 border border-[#007BFF]/40 text-white">Data Discovery</a>
+          <a href="/databytedex.html" class="px-4 py-3 rounded-xl bg-emerald-400/15 border border-emerald-300/40 text-emerald-200">DataByteDex</a>
+          <a href="/sprites-battle.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Databyte Arena</a>
+          <a href="/voltanquest.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Voltan’s Quest</a>
+        </div>
+      </details>
+      <details class="rounded-2xl bg-black/20 border border-white/10 overflow-hidden">
+        <summary class="cursor-pointer px-4 py-3 text-sky-200 font-bold">🛠️ Creator Suite</summary>
+        <div class="grid gap-2 p-3 pt-0">
+          <a href="/tools.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">All Tools</a>
+          <a href="/draw.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Draw Tool</a>
+          <a href="/character-forge/index.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Character Forge</a>
+          <a href="/gif-forge/index.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Gif Forge</a>
+          <a href="/sprite-sheet-forge/index.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Sprite Sheet Forge</a>
+          <a href="/promptcraft.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">PromptCraft</a>
+        </div>
+      </details>
+      <details class="rounded-2xl bg-black/20 border border-white/10 overflow-hidden">
+        <summary class="cursor-pointer px-4 py-3 text-zinc-100 font-bold">🌐 Site</summary>
+        <div class="grid gap-2 p-3 pt-0">
+          <a href="/features.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Programs</a>
+          <a href="/about.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">About</a>
+          <a href="/contact.html" class="px-4 py-3 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">Contact</a>
+        </div>
+      </details>
     </nav>
   </div>
 </header>
