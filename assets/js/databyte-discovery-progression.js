@@ -1,9 +1,10 @@
 // assets/js/databyte-discovery-progression.js
 // Progression layer for Data Discovery encounters.
-// Base sprites are always available. Upgraded sprites unlock after enough captures of the prior stage.
+// Base sprites are always available. Upgraded sprites unlock after enough historical captures of the prior stage.
 
 (function () {
   const COLLECTION_KEY = "vl_databyte_discovery_collection_v2";
+  const DECOMPILE_KEY = "vl_databyte_decompiled_v1";
   const REQUIRED_CAPTURES = 3;
 
   const canonNames = [
@@ -60,16 +61,28 @@
     [50, 51]
   ];
 
-  function readCollection() {
+  function read(key) {
     try {
-      return JSON.parse(localStorage.getItem(COLLECTION_KEY)) || [];
+      return JSON.parse(localStorage.getItem(key)) || [];
     } catch {
       return [];
     }
   }
 
+  function historicalCaptures() {
+    return [...read(COLLECTION_KEY), ...read(DECOMPILE_KEY)];
+  }
+
   function captureCount(name) {
-    return readCollection().filter((sprite) => sprite && sprite.name === name).length;
+    return historicalCaptures().filter((sprite) => sprite && sprite.name === name).length;
+  }
+
+  function currentInventoryCount(name) {
+    return read(COLLECTION_KEY).filter((sprite) => sprite && sprite.name === name).length;
+  }
+
+  function decompiledCount(name) {
+    return read(DECOMPILE_KEY).filter((sprite) => sprite && sprite.name === name).length;
   }
 
   function isStageUnlocked(group, stageIndex) {
@@ -89,10 +102,12 @@
     const stages = group.map((index, stageIndex) => {
       const name = canonNames[index];
       const count = captureCount(name);
+      const inventory = currentInventoryCount(name);
+      const decompiled = decompiledCount(name);
       const unlocked = isStageUnlocked(group, stageIndex);
       const nextName = canonNames[group[stageIndex + 1]] || null;
       const unlocksNext = Boolean(nextName);
-      return { name, count, unlocked, unlocksNext, nextName, stageIndex };
+      return { name, count, inventory, decompiled, unlocked, unlocksNext, nextName, stageIndex };
     });
 
     let activeGoal = null;
@@ -102,6 +117,8 @@
           priorName: stages[i].name,
           targetName: stages[i + 1].name,
           count: stages[i].count,
+          inventory: stages[i].inventory,
+          decompiled: stages[i].decompiled,
           required: REQUIRED_CAPTURES
         };
         break;
@@ -162,12 +179,11 @@
     if (!panel) return;
 
     const families = window.DD_FAMILY_PROGRESS || [];
-    const active = families.filter((family) => family.activeGoal);
     const completeCount = families.filter((family) => family.complete).length;
 
     panel.innerHTML = `
       <div class="text-[#FFD700] font-bold">Evolution Progress</div>
-      <p class="text-gray-300 mt-1 text-xs">Each sprite family unlocks separately. Capture 3 of the prior stage to unlock the next stage.</p>
+      <p class="text-gray-300 mt-1 text-xs">Each sprite family unlocks separately. Historical captures count even after Decompile.</p>
       <div class="mt-3 text-xs text-sky-200">Families complete: ${completeCount}/${families.length}</div>
       <div class="mt-3 grid gap-2 max-h-72 overflow-auto pr-1">
         ${families.map((family) => {
@@ -184,6 +200,7 @@
               </div>
               <p class="text-gray-300 text-xs mt-1">Capture <strong>${goal.priorName}</strong> to unlock <strong>${goal.targetName}</strong>.</p>
               <div class="text-[#FFD700] tracking-widest mt-2">${progressBar(goal.count)}</div>
+              <div class="text-[10px] text-gray-400 mt-1">Inventory ${goal.inventory} • Decompiled ${goal.decompiled}</div>
             </div>`;
         }).join("")}
       </div>`;
