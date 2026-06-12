@@ -106,9 +106,15 @@ function highlightActiveNav() {
 function initDataDiscoveryPatchHook() {
   if (!window.location.pathname.includes("databyte-discovery")) return;
   window.DD_PATCH_HOOK_READY = true;
+  window.DD_ENCOUNTER_GROUPS = [
+    [0,1,2],[3,4,5],[6,7,8],[9,10,11],[12,13,14],[15],[16,17,18],[19,20,21],
+    [22,23,24],[25,26,27],[28,29,30],[31],[32],[33],[34,35,36],[37,38],[39,40,41],
+    [42],[43,44],[45,46],[47],[48],[49],[50,51]
+  ];
+  window.DD_STAGE_WEIGHTS = { one:[100], two:[80,20], three:[70,25,5] };
 }
 
-window.VOLTAN_INCLUDES_VERSION = "2026-06-12-b";
+window.VOLTAN_INCLUDES_VERSION = "2026-06-12-c";
 
 (async function boot() {
   const headerInjected = await inject(
