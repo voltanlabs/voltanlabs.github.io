@@ -1,0 +1,40 @@
+/* v0.85.6 scanner source layout patch */
+#gamePanel > div > div.p-6.grid {
+  grid-template-columns: 1fr !important;
+}
+
+#gamePanel .scan-bg {
+  min-height: clamp(340px, 42vw, 520px) !important;
+  width: 100% !important;
+}
+
+#gamePanel .scan-bg > .relative.z-10 {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  transform: none !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+#spriteOrb {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+#gamePanel .scan-bg .absolute.inset-6 {
+  left: 1.5rem !important;
+  right: 1.5rem !important;
+}
+
+#encounterCard {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+@media (max-width: 768px) {
+  #gamePanel .scan-bg {
+    min-height: 520px !important;
+  }
+}
