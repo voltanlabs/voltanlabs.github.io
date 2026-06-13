@@ -1,11 +1,12 @@
 // assets/js/databyte-admin-console-simple.js
 (function () {
   const STORE_KEY = "vl_databyte_admin_console_tab";
-  const VERSION = "v0.82 Desktop Console";
+  const VERSION = "v0.83 Unified Console";
   const tabs = [
     ["profile", "Profile"],
     ["missions", "Missions"],
     ["inventory", "Inventory"],
+    ["collection", "Collection"],
     ["evolution", "Evolution"],
     ["signals", "Signals"],
     ["research", "Research"]
@@ -82,6 +83,7 @@
       profile: document.getElementById("adminCard"),
       missions: document.getElementById("scannerMissionsPanel"),
       inventory: document.getElementById("trueInventoryPanel"),
+      collection: document.getElementById("collectionList")?.parentElement,
       evolution: document.getElementById("progressionBadge"),
       signals: document.getElementById("specialSignalPanel")
     };
@@ -93,8 +95,8 @@
     return `<div class="db-simple-placeholder"><strong>${label}</strong><p>This system is initializing.</p></div>`;
   }
 
-  function hideSources(active, map) {
-    Object.entries(map).forEach(([id, node]) => {
+  function hideSources(map) {
+    Object.values(map).forEach((node) => {
       if (!node) return;
       node.classList.add("db-simple-source-hidden");
     });
@@ -113,7 +115,7 @@
       button.classList.toggle("is-active", button.dataset.simpleTab === active);
     });
 
-    hideSources(active, map);
+    hideSources(map);
 
     if (active === "research" || !map[active]) {
       body.innerHTML = placeholder(active);
