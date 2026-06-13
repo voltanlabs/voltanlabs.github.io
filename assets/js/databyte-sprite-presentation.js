@@ -1,6 +1,6 @@
 // assets/js/databyte-sprite-presentation.js
 (function () {
-  const VERSION = "v0.85.3 Center Lock";
+  const VERSION = "v0.85.4 Scanner Layout Fix";
   const RARITY_POWER = { common: 62, rare: 78, epic: 88, legendary: 96 };
   let lastName = "";
   let sequenceUntil = 0;
@@ -34,12 +34,17 @@
         align-items: center !important;
         justify-content: center !important;
         text-align: center !important;
-        width: min(92%, 520px) !important;
-        max-width: 520px !important;
+        width: min(92%, 560px) !important;
+        max-width: 560px !important;
         pointer-events: none;
       }
 
-      .db-scanner-center-lock > * {
+      .db-scanner-center-lock > *,
+      .db-scanner-center-lock p,
+      .db-scanner-center-lock h2,
+      .db-scanner-center-lock h3,
+      .db-scanner-center-lock span,
+      .db-scanner-center-lock div {
         margin-left: auto !important;
         margin-right: auto !important;
         text-align: center !important;
@@ -116,6 +121,7 @@
         text-transform: uppercase;
         opacity: .95;
         box-shadow: 0 0 24px rgba(255,215,0,.12);
+        white-space: nowrap;
       }
 
       .db-reveal-banner.db-rare {
@@ -130,6 +136,29 @@
 
       #gamePanel .scan-bg.db-rare-protocol + .db-sprite-status-bar {
         border-color: rgba(216,180,254,.32);
+      }
+
+      @media (min-width: 1024px) {
+        #encounterCard {
+          max-width: none !important;
+          width: 100% !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+          display: grid !important;
+          grid-template-columns: minmax(150px, 210px) minmax(0, 1fr) !important;
+          align-items: center !important;
+          gap: 1rem !important;
+        }
+
+        #encounterCard > * { min-width: 0; }
+
+        #encounterCard .text-5xl,
+        #encounterCard .text-6xl,
+        #encounterCard [class*="text-5xl"],
+        #encounterCard [class*="text-6xl"] {
+          font-size: clamp(4rem, 7vw, 6.8rem) !important;
+          line-height: 1 !important;
+        }
       }
 
       @media (max-width: 768px) {
@@ -153,6 +182,7 @@
           width: max-content;
           max-width: calc(100% - 24px);
           text-align: center;
+          white-space: normal;
         }
       }
     `;
@@ -161,14 +191,15 @@
 
   function stage() { return document.querySelector("#gamePanel .scan-bg"); }
   function nameNow() { return document.getElementById("encounterName")?.textContent?.trim() || ""; }
-  function rarityNow() { return document.querySelector("#encounterCard .text-\\[10px\\]")?.textContent?.trim() || ""; }
   function byteChance() { return document.getElementById("byteCoinChance")?.textContent?.trim() || "--"; }
 
   function rarityKey() {
-    const text = rarityNow().toLowerCase();
-    if (text.includes("legend")) return "legendary";
-    if (text.includes("epic")) return "epic";
-    if (text.includes("rare")) return "rare";
+    const card = document.getElementById("encounterCard");
+    const text = (card?.innerText || card?.textContent || "").toUpperCase();
+    if (/\bLEGENDARY\b/.test(text)) return "legendary";
+    if (/\bEPIC\b/.test(text)) return "epic";
+    if (/\bRARE\b/.test(text)) return "rare";
+    if (/\bCOMMON\b/.test(text)) return "common";
     return "common";
   }
 
@@ -188,12 +219,15 @@
     }
 
     if (orb.parentElement !== lock) lock.appendChild(orb);
-    let next = lock.nextElementSibling;
-    while (next && !next.classList.contains("db-scan-fx-layer") && !next.classList.contains("db-reveal-banner")) {
-      const node = next;
-      next = next.nextElementSibling;
+
+    Array.from(s.children).forEach((node) => {
+      if (node === lock) return;
+      if (node.classList?.contains("db-scan-fx-layer")) return;
+      if (node.classList?.contains("db-reveal-banner")) return;
+      if (node.id === "databyteSpriteStatusBar") return;
+      if (node.matches?.("script, style")) return;
       lock.appendChild(node);
-    }
+    });
     return lock;
   }
 
@@ -283,7 +317,7 @@
   function syncVersion() {
     document.querySelectorAll("span, strong").forEach((el) => {
       const text = (el.textContent || "").trim();
-      if (text === "v0.84 Scanner Evolution" || text === "v0.85 Sprite Presentation" || text === "v0.85.1 Scanner Polish" || text === "v0.85.2 Scanner HUD") el.textContent = VERSION;
+      if (text === "v0.84 Scanner Evolution" || text === "v0.85 Sprite Presentation" || text === "v0.85.1 Scanner Polish" || text === "v0.85.2 Scanner HUD" || text === "v0.85.3 Center Lock") el.textContent = VERSION;
     });
   }
 
@@ -292,6 +326,8 @@
     syncVersion();
     const target = document.getElementById("encounterName");
     if (target) new MutationObserver(updatePresentation).observe(target, { childList: true, characterData: true, subtree: true });
+    const card = document.getElementById("encounterCard");
+    if (card) new MutationObserver(updatePresentation).observe(card, { childList: true, characterData: true, subtree: true, attributes: true });
     setInterval(function () {
       updatePresentation();
       syncVersion();
