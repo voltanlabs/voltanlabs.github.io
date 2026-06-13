@@ -26,6 +26,7 @@
     loadScriptOnce("databyteDexPanelCleanupLoader", "/assets/js/databytedex-panel-cleanup.js");
     loadScriptOnce("databyteDexActionRouterLoader", "/assets/js/databytedex-action-router.js");
     loadScriptOnce("databyteScannerEffectsLoader", "/assets/js/databyte-scanner-effects.js");
+    loadScriptOnce("databyteSpritePresentationLoader", "/assets/js/databyte-sprite-presentation.js");
   }
 
   function apply() {
