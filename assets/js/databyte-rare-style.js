@@ -14,7 +14,17 @@
     document.body.appendChild(script);
   }
 
+  function loadStyleOnce(id, href) {
+    if (document.getElementById(id)) return;
+    const link = document.createElement("link");
+    link.id = id;
+    link.rel = "stylesheet";
+    link.href = href;
+    document.head.appendChild(link);
+  }
+
   function loadFeatureLayers() {
+    loadStyleOnce("databyteScannerLayoutStyles", "/assets/css/databyte-scanner-layout.css");
     loadScriptOnce("databyteRareSpawnLoader", "/assets/js/databyte-rare-spawn.js");
     loadScriptOnce("databyteMissionsLoader", "/assets/js/databyte-missions.js");
     loadScriptOnce("databyteInventoryLoader", "/assets/js/databyte-inventory.js");
