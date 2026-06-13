@@ -22,6 +22,7 @@
     loadScriptOnce("databytePanelStateLoader", "/assets/js/databyte-panel-state.js");
     loadScriptOnce("databyteAppShellLoader", "/assets/js/databyte-app-shell.js");
     loadScriptOnce("databyteAdminTabsLoader", "/assets/js/databyte-admin-tabs.js");
+    loadScriptOnce("databyteAdminTabsStableLoader", "/assets/js/databyte-admin-tabs-stable.js");
   }
 
   function apply() {
