@@ -75,6 +75,7 @@
   function render() {
     const el = panel();
     if (!el) return;
+    const oldScroll = document.getElementById("inventoryScrollList")?.scrollTop || 0;
     const collection = read(COLLECTION_KEY);
     const specialCount = collection.filter((sprite) => SPECIAL_NAMES.has(sprite.name)).length;
     const decomposedCount = read(DECOMPILE_KEY).length;
@@ -87,7 +88,10 @@
         ${tabButton("special", "Special", specialCount)}
         ${tabButton("decompiled", "Decompiled", decomposedCount)}
       </div>
-      <div class="grid gap-2 max-h-[420px] overflow-auto pr-1">${body()}</div>`;
+      <div id="inventoryScrollList" class="grid gap-2 max-h-[420px] overflow-auto pr-1">${body()}</div>`;
+
+    const scrollList = document.getElementById("inventoryScrollList");
+    if (scrollList) scrollList.scrollTop = oldScroll;
 
     el.querySelectorAll("[data-inventory-tab]").forEach((button) => {
       button.addEventListener("click", () => {
