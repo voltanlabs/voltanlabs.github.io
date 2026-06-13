@@ -48,13 +48,15 @@
     makePanel();
     const panel = document.getElementById("scannerMissionsPanel");
     if (!panel) return;
+
+    const oldScroll = document.getElementById("scannerMissionsList")?.scrollTop || 0;
     const list = missions();
     const done = list.filter((m) => m.progress >= m.target).length;
     panel.innerHTML = `
       <div class="text-sky-200 font-bold">Scanner Missions</div>
       <p class="text-gray-300 mt-1 text-xs">v0.80 mission tracking is online.</p>
       <div class="mt-2 text-xs text-sky-100">Completed: <strong>${done}/${list.length}</strong></div>
-      <div class="mt-3 grid gap-2 max-h-72 overflow-auto pr-1">
+      <div id="scannerMissionsList" class="mt-3 grid gap-2 max-h-72 overflow-auto pr-1">
         ${list.map((m) => `
           <div class="bg-black/20 border ${m.progress >= m.target ? "border-emerald-300/30" : "border-white/10"} rounded-xl p-3">
             <div class="flex justify-between gap-3"><strong>${m.title}</strong><span class="${m.progress >= m.target ? "text-emerald-200" : "text-[#FFD700]"} text-xs">${Math.min(m.progress, m.target)}/${m.target}</span></div>
@@ -62,6 +64,9 @@
             <div class="text-[#FFD700] tracking-widest mt-2 text-xs">${bar(m.progress, m.target)}</div>
           </div>`).join("")}
       </div>`;
+
+    const newScrollTarget = document.getElementById("scannerMissionsList");
+    if (newScrollTarget) newScrollTarget.scrollTop = oldScroll;
   }
 
   function boot() {
