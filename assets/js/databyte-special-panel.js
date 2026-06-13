@@ -49,7 +49,7 @@
     const last = list[list.length - 1];
     panel.innerHTML = `
       <div class="text-purple-200 font-bold">Special Signals</div>
-      <p class="text-gray-300 mt-1">v0.70 signal monitoring is online.</p>
+      <p class="text-gray-300 mt-1">v0.81 signal monitoring is online.</p>
       <div class="mt-2 text-xs text-purple-100">Signals Logged: <strong>${list.length}</strong></div>
       <div class="mt-1 text-xs text-gray-400">Last Signal: <strong>${last ? last.name : "None"}</strong></div>
       <div class="mt-1 text-xs text-gray-500">Watching: Glitchwyrm, Mirrormaster, Proxsentience</div>`;
