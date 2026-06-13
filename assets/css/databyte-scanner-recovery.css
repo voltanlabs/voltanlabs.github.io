@@ -1,0 +1,53 @@
+/* v0.85.5 scanner recovery */
+#gamePanel .scan-bg {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: column !important;
+}
+
+#gamePanel .scan-bg > :not(.db-scan-fx-layer):not(.db-reveal-banner) {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+.db-scanner-center-lock {
+  display: contents !important;
+}
+
+.db-scanner-center-lock > * {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+.db-reveal-banner {
+  left: 50% !important;
+  top: auto !important;
+  bottom: 20px !important;
+  transform: translateX(-50%) !important;
+  white-space: nowrap !important;
+}
+
+#databyteSpriteStatusBar {
+  margin-top: 12px !important;
+}
+
+@media (min-width: 1024px) {
+  #encounterCard {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .db-reveal-banner {
+    bottom: 14px !important;
+    max-width: calc(100% - 24px) !important;
+    white-space: normal !important;
+    text-align: center !important;
+  }
+}
