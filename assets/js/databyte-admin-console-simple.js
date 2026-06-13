@@ -1,7 +1,7 @@
 // assets/js/databyte-admin-console-simple.js
 (function () {
   const STORE_KEY = "vl_databyte_admin_console_tab";
-  const VERSION = "v0.83 Unified Console";
+  const VERSION = "v0.83 Stable Console";
   const tabs = [
     ["profile", "Profile"],
     ["missions", "Missions"],
@@ -21,7 +21,7 @@
   function setActive(id) {
     if (!tabs.some(([tabId]) => tabId === id)) return;
     localStorage.setItem(STORE_KEY, id);
-    render(true);
+    paint();
   }
 
   function injectStyles() {
@@ -29,7 +29,7 @@
     const style = document.createElement("style");
     style.id = "databyteSimpleConsoleStyles";
     style.textContent = `
-      #databyteAdminConsole, #databyteSimpleAdminConsole {
+      #databyteSimpleAdminConsole {
         background: rgba(15, 23, 42, .76);
         border: 1px solid rgba(125, 211, 252, .24);
         border-radius: 24px;
@@ -45,9 +45,11 @@
       .db-simple-tab { border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.22); color:#CBD5E1; border-radius:12px; padding:9px 6px; font-size:11px; font-weight:800; text-align:center; }
       .db-simple-tab.is-active { background:#FFD700; border-color:#FFD700; color:#111827; }
       .db-simple-body { max-height:calc(100vh - 260px); min-height:360px; overflow:auto; padding-right:4px; scrollbar-width:thin; }
-      .db-simple-body > section, .db-simple-body > div { margin-top:0 !important; }
-      .db-simple-placeholder { border:1px dashed rgba(255,215,0,.32); background:rgba(255,215,0,.07); border-radius:18px; padding:16px; color:#E5E7EB; }
-      .db-simple-placeholder strong { color:#FFD700; display:block; margin-bottom:6px; }
+      .db-console-section { display:none !important; }
+      .db-console-section.is-active { display:block !important; }
+      .db-console-section > section, .db-console-section > div { margin-top:0 !important; }
+      .db-console-placeholder { border:1px dashed rgba(255,215,0,.32); background:rgba(255,215,0,.07); border-radius:18px; padding:16px; color:#E5E7EB; }
+      .db-console-placeholder strong { color:#FFD700; display:block; margin-bottom:6px; }
       .db-simple-source-hidden { display:none !important; }
       @media (max-width:1279px) { .db-simple-body { max-height:none; min-height:0; } }
     `;
@@ -59,17 +61,21 @@
     if (!adminCard) return null;
     let panel = document.getElementById("databyteSimpleAdminConsole");
     if (panel) return panel;
+
     panel = document.createElement("section");
     panel.id = "databyteSimpleAdminConsole";
     panel.innerHTML = `
       <div class="db-simple-header">
-        <div><h2>Admin Console</h2><p>Scanner systems routed into compact tabs.</p></div>
+        <div><h2>Admin Console</h2><p>Scanner systems routed into stable tabs.</p></div>
         <span class="db-simple-version">${VERSION}</span>
       </div>
       <div class="db-simple-tabs">
         ${tabs.map(([id, label]) => `<button type="button" class="db-simple-tab" data-simple-tab="${id}">${label}</button>`).join("")}
       </div>
-      <div id="databyteSimpleConsoleBody" class="db-simple-body"></div>`;
+      <div id="databyteSimpleConsoleBody" class="db-simple-body">
+        ${tabs.map(([id]) => `<div class="db-console-section" data-console-section="${id}"></div>`).join("")}
+      </div>`;
+
     adminCard.parentElement.appendChild(panel);
     panel.querySelector(".db-simple-tabs").addEventListener("click", function (event) {
       const button = event.target.closest("[data-simple-tab]");
@@ -79,7 +85,7 @@
     return panel;
   }
 
-  function sources() {
+  function sourceMap() {
     return {
       profile: document.getElementById("adminCard"),
       missions: document.getElementById("scannerMissionsPanel"),
@@ -88,19 +94,6 @@
       evolution: document.getElementById("progressionBadge"),
       signals: document.getElementById("specialSignalPanel")
     };
-  }
-
-  function placeholder(id) {
-    if (id === "research") return `<div class="db-simple-placeholder"><strong>Research Lab</strong><p>Coming next: Research Data, ByteCoins, Scanner Rank, Capture Efficiency, Signal Stabilizers, Rare Signal Detection, and Evolution Insight.</p></div>`;
-    const label = tabs.find(([tabId]) => tabId === id)?.[1] || "Console";
-    return `<div class="db-simple-placeholder"><strong>${label}</strong><p>This system is initializing.</p></div>`;
-  }
-
-  function hideSources(map) {
-    Object.values(map).forEach((node) => {
-      if (!node) return;
-      node.classList.add("db-simple-source-hidden");
-    });
   }
 
   function renameDexPanel(node) {
@@ -112,40 +105,53 @@
     });
   }
 
-  function render(force) {
-    injectStyles();
-    const panel = makeConsole();
-    if (!panel) return;
-    const active = activeTab();
-    const body = document.getElementById("databyteSimpleConsoleBody");
-    const map = sources();
-    if (!body) return;
-
-    panel.querySelectorAll("[data-simple-tab]").forEach((button) => {
-      button.classList.toggle("is-active", button.dataset.simpleTab === active);
-    });
-
-    if (!force && body.dataset.activeTab === active && body.children.length) return;
-
-    hideSources(map);
-
-    if (active === "research" || !map[active]) {
-      body.innerHTML = placeholder(active);
-      body.dataset.activeTab = active;
+  function ensurePlaceholder(id) {
+    const section = document.querySelector(`[data-console-section="${id}"]`);
+    if (!section || section.children.length) return;
+    if (id === "research") {
+      section.innerHTML = `<div class="db-console-placeholder"><strong>Research Lab</strong><p>Coming next: Research Data, ByteCoins, Scanner Rank, Capture Efficiency, Signal Stabilizers, Rare Signal Detection, and Evolution Insight.</p></div>`;
       return;
     }
+    const label = tabs.find(([tabId]) => tabId === id)?.[1] || "Console";
+    section.innerHTML = `<div class="db-console-placeholder"><strong>${label}</strong><p>This system is initializing.</p></div>`;
+  }
 
-    const node = map[active];
-    node.classList.remove("db-simple-source-hidden");
-    if (active === "databytedex") renameDexPanel(node);
-    body.innerHTML = "";
-    body.appendChild(node);
-    body.dataset.activeTab = active;
+  function parkSources() {
+    const map = sourceMap();
+    Object.entries(map).forEach(([id, node]) => {
+      if (!node) return;
+      const section = document.querySelector(`[data-console-section="${id}"]`);
+      if (!section) return;
+      if (node.parentElement !== section) {
+        section.innerHTML = "";
+        section.appendChild(node);
+      }
+      node.classList.remove("db-simple-source-hidden");
+      if (id === "databytedex") renameDexPanel(node);
+    });
+  }
+
+  function paint() {
+    const active = activeTab();
+    document.querySelectorAll("[data-simple-tab]").forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.simpleTab === active);
+    });
+    document.querySelectorAll("[data-console-section]").forEach((section) => {
+      section.classList.toggle("is-active", section.dataset.consoleSection === active);
+    });
+  }
+
+  function render() {
+    injectStyles();
+    if (!makeConsole()) return;
+    parkSources();
+    tabs.forEach(([id]) => ensurePlaceholder(id));
+    paint();
   }
 
   function boot() {
-    render(true);
-    setInterval(() => render(false), 1200);
+    render();
+    setInterval(render, 1500);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
