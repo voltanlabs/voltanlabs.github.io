@@ -6,6 +6,14 @@
     return document.getElementById("encounterName")?.textContent?.trim() || "";
   }
 
+  function loadSpawnLayer() {
+    if (document.getElementById("databyteRareSpawnLoader")) return;
+    const script = document.createElement("script");
+    script.id = "databyteRareSpawnLoader";
+    script.src = "/assets/js/databyte-rare-spawn.js";
+    document.body.appendChild(script);
+  }
+
   function apply() {
     const active = NAMES.has(nameNow());
     const card = document.getElementById("encounterCard");
@@ -28,6 +36,7 @@
   }
 
   function boot() {
+    loadSpawnLayer();
     apply();
     const target = document.getElementById("encounterName");
     if (target) new MutationObserver(apply).observe(target, { childList: true, characterData: true, subtree: true });
