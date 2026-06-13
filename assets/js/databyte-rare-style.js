@@ -18,6 +18,7 @@
     loadScriptOnce("databyteRareSpawnLoader", "/assets/js/databyte-rare-spawn.js");
     loadScriptOnce("databyteMissionsLoader", "/assets/js/databyte-missions.js");
     loadScriptOnce("databyteInventoryLoader", "/assets/js/databyte-inventory.js");
+    loadScriptOnce("databyteBattleLoader", "/assets/js/databyte-battle.js");
   }
 
   function apply() {
