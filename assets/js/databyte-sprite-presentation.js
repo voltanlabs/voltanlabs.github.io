@@ -1,6 +1,6 @@
 // assets/js/databyte-sprite-presentation.js
 (function () {
-  const VERSION = "v0.85.1 Scanner Polish";
+  const VERSION = "v0.85.2 Scanner HUD";
   const RARITY_POWER = { common: 62, rare: 78, epic: 88, legendary: 96 };
   let lastName = "";
   let sequenceUntil = 0;
@@ -21,33 +21,25 @@
         align-items: center !important;
         justify-content: center !important;
         flex-direction: column !important;
-        padding-bottom: 96px !important;
       }
 
-      #gamePanel .scan-bg.db-sprite-focus #spriteOrb {
-        transform-origin: center;
-      }
-
-      #gamePanel .scan-bg.db-sprite-focus #spriteOrb + * {
-        text-align: center;
-      }
+      #gamePanel .scan-bg.db-sprite-focus #spriteOrb { transform-origin: center; }
+      #gamePanel .scan-bg.db-sprite-focus #spriteOrb + * { text-align: center; }
 
       .db-sprite-status-bar {
-        position: absolute;
-        left: 18px;
-        right: 18px;
-        bottom: 16px;
-        z-index: 3;
-        display: grid;
+        display: none;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 8px;
-        pointer-events: none;
+        gap: 10px;
+        width: 100%;
+        margin-top: 12px;
         border: 1px solid rgba(125,211,252,.18);
         background: rgba(15,23,42,.34);
         border-radius: 18px;
-        padding: 8px;
+        padding: 9px;
         backdrop-filter: blur(10px);
       }
+
+      .db-sprite-status-bar.is-active { display: grid; }
 
       .db-sprite-meter {
         border: 1px solid rgba(125,211,252,.25);
@@ -117,23 +109,20 @@
         box-shadow: inset 0 0 120px rgba(192,132,252,.18), 0 0 45px rgba(192,132,252,.18) !important;
       }
 
-      #gamePanel .scan-bg.db-rare-protocol .db-sprite-status-bar {
+      #gamePanel .scan-bg.db-rare-protocol + .db-sprite-status-bar {
         border-color: rgba(216,180,254,.32);
       }
 
       @media (max-width: 768px) {
-        #gamePanel .scan-bg.db-sprite-focus {
-          padding-bottom: 18px !important;
+        #spriteOrb {
+          width: clamp(135px, 42vw, 190px) !important;
+          height: clamp(135px, 42vw, 190px) !important;
+          font-size: clamp(4.25rem, 18vw, 6rem) !important;
         }
 
         .db-sprite-status-bar {
-          position: relative;
-          left: auto;
-          right: auto;
-          bottom: auto;
-          margin-top: 14px;
           grid-template-columns: 1fr;
-          width: 100%;
+          margin-top: 12px;
         }
 
         .db-reveal-banner {
@@ -167,12 +156,13 @@
   function ensureStatusBar() {
     const s = stage();
     if (!s) return null;
-    let bar = s.querySelector(".db-sprite-status-bar");
+    let bar = document.getElementById("databyteSpriteStatusBar");
     if (!bar) {
       bar = document.createElement("div");
+      bar.id = "databyteSpriteStatusBar";
       bar.className = "db-sprite-status-bar";
-      s.appendChild(bar);
     }
+    if (bar.parentElement !== s.parentElement) s.insertAdjacentElement("afterend", bar);
     return bar;
   }
 
@@ -221,11 +211,16 @@
 
     const bar = ensureStatusBar();
     if (bar) {
-      bar.innerHTML = [
-        meter("Signal", hasEncounter ? `${signal}%` : "Idle", signal),
-        meter("Capture", hasEncounter ? chanceText : "--", Math.max(8, chanceNumber)),
-        meter("Rarity", hasEncounter ? rarity.toUpperCase() : "Waiting", hasEncounter ? signal : 18)
-      ].join("");
+      bar.classList.toggle("is-active", hasEncounter);
+      if (hasEncounter) {
+        bar.innerHTML = [
+          meter("Signal", `${signal}%`, signal),
+          meter("Capture", chanceText, Math.max(8, chanceNumber)),
+          meter("Rarity", rarity.toUpperCase(), signal)
+        ].join("");
+      } else {
+        bar.innerHTML = "";
+      }
     }
 
     const banner = ensureBanner();
@@ -243,7 +238,7 @@
   function syncVersion() {
     document.querySelectorAll("span, strong").forEach((el) => {
       const text = (el.textContent || "").trim();
-      if (text === "v0.84 Scanner Evolution" || text === "v0.85 Sprite Presentation") el.textContent = VERSION;
+      if (text === "v0.84 Scanner Evolution" || text === "v0.85 Sprite Presentation" || text === "v0.85.1 Scanner Polish") el.textContent = VERSION;
     });
   }
 
