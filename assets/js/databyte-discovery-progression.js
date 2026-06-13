@@ -178,6 +178,7 @@
     const panel = document.getElementById("progressionBadge");
     if (!panel) return;
 
+    const oldScroll = document.getElementById("evolutionProgressList")?.scrollTop || 0;
     const families = window.DD_FAMILY_PROGRESS || [];
     const completeCount = families.filter((family) => family.complete).length;
 
@@ -185,7 +186,7 @@
       <div class="text-[#FFD700] font-bold">Evolution Progress</div>
       <p class="text-gray-300 mt-1 text-xs">Each sprite family unlocks separately. Historical captures count even after Decompile.</p>
       <div class="mt-3 text-xs text-sky-200">Families complete: ${completeCount}/${families.length}</div>
-      <div class="mt-3 grid gap-2 max-h-72 overflow-auto pr-1">
+      <div id="evolutionProgressList" class="mt-3 grid gap-2 max-h-72 overflow-auto pr-1">
         ${families.map((family) => {
           if (!family.activeGoal) {
             return `<div class="bg-black/20 rounded-xl p-3 border border-emerald-300/20"><div class="flex justify-between gap-3"><strong>${family.root}</strong><span class="text-emerald-200 text-xs">Unlocked</span></div></div>`;
@@ -204,6 +205,9 @@
             </div>`;
         }).join("")}
       </div>`;
+
+    const newScrollTarget = document.getElementById("evolutionProgressList");
+    if (newScrollTarget) newScrollTarget.scrollTop = oldScroll;
   }
 
   function bootProgression() {
