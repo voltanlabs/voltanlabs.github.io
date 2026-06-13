@@ -10,7 +10,6 @@
     const insideConsole = consoleBody && consoleBody.contains(panel);
     if (!insideConsole) {
       panel.classList.add("db-simple-source-hidden");
-      panel.style.display = "none";
     }
   }
 
