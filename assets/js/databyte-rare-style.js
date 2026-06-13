@@ -20,6 +20,7 @@
     loadScriptOnce("databyteInventoryLoader", "/assets/js/databyte-inventory.js");
     loadScriptOnce("databyteBattleLoader", "/assets/js/databyte-battle.js");
     loadScriptOnce("databytePanelStateLoader", "/assets/js/databyte-panel-state.js");
+    loadScriptOnce("databyteAppShellLoader", "/assets/js/databyte-app-shell.js");
   }
 
   function apply() {
