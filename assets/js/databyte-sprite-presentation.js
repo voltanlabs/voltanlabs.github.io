@@ -1,6 +1,6 @@
 // assets/js/databyte-sprite-presentation.js
 (function () {
-  const VERSION = "v0.85.2 Scanner HUD";
+  const VERSION = "v0.85.3 Center Lock";
   const RARITY_POWER = { common: 62, rare: 78, epic: 88, legendary: 96 };
   let lastName = "";
   let sequenceUntil = 0;
@@ -14,17 +14,36 @@
         width: clamp(170px, 23vw, 300px) !important;
         height: clamp(170px, 23vw, 300px) !important;
         font-size: clamp(5.25rem, 9vw, 8.5rem) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
       }
 
-      #gamePanel .scan-bg.db-sprite-focus {
+      #gamePanel .scan-bg {
+        display: grid !important;
+        place-items: center !important;
+      }
+
+      .db-scanner-center-lock {
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        z-index: 2 !important;
         display: flex !important;
+        flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        flex-direction: column !important;
+        text-align: center !important;
+        width: min(92%, 520px) !important;
+        max-width: 520px !important;
+        pointer-events: none;
       }
 
-      #gamePanel .scan-bg.db-sprite-focus #spriteOrb { transform-origin: center; }
-      #gamePanel .scan-bg.db-sprite-focus #spriteOrb + * { text-align: center; }
+      .db-scanner-center-lock > * {
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: center !important;
+      }
 
       .db-sprite-status-bar {
         display: none;
@@ -120,6 +139,10 @@
           font-size: clamp(4.25rem, 18vw, 6rem) !important;
         }
 
+        .db-scanner-center-lock {
+          width: min(92%, 360px) !important;
+        }
+
         .db-sprite-status-bar {
           grid-template-columns: 1fr;
           margin-top: 12px;
@@ -151,6 +174,27 @@
 
   function meter(label, value, fill) {
     return `<div class="db-sprite-meter"><span>${label}<strong>${value}</strong></span><div class="db-meter-track"><div class="db-meter-fill" style="--fill:${fill}%"></div></div></div>`;
+  }
+
+  function ensureCenterLock() {
+    const s = stage();
+    const orb = document.getElementById("spriteOrb");
+    if (!s || !orb) return null;
+    let lock = s.querySelector(".db-scanner-center-lock");
+    if (!lock) {
+      lock = document.createElement("div");
+      lock.className = "db-scanner-center-lock";
+      s.appendChild(lock);
+    }
+
+    if (orb.parentElement !== lock) lock.appendChild(orb);
+    let next = lock.nextElementSibling;
+    while (next && !next.classList.contains("db-scan-fx-layer") && !next.classList.contains("db-reveal-banner")) {
+      const node = next;
+      next = next.nextElementSibling;
+      lock.appendChild(node);
+    }
+    return lock;
   }
 
   function ensureStatusBar() {
@@ -198,6 +242,7 @@
     injectStyles();
     const s = stage();
     if (!s) return;
+    ensureCenterLock();
     const name = nameNow();
     const hasEncounter = !!name && !["Awaiting Signal", "Unknown Signal"].includes(name);
     const rarity = rarityKey();
@@ -238,7 +283,7 @@
   function syncVersion() {
     document.querySelectorAll("span, strong").forEach((el) => {
       const text = (el.textContent || "").trim();
-      if (text === "v0.84 Scanner Evolution" || text === "v0.85 Sprite Presentation" || text === "v0.85.1 Scanner Polish") el.textContent = VERSION;
+      if (text === "v0.84 Scanner Evolution" || text === "v0.85 Sprite Presentation" || text === "v0.85.1 Scanner Polish" || text === "v0.85.2 Scanner HUD") el.textContent = VERSION;
     });
   }
 
