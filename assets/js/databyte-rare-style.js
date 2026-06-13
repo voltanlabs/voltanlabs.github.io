@@ -6,12 +6,18 @@
     return document.getElementById("encounterName")?.textContent?.trim() || "";
   }
 
-  function loadSpawnLayer() {
-    if (document.getElementById("databyteRareSpawnLoader")) return;
+  function loadScriptOnce(id, src) {
+    if (document.getElementById(id)) return;
     const script = document.createElement("script");
-    script.id = "databyteRareSpawnLoader";
-    script.src = "/assets/js/databyte-rare-spawn.js";
+    script.id = id;
+    script.src = src;
     document.body.appendChild(script);
+  }
+
+  function loadFeatureLayers() {
+    loadScriptOnce("databyteRareSpawnLoader", "/assets/js/databyte-rare-spawn.js");
+    loadScriptOnce("databyteMissionsLoader", "/assets/js/databyte-missions.js");
+    loadScriptOnce("databyteInventoryLoader", "/assets/js/databyte-inventory.js");
   }
 
   function apply() {
@@ -36,7 +42,7 @@
   }
 
   function boot() {
-    loadSpawnLayer();
+    loadFeatureLayers();
     apply();
     const target = document.getElementById("encounterName");
     if (target) new MutationObserver(apply).observe(target, { childList: true, characterData: true, subtree: true });
