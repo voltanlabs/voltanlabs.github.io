@@ -1,8 +1,9 @@
 // assets/js/databyte-sprite-presentation.js
 (function () {
-  const VERSION = "v0.85 Sprite Presentation";
+  const VERSION = "v0.85.1 Scanner Polish";
   const RARITY_POWER = { common: 62, rare: 78, epic: 88, legendary: 96 };
   let lastName = "";
+  let sequenceUntil = 0;
 
   function injectStyles() {
     if (document.getElementById("databyteSpritePresentationStyles")) return;
@@ -10,25 +11,42 @@
     style.id = "databyteSpritePresentationStyles";
     style.textContent = `
       #spriteOrb {
-        width: clamp(150px, 21vw, 270px) !important;
-        height: clamp(150px, 21vw, 270px) !important;
-        font-size: clamp(4.5rem, 8vw, 7.5rem) !important;
+        width: clamp(170px, 23vw, 300px) !important;
+        height: clamp(170px, 23vw, 300px) !important;
+        font-size: clamp(5.25rem, 9vw, 8.5rem) !important;
+      }
+
+      #gamePanel .scan-bg.db-sprite-focus {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-direction: column !important;
+        padding-bottom: 96px !important;
       }
 
       #gamePanel .scan-bg.db-sprite-focus #spriteOrb {
         transform-origin: center;
       }
 
+      #gamePanel .scan-bg.db-sprite-focus #spriteOrb + * {
+        text-align: center;
+      }
+
       .db-sprite-status-bar {
         position: absolute;
         left: 18px;
         right: 18px;
-        bottom: 18px;
+        bottom: 16px;
         z-index: 3;
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 8px;
         pointer-events: none;
+        border: 1px solid rgba(125,211,252,.18);
+        background: rgba(15,23,42,.34);
+        border-radius: 18px;
+        padding: 8px;
+        backdrop-filter: blur(10px);
       }
 
       .db-sprite-meter {
@@ -86,15 +104,28 @@
         letter-spacing: .16em;
         text-transform: uppercase;
         opacity: .95;
+        box-shadow: 0 0 24px rgba(255,215,0,.12);
       }
 
       .db-reveal-banner.db-rare {
         border-color: rgba(216,180,254,.55);
         color: #F5D0FE;
-        box-shadow: 0 0 32px rgba(192,132,252,.22);
+        box-shadow: 0 0 36px rgba(192,132,252,.34);
+      }
+
+      #gamePanel .scan-bg.db-rare-protocol {
+        box-shadow: inset 0 0 120px rgba(192,132,252,.18), 0 0 45px rgba(192,132,252,.18) !important;
+      }
+
+      #gamePanel .scan-bg.db-rare-protocol .db-sprite-status-bar {
+        border-color: rgba(216,180,254,.32);
       }
 
       @media (max-width: 768px) {
+        #gamePanel .scan-bg.db-sprite-focus {
+          padding-bottom: 18px !important;
+        }
+
         .db-sprite-status-bar {
           position: relative;
           left: auto;
@@ -102,6 +133,7 @@
           bottom: auto;
           margin-top: 14px;
           grid-template-columns: 1fr;
+          width: 100%;
         }
 
         .db-reveal-banner {
@@ -157,6 +189,21 @@
     return banner;
   }
 
+  function runSequence(name, rare) {
+    const sequence = rare
+      ? ["Rare Signal Detected", "Warning: Anomaly", "Lock Acquired", `${name} Revealed`]
+      : ["Signal Detected", "Lock Acquired", "Materializing", `${name} Revealed`];
+    sequenceUntil = Date.now() + sequence.length * 560 + 300;
+    sequence.forEach((label, index) => {
+      setTimeout(() => {
+        const banner = ensureBanner();
+        if (!banner) return;
+        banner.textContent = label;
+        banner.classList.toggle("db-rare", rare);
+      }, index * 560);
+    });
+  }
+
   function updatePresentation() {
     injectStyles();
     const s = stage();
@@ -170,6 +217,7 @@
     const chanceNumber = Number(chanceText.replace(/[^0-9]/g, "")) || (hasEncounter ? 70 : 0);
 
     s.classList.toggle("db-sprite-focus", hasEncounter);
+    s.classList.toggle("db-rare-protocol", rare && hasEncounter);
 
     const bar = ensureStatusBar();
     if (bar) {
@@ -181,27 +229,21 @@
     }
 
     const banner = ensureBanner();
-    if (banner) {
+    if (banner && Date.now() > sequenceUntil) {
       banner.classList.toggle("db-rare", rare && hasEncounter);
-      banner.textContent = hasEncounter ? `${rare ? "Rare " : ""}Signal Locked • ${name}` : "Scanner Ready";
+      banner.textContent = hasEncounter ? `${rare ? "Rare Protocol • " : "Signal Locked • "}${name}` : "Scanner Ready";
     }
 
     if (hasEncounter && name !== lastName) {
       lastName = name;
-      const sequence = ["Signal Detected", "Lock Acquired", "Materializing", `${name} Revealed`];
-      sequence.forEach((label, index) => {
-        setTimeout(() => {
-          const currentBanner = ensureBanner();
-          if (currentBanner) currentBanner.textContent = label;
-        }, index * 520);
-      });
+      runSequence(name, rare);
     }
   }
 
   function syncVersion() {
     document.querySelectorAll("span, strong").forEach((el) => {
       const text = (el.textContent || "").trim();
-      if (text === "v0.84 Scanner Evolution") el.textContent = VERSION;
+      if (text === "v0.84 Scanner Evolution" || text === "v0.85 Sprite Presentation") el.textContent = VERSION;
     });
   }
 
