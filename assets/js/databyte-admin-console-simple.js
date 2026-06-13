@@ -6,7 +6,7 @@
     ["profile", "Profile"],
     ["missions", "Missions"],
     ["inventory", "Inventory"],
-    ["collection", "Collection"],
+    ["databytedex", "DataByteDex"],
     ["evolution", "Evolution"],
     ["signals", "Signals"],
     ["research", "Research"]
@@ -14,6 +14,7 @@
 
   function activeTab() {
     const saved = localStorage.getItem(STORE_KEY) || "profile";
+    if (saved === "collection") return "databytedex";
     return tabs.some(([id]) => id === saved) ? saved : "profile";
   }
 
@@ -83,7 +84,7 @@
       profile: document.getElementById("adminCard"),
       missions: document.getElementById("scannerMissionsPanel"),
       inventory: document.getElementById("trueInventoryPanel"),
-      collection: document.getElementById("collectionList")?.parentElement,
+      databytedex: document.getElementById("collectionList")?.parentElement,
       evolution: document.getElementById("progressionBadge"),
       signals: document.getElementById("specialSignalPanel")
     };
@@ -99,6 +100,15 @@
     Object.values(map).forEach((node) => {
       if (!node) return;
       node.classList.add("db-simple-source-hidden");
+    });
+  }
+
+  function renameDexPanel(node) {
+    if (!node) return;
+    node.querySelectorAll("h2, h3, strong, p").forEach((el) => {
+      const text = (el.textContent || "").trim();
+      if (text === "ByteCoin Collection") el.textContent = "DataByteDex";
+      if (text === "Tap a captured sprite to open Codex data.") el.textContent = "Captured sprite records, Dex data, and discovery history.";
     });
   }
 
@@ -126,6 +136,7 @@
     clone.classList.remove("db-simple-source-hidden");
     clone.removeAttribute("id");
     clone.querySelectorAll("[id]").forEach((node) => node.removeAttribute("id"));
+    if (active === "databytedex") renameDexPanel(clone);
     body.innerHTML = "";
     body.appendChild(clone);
   }
