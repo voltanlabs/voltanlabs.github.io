@@ -21,7 +21,7 @@
   function setActive(id) {
     if (!tabs.some(([tabId]) => tabId === id)) return;
     localStorage.setItem(STORE_KEY, id);
-    render();
+    render(true);
   }
 
   function injectStyles() {
@@ -112,7 +112,7 @@
     });
   }
 
-  function render() {
+  function render(force) {
     injectStyles();
     const panel = makeConsole();
     if (!panel) return;
@@ -125,25 +125,27 @@
       button.classList.toggle("is-active", button.dataset.simpleTab === active);
     });
 
+    if (!force && body.dataset.activeTab === active && body.children.length) return;
+
     hideSources(map);
 
     if (active === "research" || !map[active]) {
       body.innerHTML = placeholder(active);
+      body.dataset.activeTab = active;
       return;
     }
 
-    const clone = map[active].cloneNode(true);
-    clone.classList.remove("db-simple-source-hidden");
-    clone.removeAttribute("id");
-    clone.querySelectorAll("[id]").forEach((node) => node.removeAttribute("id"));
-    if (active === "databytedex") renameDexPanel(clone);
+    const node = map[active];
+    node.classList.remove("db-simple-source-hidden");
+    if (active === "databytedex") renameDexPanel(node);
     body.innerHTML = "";
-    body.appendChild(clone);
+    body.appendChild(node);
+    body.dataset.activeTab = active;
   }
 
   function boot() {
-    render();
-    setInterval(render, 1200);
+    render(true);
+    setInterval(() => render(false), 1200);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
