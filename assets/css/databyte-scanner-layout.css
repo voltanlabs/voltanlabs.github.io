@@ -1,4 +1,4 @@
-/* v0.85.6 scanner source layout patch */
+/* v0.85.7 idle scanner centering */
 #gamePanel > div > div.p-6.grid {
   grid-template-columns: 1fr !important;
 }
@@ -6,19 +6,34 @@
 #gamePanel .scan-bg {
   min-height: clamp(340px, 42vw, 520px) !important;
   width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: column !important;
 }
 
 #gamePanel .scan-bg > .relative.z-10 {
   position: relative !important;
   left: auto !important;
   right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
   transform: none !important;
   margin-left: auto !important;
   margin-right: auto !important;
   text-align: center !important;
+  width: min(92%, 520px) !important;
+  max-width: 520px !important;
 }
 
 #spriteOrb {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+#revealStage,
+#scannerStatus {
+  text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
 }
@@ -36,5 +51,9 @@
 @media (max-width: 768px) {
   #gamePanel .scan-bg {
     min-height: 520px !important;
+  }
+
+  #gamePanel .scan-bg > .relative.z-10 {
+    width: min(92%, 360px) !important;
   }
 }
