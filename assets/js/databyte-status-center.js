@@ -4,8 +4,12 @@
   function run(){
     var status=document.getElementById('scannerStatus');
     if(!status)return;
-    var old=document.querySelector('.db-status-sequence');
-    if(old){old.style.setProperty('display','none','important');old.setAttribute('aria-hidden','true');}
+
+    document.querySelectorAll('.db-status-sequence,.scanner-ready,.scanner-status-chip,.scanner-chip').forEach(function(el){
+      el.style.setProperty('display','none','important');
+      el.setAttribute('aria-hidden','true');
+    });
+
     var chip=document.getElementById('dbStableScannerStatus');
     if(!chip){
       chip=document.createElement('div');
