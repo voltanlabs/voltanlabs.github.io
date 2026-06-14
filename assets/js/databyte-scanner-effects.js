@@ -1,6 +1,6 @@
 // assets/js/databyte-scanner-effects.js
 (function () {
-  const VERSION = "v0.84 Scanner Evolution";
+  const VERSION = "v0.84.1 Scanner Evolution";
   const SPECIAL_NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
   let lastName = "";
 
@@ -36,9 +36,10 @@
       .db-lock-ring::before,.db-lock-ring::after { content:""; position:absolute; inset:12%; border-radius:999px; border:1px dashed rgba(255,215,0,.24); }
       .db-lock-ring::after { inset:26%; border-color:rgba(34,197,94,.2); animation:db-lock-ring 3.2s linear reverse infinite; }
       .db-noise { position:absolute; inset:0; opacity:.09; background-image:radial-gradient(circle at 20% 30%,#fff 0 1px,transparent 1px),radial-gradient(circle at 70% 60%,#fff 0 1px,transparent 1px); background-size:38px 38px,54px 54px; animation:db-noise 1.8s steps(2,end) infinite; }
-      .db-status-sequence { position:absolute; left:18px; bottom:18px; display:flex; flex-wrap:wrap; gap:8px; z-index:2; }
+      .db-status-sequence { position:absolute; left:50%; top:calc(50% + 118px); transform:translateX(-50%); display:flex; flex-wrap:wrap; justify-content:center; gap:8px; z-index:2; width:max-content; max-width:calc(100% - 32px); }
       .db-effect-chip { display:inline-flex; align-items:center; gap:6px; border:1px solid rgba(125,211,252,.28); background:rgba(14,165,233,.12); color:#BAE6FD; border-radius:999px; padding:5px 9px; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; backdrop-filter:blur(10px); }
       .db-effect-chip.is-hot { border-color:rgba(255,215,0,.42); color:#FEF3C7; background:rgba(255,215,0,.12); }
+      @media (max-width:768px){ .db-status-sequence{ top:calc(50% + 108px); } }
       @keyframes db-signal-sweep { 0%{transform:translateX(-42%)} 100%{transform:translateX(42%)} }
       @keyframes db-field-pulse { 0%,100%{transform:scale(.96);opacity:.46} 50%{transform:scale(1.03);opacity:.9} }
       @keyframes db-orb-idle { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-8px) scale(1.035)} }
@@ -96,7 +97,7 @@
     stage.classList.toggle("db-rare-stage", rare);
     orb.classList.toggle("db-rare-signal", rare);
     orb.classList.toggle("db-battle-ready", hasEncounter);
-    setSequence(hasEncounter ? ["Signal Detected", "Locking", rare ? "Rare Signal" : "Materializing"] : ["Signal Sweep", "Lock Ready"], rare);
+    setSequence(hasEncounter ? ["Signal Locked", name] : ["Scanner Ready"], rare);
     if (name && name !== lastName) {
       lastName = name;
       if (hasEncounter) { flashStage(); markMaterialize(); }
@@ -106,7 +107,7 @@
   function syncVersion() {
     document.querySelectorAll("span, strong").forEach((el) => {
       const text = (el.textContent || "").trim();
-      if (text === "v0.82 Scanner Workspace" || text === "v0.83 Stable Console" || text === "v0.84 Signal Effects") el.textContent = VERSION;
+      if (text === "v0.82 Scanner Workspace" || text === "v0.83 Stable Console" || text === "v0.84 Signal Effects" || text === "v0.84 Scanner Evolution") el.textContent = VERSION;
     });
   }
 
