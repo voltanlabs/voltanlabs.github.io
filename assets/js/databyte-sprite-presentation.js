@@ -1,6 +1,6 @@
 // assets/js/databyte-sprite-presentation.js
 (function () {
-  const VERSION = "v0.85.2 Scanner HUD";
+  const VERSION = "v0.85.3 Scanner HUD";
   const RARITY_POWER = { common: 62, rare: 78, epic: 88, legendary: 96 };
 
   function injectStyles() {
@@ -38,8 +38,7 @@
       .db-sprite-meter strong { color: #FFD700; }
       .db-meter-track { height: 6px; border-radius: 999px; background: rgba(255,255,255,.12); overflow: hidden; margin-top: 6px; }
       .db-meter-fill { height: 100%; width: var(--fill, 50%); border-radius: inherit; background: linear-gradient(90deg, rgba(34,211,238,.85), rgba(255,215,0,.85)); }
-      .db-reveal-banner { position: absolute; left: 50%; top: 16px; z-index: 3; transform: translateX(-50%); border: 1px solid rgba(255,215,0,.32); background: rgba(15,23,42,.58); color: #FEF3C7; border-radius: 999px; padding: 8px 13px; font-size: 11px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
-      .db-reveal-banner.db-rare { border-color: rgba(216,180,254,.55); color: #F5D0FE; }
+      .db-reveal-banner { display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; }
       #gamePanel .scan-bg.db-rare-protocol { box-shadow: inset 0 0 120px rgba(192,132,252,.18), 0 0 45px rgba(192,132,252,.18) !important; }
       @media (max-width: 768px) {
         #spriteOrb { width: clamp(135px,42vw,190px) !important; height: clamp(135px,42vw,190px) !important; font-size: clamp(4.25rem,18vw,6rem) !important; }
@@ -78,21 +77,13 @@
     return bar;
   }
 
-  function ensureBanner() {
-    const s = stage();
-    if (!s) return null;
-    let banner = s.querySelector(".db-reveal-banner");
-    if (!banner) {
-      banner = document.createElement("div");
-      banner.className = "db-reveal-banner";
-      banner.textContent = "Scanner Ready";
-      s.appendChild(banner);
-    }
-    return banner;
+  function removeBanner() {
+    document.querySelectorAll(".db-reveal-banner").forEach((banner) => banner.remove());
   }
 
   function updatePresentation() {
     injectStyles();
+    removeBanner();
     const s = stage();
     if (!s) return;
     const name = nameNow();
@@ -108,9 +99,6 @@
       bar.classList.toggle("is-active", hasEncounter);
       bar.innerHTML = hasEncounter ? [meter("Signal", `${signal}%`, signal), meter("Capture", chanceText, Math.max(8, chanceNumber)), meter("Rarity", rarity.toUpperCase(), signal)].join("") : "";
     }
-    const banner = ensureBanner();
-    banner.classList.toggle("db-rare", rarity !== "common" && hasEncounter);
-    banner.textContent = hasEncounter ? `${rarity !== "common" ? "Rare Protocol • " : "Signal Locked • "}${name}` : "Scanner Ready";
     document.querySelectorAll("span,strong").forEach((el) => {
       const t = (el.textContent || "").trim();
       if (t.startsWith("v0.85.")) el.textContent = VERSION;
