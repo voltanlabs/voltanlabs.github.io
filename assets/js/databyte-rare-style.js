@@ -3,7 +3,8 @@
   const NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
 
   function nameNow() {
-    return document.getElementById("encounterName")?.textContent?.trim() || "";
+    const el = document.getElementById("encounterName");
+    return el ? el.textContent.trim() : "";
   }
 
   function loadScriptOnce(id, src) {
@@ -37,6 +38,7 @@
     loadScriptOnce("databyteDexActionRouterLoader", "/assets/js/databytedex-action-router.js");
     loadScriptOnce("databyteScannerEffectsLoader", "/assets/js/databyte-scanner-effects.js");
     loadScriptOnce("databyteSpritePresentationLoader", "/assets/js/databyte-sprite-presentation.js");
+    loadScriptOnce("databyteStatusCenterLoader", "/assets/js/databyte-status-center.js");
   }
 
   function apply() {
@@ -56,7 +58,7 @@
     }
     if (active) {
       if (stage) stage.textContent = "SPECIAL SIGNAL DETECTED";
-      if (status) status.textContent = `${nameNow()} rare reading stabilized.`;
+      if (status) status.textContent = nameNow() + " rare reading stabilized.";
     }
   }
 
