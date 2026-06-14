@@ -25,7 +25,7 @@
   }
 
   function loadFeatureLayers() {
-    loadStyleOnce("databyteScannerLayoutStyles", "/assets/css/databyte-scanner-layout.css");
+    loadStyleOnce("databyteScannerLayoutStyles", "/assets/css/databyte-scanner-layout.css?v=0841b");
     loadScriptOnce("databyteRareSpawnLoader", "/assets/js/databyte-rare-spawn.js");
     loadScriptOnce("databyteMissionsLoader", "/assets/js/databyte-missions.js");
     loadScriptOnce("databyteInventoryLoader", "/assets/js/databyte-inventory.js");
@@ -38,7 +38,7 @@
     loadScriptOnce("databyteDexActionRouterLoader", "/assets/js/databytedex-action-router.js");
     loadScriptOnce("databyteScannerEffectsLoader", "/assets/js/databyte-scanner-effects.js");
     loadScriptOnce("databyteSpritePresentationLoader", "/assets/js/databyte-sprite-presentation.js");
-    loadScriptOnce("databyteStatusCenterLoader", "/assets/js/databyte-status-center.js");
+    loadScriptOnce("databyteStatusCenterLoader", "/assets/js/databyte-status-center.js?v=0841b");
   }
 
   function apply() {
