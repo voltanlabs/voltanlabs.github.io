@@ -1,6 +1,6 @@
 // assets/js/databyte-sprite-presentation.js
 (function () {
-  const VERSION = "v0.85.3 Scanner HUD";
+  const VERSION = "v0.85.4 Data Discovery";
   const RARITY_POWER = { common: 62, rare: 78, epic: 88, legendary: 96 };
 
   function injectStyles() {
@@ -50,11 +50,15 @@
 
   function nameNow() { return document.getElementById("encounterName")?.textContent?.trim() || ""; }
   function stage() { return document.querySelector("#gamePanel .scan-bg"); }
-  function byteChance() { return document.getElementById("byteCoinChance")?.textContent?.trim() || "--"; }
+  function byteChance() {
+    const chance = document.getElementById("chanceText")?.textContent?.trim();
+    if (chance) return chance;
+    return document.getElementById("byteCoinChance")?.textContent?.trim() || "0%";
+  }
 
   function rarityKey() {
     const text = (document.getElementById("encounterCard")?.innerText || "").toLowerCase();
-    if (text.includes("legendary")) return "legendary";
+    if (text.includes("legendary") || text.includes("mythic")) return "legendary";
     if (text.includes("epic")) return "epic";
     if (text.includes("rare")) return "rare";
     return "common";
@@ -81,28 +85,32 @@
     document.querySelectorAll(".db-reveal-banner").forEach((banner) => banner.remove());
   }
 
+  function syncVersion() {
+    document.querySelectorAll("span,strong").forEach((el) => {
+      const text = (el.textContent || "").trim();
+      if (/^v\d+\.\d+/i.test(text)) el.textContent = VERSION;
+    });
+  }
+
   function updatePresentation() {
     injectStyles();
     removeBanner();
     const s = stage();
-    if (!s) return;
+    if (!s) { syncVersion(); return; }
     const name = nameNow();
     const hasEncounter = !!name && !["Awaiting Signal", "Unknown Signal"].includes(name);
     const rarity = rarityKey();
     const signal = hasEncounter ? RARITY_POWER[rarity] || 70 : 34;
     const chanceText = byteChance();
-    const chanceNumber = Number(chanceText.replace(/[^0-9]/g, "")) || 8;
+    const chanceNumber = Number(chanceText.replace(/[^0-9]/g, "")) || 0;
     s.classList.toggle("db-sprite-focus", hasEncounter);
     s.classList.toggle("db-rare-protocol", rarity !== "common" && hasEncounter);
     const bar = ensureStatusBar();
     if (bar) {
       bar.classList.toggle("is-active", hasEncounter);
-      bar.innerHTML = hasEncounter ? [meter("Signal", `${signal}%`, signal), meter("Capture", chanceText, Math.max(8, chanceNumber)), meter("Rarity", rarity.toUpperCase(), signal)].join("") : "";
+      bar.innerHTML = hasEncounter ? [meter("Signal", `${signal}%`, signal), meter("Capture", chanceText, Math.max(5, chanceNumber)), meter("Rarity", rarity.toUpperCase(), signal)].join("") : "";
     }
-    document.querySelectorAll("span,strong").forEach((el) => {
-      const t = (el.textContent || "").trim();
-      if (t.startsWith("v0.85.")) el.textContent = VERSION;
-    });
+    syncVersion();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", updatePresentation);
