@@ -1,11 +1,41 @@
-/* v0.85.7 idle scanner centering */
+/* v0.86.6 mobile scanner bounds */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body:has(#gamePanel) {
+  overflow-x: hidden;
+}
+
+#gamePanel,
+#gamePanel * {
+  box-sizing: border-box;
+}
+
+#gamePanel {
+  max-width: 100% !important;
+  overflow-x: clip;
+}
+
+#gamePanel > div,
+#gamePanel aside,
+#gamePanel section {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
 #gamePanel > div > div.p-6.grid {
   grid-template-columns: 1fr !important;
+  min-width: 0 !important;
 }
 
 #gamePanel .scan-bg {
   min-height: clamp(340px, 42vw, 520px) !important;
   width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -24,11 +54,13 @@
   text-align: center !important;
   width: min(92%, 520px) !important;
   max-width: 520px !important;
+  min-width: 0 !important;
 }
 
 #spriteOrb {
   margin-left: auto !important;
   margin-right: auto !important;
+  max-width: 100% !important;
 }
 
 #revealStage,
@@ -36,6 +68,8 @@
   text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
+  max-width: 100% !important;
+  overflow-wrap: anywhere;
 }
 
 #gamePanel .scan-bg .absolute.inset-6 {
@@ -46,14 +80,97 @@
 #encounterCard {
   width: 100% !important;
   max-width: none !important;
+  min-width: 0 !important;
+}
+
+#databyteSpriteStatusBar,
+.db-sprite-status-bar {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.db-sprite-meter {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.db-sprite-meter span {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+.db-sprite-meter strong {
+  min-width: 0 !important;
+  max-width: 45% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.db-console-modal {
+  overscroll-behavior: contain !important;
+  touch-action: none;
+}
+
+.db-console-window,
+.db-console-body {
+  overscroll-behavior: contain !important;
+}
+
+.db-console-body {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+#scannerMissionsPanel,
+#evolutionProgressList,
+#specialSignalPanel,
+#collectionList,
+#inventoryScrollList,
+#partyCandidateList {
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch;
 }
 
 @media (max-width: 768px) {
+  #gamePanel {
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
   #gamePanel .scan-bg {
     min-height: 520px !important;
   }
 
   #gamePanel .scan-bg > .relative.z-10 {
-    width: min(92%, 360px) !important;
+    width: min(90%, 340px) !important;
+  }
+
+  #databyteSpriteStatusBar,
+  .db-sprite-status-bar {
+    grid-template-columns: 1fr !important;
+  }
+
+  .db-console-modal {
+    align-items: flex-start !important;
+    padding: 12px !important;
+    overflow: hidden !important;
+  }
+
+  .db-console-window {
+    width: 100% !important;
+    max-height: calc(100dvh - 24px) !important;
+  }
+
+  .db-console-body {
+    max-height: calc(100dvh - 126px) !important;
+    overflow-y: auto !important;
   }
 }
