@@ -4,6 +4,7 @@
   const SEEN_KEY = "vl_databyte_seen_v1";
   const SPECIAL_KEY = "vl_databyte_special_signals_v1";
   const DECOMPILE_KEY = "vl_databyte_decompiled_v1";
+  let lastSignature = "";
 
   function read(key) {
     try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; }
@@ -30,6 +31,16 @@
     ];
   }
 
+  function signature() {
+    return JSON.stringify({
+      collection: read(COLLECTION_KEY).length,
+      seen: uniqueSeenCount(),
+      specials: read(SPECIAL_KEY).length,
+      decompiled: read(DECOMPILE_KEY).length,
+      mystic: countByType("Mystic")
+    });
+  }
+
   function bar(value, target) {
     const full = Math.min(target, value);
     return "█".repeat(full) + "░".repeat(Math.max(0, target - full));
@@ -44,17 +55,21 @@
     adminCard.appendChild(panel);
   }
 
-  function render() {
+  function render(force = false) {
     makePanel();
     const panel = document.getElementById("scannerMissionsPanel");
     if (!panel) return;
+
+    const nextSignature = signature();
+    if (!force && nextSignature === lastSignature && panel.dataset.rendered === "true") return;
+    lastSignature = nextSignature;
+    panel.dataset.rendered = "true";
 
     const oldScroll = document.getElementById("scannerMissionsList")?.scrollTop || 0;
     const list = missions();
     const done = list.filter((m) => m.progress >= m.target).length;
     panel.innerHTML = `
       <div class="text-sky-200 font-bold">Scanner Missions</div>
-      <p class="text-gray-300 mt-1 text-xs">v0.86.5 Data Discovery mission tracking is online.</p>
       <div class="mt-2 text-xs text-sky-100">Completed: <strong>${done}/${list.length}</strong></div>
       <div id="scannerMissionsList" class="mt-3 grid gap-2 max-h-72 overflow-auto pr-1">
         ${list.map((m) => `
@@ -69,10 +84,16 @@
     if (newScrollTarget) newScrollTarget.scrollTop = oldScroll;
   }
 
+  function scheduleRender() {
+    requestAnimationFrame(() => render());
+  }
+
   function boot() {
-    render();
-    window.addEventListener("databyte:inventory-updated", render);
-    setInterval(render, 1500);
+    render(true);
+    window.addEventListener("databyte:inventory-updated", scheduleRender);
+    window.addEventListener("databyte:party-updated", scheduleRender);
+    window.addEventListener("databyte:progress-updated", scheduleRender);
+    window.addEventListener("storage", scheduleRender);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
