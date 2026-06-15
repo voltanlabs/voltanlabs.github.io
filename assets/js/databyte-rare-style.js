@@ -1,7 +1,7 @@
 // assets/js/databyte-rare-style.js
 (function () {
   const NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
-  const FEATURE_VERSION = "0860-party";
+  const FEATURE_VERSION = "0864-console-fix";
 
   function nameNow() {
     const el = document.getElementById("encounterName");
@@ -40,6 +40,7 @@
     loadScriptOnce("databytePanelStateLoader", "/assets/js/databyte-panel-state.js");
     loadScriptOnce("databyteAppShellLoader", "/assets/js/databyte-app-shell.js");
     loadScriptOnce("databyteSimpleAdminConsoleLoader", "/assets/js/databyte-admin-console-simple.js");
+    loadScriptOnce("databyteConsoleWindowFixLoader", "/assets/js/databyte-console-window-fix.js");
     loadScriptOnce("databyteScannerWorkspaceLoader", "/assets/js/databyte-scanner-workspace.js");
     loadScriptOnce("databyteDexPanelCleanupLoader", "/assets/js/databytedex-panel-cleanup.js");
     loadScriptOnce("databyteDexActionRouterLoader", "/assets/js/databytedex-action-router.js");
