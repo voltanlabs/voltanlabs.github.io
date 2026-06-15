@@ -124,11 +124,11 @@
     if (id === "profile") return profilePanel();
     if (id === "arena") return arenaPanel();
     if (id === "party") return document.getElementById("activePartyPanel");
-    if (id === "missions") return document.getElementById("scannerMissionsPanel")?.closest("section") || document.getElementById("scannerMissionsPanel");
+    if (id === "missions") return document.getElementById("scannerMissionsPanel");
     if (id === "inventory") return document.getElementById("trueInventoryPanel")?.closest("section") || document.getElementById("trueInventoryPanel");
     if (id === "databytedex") return document.getElementById("collectionList")?.closest("section");
-    if (id === "evolution") return document.getElementById("progressionBadge")?.closest("section") || document.getElementById("progressionBadge");
-    if (id === "signals") return document.getElementById("specialSignalPanel")?.closest("section") || document.getElementById("specialSignalPanel");
+    if (id === "evolution") return document.getElementById("progressionBadge");
+    if (id === "signals") return document.getElementById("specialSignalPanel");
     return null;
   }
 
