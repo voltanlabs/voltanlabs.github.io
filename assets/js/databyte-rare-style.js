@@ -1,7 +1,7 @@
 // assets/js/databyte-rare-style.js
 (function () {
   const NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
-  const FEATURE_VERSION = "0866-console-consolidated";
+  const FEATURE_VERSION = "0866-signal-stage";
 
   function nameNow() {
     const el = document.getElementById("encounterName");
@@ -36,8 +36,9 @@
     loadScriptOnce("databyteRareSpawnLoader", "/assets/js/databyte-rare-spawn.js");
     loadScriptOnce("databyteMissionsLoader", "/assets/js/databyte-missions.js");
     loadScriptOnce("databyteInventoryLoader", "/assets/js/databyte-inventory.js");
-    loadScriptOnce("databyteBattleLoader", "/assets/js/databyte-battle.js");
     loadScriptOnce("databytePartyLoader", "/assets/js/databyte-party.js");
+    loadScriptOnce("databyteSignalStageLoader", "/assets/js/databyte-signal-stage.js");
+    loadScriptOnce("databyteBattleLoader", "/assets/js/databyte-battle.js");
     loadScriptOnce("databytePanelStateLoader", "/assets/js/databyte-panel-state.js");
     loadScriptOnce("databyteAppShellLoader", "/assets/js/databyte-app-shell.js");
     loadScriptOnce("databyteAdminConsoleLoader", "/assets/js/databyte-admin-console.js");
