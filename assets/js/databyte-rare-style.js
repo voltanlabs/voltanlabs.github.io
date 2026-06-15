@@ -1,17 +1,22 @@
 // assets/js/databyte-rare-style.js
 (function () {
   const NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
+  const FEATURE_VERSION = "0860-party";
 
   function nameNow() {
     const el = document.getElementById("encounterName");
     return el ? el.textContent.trim() : "";
   }
 
+  function withVersion(src) {
+    return src.includes("?") ? `${src}&v=${FEATURE_VERSION}` : `${src}?v=${FEATURE_VERSION}`;
+  }
+
   function loadScriptOnce(id, src) {
     if (document.getElementById(id)) return;
     const script = document.createElement("script");
     script.id = id;
-    script.src = src;
+    script.src = withVersion(src);
     document.body.appendChild(script);
   }
 
@@ -20,26 +25,27 @@
     const link = document.createElement("link");
     link.id = id;
     link.rel = "stylesheet";
-    link.href = href;
+    link.href = withVersion(href);
     document.head.appendChild(link);
   }
 
   function loadFeatureLayers() {
-    loadStyleOnce("databyteScannerLayoutStyles", "/assets/css/databyte-scanner-layout.css?v=0841b");
-    loadStyleOnce("databyteHideOriginalStatusStyles", "/assets/css/databyte-hide-original-status.css?v=0841d");
+    loadStyleOnce("databyteScannerLayoutStyles", "/assets/css/databyte-scanner-layout.css");
+    loadStyleOnce("databyteHideOriginalStatusStyles", "/assets/css/databyte-hide-original-status.css");
     loadScriptOnce("databyteRareSpawnLoader", "/assets/js/databyte-rare-spawn.js");
     loadScriptOnce("databyteMissionsLoader", "/assets/js/databyte-missions.js");
     loadScriptOnce("databyteInventoryLoader", "/assets/js/databyte-inventory.js");
     loadScriptOnce("databyteBattleLoader", "/assets/js/databyte-battle.js");
+    loadScriptOnce("databytePartyLoader", "/assets/js/databyte-party.js");
     loadScriptOnce("databytePanelStateLoader", "/assets/js/databyte-panel-state.js");
     loadScriptOnce("databyteAppShellLoader", "/assets/js/databyte-app-shell.js");
     loadScriptOnce("databyteSimpleAdminConsoleLoader", "/assets/js/databyte-admin-console-simple.js");
     loadScriptOnce("databyteScannerWorkspaceLoader", "/assets/js/databyte-scanner-workspace.js");
     loadScriptOnce("databyteDexPanelCleanupLoader", "/assets/js/databytedex-panel-cleanup.js");
     loadScriptOnce("databyteDexActionRouterLoader", "/assets/js/databytedex-action-router.js");
-    loadScriptOnce("databyteScannerEffectsLoader", "/assets/js/databyte-scanner-effects.js?v=0841d");
+    loadScriptOnce("databyteScannerEffectsLoader", "/assets/js/databyte-scanner-effects.js");
     loadScriptOnce("databyteSpritePresentationLoader", "/assets/js/databyte-sprite-presentation.js");
-    loadScriptOnce("databyteStatusCenterLoader", "/assets/js/databyte-status-center.js?v=0841d");
+    loadScriptOnce("databyteStatusCenterLoader", "/assets/js/databyte-status-center.js");
   }
 
   function apply() {
