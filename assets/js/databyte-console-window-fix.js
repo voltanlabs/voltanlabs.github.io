@@ -1,5 +1,10 @@
 // assets/js/databyte-console-window-fix.js
 (function () {
+  const PROFILE_KEY = "vl_databyte_admin_profile_v1";
+  const COLLECTION_KEY = "vl_databyte_discovery_collection_v2";
+  const SEEN_KEY = "vl_databyte_seen_v1";
+  const DECOMPILE_KEY = "vl_databyte_decompile_count_v1";
+
   const SUBTITLES = {
     profile: "Admin identity, rank, seen count, and ByteCoins.",
     party: "Manage the active battle team. Slot 1 is the lead sprite.",
@@ -24,6 +29,23 @@
     research: "Research"
   };
 
+  function read(key, fallback) {
+    try {
+      const value = JSON.parse(localStorage.getItem(key));
+      return value ?? fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
+  function getRank(count) {
+    if (count >= 25) return "Root Admin";
+    if (count >= 15) return "Master Admin";
+    if (count >= 8) return "System Admin";
+    if (count >= 3) return "Admin";
+    return "Scanner";
+  }
+
   function ensureDock() {
     let dock = document.getElementById("databyteConsoleSourceDock");
     if (!dock) {
@@ -33,6 +55,37 @@
       document.body.appendChild(dock);
     }
     return dock;
+  }
+
+  function ensureGeneratedPanel(id) {
+    let panel = document.getElementById(id);
+    if (panel) return panel;
+    panel = document.createElement("section");
+    panel.id = id;
+    ensureDock().appendChild(panel);
+    return panel;
+  }
+
+  function renderProfilePanel() {
+    const panel = ensureGeneratedPanel("databyteGeneratedProfilePanel");
+    const profile = read(PROFILE_KEY, {}) || {};
+    const collection = read(COLLECTION_KEY, []) || [];
+    const seen = read(SEEN_KEY, []) || [];
+    const decompiled = Number(localStorage.getItem(DECOMPILE_KEY) || "0") || 0;
+
+    panel.innerHTML = `
+      <div class="db-clean-profile-window">
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div class="bg-black/25 rounded-2xl p-4"><span class="text-gray-400">Name</span><br><strong>${profile.name || "Scanner"}</strong></div>
+          <div class="bg-black/25 rounded-2xl p-4"><span class="text-gray-400">Rank</span><br><strong class="text-[#FFD700]">${getRank(collection.length)}</strong></div>
+          <div class="bg-black/25 rounded-2xl p-4"><span class="text-gray-400">Seen</span><br><strong>${seen.length}</strong></div>
+          <div class="bg-black/25 rounded-2xl p-4"><span class="text-gray-400">ByteCoins</span><br><strong>${collection.length}</strong></div>
+        </div>
+        <a href="/databytedex.html" class="block mt-4 text-center px-5 py-3 rounded-xl bg-emerald-400/15 border border-emerald-300/40 text-emerald-200 font-bold">Open DataByteDex</a>
+        <div class="mt-4 bg-black/25 border border-white/10 rounded-2xl p-4 text-sm"><strong>Signal Management</strong><br><span class="text-gray-300">Sprites Decompiled: ${decompiled}</span></div>
+        <div class="mt-4 bg-sky-400/10 border border-sky-200/25 rounded-2xl p-4 text-sm"><strong class="text-sky-200">Partner Sprite</strong><br><span class="text-gray-300">${profile.starter || "Unlinked"}</span></div>
+      </div>`;
+    return panel;
   }
 
   function ensureArenaPanel() {
@@ -63,7 +116,7 @@
   }
 
   function shellFor(id) {
-    if (id === "profile") return document.getElementById("adminCard")?.closest("section") || null;
+    if (id === "profile") return renderProfilePanel();
     if (id === "party") return document.getElementById("activePartyPanel") || null;
     if (id === "arena") return renderArenaPanel();
     if (id === "missions") return document.getElementById("scannerMissionsPanel")?.closest("section") || document.getElementById("scannerMissionsPanel") || null;
@@ -75,9 +128,10 @@
   }
 
   function allShells() {
-    return ["profile", "party", "arena", "missions", "inventory", "databytedex", "evolution", "signals"]
+    return ["party", "arena", "missions", "inventory", "databytedex", "evolution", "signals"]
       .map(shellFor)
-      .filter(Boolean);
+      .filter(Boolean)
+      .concat([document.getElementById("adminCard")?.closest("section"), document.getElementById("databyteGeneratedProfilePanel")].filter(Boolean));
   }
 
   function parkOpenSource() {
