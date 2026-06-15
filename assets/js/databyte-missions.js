@@ -54,7 +54,7 @@
     const done = list.filter((m) => m.progress >= m.target).length;
     panel.innerHTML = `
       <div class="text-sky-200 font-bold">Scanner Missions</div>
-      <p class="text-gray-300 mt-1 text-xs">v0.80 mission tracking is online.</p>
+      <p class="text-gray-300 mt-1 text-xs">v0.86.5 Data Discovery mission tracking is online.</p>
       <div class="mt-2 text-xs text-sky-100">Completed: <strong>${done}/${list.length}</strong></div>
       <div id="scannerMissionsList" class="mt-3 grid gap-2 max-h-72 overflow-auto pr-1">
         ${list.map((m) => `
