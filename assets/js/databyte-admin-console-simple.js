@@ -1,6 +1,6 @@
 // assets/js/databyte-admin-console-simple.js
 (function () {
-  const VERSION = "v0.86.1 Console Windows";
+  const VERSION = "v0.86.2 Console Windows";
   const tabs = [
     ["profile", "Profile"],
     ["party", "Party"],
@@ -51,7 +51,7 @@
 
   function makeConsole() {
     const adminSection = document.getElementById("adminCard")?.closest("section") || document.querySelector("#gamePanel aside section");
-    if (!adminSection) return null;
+    if (!adminSection && !document.getElementById("databyteSimpleAdminConsole")) return null;
 
     let panel = document.getElementById("databyteSimpleAdminConsole");
     if (panel) return panel;
@@ -115,6 +115,25 @@
     };
   }
 
+  function sourceShell(node) {
+    if (!node) return null;
+    if (node.id === "adminCard") return node.closest("section");
+    if (node.id === "collectionList") return node.closest("section") || node.parentElement;
+    if (node.id === "progressionBadge") return node.closest("section") || node.parentElement;
+    if (node.id === "activePartyPanel") return node;
+    return node.closest("section") || node;
+  }
+
+  function hideOriginalSources() {
+    const modalBody = document.getElementById("databyteConsoleModalBody");
+    Object.values(sourceMap()).forEach((source) => {
+      if (!source) return;
+      if (modalBody && modalBody.contains(source)) return;
+      const shell = sourceShell(source);
+      if (shell && shell.id !== "databyteSimpleAdminConsole") shell.classList.add("db-console-source-hidden");
+    });
+  }
+
   function labelFor(id) {
     return tabs.find(([tabId]) => tabId === id)?.[1] || "Console";
   }
@@ -164,6 +183,8 @@
     body.innerHTML = "";
 
     if (source) {
+      const shell = sourceShell(source);
+      if (shell) shell.classList.remove("db-console-source-hidden");
       source.classList.remove("db-console-source-hidden");
       if (id === "databytedex") renameDexPanel(source);
       body.appendChild(source);
@@ -187,6 +208,7 @@
     injectStyles();
     makeConsole();
     makeModal();
+    hideOriginalSources();
   }
 
   function boot() {
