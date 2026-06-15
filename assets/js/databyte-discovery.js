@@ -96,6 +96,20 @@ function readList(key) { try { return JSON.parse(localStorage.getItem(key)) || [
 function writeList(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
 function getProfile() { try { return JSON.parse(localStorage.getItem(PROFILE_KEY)); } catch { return null; } }
 
+function clampStat(value, min = 1) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return min;
+  return Math.max(min, Math.round(num));
+}
+
+function normalizeStats(sprite) {
+  if (!sprite || typeof sprite !== "object") return sprite;
+  sprite.hp = clampStat(sprite.hp);
+  sprite.atk = clampStat(sprite.atk);
+  sprite.def = clampStat(sprite.def);
+  return sprite;
+}
+
 function getRank(count) {
   if (count >= 25) return "Root Admin";
   if (count >= 15) return "Master Admin";
@@ -114,17 +128,19 @@ function markSeen(sprite, status = "Seen") {
 }
 
 function buildStats(seed, starter = false) {
-  return {
+  const atkSeed = seed >>> 3;
+  const defSeed = seed >>> 5;
+  return normalizeStats({
     hp: 34 + (seed % 24) + (starter ? 10 : 0),
-    atk: 9 + ((seed >> 3) % 18) + (starter ? 4 : 0),
-    def: 8 + ((seed >> 5) % 17) + (starter ? 4 : 0)
-  };
+    atk: 9 + (atkSeed % 18) + (starter ? 4 : 0),
+    def: 8 + (defSeed % 17) + (starter ? 4 : 0)
+  });
 }
 
 function makeSprite(template, code, starter = false) {
   const seed = hashCode(`${code}-${template.name}`);
   const maxStability = starter ? 9 : template.stability;
-  return {
+  const sprite = {
     id: `DBS-${seed}-${Date.now()}`, dex: template.dex, seed, code,
     name: template.name, type: template.type, icon: template.icon, color: template.color,
     rarity: starter ? "Starter" : template.rarity,
@@ -134,6 +150,7 @@ function makeSprite(template, code, starter = false) {
     ...buildStats(seed, starter),
     discoveredAt: new Date().toISOString(), byteCoin: null
   };
+  return normalizeStats(sprite);
 }
 
 function selectTemplateByCode(code) {
@@ -172,27 +189,27 @@ function updateStability() {
 }
 
 function showEncounter(sprite) {
-  currentSprite = sprite;
-  markSeen(sprite, "Seen");
+  currentSprite = normalizeStats(sprite);
+  markSeen(currentSprite, "Seen");
   renderAdmin();
 
   els.captureBtn.disabled = false;
   els.captureBtn.textContent = "Throw ByteCoin";
   els.encounterCard.classList.remove("hidden");
-  els.encounterName.textContent = sprite.name;
-  els.encounterType.textContent = `#${sprite.dex} • Type: ${sprite.type}`;
-  els.encounterRarity.textContent = sprite.rarity;
-  els.encounterIcon.textContent = sprite.icon;
-  els.statHp.textContent = sprite.hp;
-  els.statAtk.textContent = sprite.atk;
-  els.statDef.textContent = sprite.def;
-  els.encounterLore.textContent = `${sprite.lore} This discovery has been added to your DataByteDex.`;
+  els.encounterName.textContent = currentSprite.name;
+  els.encounterType.textContent = `#${currentSprite.dex} • Type: ${currentSprite.type}`;
+  els.encounterRarity.textContent = currentSprite.rarity;
+  els.encounterIcon.textContent = currentSprite.icon;
+  els.statHp.textContent = currentSprite.hp;
+  els.statAtk.textContent = currentSprite.atk;
+  els.statDef.textContent = currentSprite.def;
+  els.encounterLore.textContent = `${currentSprite.lore} This discovery has been added to your DataByteDex.`;
   els.captureResult.textContent = "";
-  els.spriteOrb.textContent = sprite.icon;
-  els.spriteOrb.style.borderColor = sprite.color;
-  els.spriteOrb.style.boxShadow = `0 0 45px ${sprite.color}66`;
-  els.revealStage.textContent = `${sprite.name.toUpperCase()} DISCOVERED`;
-  els.scannerStatus.textContent = `#${sprite.dex} ${sprite.rarity} signal identified.`;
+  els.spriteOrb.textContent = currentSprite.icon;
+  els.spriteOrb.style.borderColor = currentSprite.color;
+  els.spriteOrb.style.boxShadow = `0 0 45px ${currentSprite.color}66`;
+  els.revealStage.textContent = `${currentSprite.name.toUpperCase()} DISCOVERED`;
+  els.scannerStatus.textContent = `#${currentSprite.dex} ${currentSprite.rarity} signal identified.`;
   updateStability();
 }
 
@@ -229,13 +246,14 @@ function collapseSignal() {
 
 function attemptCapture() {
   if (!currentSprite) return;
+  normalizeStats(currentSprite);
   const chance = Math.max(5, currentSprite.currentChance);
   const roll = Math.floor(Math.random() * 100) + 1;
 
   if (roll <= chance) {
-    const collection = readList(COLLECTION_KEY);
+    const collection = readList(COLLECTION_KEY).map(normalizeStats);
     currentSprite.byteCoin = `BC-${String(collection.length + 1).padStart(4, "0")}`;
-    collection.push(currentSprite);
+    collection.push(normalizeStats(currentSprite));
     writeList(COLLECTION_KEY, collection);
     markSeen(currentSprite, "Captured");
     els.captureResult.textContent = `BYTECOIN CREATED: ${currentSprite.name} stored in ${currentSprite.byteCoin}.`;
@@ -257,7 +275,7 @@ function attemptCapture() {
 function register(starterName) {
   const name = els.adminNameInput.value.trim();
   if (!name) { els.registrationMessage.textContent = "Enter an Admin name first."; return; }
-  const starter = makeSprite(canon.find((x) => x.name === starterName), `STARTER-${starterName}`, true);
+  const starter = normalizeStats(makeSprite(canon.find((x) => x.name === starterName), `STARTER-${starterName}`, true));
   starter.byteCoin = "BC-0001";
   localStorage.setItem(PROFILE_KEY, JSON.stringify({ name, starter: starterName, createdAt: new Date().toISOString() }));
   writeList(COLLECTION_KEY, [starter]);
@@ -267,7 +285,7 @@ function register(starterName) {
 
 function renderAdmin() {
   const profile = getProfile();
-  const collection = readList(COLLECTION_KEY);
+  const collection = readList(COLLECTION_KEY).map(normalizeStats);
   const seen = readList(SEEN_KEY);
   els.adminCard.innerHTML = `
     <div class="grid grid-cols-2 gap-3 text-sm">
@@ -280,7 +298,7 @@ function renderAdmin() {
 }
 
 function renderCollection() {
-  const collection = readList(COLLECTION_KEY);
+  const collection = readList(COLLECTION_KEY).map(normalizeStats);
   if (!collection.length) {
     els.collectionList.innerHTML = `<div class="text-gray-300 bg-black/20 rounded-2xl p-5 border border-white/10">No ByteCoins created yet.</div>`;
     return;
@@ -292,6 +310,7 @@ function renderCollection() {
           <p class="text-[10px] uppercase tracking-[0.25em] text-[#FFD700]">${sprite.byteCoin || "BC-????"} • #${sprite.dex || "???"} • ${sprite.rarity}</p>
           <h3 class="text-xl font-bold text-white mt-1">${sprite.name}</h3>
           <p class="text-sm text-gray-300">${sprite.type}</p>
+          <p class="text-xs text-gray-400 mt-2">HP: ${sprite.hp} · ATK: ${sprite.atk} · DEF: ${sprite.def}</p>
           <p class="text-xs text-emerald-200 mt-2">Tap for Codex data</p>
         </div>
         <div class="text-4xl">${sprite.icon}</div>
@@ -300,8 +319,8 @@ function renderCollection() {
 }
 
 function openDex(name) {
-  const collection = readList(COLLECTION_KEY);
-  let sprite = collection.find((x) => x.name === name) || currentSprite || null;
+  const collection = readList(COLLECTION_KEY).map(normalizeStats);
+  let sprite = normalizeStats(collection.find((x) => x.name === name) || currentSprite || null);
   const template = canon.find((x) => x.name === name);
   if (!sprite && template) sprite = { ...template, hp: "?", atk: "?", def: "?" };
   if (!sprite) return;
