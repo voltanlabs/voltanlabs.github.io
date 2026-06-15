@@ -1,6 +1,6 @@
 // assets/js/databyte-sprite-presentation.js
 (function () {
-  const VERSION = "v0.85.4 Data Discovery";
+  const VERSION = window.DATABYTE_DISCOVERY_VERSION || "v0.86.5 Data Discovery";
   const RARITY_POWER = { common: 62, rare: 78, epic: 88, legendary: 96 };
 
   function injectStyles() {
@@ -85,18 +85,11 @@
     document.querySelectorAll(".db-reveal-banner").forEach((banner) => banner.remove());
   }
 
-  function syncVersion() {
-    document.querySelectorAll("span,strong").forEach((el) => {
-      const text = (el.textContent || "").trim();
-      if (/^v\d+\.\d+/i.test(text)) el.textContent = VERSION;
-    });
-  }
-
   function updatePresentation() {
     injectStyles();
     removeBanner();
     const s = stage();
-    if (!s) { syncVersion(); return; }
+    if (!s) return;
     const name = nameNow();
     const hasEncounter = !!name && !["Awaiting Signal", "Unknown Signal"].includes(name);
     const rarity = rarityKey();
@@ -110,7 +103,6 @@
       bar.classList.toggle("is-active", hasEncounter);
       bar.innerHTML = hasEncounter ? [meter("Signal", `${signal}%`, signal), meter("Capture", chanceText, Math.max(5, chanceNumber)), meter("Rarity", rarity.toUpperCase(), signal)].join("") : "";
     }
-    syncVersion();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", updatePresentation);
