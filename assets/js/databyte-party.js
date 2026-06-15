@@ -7,6 +7,7 @@
   const MAX_PRESTIGE = 2;
   const MAX_PARTY = 5;
   const PRESTIGE_REQUIREMENTS = [5, 10];
+  let lastSignature = "";
 
   function read(key, fallback = []) {
     try {
@@ -67,6 +68,14 @@
     return partyIds().map((id) => byId.get(id)).filter(Boolean).map(normalizeSprite);
   }
 
+  function stateSignature() {
+    return JSON.stringify({
+      collection: collection().map((sprite) => [sprite.id, sprite.name, sprite.hp, sprite.atk, sprite.def, sprite.byteCoin]),
+      party: partyIds(),
+      prestige: prestigeLevel()
+    });
+  }
+
   function dispatch() {
     window.dispatchEvent(new CustomEvent("databyte:party-updated", {
       detail: { party: partySprites(), cap: partyCap(), prestige: prestigeLevel() }
@@ -77,19 +86,19 @@
     const ids = partyIds();
     if (ids.includes(id)) return;
     if (ids.length >= partyCap()) {
-      flashMessage(`Party full. Prestige upgrades unlock more slots.`);
+      flashMessage("Party full. Prestige upgrades unlock more slots.");
       return;
     }
     ids.push(id);
     write(PARTY_KEY, ids);
     dispatch();
-    render();
+    render({ keepDrawerOpen: true });
   }
 
   function removeFromParty(id) {
     write(PARTY_KEY, partyIds().filter((item) => item !== id));
     dispatch();
-    render();
+    render({ keepDrawerOpen: true });
   }
 
   function setLeader(id) {
@@ -97,7 +106,7 @@
     if (!ids.includes(id)) return;
     write(PARTY_KEY, [id].concat(ids.filter((item) => item !== id)));
     dispatch();
-    render();
+    render({ keepDrawerOpen: true });
   }
 
   function canPrestige(nextLevel) {
@@ -115,20 +124,21 @@
     }
     write(PRESTIGE_KEY, next);
     dispatch();
-    render();
+    render({ keepDrawerOpen: true });
   }
 
   function ensurePanel() {
     let panel = document.getElementById("activePartyPanel");
     if (panel) return panel;
 
-    const adminCard = document.getElementById("adminCard");
-    if (!adminCard) return null;
+    const aside = document.querySelector("#gamePanel aside");
+    const adminSection = document.getElementById("adminCard")?.closest("section");
+    if (!aside || !adminSection) return null;
 
-    panel = document.createElement("div");
+    panel = document.createElement("section");
     panel.id = "activePartyPanel";
-    panel.className = "mt-4 bg-emerald-500/10 border border-emerald-300/30 rounded-2xl p-4 text-sm";
-    adminCard.appendChild(panel);
+    panel.className = "bg-[#2C3E50] rounded-3xl border border-emerald-300/30 shadow-2xl overflow-hidden";
+    adminSection.insertAdjacentElement("afterend", panel);
     return panel;
   }
 
@@ -203,31 +213,39 @@
     </div>`;
   }
 
-  function render() {
+  function render(options = {}) {
     const panel = ensurePanel();
     if (!panel) return;
 
+    const drawerWasOpen = options.keepDrawerOpen || !!panel.querySelector("#partyAddDrawer[open]");
+    const scrollBox = panel.querySelector("#partyCandidateList");
+    const savedScroll = scrollBox ? scrollBox.scrollTop : 0;
     const currentParty = partySprites();
     const list = collection();
     const cap = partyCap();
     const prestige = prestigeLevel();
 
-    panel.innerHTML = `<div class="flex justify-between gap-3 items-start">
-      <div><div class="text-emerald-200 font-bold">Active Party</div><p class="text-xs text-gray-300 mt-1">Choose your battle team. Slot 1 is your lead sprite.</p></div>
+    panel.innerHTML = `<div class="p-5 border-b border-white/10 flex items-center justify-between gap-3">
+      <div><h2 class="text-2xl font-bold text-[#FFD700]">Party</h2><p class="text-sm text-gray-300">Build the team your battle system will use.</p></div>
       <div class="text-xs text-emerald-100">${currentParty.length}/${cap}</div>
     </div>
-    <div class="text-[10px] text-gray-400 mt-1">Base cap 3 • Prestige ${prestige}/${MAX_PRESTIGE} • Max cap 5</div>
-    <p id="partyMessage" class="hidden mt-3 rounded-xl border border-[#FFD700]/30 bg-[#FFD700]/10 p-2 text-xs text-[#FFD700]"></p>
-    <div class="grid gap-2 mt-3">
-      ${Array.from({ length: MAX_PARTY }).map((_, index) => partyCard(currentParty[index], index)).join("")}
-    </div>
-    ${prestigeBlock()}
-    <details class="mt-3">
-      <summary class="cursor-pointer text-xs text-[#FFD700] font-bold">Add Sprite From ByteCoins</summary>
-      <div class="grid gap-2 mt-2 max-h-56 overflow-auto pr-1">
-        ${list.length ? list.slice().reverse().map(candidateCard).join("") : `<div class="text-gray-400 text-xs">Capture sprites to build a party.</div>`}
+    <div class="p-5">
+      <div class="text-[10px] text-gray-400">Base cap 3 • Prestige ${prestige}/${MAX_PRESTIGE} • Max cap 5</div>
+      <p id="partyMessage" class="hidden mt-3 rounded-xl border border-[#FFD700]/30 bg-[#FFD700]/10 p-2 text-xs text-[#FFD700]"></p>
+      <div class="grid gap-2 mt-3">
+        ${Array.from({ length: MAX_PARTY }).map((_, index) => partyCard(currentParty[index], index)).join("")}
       </div>
-    </details>`;
+      ${prestigeBlock()}
+      <details id="partyAddDrawer" class="mt-3" ${drawerWasOpen ? "open" : ""}>
+        <summary class="cursor-pointer text-xs text-[#FFD700] font-bold">Add Sprite From ByteCoins</summary>
+        <div id="partyCandidateList" class="grid gap-2 mt-2 max-h-56 overflow-auto pr-1">
+          ${list.length ? list.slice().reverse().map(candidateCard).join("") : `<div class="text-gray-400 text-xs">Capture sprites to build a party.</div>`}
+        </div>
+      </details>
+    </div>`;
+
+    const nextScrollBox = panel.querySelector("#partyCandidateList");
+    if (nextScrollBox) nextScrollBox.scrollTop = savedScroll;
 
     panel.querySelectorAll("[data-party-add]").forEach((button) => {
       button.addEventListener("click", () => addToParty(button.dataset.partyAdd));
@@ -240,9 +258,19 @@
     });
     const prestigeBtn = document.getElementById("partyPrestigeBtn");
     if (prestigeBtn) prestigeBtn.addEventListener("click", upgradePrestige);
+
+    lastSignature = stateSignature();
+  }
+
+  function maybeRender() {
+    const signature = stateSignature();
+    if (signature !== lastSignature || !document.getElementById("activePartyPanel")) render();
   }
 
   function boot() {
+    const oldNestedPanel = document.querySelector("#adminCard #activePartyPanel");
+    if (oldNestedPanel) oldNestedPanel.remove();
+
     window.getActivePartySprites = partySprites;
     window.getLeadPartySprite = function () {
       return partySprites()[0] || collection()[collection().length - 1] || null;
@@ -251,9 +279,9 @@
       return { party: partySprites(), cap: partyCap(), prestige: prestigeLevel(), maxCap: MAX_PARTY };
     };
     render();
-    window.addEventListener("databyte:inventory-updated", render);
-    window.addEventListener("databyte:party-updated", render);
-    setInterval(render, 2500);
+    window.addEventListener("databyte:inventory-updated", () => render({ keepDrawerOpen: true }));
+    window.addEventListener("databyte:party-updated", () => render({ keepDrawerOpen: true }));
+    setInterval(maybeRender, 2500);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
