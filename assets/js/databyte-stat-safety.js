@@ -1,6 +1,6 @@
 // assets/js/databyte-stat-safety.js
 // Safety layer for Data Discovery stats.
-// Prevents negative or invalid HP/ATK/DEF values from appearing in the scanner, Dex modal, or saved ByteCoins.
+// Prevents negative or invalid HP/ATK/DEF values from appearing in the scanner, Dex modal, saved ByteCoins, or visible Dex cards.
 (function () {
   const COLLECTION_KEY = "vl_databyte_discovery_collection_v2";
   const MIN_STATS = { hp: 1, atk: 1, def: 1 };
@@ -48,7 +48,7 @@
     if (changed) writeCollection(safe);
   }
 
-  function setText(id, value) {
+  function setText(id) {
     const el = document.getElementById(id);
     if (!el) return;
     const current = el.textContent.trim();
@@ -57,21 +57,35 @@
   }
 
   function sanitizeVisibleStats() {
-    setText("statHp", 1);
-    setText("statAtk", 1);
-    setText("statDef", 1);
-    setText("modalHp", 1);
-    setText("modalAtk", 1);
-    setText("modalDef", 1);
+    setText("statHp");
+    setText("statAtk");
+    setText("statDef");
+    setText("modalHp");
+    setText("modalAtk");
+    setText("modalDef");
+  }
+
+  function sanitizeInlineCardStats() {
+    const targets = document.querySelectorAll("#collectionList p, #collectionList span, #collectionList div, #collectionList button, #databyteSimpleConsoleBody p, #databyteSimpleConsoleBody span, #databyteSimpleConsoleBody div");
+    targets.forEach((el) => {
+      if (!el || el.children.length) return;
+      let text = el.textContent;
+      if (!text || !/(HP|ATK|DEF)\s*:/i.test(text)) return;
+      text = text.replace(/\b(HP|ATK|DEF)\s*:\s*(-?\d+)/gi, function (_, label, value) {
+        return label.toUpperCase() + ": " + clampNumber(value, 1);
+      });
+      el.textContent = text;
+    });
   }
 
   function run() {
     sanitizeCollection();
     sanitizeVisibleStats();
+    sanitizeInlineCardStats();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run);
   else run();
 
-  setInterval(run, 300);
+  setInterval(run, 250);
 })();
