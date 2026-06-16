@@ -3,6 +3,7 @@
   const COLLECTION_KEY = "vl_databyte_discovery_collection_v2";
   const PARTY_KEY = "vl_databyte_active_party_v1";
   const PRESTIGE_KEY = "vl_databyte_party_prestige_v1";
+  const EXCLUDED_KEY = "vl_databyte_party_autofill_excluded_v1";
   const BASE_PARTY = 3;
   const MAX_PARTY = 5;
   const MAX_PRESTIGE = 2;
@@ -39,6 +40,14 @@
     return read(COLLECTION_KEY, []).map(normalize).filter((sprite) => sprite && sprite.id);
   }
 
+  function exclusions() {
+    return new Set(read(EXCLUDED_KEY, []));
+  }
+
+  function writeExclusions(set) {
+    write(EXCLUDED_KEY, Array.from(set));
+  }
+
   function prestige() {
     const value = Number(read(PRESTIGE_KEY, 0));
     if (!Number.isFinite(value)) return 0;
@@ -52,15 +61,25 @@
   function autoFillParty() {
     const list = collection();
     const valid = new Set(list.map((sprite) => sprite.id));
-    const current = read(PARTY_KEY, []).filter((id) => valid.has(id));
+    const excluded = exclusions();
+    const currentRaw = read(PARTY_KEY, []);
+    const current = currentRaw.filter((id) => valid.has(id));
     const next = current.slice(0, cap());
+
+    // Keep exclusions clean. If a sprite is no longer owned, it should not stay excluded forever.
+    Array.from(excluded).forEach((id) => {
+      if (!valid.has(id)) excluded.delete(id);
+    });
 
     for (const sprite of list) {
       if (next.length >= cap()) break;
+      if (excluded.has(sprite.id)) continue;
       if (!next.includes(sprite.id)) next.push(sprite.id);
     }
 
-    if (JSON.stringify(next) !== JSON.stringify(read(PARTY_KEY, []))) {
+    writeExclusions(excluded);
+
+    if (JSON.stringify(next) !== JSON.stringify(currentRaw)) {
       write(PARTY_KEY, next);
       return true;
     }
@@ -104,6 +123,8 @@
     window.addEventListener("storage", apply);
     setInterval(apply, 1800);
   }
+
+  window.dataBytePartyAutofillApply = apply;
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
