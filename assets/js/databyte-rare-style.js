@@ -1,7 +1,7 @@
 // assets/js/databyte-rare-style.js
 (function () {
   const NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
-  const FEATURE_VERSION = "0872-party-autofill";
+  const FEATURE_VERSION = "0873-retire-legacy-battle";
 
   function nameNow() {
     const el = document.getElementById("encounterName");
@@ -29,6 +29,12 @@
     document.head.appendChild(link);
   }
 
+  function retireLegacyBattle() {
+    document.getElementById("databyteBattleStageOverlay")?.remove();
+    document.getElementById("battlePanel")?.remove();
+    document.getElementById("databyteBattleLoader")?.remove();
+  }
+
   function loadFeatureLayers() {
     loadStyleOnce("databyteScannerLayoutStyles", "/assets/css/databyte-scanner-layout.css");
     loadStyleOnce("databyteHideOriginalStatusStyles", "/assets/css/databyte-hide-original-status.css");
@@ -39,7 +45,7 @@
     loadScriptOnce("databytePartyLoader", "/assets/js/databyte-party.js");
     loadScriptOnce("databytePartyAutofillLoader", "/assets/js/databyte-party-autofill.js");
     loadScriptOnce("databyteSignalStageLoader", "/assets/js/databyte-signal-stage.js");
-    loadScriptOnce("databyteBattleLoader", "/assets/js/databyte-battle.js");
+    retireLegacyBattle();
     loadScriptOnce("databyteBattlePhase2Loader", "/assets/js/databyte-battle-phase2.js");
     loadScriptOnce("databytePanelStateLoader", "/assets/js/databyte-panel-state.js");
     loadScriptOnce("databyteAppShellLoader", "/assets/js/databyte-app-shell.js");
@@ -53,6 +59,7 @@
   }
 
   function apply() {
+    retireLegacyBattle();
     const active = NAMES.has(nameNow());
     const card = document.getElementById("encounterCard");
     const orb = document.getElementById("spriteOrb");
