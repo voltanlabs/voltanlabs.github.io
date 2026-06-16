@@ -1,7 +1,7 @@
 // assets/js/databyte-rare-style.js
 (function () {
   const NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
-  const FEATURE_VERSION = "0873-retire-legacy-battle";
+  const FEATURE_VERSION = "0874-signal-collapse";
 
   function nameNow() {
     const el = document.getElementById("encounterName");
@@ -47,6 +47,7 @@
     loadScriptOnce("databyteSignalStageLoader", "/assets/js/databyte-signal-stage.js");
     retireLegacyBattle();
     loadScriptOnce("databyteBattlePhase2Loader", "/assets/js/databyte-battle-phase2.js");
+    loadScriptOnce("databyteSignalCollapseLoader", "/assets/js/databyte-signal-collapse.js");
     loadScriptOnce("databytePanelStateLoader", "/assets/js/databyte-panel-state.js");
     loadScriptOnce("databyteAppShellLoader", "/assets/js/databyte-app-shell.js");
     loadScriptOnce("databyteAdminConsoleLoader", "/assets/js/databyte-admin-console.js");
