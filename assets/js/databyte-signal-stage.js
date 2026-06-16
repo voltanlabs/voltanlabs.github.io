@@ -20,8 +20,8 @@
     const chance = text("chanceText") || "?";
     const stability = text("stabilityText") || "?";
     const rarityLower = rarity.toLowerCase();
-    const signalPct = rarityLower.includes("legendary") ? 96 : rarityLower.includes("epic") ? 88 : rarityLower.includes("rare") ? 78 : 62;
-    return { name, rarity, type: text("encounterType") || "Unknown", icon: text("encounterIcon") || "◈", hp: text("statHp") || "?", atk: text("statAtk") || "?", def: text("statDef") || "?", stability, chance, chancePct: num(chance, 20), signalPct, lore: text("encounterLore") || "No signal lore decoded." };
+    const rarityPct = rarityLower.includes("legendary") ? 96 : rarityLower.includes("epic") ? 88 : rarityLower.includes("rare") ? 78 : 62;
+    return { name, rarity, type: text("encounterType") || "Unknown", icon: text("encounterIcon") || "◈", hp: text("statHp") || "?", atk: text("statAtk") || "?", def: text("statDef") || "?", stability, signal: chance, signalPct: num(chance, 20), rarityPct, lore: text("encounterLore") || "No signal lore decoded." };
   }
 
   function styles() {
@@ -77,13 +77,13 @@
 
   function captureFromSignal() {
     const before = text("captureResult");
-    feedback = `BYTECOIN THROWN • Capture chance ${text("chanceText") || "?"}`;
+    feedback = `BYTECOIN THROWN • Signal strength ${text("chanceText") || "?"}`;
     document.getElementById("captureBtn")?.click();
     show();
     setTimeout(function () {
       const result = text("captureResult") || before;
-      const caught = /captured|added|caught|success/i.test(result);
-      feedback = caught ? `SIGNAL CAPTURED • ${result}` : `SIGNAL ESCAPED • ${result || "Try again or battle to improve odds."}`;
+      const caught = /captured|added|caught|success|created|stored/i.test(result);
+      feedback = caught ? `SIGNAL CAPTURED • ${result}` : `SIGNAL ESCAPED • ${result || "Try again or battle to strengthen the signal."}`;
       if (caught) { show(); setTimeout(function () { resetScanner("SIGNAL CAPTURED"); }, 900); }
       else show();
     }, 120);
@@ -97,7 +97,7 @@
     core()?.classList.add("hidden");
     o.classList.remove("hidden");
     const feedbackClass = /captured/i.test(feedback) ? " is-caught" : "";
-    o.innerHTML = `<div class="db-signal-screen"><div class="db-signal-head"><div><div class="db-signal-kicker">${d.rarity}</div><div class="db-signal-name">${d.name}</div><div class="db-signal-type">${d.type}</div></div></div><div class="db-signal-orb"><div class="db-signal-icon">${d.icon}</div><p class="db-signal-lore">${d.lore}</p></div><div class="db-signal-bottom"><div class="db-signal-stats"><div class="db-signal-stat"><span>HP</span><strong>${d.hp}</strong></div><div class="db-signal-stat"><span>ATK</span><strong>${d.atk}</strong></div><div class="db-signal-stat"><span>DEF</span><strong>${d.def}</strong></div></div>${meter("Signal", `${d.signalPct}%`, d.signalPct)}${meter("Capture", d.chance, d.chancePct)}${meter("Rarity", d.rarity, d.signalPct)}<div class="db-signal-meter"><span>Stability<strong>${d.stability}</strong></span><div class="db-signal-track"><div class="db-signal-fill" style="--fill:${num(d.stability, 35)}%"></div></div></div>${feedback ? `<div class="db-signal-feedback${feedbackClass}">${feedback}</div>` : ""}<div class="db-signal-actions"><button type="button" data-signal-action="capture">Throw ByteCoin</button><button type="button" data-signal-action="battle">Battle Signal</button><button type="button" data-signal-action="return">Return</button></div></div></div>`;
+    o.innerHTML = `<div class="db-signal-screen"><div class="db-signal-head"><div><div class="db-signal-kicker">${d.rarity}</div><div class="db-signal-name">${d.name}</div><div class="db-signal-type">${d.type}</div></div></div><div class="db-signal-orb"><div class="db-signal-icon">${d.icon}</div><p class="db-signal-lore">${d.lore}</p></div><div class="db-signal-bottom"><div class="db-signal-stats"><div class="db-signal-stat"><span>HP</span><strong>${d.hp}</strong></div><div class="db-signal-stat"><span>ATK</span><strong>${d.atk}</strong></div><div class="db-signal-stat"><span>DEF</span><strong>${d.def}</strong></div></div>${meter("Signal", d.signal, d.signalPct)}${meter("Rarity", d.rarity, d.rarityPct)}<div class="db-signal-meter"><span>Stability<strong>${d.stability}</strong></span><div class="db-signal-track"><div class="db-signal-fill" style="--fill:${num(d.stability, 35)}%"></div></div></div>${feedback ? `<div class="db-signal-feedback${feedbackClass}">${feedback}</div>` : ""}<div class="db-signal-actions"><button type="button" data-signal-action="capture">Throw ByteCoin</button><button type="button" data-signal-action="battle">Battle Signal</button><button type="button" data-signal-action="return">Return</button></div></div></div>`;
     o.querySelector("[data-signal-action='capture']")?.addEventListener("click", captureFromSignal);
     o.querySelector("[data-signal-action='battle']")?.addEventListener("click", function () { hide(); setTimeout(function () { window.startDataByteBattle?.(); document.getElementById("startBattleBtn")?.click(); }, 80); });
     o.querySelector("[data-signal-action='return']")?.addEventListener("click", hide);
