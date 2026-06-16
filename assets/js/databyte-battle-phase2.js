@@ -11,11 +11,13 @@
 
   function normalizeCaptureText(value) {
     return String(value || "")
-      .replace(/ByteCoin failed/gi, "DataByteCoin integrity failure")
-      .replace(/ByteCoin created/gi, "DataByteCoin created")
-      .replace(/ByteCoin breakout/gi, "DataByteCoin breakout")
-      .replace(/stored in BC-/gi, "stored in DataByteCoin DBC-")
-      .replace(/BC-(\d+)/g, "DBC-$1");
+      .replace(/DataDataByteCoin/gi, "DataByteCoin")
+      .replace(/DD+BC-(\d+)/g, "DBC-$1")
+      .replace(/\bByteCoin failed\b/gi, "DataByteCoin integrity failure")
+      .replace(/\bByteCoin created\b/gi, "DataByteCoin created")
+      .replace(/\bByteCoin breakout\b/gi, "DataByteCoin breakout")
+      .replace(/stored in BC-(\d+)/gi, "stored in DataByteCoin DBC-$1")
+      .replace(/(?<!D)BC-(\d+)/g, "DBC-$1");
   }
 
   function enemy() {
@@ -60,16 +62,7 @@
   function drop(reason) { const b = state.stability; state.stability = clamp(state.stability - 1, 0, state.maxStability); log(`${reason} Stability ${b}/${state.maxStability} → ${state.stability}/${state.maxStability}.`); if (state.stability <= 0) result("Signal Lost", `${state.enemy.name} escaped the scanner network.`); }
   function strengthen(n) { const b = state.signal; state.signal = clamp(state.signal + n, 5, 100); syncSignal(); log(`Signal strengthened ${b}% → ${state.signal}%.`); }
 
-  function start() {
-    const e = enemy(); if (!e) return;
-    const p = lead();
-    state = { player: p, enemy: e, playerHp: p.hp, enemyHp: e.hp, signal: signal(), stability: e.maxStability, maxStability: e.maxStability, log: [`${e.name} pulled the scanner into battle mode.`], down: new Set(), swap: false, result: null, subduedShown: false };
-    core()?.classList.add("hidden");
-    document.getElementById("databyteSignalOverlay")?.classList.add("hidden");
-    document.getElementById("databyteBattleStageOverlay")?.classList.add("hidden");
-    syncSignal(); render();
-  }
-
+  function start() { const e = enemy(); if (!e) return; const p = lead(); state = { player: p, enemy: e, playerHp: p.hp, enemyHp: e.hp, signal: signal(), stability: e.maxStability, maxStability: e.maxStability, log: [`${e.name} pulled the scanner into battle mode.`], down: new Set(), swap: false, result: null, subduedShown: false }; core()?.classList.add("hidden"); document.getElementById("databyteSignalOverlay")?.classList.add("hidden"); document.getElementById("databyteBattleStageOverlay")?.classList.add("hidden"); syncSignal(); render(); }
   function subdueEnemy() { if (state.subduedShown) return; state.subduedShown = true; strengthen(15); log(`${state.enemy.name} subdued. DataByteCoin lock window opened.`); }
   function attack() { if (!state || state.swap || state.result || state.enemyHp <= 0) return; const hit = dmg(state.player.atk, state.enemy.def); state.enemyHp = clamp(state.enemyHp - hit, 0, state.enemy.hp); log(`${state.player.name} struck for ${hit}.`); if (state.enemyHp <= 0) subdueEnemy(); else enemyTurn(); render(); }
   function guard() { if (!state || state.swap || state.result || state.enemyHp <= 0) return; const hit = Math.max(1, Math.floor(dmg(state.enemy.atk, state.player.def) * .45)); state.playerHp = clamp(state.playerHp - hit, 0, state.player.hp); log(`${state.player.name} guarded and took ${hit}.`); if (state.playerHp <= 0) offline(); render(); }
@@ -86,14 +79,7 @@
   function swap() { if (!state.swap) return ""; return `<div class="dbp2-swap"><h3>Deploy Next Sprite</h3><p>${state.player.name} is offline. Choose a remaining party member.</p><div class="dbp2-party">${remaining().map(s => `<button data-deploy="${s.id}">${s.icon} ${s.name}<br><small>HP ${s.hp} ATK ${s.atk} DEF ${s.def}</small></button>`).join("")}</div></div>`; }
   function actions() { if (state.swap) return ""; if (state.enemyHp <= 0) return `<div class="dbp2-actions resolved"><button class="gold" data-act="capture">Launch DataByteCoin</button><button data-act="back">Return</button></div>`; return `<div class="dbp2-actions"><button data-act="attack">Attack</button><button data-act="guard">Guard</button><button data-act="pulse">Scan Pulse</button><button class="gold" data-act="capture">Launch DataByteCoin</button></div>`; }
 
-  function render() {
-    const o = overlay(); if (!o || !state) return;
-    o.classList.remove("hidden");
-    if (state.result) { o.innerHTML = `<div class="dbp2-result"><h2>${state.result.title}</h2><p>${state.result.msg}</p><button data-act="finish">Continue</button></div>`; o.querySelector("[data-act='finish']")?.addEventListener("click", finish); return; }
-    o.innerHTML = `<div class="dbp2-top"><span>Signal Battle</span><span>${state.swap ? "Swap Needed" : state.enemyHp <= 0 ? "Signal Subdued" : "Active"}</span></div><div class="dbp2-arena">${fighter(state.player, state.playerHp, "Party Lead")}<div class="dbp2-vs">VS</div>${fighter(state.enemy, state.enemyHp, "Wild Signal")}</div>${meters()}${subdued()}<div class="dbp2-log">${state.log.slice(0,3).map(x => `<p>${x}</p>`).join("")}</div>${swap()}${actions()}`;
-    o.querySelector("[data-act='attack']")?.addEventListener("click", attack); o.querySelector("[data-act='guard']")?.addEventListener("click", guard); o.querySelector("[data-act='pulse']")?.addEventListener("click", pulse); o.querySelector("[data-act='capture']")?.addEventListener("click", capture); o.querySelector("[data-act='back']")?.addEventListener("click", back); o.querySelectorAll("[data-deploy]").forEach(b => b.addEventListener("click", () => deploy(b.dataset.deploy)));
-  }
-
+  function render() { const o = overlay(); if (!o || !state) return; o.classList.remove("hidden"); if (state.result) { o.innerHTML = `<div class="dbp2-result"><h2>${state.result.title}</h2><p>${state.result.msg}</p><button data-act="finish">Continue</button></div>`; o.querySelector("[data-act='finish']")?.addEventListener("click", finish); return; } o.innerHTML = `<div class="dbp2-top"><span>Signal Battle</span><span>${state.swap ? "Swap Needed" : state.enemyHp <= 0 ? "Signal Subdued" : "Active"}</span></div><div class="dbp2-arena">${fighter(state.player, state.playerHp, "Party Lead")}<div class="dbp2-vs">VS</div>${fighter(state.enemy, state.enemyHp, "Wild Signal")}</div>${meters()}${subdued()}<div class="dbp2-log">${state.log.slice(0,3).map(x => `<p>${x}</p>`).join("")}</div>${swap()}${actions()}`; o.querySelector("[data-act='attack']")?.addEventListener("click", attack); o.querySelector("[data-act='guard']")?.addEventListener("click", guard); o.querySelector("[data-act='pulse']")?.addEventListener("click", pulse); o.querySelector("[data-act='capture']")?.addEventListener("click", capture); o.querySelector("[data-act='back']")?.addEventListener("click", back); o.querySelectorAll("[data-deploy]").forEach(b => b.addEventListener("click", () => deploy(b.dataset.deploy))); }
   function boot() { styles(); overlay(); window.startDataByteBattle = start; }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();
