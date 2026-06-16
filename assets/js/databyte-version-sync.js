@@ -1,7 +1,7 @@
 // assets/js/databyte-version-sync.js
 (function () {
-  const VERSION = "v0.86.6 Data Discovery";
-  const CACHE_VERSION = "0866-data-discovery-cleanup";
+  const VERSION = "v0.87.0 Data Discovery";
+  const CACHE_VERSION = "0870-battle-signal-stability";
 
   window.DATABYTE_DISCOVERY_VERSION = VERSION;
   window.DATABYTE_DISCOVERY_CACHE_VERSION = CACHE_VERSION;
