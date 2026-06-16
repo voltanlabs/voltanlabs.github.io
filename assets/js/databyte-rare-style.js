@@ -1,7 +1,7 @@
 // assets/js/databyte-rare-style.js
 (function () {
   const NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
-  const FEATURE_VERSION = "0871-battle-phase2";
+  const FEATURE_VERSION = "0872-party-autofill";
 
   function nameNow() {
     const el = document.getElementById("encounterName");
@@ -37,6 +37,7 @@
     loadScriptOnce("databyteMissionsLoader", "/assets/js/databyte-missions.js");
     loadScriptOnce("databyteInventoryLoader", "/assets/js/databyte-inventory.js");
     loadScriptOnce("databytePartyLoader", "/assets/js/databyte-party.js");
+    loadScriptOnce("databytePartyAutofillLoader", "/assets/js/databyte-party-autofill.js");
     loadScriptOnce("databyteSignalStageLoader", "/assets/js/databyte-signal-stage.js");
     loadScriptOnce("databyteBattleLoader", "/assets/js/databyte-battle.js");
     loadScriptOnce("databyteBattlePhase2Loader", "/assets/js/databyte-battle-phase2.js");
