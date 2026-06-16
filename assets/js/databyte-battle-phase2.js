@@ -7,7 +7,16 @@
   function text(id) { return document.getElementById(id)?.textContent?.trim() || ""; }
   function clamp(v, min = 0, max = 999) { return Math.max(min, Math.min(max, Number(v) || 0)); }
   function pct(v, m) { return Math.max(0, Math.min(100, Math.round((v / Math.max(1, m)) * 100))); }
-  function key(s) { return String(s?.id || s?.byteCoin || s?.name || ""); }
+  function key(s) { return String(s?.id || s?.dataByteCoin || s?.byteCoin || s?.name || ""); }
+
+  function normalizeCaptureText(value) {
+    return String(value || "")
+      .replace(/ByteCoin failed/gi, "DataByteCoin integrity failure")
+      .replace(/ByteCoin created/gi, "DataByteCoin created")
+      .replace(/ByteCoin breakout/gi, "DataByteCoin breakout")
+      .replace(/stored in BC-/gi, "stored in DataByteCoin DBC-")
+      .replace(/BC-(\d+)/g, "DBC-$1");
+  }
 
   function enemy() {
     const name = text("encounterName");
@@ -47,7 +56,7 @@
   function stars() { return "★".repeat(state.stability) + "☆".repeat(Math.max(0, state.maxStability - state.stability)); }
   function remaining() { return party().filter(s => !state.down.has(s.id) && s.id !== state.player.id); }
 
-  function result(title, msg) { state.result = { title, msg }; state.swap = false; render(); }
+  function result(title, msg) { state.result = { title, msg: normalizeCaptureText(msg) }; state.swap = false; render(); }
   function drop(reason) { const b = state.stability; state.stability = clamp(state.stability - 1, 0, state.maxStability); log(`${reason} Stability ${b}/${state.maxStability} → ${state.stability}/${state.maxStability}.`); if (state.stability <= 0) result("Signal Lost", `${state.enemy.name} escaped the scanner network.`); }
   function strengthen(n) { const b = state.signal; state.signal = clamp(state.signal + n, 5, 100); syncSignal(); log(`Signal strengthened ${b}% → ${state.signal}%.`); }
 
@@ -61,27 +70,21 @@
     syncSignal(); render();
   }
 
-  function subdueEnemy() {
-    if (state.subduedShown) return;
-    state.subduedShown = true;
-    strengthen(15);
-    log(`${state.enemy.name} subdued. ByteCoin lock window opened.`);
-  }
-
+  function subdueEnemy() { if (state.subduedShown) return; state.subduedShown = true; strengthen(15); log(`${state.enemy.name} subdued. DataByteCoin lock window opened.`); }
   function attack() { if (!state || state.swap || state.result || state.enemyHp <= 0) return; const hit = dmg(state.player.atk, state.enemy.def); state.enemyHp = clamp(state.enemyHp - hit, 0, state.enemy.hp); log(`${state.player.name} struck for ${hit}.`); if (state.enemyHp <= 0) subdueEnemy(); else enemyTurn(); render(); }
   function guard() { if (!state || state.swap || state.result || state.enemyHp <= 0) return; const hit = Math.max(1, Math.floor(dmg(state.enemy.atk, state.player.def) * .45)); state.playerHp = clamp(state.playerHp - hit, 0, state.player.hp); log(`${state.player.name} guarded and took ${hit}.`); if (state.playerHp <= 0) offline(); render(); }
   function pulse() { if (!state || state.swap || state.result || state.enemyHp <= 0) return; strengthen(12); log("Scan Pulse tuned the signal resonance."); enemyTurn(); render(); }
   function enemyTurn() { if (!state || state.result || state.enemyHp <= 0) return; const hit = dmg(state.enemy.atk, state.player.def); state.playerHp = clamp(state.playerHp - hit, 0, state.player.hp); log(`${state.enemy.name} countered for ${hit}.`); if (state.playerHp <= 0) offline(); }
   function offline() { state.playerHp = 0; state.down.add(state.player.id); drop(`${state.player.name} was forced offline.`); if (state.result) return; const opts = remaining(); if (opts.length) { state.swap = true; log("Choose another party sprite to continue."); } else result("Party Offline", `${state.enemy.name} overran your active party.`); }
   function deploy(id) { const next = remaining().find(s => s.id === id); if (!next) return; state.player = next; state.playerHp = next.hp; state.swap = false; log(`${next.name} deployed.`); render(); }
-  function capture() { if (!state || state.result) return; syncSignal(); const before = text("captureResult"); document.getElementById("captureBtn")?.click(); setTimeout(() => { if (!state) return; const r = text("captureResult") || before; state.signal = signal(); syncSignal(); if (/captured|added|caught|success|created|stored/i.test(r)) result("Signal Stored", r || `${state.enemy.name} stored in a ByteCoin.`); else { log(`ByteCoin failed. Signal now ${state.signal}%.`); drop("ByteCoin breakout."); if (!state.result && state.enemyHp > 0) enemyTurn(); render(); } }, 120); }
+  function capture() { if (!state || state.result) return; syncSignal(); const before = text("captureResult"); document.getElementById("captureBtn")?.click(); setTimeout(() => { if (!state) return; const r = normalizeCaptureText(text("captureResult") || before); state.signal = signal(); syncSignal(); if (/captured|added|caught|success|created|stored/i.test(r)) result("DataByteCoin Created", r || `${state.enemy.name} stored in a DataByteCoin.`); else { log(`DataByteCoin integrity failure. Signal now ${state.signal}%.`); drop("DataByteCoin breakout."); if (!state.result && state.enemyHp > 0) enemyTurn(); render(); } }, 120); }
   function finish() { const title = state?.result?.title || "Scanner Ready"; state = null; document.getElementById("dbBattlePhase2")?.classList.add("hidden"); window.resetDataByteScannerStage?.(title); }
   function back() { state = null; document.getElementById("dbBattlePhase2")?.classList.add("hidden"); core()?.classList.remove("hidden"); }
 
   function meters() { return `<div class="dbp2-meters"><div class="dbp2-meter"><span>Signal<strong>${state.signal}%</strong></span><div class="dbp2-track"><div class="dbp2-fill" style="--w:${state.signal}%"></div></div></div><div class="dbp2-meter"><span><span>Stability <span class="dbp2-stars">${stars()}</span></span><strong>${state.stability}/${state.maxStability}</strong></span></div></div>`; }
-  function subdued() { if (state.enemyHp > 0) return ""; return `<div class="dbp2-subdued"><h3>Signal Subdued</h3><p>${state.enemy.name} can now be safely compiled into a ByteCoin. Signal strength: ${state.signal}%.</p></div>`; }
+  function subdued() { if (state.enemyHp > 0) return ""; return `<div class="dbp2-subdued"><h3>Signal Subdued</h3><p>${state.enemy.name} can now be safely stored in a DataByteCoin. Signal strength: ${state.signal}%.</p></div>`; }
   function swap() { if (!state.swap) return ""; return `<div class="dbp2-swap"><h3>Deploy Next Sprite</h3><p>${state.player.name} is offline. Choose a remaining party member.</p><div class="dbp2-party">${remaining().map(s => `<button data-deploy="${s.id}">${s.icon} ${s.name}<br><small>HP ${s.hp} ATK ${s.atk} DEF ${s.def}</small></button>`).join("")}</div></div>`; }
-  function actions() { if (state.swap) return ""; if (state.enemyHp <= 0) return `<div class="dbp2-actions resolved"><button class="gold" data-act="capture">Throw ByteCoin</button><button data-act="back">Return</button></div>`; return `<div class="dbp2-actions"><button data-act="attack">Attack</button><button data-act="guard">Guard</button><button data-act="pulse">Scan Pulse</button><button class="gold" data-act="capture">Throw ByteCoin</button></div>`; }
+  function actions() { if (state.swap) return ""; if (state.enemyHp <= 0) return `<div class="dbp2-actions resolved"><button class="gold" data-act="capture">Launch DataByteCoin</button><button data-act="back">Return</button></div>`; return `<div class="dbp2-actions"><button data-act="attack">Attack</button><button data-act="guard">Guard</button><button data-act="pulse">Scan Pulse</button><button class="gold" data-act="capture">Launch DataByteCoin</button></div>`; }
 
   function render() {
     const o = overlay(); if (!o || !state) return;
