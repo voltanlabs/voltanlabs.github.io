@@ -13,6 +13,14 @@
     return Number.isFinite(value) && value > 0 ? Math.min(100, value) : fallback;
   }
 
+  function normalizeCaptureText(value) {
+    return String(value || "")
+      .replace(/ByteCoin failed/gi, "DataByteCoin failed")
+      .replace(/ByteCoin created/gi, "DataByteCoin created")
+      .replace(/stored in BC-/gi, "stored in DataByteCoin DBC-")
+      .replace(/BC-(\d+)/g, "DBC-$1");
+  }
+
   function data() {
     const name = text("encounterName");
     if (!name || name === "Awaiting Signal" || name === "Unknown Signal") return null;
@@ -56,7 +64,7 @@
 
   function meter(label, value, fill) { return `<div class="db-signal-meter"><span>${label}<strong>${value}</strong></span><div class="db-signal-track"><div class="db-signal-fill" style="--fill:${fill}%"></div></div></div>`; }
 
-  function resetScanner(message = "SIGNAL CAPTURED") {
+  function resetScanner(message = "SIGNAL STORED") {
     open = false;
     feedback = "";
     document.getElementById("databyteSignalOverlay")?.classList.add("hidden");
@@ -78,14 +86,14 @@
 
   function captureFromSignal() {
     const before = text("captureResult");
-    feedback = `BYTECOIN THROWN • Signal strength ${text("chanceText") || "?"}`;
+    feedback = `DATABYTECOIN LAUNCHED • Signal strength ${text("chanceText") || "?"}`;
     document.getElementById("captureBtn")?.click();
     show();
     setTimeout(function () {
-      const result = text("captureResult") || before;
+      const result = normalizeCaptureText(text("captureResult") || before);
       const caught = /captured|added|caught|success|created|stored/i.test(result);
-      feedback = caught ? `SIGNAL CAPTURED • ${result}` : `SIGNAL ESCAPED • ${result || "Try again or battle to strengthen the signal."}`;
-      if (caught) { show(); setTimeout(function () { resetScanner("SIGNAL CAPTURED"); }, 900); }
+      feedback = caught ? `SIGNAL STORED • ${result}` : `SIGNAL ESCAPED • ${result || "Try again or battle to strengthen the signal."}`;
+      if (caught) { show(); setTimeout(function () { resetScanner("SIGNAL STORED"); }, 900); }
       else show();
     }, 120);
   }
@@ -97,8 +105,8 @@
     open = true;
     core()?.classList.add("hidden");
     o.classList.remove("hidden");
-    const feedbackClass = /captured/i.test(feedback) ? " is-caught" : "";
-    o.innerHTML = `<div class="db-signal-screen"><div class="db-signal-head"><div><div class="db-signal-kicker">${d.rarity}</div><div class="db-signal-name">${d.name}</div><div class="db-signal-type">${d.type}</div></div></div><div class="db-signal-orb"><div class="db-signal-icon">${d.icon}</div><p class="db-signal-lore">${d.lore}</p></div><div class="db-signal-bottom"><div class="db-signal-stats"><div class="db-signal-stat"><span>HP</span><strong>${d.hp}</strong></div><div class="db-signal-stat"><span>ATK</span><strong>${d.atk}</strong></div><div class="db-signal-stat"><span>DEF</span><strong>${d.def}</strong></div></div>${meter("Signal", d.signal, d.signalPct)}${meter("Rarity", d.rarity, d.rarityPct)}<div class="db-signal-meter"><span>Stability<strong>${d.stability}</strong></span><div class="db-signal-track"><div class="db-signal-fill" style="--fill:${num(d.stability, 35)}%"></div></div></div>${feedback ? `<div class="db-signal-feedback${feedbackClass}">${feedback}</div>` : ""}<div class="db-signal-actions"><button type="button" data-signal-action="capture">Throw ByteCoin</button><button type="button" data-signal-action="battle">Battle Signal</button><button type="button" data-signal-action="return">Return</button></div></div></div>`;
+    const feedbackClass = /captured|stored/i.test(feedback) ? " is-caught" : "";
+    o.innerHTML = `<div class="db-signal-screen"><div class="db-signal-head"><div><div class="db-signal-kicker">${d.rarity}</div><div class="db-signal-name">${d.name}</div><div class="db-signal-type">${d.type}</div></div></div><div class="db-signal-orb"><div class="db-signal-icon">${d.icon}</div><p class="db-signal-lore">${d.lore}</p></div><div class="db-signal-bottom"><div class="db-signal-stats"><div class="db-signal-stat"><span>HP</span><strong>${d.hp}</strong></div><div class="db-signal-stat"><span>ATK</span><strong>${d.atk}</strong></div><div class="db-signal-stat"><span>DEF</span><strong>${d.def}</strong></div></div>${meter("Signal", d.signal, d.signalPct)}${meter("Rarity", d.rarity, d.rarityPct)}<div class="db-signal-meter"><span>Stability<strong>${d.stability}</strong></span><div class="db-signal-track"><div class="db-signal-fill" style="--fill:${num(d.stability, 35)}%"></div></div></div>${feedback ? `<div class="db-signal-feedback${feedbackClass}">${feedback}</div>` : ""}<div class="db-signal-actions"><button type="button" data-signal-action="capture">Launch DataByteCoin</button><button type="button" data-signal-action="battle">Battle Signal</button><button type="button" data-signal-action="return">Return</button></div></div></div>`;
     o.querySelector("[data-signal-action='capture']")?.addEventListener("click", captureFromSignal);
     o.querySelector("[data-signal-action='battle']")?.addEventListener("click", function () {
       hide();
