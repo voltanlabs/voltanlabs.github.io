@@ -61,6 +61,7 @@
     feedback = "";
     document.getElementById("databyteSignalOverlay")?.classList.add("hidden");
     document.getElementById("databyteBattleStageOverlay")?.classList.add("hidden");
+    document.getElementById("dbBattlePhase2")?.classList.add("hidden");
     const encounterCard = document.getElementById("encounterCard");
     if (encounterCard) encounterCard.classList.add("hidden");
     const orb = document.getElementById("spriteOrb");
@@ -99,7 +100,12 @@
     const feedbackClass = /captured/i.test(feedback) ? " is-caught" : "";
     o.innerHTML = `<div class="db-signal-screen"><div class="db-signal-head"><div><div class="db-signal-kicker">${d.rarity}</div><div class="db-signal-name">${d.name}</div><div class="db-signal-type">${d.type}</div></div></div><div class="db-signal-orb"><div class="db-signal-icon">${d.icon}</div><p class="db-signal-lore">${d.lore}</p></div><div class="db-signal-bottom"><div class="db-signal-stats"><div class="db-signal-stat"><span>HP</span><strong>${d.hp}</strong></div><div class="db-signal-stat"><span>ATK</span><strong>${d.atk}</strong></div><div class="db-signal-stat"><span>DEF</span><strong>${d.def}</strong></div></div>${meter("Signal", d.signal, d.signalPct)}${meter("Rarity", d.rarity, d.rarityPct)}<div class="db-signal-meter"><span>Stability<strong>${d.stability}</strong></span><div class="db-signal-track"><div class="db-signal-fill" style="--fill:${num(d.stability, 35)}%"></div></div></div>${feedback ? `<div class="db-signal-feedback${feedbackClass}">${feedback}</div>` : ""}<div class="db-signal-actions"><button type="button" data-signal-action="capture">Throw ByteCoin</button><button type="button" data-signal-action="battle">Battle Signal</button><button type="button" data-signal-action="return">Return</button></div></div></div>`;
     o.querySelector("[data-signal-action='capture']")?.addEventListener("click", captureFromSignal);
-    o.querySelector("[data-signal-action='battle']")?.addEventListener("click", function () { hide(); setTimeout(function () { window.startDataByteBattle?.(); document.getElementById("startBattleBtn")?.click(); }, 80); });
+    o.querySelector("[data-signal-action='battle']")?.addEventListener("click", function () {
+      hide();
+      setTimeout(function () {
+        if (window.startDataByteBattle) window.startDataByteBattle();
+      }, 80);
+    });
     o.querySelector("[data-signal-action='return']")?.addEventListener("click", hide);
   }
 
