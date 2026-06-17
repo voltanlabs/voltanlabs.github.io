@@ -1,12 +1,9 @@
 // assets/js/databyte-rare-style.js
+// Data Discovery standalone loader.
+// This file remains loaded by databyte-discovery.html, so it is now the handoff point
+// from the legacy page into the standalone mobile-app container.
 (function () {
-  const NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
-  const FEATURE_VERSION = "0891-auto-start-native-shell";
-
-  function nameNow() {
-    const el = document.getElementById("encounterName");
-    return el ? el.textContent.trim() : "";
-  }
+  const FEATURE_VERSION = "0898-standalone-loader";
 
   function withVersion(src) {
     return src.includes("?") ? `${src}&v=${FEATURE_VERSION}` : `${src}?v=${FEATURE_VERSION}`;
@@ -20,90 +17,28 @@
     document.body.appendChild(script);
   }
 
-  function loadStyleOnce(id, href) {
-    if (document.getElementById(id)) return;
-    const link = document.createElement("link");
-    link.id = id;
-    link.rel = "stylesheet";
-    link.href = withVersion(href);
-    document.head.appendChild(link);
-  }
-
-  function retireLegacyBattle() {
-    document.getElementById("databyteBattleStageOverlay")?.remove();
-    document.getElementById("battlePanel")?.remove();
-    document.getElementById("databyteBattleLoader")?.remove();
-  }
-
-  function unloadRiskyPatchLayers() {
+  function retireLegacyLayers() {
     document.getElementById("databyteSignalCollapseLoader")?.remove();
     document.getElementById("databyteContainerRefineLoader")?.remove();
     document.getElementById("databyteFullscreenShellLoader")?.remove();
     document.getElementById("databyteSignalStageLoader")?.remove();
     document.getElementById("databyteAppShellLoader")?.remove();
+    document.getElementById("databyteNativeAppShellLoader")?.remove();
+    document.getElementById("databyteAutoStartLoader")?.remove();
     document.getElementById("databyteSignalDriftStyles")?.remove();
     document.getElementById("databyteContainerRefineStyles")?.remove();
     document.getElementById("databyteFullscreenShellStyles")?.remove();
     document.getElementById("databyteSignalStageStyles")?.remove();
     document.getElementById("databyteAppShellStyles")?.remove();
+    document.getElementById("databyteNativeScannerShellStyles")?.remove();
     document.querySelector(".dd-app-shell")?.remove();
     document.querySelectorAll(".db-drift-screen,.db-storage-summary,.db-signal-overlay,.dd-floating-menu,.dd-panel-overlay,.db-app-topbar").forEach((el) => el.remove());
-    document.body.classList.remove("dd-fullscreen-mode", "dd-app-starting", "dd-mode-signal", "dd-mode-battle", "dd-ui-state-signal", "dd-ui-state-battle", "dd-ui-state-modal");
-    document.getElementById("databyteSignalOverlay")?.classList.remove("db-stored-clean");
-  }
-
-  function loadFeatureLayers() {
-    loadStyleOnce("databyteScannerLayoutStyles", "/assets/css/databyte-scanner-layout.css");
-    loadStyleOnce("databyteHideOriginalStatusStyles", "/assets/css/databyte-hide-original-status.css");
-    loadScriptOnce("databyteVersionSyncLoader", "/assets/js/databyte-version-sync.js");
-    loadScriptOnce("databyteAutoStartLoader", "/assets/js/databyte-auto-start.js");
-    loadScriptOnce("databyteRareSpawnLoader", "/assets/js/databyte-rare-spawn.js");
-    loadScriptOnce("databyteMissionsLoader", "/assets/js/databyte-missions.js");
-    loadScriptOnce("databyteInventoryLoader", "/assets/js/databyte-inventory.js");
-    loadScriptOnce("databytePartyLoader", "/assets/js/databyte-party.js");
-    loadScriptOnce("databytePartyAutofillLoader", "/assets/js/databyte-party-autofill.js");
-    retireLegacyBattle();
-    unloadRiskyPatchLayers();
-    loadScriptOnce("databyteBattlePhase2Loader", "/assets/js/databyte-battle-phase2.js");
-    loadScriptOnce("databyteBattleLayoutLockLoader", "/assets/js/databyte-battle-layout-lock.js");
-    loadScriptOnce("databytePanelStateLoader", "/assets/js/databyte-panel-state.js");
-    loadScriptOnce("databyteNativeAppShellLoader", "/assets/js/databyte-app-shell-v2.js");
-    loadScriptOnce("databyteAdminConsoleLoader", "/assets/js/databyte-admin-console.js");
-    loadScriptOnce("databyteDexPanelCleanupLoader", "/assets/js/databytedex-panel-cleanup.js");
-    loadScriptOnce("databyteDexActionRouterLoader", "/assets/js/databytedex-action-router.js");
-    loadScriptOnce("databyteScannerEffectsLoader", "/assets/js/databyte-scanner-effects.js");
-    loadScriptOnce("databyteSpritePresentationLoader", "/assets/js/databyte-sprite-presentation.js");
-    loadScriptOnce("databyteStatusCenterLoader", "/assets/js/databyte-status-center.js");
-  }
-
-  function apply() {
-    unloadRiskyPatchLayers();
-    const active = NAMES.has(nameNow());
-    const card = document.getElementById("encounterCard");
-    const orb = document.getElementById("spriteOrb");
-    const stage = document.getElementById("revealStage");
-    const status = document.getElementById("scannerStatus");
-
-    if (card) {
-      card.style.borderColor = active ? "rgba(192,132,252,.9)" : "";
-      card.style.boxShadow = active ? "0 0 34px rgba(192,132,252,.30)" : "";
-    }
-    if (orb) {
-      orb.style.borderColor = active ? "rgba(192,132,252,.9)" : "";
-      orb.style.boxShadow = active ? "0 0 38px rgba(192,132,252,.42)" : "";
-    }
-    if (active) {
-      if (stage) stage.textContent = "SPECIAL SIGNAL DETECTED";
-      if (status) status.textContent = nameNow() + " rare reading stabilized.";
-    }
+    document.body.classList.remove("dd-fullscreen-mode", "dd-app-starting", "dd-mode-signal", "dd-mode-battle", "dd-ui-state-signal", "dd-ui-state-battle", "dd-ui-state-modal", "dd-native-scanner", "dd-root");
   }
 
   function boot() {
-    loadFeatureLayers();
-    apply();
-    const target = document.getElementById("encounterName");
-    if (target) new MutationObserver(apply).observe(target, { childList: true, characterData: true, subtree: true });
-    setInterval(apply, 1500);
+    retireLegacyLayers();
+    loadScriptOnce("databyteStandaloneAppLoader", "/assets/js/databyte-standalone-app.js");
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
