@@ -24,17 +24,21 @@
       body.dd-fullscreen-mode #gamePanel .scan-bg{min-height:0!important;height:100%!important;border:0!important;border-radius:0!important;background-color:transparent!important;background-image:none!important;overflow:hidden!important}
       body.dd-fullscreen-mode #gamePanel input,body.dd-fullscreen-mode #gamePanel button{touch-action:manipulation!important}
       body.dd-fullscreen-mode #gamePanel .scan-bg + div,body.dd-fullscreen-mode #gamePanel .scan-bg~div{position:relative!important;z-index:5!important;min-height:0!important;max-height:31dvh!important;overflow:auto!important;overscroll-behavior:contain!important;padding:10px!important;background:rgba(7,17,31,.78)!important;border:1px solid rgba(125,211,252,.16)!important;border-radius:18px!important;margin:0 0 72px!important;box-sizing:border-box!important}
+      body.dd-mode-signal #gamePanel .scan-bg + div,body.dd-mode-signal #gamePanel .scan-bg~div,body.dd-mode-battle #gamePanel .scan-bg + div,body.dd-mode-battle #gamePanel .scan-bg~div{display:none!important}
       body.dd-fullscreen-mode #encounterCard{max-height:58dvh!important;overflow:auto!important;overscroll-behavior:contain!important;margin-top:10px!important}
+      body.dd-mode-signal #encounterCard{max-height:calc(100dvh - 40px)!important;margin:0!important;padding-bottom:70px!important;box-sizing:border-box!important}
       body.dd-fullscreen-mode #databyteSignalOverlay,body.dd-fullscreen-mode #dbBattlePhase2{inset:0!important;height:100%!important;max-height:100%!important;overflow:auto!important;overscroll-behavior:contain!important;padding-bottom:82px!important;box-sizing:border-box!important}
+      body.dd-mode-battle #dbBattlePhase2{display:grid!important;align-content:start!important;gap:8px!important;padding:8px 8px 86px!important;background:rgba(7,17,31,.34)!important}
       body.dd-fullscreen-mode #dbBattlePhase2 .dbp2-arena{gap:6px!important}
-      body.dd-fullscreen-mode #dbBattlePhase2 .dbp2-icon{width:82px!important;height:82px!important;font-size:2.8rem!important}
-      body.dd-fullscreen-mode #dbBattlePhase2 .dbp2-name{font-size:1.2rem!important;line-height:1.05!important}
-      body.dd-fullscreen-mode #dbBattlePhase2 .dbp2-log{min-height:44px!important;max-height:54px!important}
-      body.dd-fullscreen-mode #dbBattlePhase2 .dbp2-actions button{min-height:48px!important}
-      .dd-floating-menu{position:absolute;right:14px;bottom:max(14px,env(safe-area-inset-bottom));z-index:2147482000;display:grid;justify-items:end;gap:9px;pointer-events:none}.dd-fab{width:58px;height:58px;border-radius:20px;border:1px solid rgba(125,211,252,.34);background:rgba(15,23,42,.92);color:#FFD700;font-size:1.45rem;font-weight:900;box-shadow:0 16px 46px rgba(0,0,0,.42);pointer-events:auto}.dd-menu-stack{display:none;gap:8px;grid-auto-rows:min-content;pointer-events:auto}.dd-floating-menu.open .dd-menu-stack{display:grid}.dd-menu-stack button{min-width:132px;border:1px solid rgba(125,211,252,.26);background:rgba(15,23,42,.9);color:#E5E7EB;border-radius:16px;padding:11px 14px;font-weight:900;text-align:left;box-shadow:0 12px 32px rgba(0,0,0,.28)}.dd-menu-stack button span{color:#FFD700;margin-right:8px}.dd-panel-overlay{position:absolute;inset:12px;z-index:2147482100;display:none;border:1px solid rgba(125,211,252,.24);border-radius:24px;background:rgba(7,17,31,.92);box-shadow:0 24px 80px rgba(0,0,0,.44);backdrop-filter:blur(10px);overflow:hidden}.dd-panel-overlay.open{display:grid;grid-template-rows:auto minmax(0,1fr)}.dd-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 16px 10px;border-bottom:1px solid rgba(125,211,252,.14)}.dd-panel-title{color:#FFD700;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.dd-panel-close{border:1px solid rgba(125,211,252,.24);background:rgba(30,41,59,.72);color:#E5E7EB;border-radius:14px;padding:9px 12px;font-weight:900}.dd-panel-body{overflow:auto;overscroll-behavior:contain;padding:16px;display:grid;gap:12px}.dd-panel-card{border:1px solid rgba(125,211,252,.16);border-radius:18px;background:rgba(15,23,42,.76);padding:14px}.dd-panel-card strong{color:#FFD700}.dd-panel-muted{color:#BAE6FD;line-height:1.4}
+      body.dd-fullscreen-mode #dbBattlePhase2 .dbp2-icon{width:74px!important;height:74px!important;font-size:2.55rem!important}
+      body.dd-fullscreen-mode #dbBattlePhase2 .dbp2-name{font-size:1.15rem!important;line-height:1.05!important}
+      body.dd-fullscreen-mode #dbBattlePhase2 .dbp2-log{min-height:42px!important;max-height:58px!important;overflow:auto!important}
+      body.dd-fullscreen-mode #dbBattlePhase2 .dbp2-actions{gap:8px!important}
+      body.dd-fullscreen-mode #dbBattlePhase2 .dbp2-actions button{min-height:46px!important}
+      .dd-floating-menu{position:absolute;right:14px;bottom:max(14px,env(safe-area-inset-bottom));z-index:2147482000;display:grid;justify-items:end;gap:9px;pointer-events:none}.dd-fab{width:58px;height:58px;border-radius:20px;border:1px solid rgba(125,211,252,.34);background:rgba(15,23,42,.92);color:#FFD700;font-size:1.45rem;font-weight:900;box-shadow:0 16px 46px rgba(0,0,0,.42);pointer-events:auto}.dd-menu-stack{display:none;gap:8px;grid-auto-rows:min-content;pointer-events:auto}.dd-floating-menu.open .dd-menu-stack{display:grid}.dd-menu-stack button{min-width:132px;border:1px solid rgba(125,211,252,.26);background:rgba(15,23,42,.9);color:#E5E7EB;border-radius:16px;padding:11px 14px;font-weight:900;text-align:left;box-shadow:0 12px 32px rgba(0,0,0,.28)}.dd-menu-stack button span{color:#FFD700;margin-right:8px}body.dd-mode-battle .dd-floating-menu{display:none!important}.dd-panel-overlay{position:fixed!important;inset:12px!important;z-index:2147482100;display:none;border:1px solid rgba(125,211,252,.24);border-radius:24px;background:rgba(7,17,31,.94);box-shadow:0 24px 80px rgba(0,0,0,.44);backdrop-filter:blur(10px);overflow:hidden}.dd-panel-overlay.open{display:grid;grid-template-rows:auto minmax(0,1fr)}.dd-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 16px 10px;border-bottom:1px solid rgba(125,211,252,.14)}.dd-panel-title{color:#FFD700;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.dd-panel-close{border:1px solid rgba(125,211,252,.24);background:rgba(30,41,59,.72);color:#E5E7EB;border-radius:14px;padding:9px 12px;font-weight:900}.dd-panel-body{overflow:auto;overscroll-behavior:contain;padding:16px;display:grid;gap:12px}.dd-panel-card{border:1px solid rgba(125,211,252,.16);border-radius:18px;background:rgba(15,23,42,.76);padding:14px}.dd-panel-card strong{color:#FFD700}.dd-panel-muted{color:#BAE6FD;line-height:1.4}
       .dd-start-screen{position:absolute;inset:0;z-index:2147483600!important;display:grid;place-items:center;padding:24px;box-sizing:border-box;text-align:center;background:rgba(7,17,31,.24);pointer-events:auto!important}.dd-start-card{width:min(100%,620px);display:grid;gap:18px;padding:28px 20px;border:1px solid rgba(125,211,252,.24);border-radius:28px;background:rgba(15,23,42,.82);box-shadow:0 24px 80px rgba(0,0,0,.38);backdrop-filter:blur(8px);pointer-events:auto!important}.dd-start-kicker{color:#FFD700;font-weight:900;letter-spacing:.24em;text-transform:uppercase;font-size:.72rem}.dd-start-title{color:#0787ff;font-size:clamp(2.2rem,12vw,5rem);font-weight:900;line-height:.92}.dd-start-copy{color:#CBD5E1;font-size:1rem;line-height:1.45}.dd-start-btn{border:0;border-radius:18px;background:#FFD700;color:#111827;font-weight:900;padding:15px 18px;font-size:1rem;pointer-events:auto!important}.dd-start-note{color:#BAE6FD;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase}
       body.dd-app-starting .dd-app-main,body.dd-app-starting .dd-floating-menu{visibility:hidden!important;pointer-events:none!important}
-      @media(orientation:landscape) and (min-width:820px){body.dd-fullscreen-mode .dd-app-main{grid-template-columns:minmax(0,1fr) 330px!important;gap:10px!important}body.dd-fullscreen-mode .dd-app-side{display:grid!important;min-height:0!important;overflow:auto!important}body.dd-fullscreen-mode #gamePanel>div>div:nth-child(2){grid-template-columns:minmax(0,1fr) 330px!important;grid-template-rows:minmax(0,1fr)!important}body.dd-fullscreen-mode #gamePanel .scan-bg + div,body.dd-fullscreen-mode #gamePanel .scan-bg~div{max-height:100%!important;margin:0!important}.dd-floating-menu{right:354px}.dd-panel-overlay{right:354px}}
+      @media(orientation:landscape) and (min-width:820px){body.dd-fullscreen-mode .dd-app-main{grid-template-columns:minmax(0,1fr) 330px!important;gap:10px!important}body.dd-fullscreen-mode .dd-app-side{display:grid!important;min-height:0!important;overflow:auto!important}body.dd-fullscreen-mode #gamePanel>div>div:nth-child(2){grid-template-columns:minmax(0,1fr) 330px!important;grid-template-rows:minmax(0,1fr)!important}body.dd-fullscreen-mode #gamePanel .scan-bg + div,body.dd-fullscreen-mode #gamePanel .scan-bg~div{max-height:100%!important;margin:0!important}.dd-floating-menu{right:354px}.dd-panel-overlay{right:354px!important}}
     `;
     document.head.appendChild(style);
   }
@@ -141,6 +145,19 @@
     shell.appendChild(overlay);
   }
 
+  function updateMode(shell) {
+    const battle = document.getElementById("dbBattlePhase2");
+    const signalOverlay = document.getElementById("databyteSignalOverlay");
+    const encounterCard = document.getElementById("encounterCard");
+    const scanBg = document.querySelector("#gamePanel .scan-bg");
+    const text = (scanBg?.textContent || "").toLowerCase();
+    const battleActive = !!battle && isVisible(battle) && text.includes("signal battle");
+    const signalActive = !battleActive && ((!!signalOverlay && isVisible(signalOverlay)) || (!!encounterCard && isVisible(encounterCard)) || text.includes("launch databytecoin") || text.includes("battle signal"));
+    document.body.classList.toggle("dd-mode-battle", battleActive);
+    document.body.classList.toggle("dd-mode-signal", signalActive);
+    if (battleActive) shell.querySelector(".dd-floating-menu")?.classList.remove("open");
+  }
+
   function build() {
     injectStyles();
     const gamePanel = document.getElementById("gamePanel");
@@ -173,6 +190,9 @@
 
     document.body.classList.add("dd-fullscreen-mode");
     startScreen(shell);
+    updateMode(shell);
+    setInterval(() => updateMode(shell), 300);
+    new MutationObserver(() => updateMode(shell)).observe(gamePanel, { childList: true, subtree: true, characterData: true, attributes: true });
     return true;
   }
 
