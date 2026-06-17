@@ -1,7 +1,7 @@
 // assets/js/databyte-rare-style.js
 (function () {
   const NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
-  const FEATURE_VERSION = "0876-battle-stability";
+  const FEATURE_VERSION = "0880-fullscreen-shell";
 
   function nameNow() {
     const el = document.getElementById("encounterName");
@@ -58,6 +58,7 @@
     unloadRiskyPatchLayers();
     loadScriptOnce("databyteBattlePhase2Loader", "/assets/js/databyte-battle-phase2.js");
     loadScriptOnce("databyteBattleLayoutLockLoader", "/assets/js/databyte-battle-layout-lock.js");
+    loadScriptOnce("databyteFullscreenShellLoader", "/assets/js/databyte-fullscreen-shell.js");
     loadScriptOnce("databytePanelStateLoader", "/assets/js/databyte-panel-state.js");
     loadScriptOnce("databyteAppShellLoader", "/assets/js/databyte-app-shell.js");
     loadScriptOnce("databyteAdminConsoleLoader", "/assets/js/databyte-admin-console.js");
