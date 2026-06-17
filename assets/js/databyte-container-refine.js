@@ -18,10 +18,13 @@
   }
 
   function normalizeVisibleText(root) {
-    const walker = document.createTreeWalker(root || document.body, NodeFilter.SHOW_TEXT);
+    if (!root) return;
+    if (root.id === "dbBattlePhase2" || root.closest?.("#dbBattlePhase2")) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     const nodes = [];
     while (walker.nextNode()) nodes.push(walker.currentNode);
     nodes.forEach((node) => {
+      if (node.parentElement?.closest?.("#dbBattlePhase2")) return;
       const fixed = normalizeString(node.nodeValue);
       if (fixed !== node.nodeValue) node.nodeValue = fixed;
     });
@@ -75,7 +78,8 @@
     const before = chanceValue();
     setTimeout(function () {
       const result = captureResultText();
-      normalizeVisibleText(document.body);
+      normalizeVisibleText(document.getElementById("databyteSignalOverlay"));
+      normalizeVisibleText(document.getElementById("captureResult"));
       if (isStored(result)) { addStorageSummary(); return; }
       if (isFailure(result) && chanceValue() >= before) maybeLowerSignal();
     }, 180);
@@ -83,7 +87,8 @@
 
   function scan() {
     css();
-    normalizeVisibleText(document.body);
+    normalizeVisibleText(document.getElementById("databyteSignalOverlay"));
+    normalizeVisibleText(document.getElementById("captureResult"));
     addStorageSummary();
     if (lastLaunch && Date.now() - lastLaunch < 900) {
       const result = captureResultText();
@@ -94,8 +99,9 @@
   function boot() {
     css();
     document.addEventListener("click", watchLaunches, true);
-    new MutationObserver(scan).observe(document.body, { childList: true, subtree: true, characterData: true });
-    setInterval(scan, 1000);
+    const signalOverlay = document.getElementById("databyteSignalOverlay") || document.body;
+    new MutationObserver(scan).observe(signalOverlay, { childList: true, subtree: true, characterData: true });
+    setInterval(scan, 1200);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
