@@ -1,7 +1,7 @@
 // assets/js/databyte-rare-style.js
 (function () {
   const NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
-  const FEATURE_VERSION = "0890-native-scanner-shell";
+  const FEATURE_VERSION = "0891-auto-start-native-shell";
 
   function nameNow() {
     const el = document.getElementById("encounterName");
@@ -56,6 +56,7 @@
     loadStyleOnce("databyteScannerLayoutStyles", "/assets/css/databyte-scanner-layout.css");
     loadStyleOnce("databyteHideOriginalStatusStyles", "/assets/css/databyte-hide-original-status.css");
     loadScriptOnce("databyteVersionSyncLoader", "/assets/js/databyte-version-sync.js");
+    loadScriptOnce("databyteAutoStartLoader", "/assets/js/databyte-auto-start.js");
     loadScriptOnce("databyteRareSpawnLoader", "/assets/js/databyte-rare-spawn.js");
     loadScriptOnce("databyteMissionsLoader", "/assets/js/databyte-missions.js");
     loadScriptOnce("databyteInventoryLoader", "/assets/js/databyte-inventory.js");
