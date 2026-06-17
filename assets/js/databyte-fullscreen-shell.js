@@ -33,6 +33,18 @@
     document.head.appendChild(style);
   }
 
+  function isVisible(el) {
+    if (!el) return false;
+    const style = window.getComputedStyle(el);
+    return style.display !== "none" && style.visibility !== "hidden" && el.offsetParent !== null;
+  }
+
+  function registrationComplete() {
+    const gamePanel = document.getElementById("gamePanel");
+    const reg = document.getElementById("registrationPanel");
+    return !!gamePanel && isVisible(gamePanel) && (!reg || !isVisible(reg));
+  }
+
   function makeButton(label, icon, action) {
     const btn = document.createElement("button");
     btn.type = "button";
@@ -64,21 +76,21 @@
     screen.innerHTML = `<div class="dd-start-card"><div class="dd-start-kicker">Scanner Candidate Evaluation</div><div class="dd-start-title">DataByteSprites</div><div class="dd-start-copy">Enter the Data Discovery scanner, lock onto signals, launch DataByteCoins, and build your active party.</div><button class="dd-start-btn" type="button" data-dd-start="true">Start Scanner</button><div class="dd-start-note">Tip: install to home screen for true fullscreen mode</div></div>`;
     shell.appendChild(screen);
     document.body.classList.add("dd-app-starting");
-    screen.addEventListener("click", function (event) {
-      if (event.target.closest("[data-dd-start]")) enterScanner(shell);
+    ["pointerup", "click", "touchend"].forEach((type) => {
+      screen.addEventListener(type, function (event) {
+        if (event.target.closest("[data-dd-start]")) {
+          event.preventDefault();
+          enterScanner(shell);
+        }
+      }, { passive: false });
     });
-    screen.addEventListener("touchend", function (event) {
-      if (event.target.closest("[data-dd-start]")) {
-        event.preventDefault();
-        enterScanner(shell);
-      }
-    }, { passive: false });
   }
 
   function build() {
     injectStyles();
     const gamePanel = document.getElementById("gamePanel");
     if (!gamePanel || !gamePanel.querySelector(".scan-bg") || document.querySelector(".dd-app-shell")) return false;
+    if (!registrationComplete()) return false;
 
     const panels = collectSidePanels(gamePanel);
     const originalParent = gamePanel.parentElement;
@@ -119,8 +131,10 @@
     let tries = 0;
     const timer = setInterval(() => {
       tries += 1;
-      if (build() || tries > 20) clearInterval(timer);
+      if (build() || tries > 80) clearInterval(timer);
     }, 250);
+    document.addEventListener("click", () => setTimeout(build, 150), true);
+    document.addEventListener("touchend", () => setTimeout(build, 150), true);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
