@@ -1,7 +1,7 @@
 // assets/js/databyte-rare-style.js
 (function () {
   const NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
-  const FEATURE_VERSION = "0875-container-refine";
+  const FEATURE_VERSION = "0876-battle-stability";
 
   function nameNow() {
     const el = document.getElementById("encounterName");
@@ -35,6 +35,15 @@
     document.getElementById("databyteBattleLoader")?.remove();
   }
 
+  function unloadRiskyPatchLayers() {
+    document.getElementById("databyteSignalCollapseLoader")?.remove();
+    document.getElementById("databyteContainerRefineLoader")?.remove();
+    document.getElementById("databyteSignalDriftStyles")?.remove();
+    document.getElementById("databyteContainerRefineStyles")?.remove();
+    document.querySelectorAll(".db-drift-screen,.db-storage-summary").forEach((el) => el.remove());
+    document.getElementById("databyteSignalOverlay")?.classList.remove("db-stored-clean");
+  }
+
   function loadFeatureLayers() {
     loadStyleOnce("databyteScannerLayoutStyles", "/assets/css/databyte-scanner-layout.css");
     loadStyleOnce("databyteHideOriginalStatusStyles", "/assets/css/databyte-hide-original-status.css");
@@ -46,9 +55,9 @@
     loadScriptOnce("databytePartyAutofillLoader", "/assets/js/databyte-party-autofill.js");
     loadScriptOnce("databyteSignalStageLoader", "/assets/js/databyte-signal-stage.js");
     retireLegacyBattle();
+    unloadRiskyPatchLayers();
     loadScriptOnce("databyteBattlePhase2Loader", "/assets/js/databyte-battle-phase2.js");
-    loadScriptOnce("databyteSignalCollapseLoader", "/assets/js/databyte-signal-collapse.js");
-    loadScriptOnce("databyteContainerRefineLoader", "/assets/js/databyte-container-refine.js");
+    loadScriptOnce("databyteBattleLayoutLockLoader", "/assets/js/databyte-battle-layout-lock.js");
     loadScriptOnce("databytePanelStateLoader", "/assets/js/databyte-panel-state.js");
     loadScriptOnce("databyteAppShellLoader", "/assets/js/databyte-app-shell.js");
     loadScriptOnce("databyteAdminConsoleLoader", "/assets/js/databyte-admin-console.js");
@@ -62,6 +71,7 @@
 
   function apply() {
     retireLegacyBattle();
+    unloadRiskyPatchLayers();
     const active = NAMES.has(nameNow());
     const card = document.getElementById("encounterCard");
     const orb = document.getElementById("spriteOrb");
