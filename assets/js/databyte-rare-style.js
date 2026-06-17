@@ -1,7 +1,7 @@
 // assets/js/databyte-rare-style.js
 (function () {
   const NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
-  const FEATURE_VERSION = "0881-app-mode-retry";
+  const FEATURE_VERSION = "0890-native-scanner-shell";
 
   function nameNow() {
     const el = document.getElementById("encounterName");
@@ -38,9 +38,17 @@
   function unloadRiskyPatchLayers() {
     document.getElementById("databyteSignalCollapseLoader")?.remove();
     document.getElementById("databyteContainerRefineLoader")?.remove();
+    document.getElementById("databyteFullscreenShellLoader")?.remove();
+    document.getElementById("databyteSignalStageLoader")?.remove();
+    document.getElementById("databyteAppShellLoader")?.remove();
     document.getElementById("databyteSignalDriftStyles")?.remove();
     document.getElementById("databyteContainerRefineStyles")?.remove();
-    document.querySelectorAll(".db-drift-screen,.db-storage-summary").forEach((el) => el.remove());
+    document.getElementById("databyteFullscreenShellStyles")?.remove();
+    document.getElementById("databyteSignalStageStyles")?.remove();
+    document.getElementById("databyteAppShellStyles")?.remove();
+    document.querySelector(".dd-app-shell")?.remove();
+    document.querySelectorAll(".db-drift-screen,.db-storage-summary,.db-signal-overlay,.dd-floating-menu,.dd-panel-overlay,.db-app-topbar").forEach((el) => el.remove());
+    document.body.classList.remove("dd-fullscreen-mode", "dd-app-starting", "dd-mode-signal", "dd-mode-battle", "dd-ui-state-signal", "dd-ui-state-battle", "dd-ui-state-modal");
     document.getElementById("databyteSignalOverlay")?.classList.remove("db-stored-clean");
   }
 
@@ -53,16 +61,13 @@
     loadScriptOnce("databyteInventoryLoader", "/assets/js/databyte-inventory.js");
     loadScriptOnce("databytePartyLoader", "/assets/js/databyte-party.js");
     loadScriptOnce("databytePartyAutofillLoader", "/assets/js/databyte-party-autofill.js");
-    loadScriptOnce("databyteSignalStageLoader", "/assets/js/databyte-signal-stage.js");
     retireLegacyBattle();
     unloadRiskyPatchLayers();
     loadScriptOnce("databyteBattlePhase2Loader", "/assets/js/databyte-battle-phase2.js");
     loadScriptOnce("databyteBattleLayoutLockLoader", "/assets/js/databyte-battle-layout-lock.js");
-    loadScriptOnce("databyteFullscreenShellLoader", "/assets/js/databyte-fullscreen-shell.js");
     loadScriptOnce("databytePanelStateLoader", "/assets/js/databyte-panel-state.js");
-    loadScriptOnce("databyteAppShellLoader", "/assets/js/databyte-app-shell.js");
+    loadScriptOnce("databyteNativeAppShellLoader", "/assets/js/databyte-app-shell-v2.js");
     loadScriptOnce("databyteAdminConsoleLoader", "/assets/js/databyte-admin-console.js");
-    loadScriptOnce("databyteScannerWorkspaceLoader", "/assets/js/databyte-scanner-workspace.js");
     loadScriptOnce("databyteDexPanelCleanupLoader", "/assets/js/databytedex-panel-cleanup.js");
     loadScriptOnce("databyteDexActionRouterLoader", "/assets/js/databytedex-action-router.js");
     loadScriptOnce("databyteScannerEffectsLoader", "/assets/js/databyte-scanner-effects.js");
@@ -71,7 +76,6 @@
   }
 
   function apply() {
-    retireLegacyBattle();
     unloadRiskyPatchLayers();
     const active = NAMES.has(nameNow());
     const card = document.getElementById("encounterCard");
