@@ -11,14 +11,25 @@
       "Signal";
   }
 
+  function activeBattle(container) {
+    if (!container || container.classList.contains("hidden")) return false;
+    const hasLiveButtons = !!container.querySelector("[data-act='attack'],[data-act='guard'],[data-act='pulse'],[data-deploy]");
+    const hasResultScreen = !!container.querySelector(".dbp2-result");
+    return hasLiveButtons && !hasResultScreen;
+  }
+
   function shouldShow(container) {
+    if (!container || activeBattle(container)) return false;
     const value = txt(container).toLowerCase();
-    return !!value && (
+    if (!value) return false;
+    const isResult = !!container.querySelector(".dbp2-result") || container.id === "databyteSignalOverlay";
+    if (!isResult) return false;
+    return (
       value.includes("signal collapsed") ||
       value.includes("signal collapse") ||
-      value.includes("signal escaped") ||
-      value.includes("signal lost") ||
-      (value.includes("stability") && value.includes("0/"))
+      (value.includes("signal lost") && value.includes("escaped")) ||
+      (value.includes("signal escaped") && value.includes("datalines")) ||
+      (value.includes("stability") && value.includes("0/") && value.includes("escaped"))
     );
   }
 
@@ -53,8 +64,11 @@
   function boot() {
     css();
     scan();
-    new MutationObserver(scan).observe(document.body, { childList: true, subtree: true, characterData: true });
-    setInterval(scan, 1000);
+    const battle = document.getElementById("dbBattlePhase2");
+    const signal = document.getElementById("databyteSignalOverlay");
+    if (battle) new MutationObserver(scan).observe(battle, { childList: true, subtree: true, characterData: true });
+    if (signal) new MutationObserver(scan).observe(signal, { childList: true, subtree: true, characterData: true });
+    setInterval(scan, 1200);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
