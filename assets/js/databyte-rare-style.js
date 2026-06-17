@@ -1,7 +1,7 @@
 // assets/js/databyte-rare-style.js
 (function () {
   const NAMES = new Set(["Glitchwyrm", "Mirrormaster", "Proxsentience"]);
-  const FEATURE_VERSION = "0880-fullscreen-shell";
+  const FEATURE_VERSION = "0881-app-mode-retry";
 
   function nameNow() {
     const el = document.getElementById("encounterName");
