@@ -9,18 +9,18 @@
     style.textContent = `
       html,body{height:100%;background:#07111f!important;overscroll-behavior:none!important}
       body.dd-fullscreen-mode{margin:0!important;overflow:hidden!important;background:#07111f!important}
-      body.dd-fullscreen-mode .dd-app-shell{position:fixed!important;inset:0!important;z-index:999999!important;width:100vw!important;height:100dvh!important;display:grid!important;grid-template-rows:auto minmax(0,1fr) auto!important;gap:8px!important;padding:8px 10px max(8px,env(safe-area-inset-bottom))!important;box-sizing:border-box!important;overflow:hidden!important;background:#07111f!important;color:#E5E7EB!important}
-      body.dd-fullscreen-mode .dd-app-topbar{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;min-height:46px!important;padding:8px 10px!important;border:1px solid rgba(125,211,252,.22)!important;border-radius:16px!important;background:rgba(15,23,42,.86)!important;box-sizing:border-box!important}
-      .dd-app-title{color:#FFD700!important;font-weight:900!important;letter-spacing:.08em!important;text-transform:uppercase!important;font-size:1rem!important}.dd-app-sub{color:#BAE6FD!important;font-size:.66rem!important;letter-spacing:.12em!important;text-transform:uppercase!important}.dd-app-chip{color:#BAE6FD!important;border:1px solid rgba(186,230,253,.32)!important;background:rgba(14,165,233,.12)!important;border-radius:999px!important;padding:7px 9px!important;font-size:.62rem!important;font-weight:800!important;letter-spacing:.12em!important;text-transform:uppercase!important;white-space:nowrap!important}
+      body.dd-fullscreen-mode .dd-app-shell{position:fixed!important;inset:0!important;z-index:999999!important;width:100vw!important;height:100dvh!important;display:grid!important;grid-template-rows:minmax(0,1fr) auto!important;gap:8px!important;padding:8px 10px max(8px,env(safe-area-inset-bottom))!important;box-sizing:border-box!important;overflow:hidden!important;background:#07111f!important;color:#E5E7EB!important}
       body.dd-fullscreen-mode .dd-app-main{min-height:0!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;overflow:hidden!important}
       body.dd-fullscreen-mode .dd-app-stage{min-height:0!important;overflow:auto!important;overscroll-behavior:contain!important;display:block!important}
       body.dd-fullscreen-mode .dd-app-dock{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:7px!important;padding:7px!important;min-height:58px!important;border:1px solid rgba(125,211,252,.18)!important;border-radius:18px!important;background:rgba(15,23,42,.86)!important;box-sizing:border-box!important}
       body.dd-fullscreen-mode .dd-app-dock button{min-height:42px!important;border:1px solid rgba(125,211,252,.24)!important;background:rgba(30,41,59,.72)!important;color:#E5E7EB!important;border-radius:13px!important;padding:8px 4px!important;font-weight:800!important;font-size:.62rem!important;line-height:1.05!important}.dd-app-dock button strong{display:block!important;color:#FFD700!important;font-size:.82rem!important;margin-bottom:2px!important}
       body.dd-fullscreen-mode .dd-app-side{display:none!important}
       body.dd-fullscreen-mode #gamePanel{width:100%!important;max-width:760px!important;margin:0 auto!important;border-radius:18px!important;overflow:hidden!important;box-sizing:border-box!important}
-      body.dd-fullscreen-mode #gamePanel .scan-bg{min-height:calc(100dvh - 265px)!important}
+      body.dd-fullscreen-mode #gamePanel .scan-bg{min-height:calc(100dvh - 205px)!important}
       body.dd-fullscreen-mode #gamePanel input,body.dd-fullscreen-mode #gamePanel button{touch-action:manipulation!important}
-      @media(orientation:landscape) and (min-width:820px){body.dd-fullscreen-mode .dd-app-shell{grid-template-rows:auto minmax(0,1fr)!important}body.dd-fullscreen-mode .dd-app-main{grid-template-columns:minmax(520px,1.25fr) minmax(300px,.75fr)!important;gap:10px!important}body.dd-fullscreen-mode .dd-app-side{display:grid!important;min-height:0!important;overflow:auto!important}body.dd-fullscreen-mode .dd-app-dock{display:none!important}body.dd-fullscreen-mode #gamePanel .scan-bg{min-height:calc(100dvh - 150px)!important}}
+      .dd-start-screen{position:absolute;inset:0;z-index:1000000;display:grid;place-items:center;padding:24px;box-sizing:border-box;background:radial-gradient(circle at 50% 20%,rgba(0,123,255,.28),rgba(7,17,31,.98) 58%);text-align:center}.dd-start-card{width:min(100%,620px);display:grid;gap:18px;padding:28px 20px;border:1px solid rgba(125,211,252,.24);border-radius:28px;background:rgba(15,23,42,.72);box-shadow:0 24px 80px rgba(0,0,0,.38)}.dd-start-kicker{color:#FFD700;font-weight:900;letter-spacing:.24em;text-transform:uppercase;font-size:.72rem}.dd-start-title{color:#0787ff;font-size:clamp(2.2rem,12vw,5rem);font-weight:900;line-height:.92}.dd-start-copy{color:#CBD5E1;font-size:1rem;line-height:1.45}.dd-start-btn{border:0;border-radius:18px;background:#FFD700;color:#111827;font-weight:900;padding:15px 18px;font-size:1rem}.dd-start-note{color:#BAE6FD;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase}
+      body.dd-app-starting .dd-app-main,body.dd-app-starting .dd-app-dock{visibility:hidden!important}
+      @media(orientation:landscape) and (min-width:820px){body.dd-fullscreen-mode .dd-app-shell{grid-template-rows:minmax(0,1fr)!important}body.dd-fullscreen-mode .dd-app-main{grid-template-columns:minmax(520px,1.25fr) minmax(300px,.75fr)!important;gap:10px!important}body.dd-fullscreen-mode .dd-app-side{display:grid!important;min-height:0!important;overflow:auto!important}body.dd-fullscreen-mode .dd-app-dock{display:none!important}body.dd-fullscreen-mode #gamePanel .scan-bg{min-height:calc(100dvh - 90px)!important}}
     `;
     document.head.appendChild(style);
   }
@@ -52,6 +52,18 @@
     }).slice(0, 8);
   }
 
+  function startScreen(shell) {
+    const screen = document.createElement("div");
+    screen.className = "dd-start-screen";
+    screen.innerHTML = `<div class="dd-start-card"><div class="dd-start-kicker">Scanner Candidate Evaluation</div><div class="dd-start-title">DataByteSprites</div><div class="dd-start-copy">Enter the Data Discovery scanner, lock onto signals, launch DataByteCoins, and build your active party.</div><button class="dd-start-btn" type="button">Start Scanner</button><div class="dd-start-note">Tip: install to home screen for true fullscreen mode</div></div>`;
+    shell.appendChild(screen);
+    document.body.classList.add("dd-app-starting");
+    screen.querySelector("button")?.addEventListener("click", () => {
+      document.body.classList.remove("dd-app-starting");
+      screen.remove();
+    });
+  }
+
   function build() {
     injectStyles();
     const gamePanel = document.getElementById("gamePanel");
@@ -65,9 +77,6 @@
 
     const shell = document.createElement("div");
     shell.className = "dd-app-shell";
-    const topbar = document.createElement("div");
-    topbar.className = "dd-app-topbar";
-    topbar.innerHTML = `<div><div class="dd-app-title">Data Discovery</div><div class="dd-app-sub">Scanner Active</div></div><div class="dd-app-chip">v0.88 App</div>`;
     const main = document.createElement("div");
     main.className = "dd-app-main";
     const stage = document.createElement("div");
@@ -78,7 +87,6 @@
     dock.className = "dd-app-dock";
 
     document.body.appendChild(shell);
-    shell.appendChild(topbar);
     shell.appendChild(main);
     main.appendChild(stage);
     main.appendChild(side);
@@ -93,6 +101,7 @@
     shell.appendChild(dock);
 
     document.body.classList.add("dd-fullscreen-mode");
+    startScreen(shell);
     return true;
   }
 
