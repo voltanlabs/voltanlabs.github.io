@@ -3,7 +3,7 @@
 // This file remains loaded by databyte-discovery.html, so it is now the handoff point
 // from the legacy page into the standalone mobile-app container.
 (function () {
-  const FEATURE_VERSION = "0898-standalone-loader";
+  const FEATURE_VERSION = "0899-scan-bg";
 
   function withVersion(src) {
     return src.includes("?") ? `${src}&v=${FEATURE_VERSION}` : `${src}?v=${FEATURE_VERSION}`;
@@ -39,6 +39,7 @@
   function boot() {
     retireLegacyLayers();
     loadScriptOnce("databyteStandaloneAppLoader", "/assets/js/databyte-standalone-app.js");
+    loadScriptOnce("ddScanBgLoader", "/assets/js/dd-scan-bg.js");
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
