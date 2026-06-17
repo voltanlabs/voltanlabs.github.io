@@ -48,24 +48,35 @@
   }
 
   function captureResultText() { return normalizeString(document.getElementById("captureResult")?.textContent || ""); }
-  function isStored(value) { return /captured|stored|created|success/i.test(value || ""); }
+  function isStored(value) { return /captured|stored in|databytecoin created|signal stored|success/i.test(value || ""); }
   function isFailure(value) { return /failed|escaped|breakout|collapsed/i.test(value || ""); }
   function dbc(value) { return normalizeString(value).match(/DBC-\d+/i)?.[0]?.toUpperCase() || "DBC-????"; }
+
+  function resetCleanState(overlay) {
+    if (!overlay) return;
+    overlay.classList.remove("db-stored-clean");
+    overlay.querySelectorAll(".db-storage-summary").forEach((el) => el.remove());
+  }
 
   function addStorageSummary() {
     const overlay = document.getElementById("databyteSignalOverlay");
     if (!overlay || overlay.classList.contains("hidden")) return;
     const result = captureResultText();
     const feedback = Array.from(overlay.querySelectorAll(".db-signal-feedback")).find(Boolean);
-    const visible = text(overlay);
-    if (!isStored(result) && !isStored(visible)) return;
+
+    // Only the hidden captureResult or explicit feedback can mark a stored signal.
+    // Do not use all visible overlay text because lore can contain words like "added" or old stale text.
+    const feedbackText = text(feedback);
+    const stored = isStored(result) || isStored(feedbackText);
+    if (!stored) { resetCleanState(overlay); return; }
+
     overlay.classList.add("db-stored-clean");
     if (overlay.querySelector(".db-storage-summary")) return;
     const name = document.getElementById("encounterName")?.textContent?.trim() || "DataByteSprite";
     const rare = document.getElementById("encounterRarity")?.textContent?.trim() || "Unknown";
     const summary = document.createElement("div");
     summary.className = "db-storage-summary";
-    summary.innerHTML = `<div>SIGNAL STORED</div><div><strong>${name}</strong> contained successfully.</div><div>Container: <strong>${dbc(result || visible)}</strong></div><div>Rarity: <strong>${rare}</strong></div>`;
+    summary.innerHTML = `<div>SIGNAL STORED</div><div><strong>${name}</strong> contained successfully.</div><div>Container: <strong>${dbc(result || feedbackText)}</strong></div><div>Rarity: <strong>${rare}</strong></div>`;
     if (feedback) feedback.insertAdjacentElement("beforebegin", summary);
     else overlay.querySelector(".db-signal-bottom")?.prepend(summary);
   }
