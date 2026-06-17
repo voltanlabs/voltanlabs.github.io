@@ -1,7 +1,7 @@
 // assets/js/databyte-app-shell.js
-// Bridge file: old loaders still request this path, so route them into the scanner-root app flow.
+// Bridge file: old loaders still request this path, so mount the standalone scanner app.
 (function () {
-  const VERSION = "0896-root-boot";
+  const VERSION = "0897-standalone-app";
 
   function loadOnce(id, src) {
     if (document.getElementById(id)) return;
@@ -13,9 +13,7 @@
 
   function boot() {
     if (!window.location.pathname.includes("databyte-discovery")) return;
-    loadOnce("ddRootBridgeLoader", "/assets/js/dd-root.js");
-    loadOnce("databyteNativeShellBridgeLoader", "/assets/js/databyte-app-shell-v2.js");
-    loadOnce("databyteClickFixBridgeLoader", "/assets/js/databyte-click-fix.js");
+    loadOnce("databyteStandaloneAppLoader", "/assets/js/databyte-standalone-app.js");
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
