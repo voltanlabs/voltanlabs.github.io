@@ -15,6 +15,7 @@ load('ddCaptureThemesLoader','/assets/js/dd-capture-themes.js?v=0913');
 load('ddPortraitCardsLoader','/assets/js/dd-portrait-cards.js?v=0913');
 load('ddDexProgressLoader','/assets/js/dd-dex-progress.js?v=0913');
 load('ddBattleOsLoader','/assets/js/dd-battle-os.js?v=0913');
+load('ddBattleLegacyStatsLoader','/assets/js/dd-battle-legacy-stats.js?v=0914');
 }
 function boot(){add();setInterval(add,1200)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
