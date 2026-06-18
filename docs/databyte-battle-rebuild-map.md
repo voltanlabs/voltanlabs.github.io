@@ -10,6 +10,7 @@ Purpose: keep the Scanner OS battle rebuild aligned with the original Data Disco
 |---|---|---|
 | `assets/js/databyte-battle.js` | LEGACY SOURCE | Battle rules reference. Do not load directly into Scanner OS. |
 | `assets/js/databyte-discovery.js` | LEGACY SOURCE | Capture, Signal, Stability, Seen/Captured/Escaped rules. |
+| `assets/js/dd-battle-os-v2.js` | ACTIVE REBUILD | Current single active battle system for testing. |
 | `docs/databyte-discovery-scanner-map.md` | ACTIVE MAP | Main Scanner OS architecture map. |
 | `docs/databyte-legacy-app-rebuild-map.md` | ACTIVE MAP | Overall legacy-to-Scanner OS migration tracker. |
 
@@ -17,7 +18,7 @@ Purpose: keep the Scanner OS battle rebuild aligned with the original Data Disco
 
 - Signal means capture probability.
 - Battle starts with Signal equal to the current encounter capture chance.
-- Attack reduces target HP.
+- Tune/attack reduces target HP.
 - Enemy HP reaching zero means the target is weakened/subdued, not automatically captured.
 - Weakened/subdued battle grants a Signal boost.
 - Scan Pulse grants a Signal boost and then lets the enemy act.
@@ -28,27 +29,47 @@ Purpose: keep the Scanner OS battle rebuild aligned with the original Data Disco
 
 ## Current active battle stack
 
-| File | Status | Problem / role |
+| File | Status | Role |
 |---|---|---|
-| `assets/js/dd-battle-os.js` | ACTIVE CORE | Main battle UI and action engine, but still partially HP/RPG-style. |
-| `assets/js/dd-battle-legacy-stats.js` | TEMP ACTIVE | Displays Signal, Battle Bonus, Target HP. Should be merged into battle core. |
-| `assets/js/dd-battle-legacy-features.js` | TEMP ACTIVE | Adds Stability pips, Scan Pulse, Return, and Subdued guard. Should be merged into battle core. |
-| `assets/js/dd-scan-bg.js` | ACTIVE LOADER | Loads the battle core and temporary battle layers. |
+| `assets/js/dd-battle-os-v2.js` | ACTIVE CORE | Single active battle rebuild. Owns battle UI, Signal, Stability, Subdued/Lost, and coin handoff. |
+| `assets/js/dd-battle-os.js` | RETIRED ACTIVE-FILE | Old battle core. No longer loaded by `dd-scan-bg.js`; keep as fallback/reference until V2 is renamed final. |
+| `assets/js/dd-battle-legacy-stats.js` | RETIRED TEMP | Not loaded. Earlier telemetry overlay. |
+| `assets/js/dd-battle-legacy-features.js` | RETIRED TEMP | Not loaded. Earlier controls overlay. |
+| `assets/js/dd-scan-bg.js` | ACTIVE LOADER | Loads Scanner OS modules and `dd-battle-os-v2.js`. Also owns restored scanner background CSS. |
 
 ## Current known issues
 
 | Issue | Status | Notes |
 |---|---|---|
-| Signal telemetry confusion | PARTIAL FIX | Signal label corrected, but core battle still owns HP-derived flow. |
-| Enemy defeat capture flow | BROKEN | User still sees same problem after Subdued overlay patch. Need core rewrite, not overlay. |
-| Multiple battle files fighting each other | BROKEN | Temporary overlays are patching `dd-battle-os.js` instead of replacing the wrong flow. |
-| Capture probability mismatch | WATCH | Battle display and final capture roll can differ by a few points due to duplicated calculations. |
-| FAB/hamburger during battle | WATCH | Previously patched by removal/hiding, but must be owned by battle core. |
-| Legacy Scan Pulse amount | PARTIAL | Legacy was +12 Signal. Current overlay used smaller tuning. Must be standardized. |
-| Signal Lost from battle | MISSING | Failed ByteCoin/breakout should drop Stability and possibly mark Escaped. |
+| Multiple battle files fighting each other | FIXED FOR TESTING | Loader now runs only `dd-battle-os-v2.js` for battle. |
+| Signal telemetry confusion | FIXED IN V2 | Signal is treated as capture probability. HP is displayed separately. |
+| Enemy defeat capture flow | PARTIAL FIX | V2 enters Subdued and uses Throw DataByteCoin. Needs more capture-result parity testing. |
+| Damage-to-Signal math | PHASE 2B ACTIVE | Damage now converts into Signal gain with rarity scaling. Needs tuning from screenshots. |
+| Counter after defeating blow | FIXED IN 2B | Defeating hit should not trigger enemy counter. |
+| Capture probability mismatch | WATCH | Final capture screen still uses scanner capture system; compare V2 Signal to result roll. |
+| Signal Lost from battle | PARTIAL | Core-offline Stability drop exists. Failed coin breakout still needs parity. |
 | Party swap after player forced offline | MISSING | Legacy noted party swap needed. Scanner OS does not implement it yet. |
-| Battle log history | MISSING | Current screen mostly uses a single line. Legacy kept recent log entries. |
+| Battle log history | PARTIAL | V2 stores recent action history. Needs styling/tuning. |
 | XP / rewards | MISSING | Future Scanner OS progression system. |
+
+## Scanner visual notes tied to battle work
+
+The battle isolation pass temporarily removed scanner background effects from the loader. These were restored in `dd-scan-bg.js`.
+
+Current visual state:
+
+- Grid brightness restored and increased.
+- Gold scanner sweep restored.
+- Sprite-orb animated rings added.
+- Ring placement fixed from stage-level to orb-level.
+
+Planned scanner visual upgrades:
+
+1. Rarity-colored orb rings.
+2. Slow orbiting particles for Epic/Mythic sprites.
+3. Signal distortion effect for Glitch sprites.
+4. Scanner pulse expanding outward when discovery succeeds.
+5. Rarity-specific idle glow intensity.
 
 ## Rebuild target architecture
 
@@ -56,10 +77,11 @@ Target battle stack:
 
 | File | Target role |
 |---|---|
-| `assets/js/dd-battle-os.js` | Owns all battle UI, state, actions, Signal math bridge, Subdued/Lost/Capture flow. |
-| `assets/js/dd-battle-legacy-stats.js` | DELETE after merge. |
-| `assets/js/dd-battle-legacy-features.js` | DELETE after merge. |
-| `assets/js/dd-scan-bg.js` | Loads only `dd-battle-os.js` for battle. |
+| `assets/js/dd-battle-os.js` | Final battle owner after V2 is confirmed and renamed/swapped. |
+| `assets/js/dd-battle-os-v2.js` | Temporary active rebuild workspace. |
+| `assets/js/dd-battle-legacy-stats.js` | Delete or mark reference-only after final swap. |
+| `assets/js/dd-battle-legacy-features.js` | Delete or mark reference-only after final swap. |
+| `assets/js/dd-scan-bg.js` | Loads only the final battle module and scanner visual modules. |
 
 ## Phase checklist
 
@@ -70,29 +92,38 @@ Target battle stack:
 - [x] Document that Signal equals capture probability.
 - [x] Document current temporary overlay drift.
 
-### Phase 2 — Stabilize current visible battle
+### Phase 2A — Isolate current visible battle
 
-- [x] Rename/remove HP-derived Signal Integrity telemetry.
-- [~] Add Subdued state guard through overlay.
-- [ ] Confirm Subdued state works in user testing.
-- [ ] If still broken, stop overlay patching and rewrite `dd-battle-os.js` directly.
+- [x] Create `dd-battle-os-v2.js` copy-based rebuild workspace.
+- [x] Wire loader to V2 only.
+- [x] Retire old overlays from active loader.
+- [x] Confirm V2 battle launches on mobile.
+- [x] Confirm Subdued and Throw DataByteCoin are visible.
 
-### Phase 3 — Core battle rewrite
+### Phase 2B — Signal math and defeated-state correction
 
-- [ ] Replace `dd-battle-os.js` battle flow with legacy-correct state machine.
-- [ ] State machine: `active -> subdued -> capture-result` or `active -> lost -> return`.
-- [ ] Signal math uses `window.ddChanceOf()` and `window.ddBoostCapture()` only.
-- [ ] Scan Pulse boost standardized.
-- [ ] Enemy defeated boost standardized.
-- [ ] Throw DataByteCoin calls scanner capture once, intentionally.
-- [ ] Failed capture returns to signal/battle state according to Stability.
-- [ ] Battle UI owns its own log history.
+- [x] Remove counter after defeating hit.
+- [x] Convert target damage into Signal gain.
+- [x] Add rarity-scaled Signal gains.
+- [x] Add subdued result panel with final capture probability.
+- [x] Keep Signal as capture probability.
+- [ ] Tune Common/Rare/Epic/Mythic gain numbers from user screenshots.
+- [ ] Compare V2 displayed Signal against final capture result roll.
 
-### Phase 4 — Cleanup
+### Phase 3 — Battle parity pass
 
-- [ ] Remove `dd-battle-legacy-stats.js` from loader.
-- [ ] Remove `dd-battle-legacy-features.js` from loader.
-- [ ] Delete temporary overlay files or mark as reference-only.
+- [ ] Failed coin breakout reduces Stability and may return to battle/signal.
+- [ ] Signal Lost from failed capture matches legacy behavior.
+- [ ] Party lead swap after player forced offline.
+- [ ] Battle result screen parity with legacy wording.
+- [ ] Scanner XP/rank reward hooks.
+- [ ] Type/rarity-specific battle text.
+
+### Phase 4 — Finalize single battle system
+
+- [ ] Rename/swap `dd-battle-os-v2.js` into final `dd-battle-os.js`.
+- [ ] Update `dd-scan-bg.js` to load final file name.
+- [ ] Delete or reference-only retire old battle overlays.
 - [ ] Update `docs/databyte-discovery-scanner-map.md`.
 - [ ] Update `docs/databyte-legacy-app-rebuild-map.md`.
 
