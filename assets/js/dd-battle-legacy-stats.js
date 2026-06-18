@@ -25,7 +25,7 @@
     if(document.getElementById('ddLegacyStats'))return;
     var box=document.createElement('section');
     box.id='ddLegacyStats';box.className='dd-legacy-stats';
-    box.innerHTML='<div><div class="dd-legacy-row"><span>Signal Integrity</span><strong id="ddLegacyIntegrityText">100%</strong></div><div class="dd-legacy-track"><div id="ddLegacyIntegrityFill" class="dd-legacy-fill integrity"></div></div></div><div><div class="dd-legacy-row"><span>Capture Probability</span><strong id="ddLegacyChanceText">0%</strong></div><div class="dd-legacy-track"><div id="ddLegacyChanceFill" class="dd-legacy-fill"></div></div></div><div class="dd-legacy-row"><span>Battle Bonus</span><strong id="ddLegacyBonusText">+0%</strong></div>';
+    box.innerHTML='<div><div class="dd-legacy-row"><span>Target Integrity</span><strong id="ddLegacyIntegrityText">100%</strong></div><div class="dd-legacy-track"><div id="ddLegacyIntegrityFill" class="dd-legacy-fill integrity"></div></div></div><div><div class="dd-legacy-row"><span>Signal Lock</span><strong id="ddLegacyChanceText">0%</strong></div><div class="dd-legacy-track"><div id="ddLegacyChanceFill" class="dd-legacy-fill"></div></div></div><div class="dd-legacy-row"><span>Capture Bonus</span><strong id="ddLegacyBonusText">+0%</strong></div>';
     var log=document.getElementById('battleLog');
     if(log&&log.parentElement&&log.parentElement.parentElement)log.parentElement.parentElement.insertBefore(box,log.parentElement);
     else sc.appendChild(box);
