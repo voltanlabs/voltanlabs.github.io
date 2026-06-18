@@ -3,7 +3,7 @@
 // This file remains loaded by databyte-discovery.html, so it is now the handoff point
 // from the legacy page into the standalone mobile-app container.
 (function () {
-  const FEATURE_VERSION = "0899-scan-bg";
+  const FEATURE_VERSION = "0911-boot-cloak";
 
   function withVersion(src) {
     return src.includes("?") ? `${src}&v=${FEATURE_VERSION}` : `${src}?v=${FEATURE_VERSION}`;
