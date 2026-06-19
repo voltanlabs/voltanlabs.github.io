@@ -19,26 +19,33 @@ Related maps:
 | Capture Result Screen | REBUILT | Success/failure result flow active. |
 | Rarity Effects | REBUILT | Scanner OS effects active. |
 | Dex Progress Panels | REBUILT | Scanner OS implementation active. |
-| Battle System | PARTIAL | Legacy rules documented. Core rewrite still required. |
+| Battle System | REBUILT | Battle, subdued, capture, result, and reward flow active. |
+| Signal Lost Flow | PARTIAL | Core behavior exists. Legacy parity tuning remains. |
+| XP Rewards | PARTIAL | XP backend and rewards active. Scanner UI still missing. |
+| Progression / Scanner Rank | PARTIAL | Backend foundations exist. Rank UI not rebuilt. |
+| Party Management | PARTIAL | Collection exists, battle integration incomplete. |
 | Journal | PENDING | Legacy reference exists but not rebuilt. |
 | Missions | PENDING | Legacy reference exists but not rebuilt. |
 | Inventory Expansion | PENDING | Partial storage exists. Not rebuilt. |
 | Decompile System | PENDING | Legacy reference only. |
 | Admin Console | PENDING | Legacy reference only. |
-| Progression / Scanner Rank | PENDING | Not rebuilt. |
-| XP Rewards | PENDING | Not rebuilt. |
-| Party Management | PARTIAL | Basic collection exists, battle integration incomplete. |
-| Signal Lost Flow | PARTIAL | Exists in legacy. Not fully restored. |
 | Evolution / Upgrade Systems | PENDING | Future rebuild. |
+| Regional Maps | PENDING | Future rebuild. |
+
+## Current rebuild estimate
+
+- Core Scanner Migration: ~80%
+- Battle Migration: ~90%
+- Progression Migration: ~35%
+- Content Systems Migration: ~15%
 
 ## Active Scanner OS modules
-
-These are intended rebuild targets and active ownership locations.
 
 | Module | Ownership |
 |---|---|
 | `databyte-standalone-app.js` | Core scanner state and rendering. |
-| `dd-battle-os.js` | Future single battle owner after rebuild. |
+| `dd-battle-os-v2.js` | Current active battle owner. |
+| `dd-battle-phase3c-guard.js` | Phase 3C battle/result polish layer. |
 | `dd-dex-progress.js` | Dex/progress UI. |
 | Future `dd-journal-os.js` | Journal rebuild target. |
 | Future `dd-missions-os.js` | Missions rebuild target. |
@@ -56,14 +63,15 @@ These are references, not runtime targets.
 - `databyte-missions.js`
 - `databyte-admin-console.js`
 
-## Current priority order
+## Next rebuild priority order
 
-1. Finish battle rebuild.
-2. Restore Signal Lost and Stability behavior.
-3. Restore progression/rank system.
-4. Rebuild journal.
-5. Rebuild missions.
-6. Rebuild admin console.
+1. Scanner XP bar and rank display.
+2. Scanner progression screen.
+3. DataByteDex completion tracking.
+4. Journal rebuild.
+5. Missions rebuild.
+6. Regional map system.
+7. Admin console rebuild.
 
 ## Engineering rule
 
