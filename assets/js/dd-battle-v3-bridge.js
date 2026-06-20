@@ -2,22 +2,45 @@
 (function(){
   if(!location.pathname.includes('databyte-discovery')) return;
 
-  function launchV3Battle(){
-    var btn=document.getElementById('battleDockBtn');
-    if(btn){ btn.click(); return true; }
-    return false;
+  var STYLE_ID='ddBattleV3NativeBridgeStyle';
+  function $(id){return document.getElementById(id)}
+  function text(id){return ($(id)&&$(id).textContent||'').trim()}
+  function read(k,f){try{return JSON.parse(localStorage.getItem(k))||f}catch(e){return f}}
+  function encData(){
+    var name=text('encounterName');
+    if(!name||name==='Awaiting Signal'||name==='Unknown Signal')return null;
+    return {name:name,rarity:text('encounterRarity')||'Signal',type:text('encounterType')||'Unknown',icon:text('encounterIcon')||'◈',hp:Number(text('statHp').replace(/[^0-9]/g,''))||40,atk:Number(text('statAtk').replace(/[^0-9]/g,''))||12,def:Number(text('statDef').replace(/[^0-9]/g,''))||10,chance:Number(text('chanceText').replace(/[^0-9]/g,''))||50,stability:text('stabilityText')||'3/3'};
   }
-
-  window.startDataByteBattle=function(){
-    if(launchV3Battle()) return;
-    setTimeout(function(){
-      if(launchV3Battle()) return;
-      var evt=new CustomEvent('dd:v3-battle-request');
-      document.dispatchEvent(evt);
-    },120);
-  };
-
-  document.addEventListener('dd:v3-battle-ready',function(){
-    window.startDataByteBattle=function(){ launchV3Battle(); };
-  });
+  function lead(){return read('vl_databyte_discovery_collection_v2',[])[0]||{name:'Leovolt',icon:'🦁',hp:64,atk:18,def:12}}
+  function stage(){return document.querySelector('#gamePanel .scan-bg')||document.body}
+  function esc(v){return String(v==null?'':v).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function pct(a,b){return Math.max(0,Math.min(100,Math.round((a/Math.max(1,b))*100)))}
+  function styles(){
+    if($(STYLE_ID))return;
+    var s=document.createElement('style');s.id=STYLE_ID;s.textContent='@keyframes ddV3SpinNative{to{transform:rotate(360deg)}}@keyframes ddV3BobNative{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}#ddV3NativeBattle{position:absolute;inset:0;z-index:2147483300;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px;padding:16px;overflow:auto;background:radial-gradient(circle at 50% 30%,rgba(0,123,255,.2),rgba(7,17,31,.86) 58%,rgba(7,17,31,.98));border-radius:inherit;color:#fff}#ddV3NativeBattle .v3-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}#ddV3NativeBattle .v3-k{color:#FFD700;font-size:10px;font-weight:1000;letter-spacing:.22em;text-transform:uppercase}#ddV3NativeBattle .v3-title{font-size:clamp(2.2rem,9vw,4.6rem);font-weight:1000;line-height:.94}#ddV3NativeBattle .v3-sub{color:#BAE6FD;font-size:13px;margin-top:8px}#ddV3NativeBattle .v3-close{border:1px solid rgba(255,215,0,.34);background:rgba(15,23,42,.8);color:#FFD700;border-radius:999px;padding:11px 15px;font-weight:1000}.v3-field{position:relative;border:1px solid rgba(125,211,252,.25);border-radius:26px;min-height:270px;height:37vh;padding:48px 10px 14px;overflow:hidden;background:radial-gradient(circle at 50% 42%,rgba(0,123,255,.34),transparent 42%),linear-gradient(135deg,rgba(255,215,0,.12),transparent 46%,rgba(0,123,255,.13))}.v3-field:before{content:"DATA ENVIRONMENT";position:absolute;left:16px;top:14px;color:#FFD700;font-size:10px;font-weight:1000;letter-spacing:.2em}.v3-field:after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,123,255,.22) 1px,transparent 1px),linear-gradient(90deg,rgba(0,123,255,.18) 1px,transparent 1px);background-size:28px 28px;opacity:.74;pointer-events:none}.v3-pair{position:relative;z-index:2;height:100%;display:grid;grid-template-columns:1fr 1fr;gap:4px;align-items:center;justify-items:center}.v3-unit{width:148px;display:grid;justify-items:center;text-align:center;animation:ddV3BobNative 3.2s ease-in-out infinite}.v3-unit:nth-child(2){animation-delay:.4s}.v3-label{height:14px;line-height:14px;width:100%;color:#FFD700;font-size:9px;font-weight:1000;letter-spacing:.15em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v3-port{position:relative;width:118px;height:118px;border-radius:24px;border:2px solid rgba(125,211,252,.88);display:grid;place-items:center;margin-top:8px;background:radial-gradient(circle at 50% 38%,rgba(14,165,233,.34),rgba(7,17,31,.9) 72%);box-shadow:inset 0 0 28px rgba(0,123,255,.36),0 0 20px rgba(0,123,255,.22)}.v3-port:before{content:"";position:absolute;inset:-7px;border:1px dashed rgba(125,211,252,.68);border-radius:28px;animation:ddV3SpinNative 8s linear infinite}.v3-port:after{content:"";position:absolute;inset:-13px;border:1px solid rgba(255,215,0,.22);border-radius:34px;animation:ddV3SpinNative 13s linear reverse infinite}.v3-sprite{position:relative;z-index:2;width:82px;height:82px;display:flex;align-items:center;justify-content:center;font-size:66px;line-height:1}.v3-name{width:148px;height:29px;line-height:29px;font-size:22px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 3px 14px rgba(0,0,0,.65);margin-top:12px}.v3-stat{width:148px;height:19px;line-height:19px;font-size:13px;color:#BAE6FD;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v3-meter{width:132px;height:7px;background:rgba(7,17,31,.86);border-radius:999px;overflow:hidden;margin-top:8px}.v3-meter span{display:block;height:100%;background:linear-gradient(90deg,#22C55E,#FFD700)}.v3-prob,.v3-panel,.v3-log{border:1px solid rgba(125,211,252,.24);border-radius:18px;background:rgba(15,23,42,.86);padding:10px 12px;color:#BAE6FD}.v3-prob{text-align:center;border-color:rgba(255,215,0,.42);background:rgba(255,215,0,.08)}.v3-prob b{display:block;color:#fff;font-size:clamp(46px,13vw,66px);line-height:1}.v3-panel{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-weight:1000;letter-spacing:.08em;text-transform:uppercase}.v3-log{max-height:64px;overflow:auto}.v3-actions{position:sticky;bottom:0;display:grid;grid-template-columns:repeat(6,1fr);gap:5px;background:rgba(7,17,31,.9);border:1px solid rgba(125,211,252,.22);backdrop-filter:blur(12px);border-radius:24px;padding:7px}.v3-actions button{min-height:56px;border-radius:17px;padding:6px 2px;border:1px solid rgba(125,211,252,.24);background:rgba(15,23,42,.94);color:#E5E7EB;font-size:10px;font-weight:900}.v3-actions .gold{background:#FFD700;color:#111827;border-color:#FFD700}@media(min-width:520px){.v3-unit{width:168px}.v3-port{width:132px;height:132px}.v3-sprite{width:92px;height:92px;font-size:72px}.v3-name,.v3-stat{width:168px}.v3-meter{width:150px}}';document.head.appendChild(s);
+  }
+  function unit(label,name,icon,stat,bar){return '<div class="v3-unit"><div class="v3-label">'+esc(label)+'</div><div class="v3-port"><div class="v3-sprite">'+esc(icon)+'</div></div><div class="v3-name">'+esc(name)+'</div><div class="v3-stat">'+esc(stat)+'</div><div class="v3-meter"><span style="width:'+bar+'%"></span></div></div>'}
+  function start(){
+    var e=encData(),p=lead(),host=stage(); if(!e||!host)return false;
+    styles();
+    document.getElementById('databyteSignalOverlay')?.classList.add('hidden');
+    document.body.classList.add('dd-battle-active');
+    var old=$('ddV3NativeBattle'); if(old)old.remove();
+    if(getComputedStyle(host).position==='static')host.style.position='relative';
+    var ph=p.hp||64,pm=p.hp||64,eh=e.hp||40,em=e.hp||40,ch=e.chance||50,msg='Rogue signal engaged. Choose a battle action.';
+    function render(){
+      var o=$('ddV3NativeBattle')||document.createElement('div');o.id='ddV3NativeBattle';
+      o.innerHTML='<div class="v3-head"><div><div class="v3-k">Signal Challenge</div><div class="v3-title">Signal</div><div class="v3-sub">Attack, shield, change, item, or throw a DataByteCoin.</div></div><button class="v3-close" id="v3NativeClose">◂ Scanner</button></div><div><section class="v3-field"><div class="v3-pair">'+unit('Scanner Core',p.name||'Leovolt',p.icon||'🦁','Core '+ph+'/'+pm,pct(ph,pm))+unit('Target Signal',e.name,e.icon,'Target '+eh+'/'+em,pct(eh,em))+'</div></section><section class="v3-prob"><div class="v3-k">Capture Probability</div><b>'+ch+'%</b></section><section class="v3-panel"><span>Signal Gain</span><strong>+0%</strong><span>Signal Stability</span><strong style="color:#FFD700">'+esc(e.stability)+'</strong></section><section class="v3-log"><div class="v3-k">Battle Log</div>'+esc(msg)+'</section></div><div class="v3-actions"><button id="v3NAttack">⚔<br>Attack</button><button id="v3NShield">🛡<br>Shield</button><button id="v3NChange">🔄<br>Change</button><button id="v3NItem">🎒<br>Item</button><button id="v3NReturn">↩<br>Return</button><button id="v3NCoin" class="gold">◈<br>Coin</button></div>';
+      if(!o.parentNode)host.appendChild(o);
+      $('v3NativeClose').onclick=$('v3NReturn').onclick=function(){o.remove();document.body.classList.remove('dd-battle-active');};
+      $('v3NAttack').onclick=function(){var d=Math.max(4,Math.floor((p.atk||18)*.6-(e.def||10)*.2+5));eh=Math.max(0,eh-d);ch=Math.min(88,ch+Math.max(3,Math.round(d/2)));msg=eh<=0?'Target resistance broken. Capture odds peaked. Choose your next action.':'You attacked '+e.name+'. Capture probability increased.';render();};
+      $('v3NShield').onclick=function(){msg='Shield raised. Incoming signal pressure reduced.';render();};
+      $('v3NChange').onclick=function(){msg='Change system staged. Party swap module is not online yet.';render();};
+      $('v3NItem').onclick=function(){ch=Math.min(88,ch+5);msg='Item used. Signal gain increased.';render();};
+      $('v3NCoin').onclick=function(){var roll=Math.floor(Math.random()*100)+1;if(roll<=ch){msg='SIGNAL STORED. Roll '+roll+'/'+ch+'.';setTimeout(function(){document.getElementById('captureBtn')?.click();o.remove();document.body.classList.remove('dd-battle-active');},250)}else{ch=Math.max(5,ch-10);msg='DataByteCoin breakout. Roll '+roll+'/'+ch+'. Choose another action.';render();}};
+    }
+    render(); return true;
+  }
+  window.startDataByteBattle=start;
+  document.dispatchEvent(new CustomEvent('dd:v3-battle-ready'));
 })();
