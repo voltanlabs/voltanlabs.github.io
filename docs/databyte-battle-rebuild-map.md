@@ -42,15 +42,42 @@ Important rule: Throw DataByteCoin should be available during the normal battle 
 - Environment backgrounds introduced
 - Reduce vertical button footprint
 
+### Phase 4B.2 Design Decision — Shared Battlefield Portraits
+
+The battle view should not use a tiny player HUD card and one giant target card.
+
+Both active sprites belong inside the same `Data Environment` battlefield window:
+
+```text
+DATA ENVIRONMENT
+┌───────────────────────────────┐
+│                               │
+│  [ Scanner Core ] [ Target ]  │
+│                               │
+└───────────────────────────────┘
+```
+
+Rules:
+
+- Scanner Core and Target use matching rounded-square portrait boxes.
+- Both portraits use the same scanner ring / scan frame effects.
+- Both portraits can receive background environments later.
+- Both portraits support future idle animation, attack animation, rarity frames, and status overlays.
+- Difference is role/position only: Scanner Core left, Target right.
+- No more tiny lower-left commander card as the primary player display.
+- The Data Environment window should be the shared stage for both creatures.
+
 ### Planned Work
 
-- [ ] Floating action dock (Attack / Shield / Item / Change / Coin)
-- [ ] Large signal presentation area
+- [x] Floating action dock (Attack / Shield / Item / Change / Coin)
+- [x] Large signal presentation area — initial pass
+- [x] Mobile-first battle spacing pass — initial pass
+- [x] Rounded-square portrait frame module — initial pass
+- [ ] Phase 4B.2 side-by-side shared battlefield portraits
 - [ ] Environment system (Forest, Stream, Cave, Rift, etc.)
 - [ ] Animated signal-ready layout
-- [ ] Compact battle log
-- [ ] Scanner HUD redesign
-- [ ] Mobile-first battle spacing pass
+- [ ] Compact battle log final pass
+- [ ] Scanner HUD redesign final pass
 
 ### Phase 4C — Progression Systems
 
