@@ -4,151 +4,107 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Technology Vault - VoltanLabs</title>
-  <meta name="description" content="The VoltanLabs Technology Vault is a curated archive of AI, programming, design, game development, and offline-first resources.">
+  <meta name="description" content="The VoltanLabs Technology Vault is a curated technology library for AI, programming, web development, design, documentation, games, and offline-first systems.">
   <link rel="icon" type="image/png" href="/images/favicon.png">
   <link rel="shortcut icon" href="/images/favicon.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto&display=swap" rel="stylesheet">
   <style>
-    body{font-family:'Roboto',sans-serif}
-    h1,h2,h3,h4{font-family:'Orbitron',sans-serif}
+    body{font-family:'Roboto',sans-serif}h1,h2,h3,h4{font-family:'Orbitron',sans-serif}.card{background:#2C3E50;border:1px solid rgba(255,255,255,.12);border-radius:1.25rem;padding:1.25rem}.pill{display:inline-flex;align-items:center;border-radius:999px;padding:.35rem .7rem;font-size:.75rem;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.22)}
   </style>
 </head>
 <body class="bg-[#1A1A1A] text-white">
   <div id="vl-header"></div>
 
   <section class="px-4 py-20 bg-gradient-to-b from-[#2C3E50] to-[#1A1A1A]">
-    <div class="max-w-6xl mx-auto text-center">
-      <span class="inline-block mb-5 text-[11px] px-4 py-2 rounded-full bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/40 tracking-wide uppercase">VoltanLabs Archive System</span>
-      <h1 class="text-4xl sm:text-6xl font-bold mb-6 text-[#007BFF]">Technology Vault</h1>
-      <p class="text-lg sm:text-xl text-gray-200 max-w-3xl mx-auto">A curated archive of AI systems, programming tools, design resources, datasets, code, documentation, and offline-first building blocks for every VoltanLabs project.</p>
-      <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="#hall-of-fame" class="px-8 py-4 bg-[#FFD700] text-[#1A1A1A] rounded-xl hover:bg-yellow-300 transition font-bold">View Hall of Fame</a>
-        <a href="#submit" class="px-8 py-4 border border-white/70 rounded-xl hover:bg-white hover:text-[#1A1A1A] transition font-bold">Archive Workflow</a>
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center max-w-4xl mx-auto">
+        <span class="inline-block mb-5 text-[11px] px-4 py-2 rounded-full bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/40 tracking-wide uppercase">Technology Vault 2.0</span>
+        <h1 class="text-4xl sm:text-6xl font-bold mb-6 text-[#007BFF]">VoltanLabs Knowledge Engine</h1>
+        <p class="text-lg sm:text-xl text-gray-200">A curated archive of AI systems, programming tools, design resources, workflows, datasets, documentation, and offline-first building blocks.</p>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 text-center">
+        <a href="#hall" class="card hover:border-[#FFD700] transition"><div class="text-3xl">🏛</div><div class="mt-2 font-bold text-[#FFD700]">Hall of Fame</div></a>
+        <a href="#stack" class="card hover:border-[#FFD700] transition"><div class="text-3xl">🚀</div><div class="mt-2 font-bold text-[#FFD700]">Official Stack</div></a>
+        <a href="#tracks" class="card hover:border-[#FFD700] transition"><div class="text-3xl">🧭</div><div class="mt-2 font-bold text-[#FFD700]">Tracks</div></a>
+        <a href="#queue" class="card hover:border-[#FFD700] transition"><div class="text-3xl">🔬</div><div class="mt-2 font-bold text-[#FFD700]">Research Queue</div></a>
       </div>
     </div>
   </section>
 
   <section class="px-4 py-16 bg-[#1A1A1A]">
-    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-[#2C3E50] rounded-2xl p-6 border border-[#FFD700]/30">
-        <div class="text-4xl mb-4">📦</div>
-        <h2 class="text-2xl text-[#FFD700] mb-3">Curated, Not Random</h2>
-        <p class="text-gray-300">Every item gets reviewed before it enters the vault. The goal is a useful library, not a pile of links.</p>
-      </div>
-      <div class="bg-[#2C3E50] rounded-2xl p-6 border border-[#007BFF]/40">
-        <div class="text-4xl mb-4">🔒</div>
-        <h2 class="text-2xl text-[#FFD700] mb-3">Offline Priority</h2>
-        <p class="text-gray-300">Offline use is a major deciding factor. Tools that run locally, avoid paid APIs, and survive without the internet get priority.</p>
-      </div>
-      <div class="bg-[#2C3E50] rounded-2xl p-6 border border-emerald-300/30">
-        <div class="text-4xl mb-4">🚀</div>
-        <h2 class="text-2xl text-[#FFD700] mb-3">Built for Momentum</h2>
-        <p class="text-gray-300">The vault supports faster site builds, offline AI setups, creative tools, games, research, and future VoltanLabs systems.</p>
-      </div>
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="card"><div class="text-3xl text-[#FFD700] font-bold">40+</div><p class="text-gray-300">tracked resources</p></div>
+      <div class="card"><div class="text-3xl text-[#FFD700] font-bold">12</div><p class="text-gray-300">technology tracks</p></div>
+      <div class="card"><div class="text-3xl text-[#FFD700] font-bold">Offline</div><p class="text-gray-300">priority scoring</p></div>
+      <div class="card"><div class="text-3xl text-[#FFD700] font-bold">Scout</div><p class="text-gray-300">discover → evaluate → archive</p></div>
     </div>
   </section>
 
-  <section class="px-4 py-16 bg-black/20">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-10">
-        <h2 class="text-3xl sm:text-4xl text-[#FFD700] mb-4">Review Status</h2>
-        <p class="text-gray-300 max-w-3xl mx-auto">Each resource gets a simple status so we know whether to archive it immediately, save it for later, or skip it.</p>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="rounded-2xl p-5 bg-emerald-400/10 border border-emerald-300/40"><h3 class="text-xl font-bold text-emerald-200">🟢 Archive Immediately</h3><p class="text-gray-300 mt-2 text-sm">High-value, useful now, preferably offline-capable.</p></div>
-        <div class="rounded-2xl p-5 bg-yellow-400/10 border border-yellow-300/40"><h3 class="text-xl font-bold text-yellow-200">🟡 Save for Evaluation</h3><p class="text-gray-300 mt-2 text-sm">Interesting or useful, but needs testing or comparison.</p></div>
-        <div class="rounded-2xl p-5 bg-sky-400/10 border border-sky-300/40"><h3 class="text-xl font-bold text-sky-200">🔵 Online Only</h3><p class="text-gray-300 mt-2 text-sm">Cloud-dependent but still valuable enough to track.</p></div>
-        <div class="rounded-2xl p-5 bg-red-400/10 border border-red-300/40"><h3 class="text-xl font-bold text-red-200">🔴 Skip</h3><p class="text-gray-300 mt-2 text-sm">Low value, redundant, abandoned, locked down, or not worth archiving.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="hall-of-fame" class="px-4 py-16 bg-[#1A1A1A]">
+  <section id="hall" class="px-4 py-16 bg-black/20">
     <div class="max-w-7xl mx-auto">
-      <div class="text-center mb-10">
-        <span class="inline-block mb-4 text-[11px] px-4 py-2 rounded-full bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/40 tracking-wide uppercase">Archive Immediately</span>
-        <h2 class="text-3xl sm:text-4xl text-[#FFD700] mb-4">Hall of Fame</h2>
-        <p class="text-gray-300 max-w-3xl mx-auto">Foundational tools and resources worth keeping in the vault first.</p>
+      <div class="text-center mb-10"><h2 class="text-3xl sm:text-4xl text-[#FFD700] mb-3">🏛 Hall of Fame</h2><p class="text-gray-300">Foundational resources we would archive first and recommend without hesitation.</p></div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <a class="card hover:border-[#FFD700] transition" href="https://ollama.com"><span class="pill text-emerald-200">Local AI</span><h3 class="text-2xl text-[#FFD700] mt-3">Ollama</h3><p class="text-gray-300 mt-2">Primary local model runtime for offline AI workflows.</p></a>
+        <a class="card hover:border-[#FFD700] transition" href="https://github.com/ggml-org/llama.cpp"><span class="pill text-emerald-200">Inference</span><h3 class="text-2xl text-[#FFD700] mt-3">llama.cpp</h3><p class="text-gray-300 mt-2">Core GGUF inference engine for CPU and GPU local models.</p></a>
+        <a class="card hover:border-[#FFD700] transition" href="https://github.com/ggml-org/whisper.cpp"><span class="pill text-emerald-200">Speech</span><h3 class="text-2xl text-[#FFD700] mt-3">whisper.cpp</h3><p class="text-gray-300 mt-2">Offline speech-to-text foundation.</p></a>
+        <a class="card hover:border-[#FFD700] transition" href="https://github.com/allenai/olmocr"><span class="pill text-emerald-200">OCR</span><h3 class="text-2xl text-[#FFD700] mt-3">olmOCR</h3><p class="text-gray-300 mt-2">Turns scans, PDFs, and documents into searchable text.</p></a>
+        <a class="card hover:border-[#FFD700] transition" href="https://github.com/TheAlgorithms/Python"><span class="pill text-emerald-200">Programming</span><h3 class="text-2xl text-[#FFD700] mt-3">TheAlgorithms</h3><p class="text-gray-300 mt-2">Offline-friendly algorithm and data-structure reference.</p></a>
+        <a class="card hover:border-[#FFD700] transition" href="https://github.com/KittenML/KittenTTS"><span class="pill text-emerald-200">Voice</span><h3 class="text-2xl text-[#FFD700] mt-3">KittenTTS</h3><p class="text-gray-300 mt-2">Small offline text-to-speech candidate.</p></a>
       </div>
+    </div>
+  </section>
+
+  <section id="stack" class="px-4 py-16 bg-[#1A1A1A]">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-10"><h2 class="text-3xl sm:text-4xl text-[#FFD700] mb-3">🚀 Official VoltanLabs Stack</h2><p class="text-gray-300">Current preferred tools and systems for building VoltanLabs projects.</p></div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="card"><h3 class="text-xl text-[#FFD700]">AI Core</h3><p class="text-gray-300 mt-2">Ollama, llama.cpp, LocalAI, DeepSeek/Qwen models</p></div>
+        <div class="card"><h3 class="text-xl text-[#FFD700]">Speech & Documents</h3><p class="text-gray-300 mt-2">whisper.cpp, KittenTTS, olmOCR, Wikipedia dumps</p></div>
+        <div class="card"><h3 class="text-xl text-[#FFD700]">Coding</h3><p class="text-gray-300 mt-2">Aider, Continue.dev, Smart Ralph, skills.sh, TheAlgorithms</p></div>
+        <div class="card"><h3 class="text-xl text-[#FFD700]">Web</h3><p class="text-gray-300 mt-2">HTML, CSS, JavaScript, Tailwind, Logto, 21st.dev</p></div>
+        <div class="card"><h3 class="text-xl text-[#FFD700]">Creative</h3><p class="text-gray-300 mt-2">Krita, Blender, Inkscape, Audacity, VoltanLabs Forge tools</p></div>
+        <div class="card"><h3 class="text-xl text-[#FFD700]">Games</h3><p class="text-gray-300 mt-2">Godot, Tiled, LDtk, DataByteSprites systems</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tracks" class="px-4 py-16 bg-black/20">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-10"><h2 class="text-3xl sm:text-4xl text-[#FFD700] mb-3">🧭 Technology Tracks</h2><p class="text-gray-300">The vault is organized by complete project tracks, not just loose folders.</p></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="card">🤖 <b class="text-[#FFD700]">Local AI</b><p class="text-gray-300 text-sm mt-2">Models, inference, embeddings, memory.</p></div>
+        <div class="card">🧠 <b class="text-[#FFD700]">AI Agents</b><p class="text-gray-300 text-sm mt-2">MCP, skills, planning, automation.</p></div>
+        <div class="card">💻 <b class="text-[#FFD700]">Programming</b><p class="text-gray-300 text-sm mt-2">Languages, algorithms, CLI, testing.</p></div>
+        <div class="card">🌐 <b class="text-[#FFD700]">Web Development</b><p class="text-gray-300 text-sm mt-2">Frontend, backend, auth, performance.</p></div>
+        <div class="card">🎮 <b class="text-[#FFD700]">Game Development</b><p class="text-gray-300 text-sm mt-2">Engines, sprites, audio, levels.</p></div>
+        <div class="card">🎨 <b class="text-[#FFD700]">Creative</b><p class="text-gray-300 text-sm mt-2">Art, 3D, audio, video, UI.</p></div>
+        <div class="card">📄 <b class="text-[#FFD700]">Knowledge</b><p class="text-gray-300 text-sm mt-2">OCR, books, papers, datasets, docs.</p></div>
+        <div class="card">🔐 <b class="text-[#FFD700]">Security</b><p class="text-gray-300 text-sm mt-2">Auth, networking, encryption, monitoring.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="queue" class="px-4 py-16 bg-[#1A1A1A]">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-10"><h2 class="text-3xl sm:text-4xl text-[#FFD700] mb-3">🔬 Research Queue</h2><p class="text-gray-300">Promising finds waiting for testing, license review, or deeper comparison.</p></div>
       <div class="overflow-x-auto rounded-2xl border border-white/10 bg-[#2C3E50]">
-        <table class="w-full text-left text-sm">
-          <thead class="bg-black/30 text-[#FFD700] uppercase text-xs tracking-wide">
-            <tr><th class="p-4">Item</th><th class="p-4">Category</th><th class="p-4">Offline</th><th class="p-4">Link</th><th class="p-4">Notes</th></tr>
-          </thead>
-          <tbody class="divide-y divide-white/10 text-gray-200">
-            <tr><td class="p-4 font-bold">Ollama</td><td class="p-4">Local AI</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://ollama.com">Open</a></td><td class="p-4">Primary local AI runtime.</td></tr>
-            <tr><td class="p-4 font-bold">llama.cpp</td><td class="p-4">Inference</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://github.com/ggml-org/llama.cpp">GitHub</a></td><td class="p-4">Runs GGUF models efficiently.</td></tr>
-            <tr><td class="p-4 font-bold">LocalAI</td><td class="p-4">AI Server</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://github.com/mudler/LocalAI">GitHub</a></td><td class="p-4">OpenAI-compatible local server.</td></tr>
-            <tr><td class="p-4 font-bold">KittenTTS</td><td class="p-4">Text-to-Speech</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://github.com/KittenML/KittenTTS">GitHub</a></td><td class="p-4">Lightweight offline voices.</td></tr>
-            <tr><td class="p-4 font-bold">whisper.cpp</td><td class="p-4">Speech-to-Text</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://github.com/ggml-org/whisper.cpp">GitHub</a></td><td class="p-4">Offline speech recognition.</td></tr>
-            <tr><td class="p-4 font-bold">Continue.dev</td><td class="p-4">Coding Assistant</td><td class="p-4">Partial</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://www.continue.dev">Open</a></td><td class="p-4">VS Code AI assistant.</td></tr>
-            <tr><td class="p-4 font-bold">Aider</td><td class="p-4">Coding</td><td class="p-4">Partial</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://github.com/Aider-AI/aider">GitHub</a></td><td class="p-4">Git-aware coding assistant.</td></tr>
-            <tr><td class="p-4 font-bold">OpenCode</td><td class="p-4">Coding Agent</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://github.com/sst/opencode">GitHub</a></td><td class="p-4">Local coding agent candidate.</td></tr>
-            <tr><td class="p-4 font-bold">Blender</td><td class="p-4">3D</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://www.blender.org">Open</a></td><td class="p-4">3D creation suite.</td></tr>
-            <tr><td class="p-4 font-bold">Krita</td><td class="p-4">Art</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://krita.org">Open</a></td><td class="p-4">Digital painting.</td></tr>
-            <tr><td class="p-4 font-bold">Godot</td><td class="p-4">Game Dev</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://godotengine.org">Open</a></td><td class="p-4">Open-source game engine.</td></tr>
-            <tr><td class="p-4 font-bold">FAISS</td><td class="p-4">Vector Search</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://github.com/facebookresearch/faiss">GitHub</a></td><td class="p-4">Fast similarity search.</td></tr>
-            <tr><td class="p-4 font-bold">ChromaDB</td><td class="p-4">Vector DB</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://www.trychroma.com">Open</a></td><td class="p-4">Embedding database.</td></tr>
-            <tr><td class="p-4 font-bold">Wikipedia Dumps</td><td class="p-4">Knowledge</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://dumps.wikimedia.org">Open</a></td><td class="p-4">Offline encyclopedia source.</td></tr>
-            <tr><td class="p-4 font-bold">Stack Exchange Data Dump</td><td class="p-4">Programming</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://archive.org/details/stackexchange">Open</a></td><td class="p-4">Programming Q&A archive.</td></tr>
-          </tbody>
-        </table>
+        <table class="w-full text-left text-sm"><thead class="bg-black/30 text-[#FFD700] uppercase text-xs"><tr><th class="p-4">Resource</th><th class="p-4">Track</th><th class="p-4">Status</th><th class="p-4">Next Step</th></tr></thead><tbody class="divide-y divide-white/10 text-gray-200">
+          <tr><td class="p-4 font-bold">Scrapling</td><td class="p-4">Web Research</td><td class="p-4">Evaluate</td><td class="p-4">Review ethical use and capabilities.</td></tr>
+          <tr><td class="p-4 font-bold">RTK AI</td><td class="p-4">AI Infrastructure</td><td class="p-4">Evaluate</td><td class="p-4">Verify repo and token-reduction claims.</td></tr>
+          <tr><td class="p-4 font-bold">Free Claude Code</td><td class="p-4">Coding</td><td class="p-4">Evaluate</td><td class="p-4">Check licensing and whether it bypasses services.</td></tr>
+          <tr><td class="p-4 font-bold">Agent-Reach</td><td class="p-4">Research Agents</td><td class="p-4">Evaluate</td><td class="p-4">Review data-source policies and usefulness.</td></tr>
+          <tr><td class="p-4 font-bold">WiFi Radar</td><td class="p-4">Networking</td><td class="p-4">Evaluate</td><td class="p-4">Keep as learning/demo project.</td></tr>
+        </tbody></table>
       </div>
     </div>
   </section>
 
   <section class="px-4 py-16 bg-black/20">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-10">
-        <h2 class="text-3xl sm:text-4xl text-[#FFD700] mb-4">Archive Categories</h2>
-        <p class="text-gray-300 max-w-3xl mx-auto">These are the main folders we will keep growing as new resources are reviewed.</p>
-      </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">AI Models</div>
-        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Text-to-Speech</div>
-        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Speech-to-Text</div>
-        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Vision & OCR</div>
-        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Programming</div>
-        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Design</div>
-        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Game Development</div>
-        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Datasets</div>
-        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Documentation</div>
-        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Offline Knowledge</div>
-        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Automation & Agents</div>
-        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">VoltanLabs Projects</div>
-      </div>
-    </div>
-  </section>
-
-  <section id="submit" class="px-4 py-16 bg-[#1A1A1A]">
-    <div class="max-w-5xl mx-auto bg-[#2C3E50] rounded-3xl p-8 border border-[#007BFF]/40">
-      <h2 class="text-3xl text-[#FFD700] mb-4">Archive Workflow</h2>
-      <p class="text-gray-300 mb-6">When a new link, screenshot, repository, model, paper, tool, dataset, or codebase is found, it gets reviewed before becoming part of the vault.</p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h3 class="text-xl text-white font-bold mb-3">Review Checklist</h3>
-          <ul class="space-y-2 text-gray-300 list-disc list-inside">
-            <li>Does it work offline?</li>
-            <li>Is it open source or reusable?</li>
-            <li>Is it actively maintained?</li>
-            <li>Does it support VoltanLabs projects?</li>
-            <li>Is it better than what we already have?</li>
-            <li>Is it worth permanent storage?</li>
-          </ul>
-        </div>
-        <div>
-          <h3 class="text-xl text-white font-bold mb-3">Entry Fields</h3>
-          <ul class="space-y-2 text-gray-300 list-disc list-inside">
-            <li>Name and official link</li>
-            <li>Category and tags</li>
-            <li>Offline rating</li>
-            <li>Install difficulty</li>
-            <li>License notes</li>
-            <li>VoltanLabs use cases</li>
-          </ul>
-        </div>
-      </div>
+    <div class="max-w-5xl mx-auto card border-[#007BFF]/40">
+      <h2 class="text-3xl text-[#FFD700] mb-4">Technology Scout Pipeline</h2>
+      <p class="text-gray-300 mb-6">Every new discovery follows the same path: discover → research → evaluate → archive → document → test → integrate → publish.</p>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-center text-sm"><div class="pill justify-center">1. Discover</div><div class="pill justify-center">2. Evaluate</div><div class="pill justify-center">3. Archive</div><div class="pill justify-center">4. Integrate</div></div>
     </div>
   </section>
 
