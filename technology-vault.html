@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technology Vault - VoltanLabs</title>
+  <meta name="description" content="The VoltanLabs Technology Vault is a curated archive of AI, programming, design, game development, and offline-first resources.">
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <link rel="shortcut icon" href="/images/favicon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Roboto',sans-serif}
+    h1,h2,h3,h4{font-family:'Orbitron',sans-serif}
+  </style>
+</head>
+<body class="bg-[#1A1A1A] text-white">
+  <div id="vl-header"></div>
+
+  <section class="px-4 py-20 bg-gradient-to-b from-[#2C3E50] to-[#1A1A1A]">
+    <div class="max-w-6xl mx-auto text-center">
+      <span class="inline-block mb-5 text-[11px] px-4 py-2 rounded-full bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/40 tracking-wide uppercase">VoltanLabs Archive System</span>
+      <h1 class="text-4xl sm:text-6xl font-bold mb-6 text-[#007BFF]">Technology Vault</h1>
+      <p class="text-lg sm:text-xl text-gray-200 max-w-3xl mx-auto">A curated archive of AI systems, programming tools, design resources, datasets, code, documentation, and offline-first building blocks for every VoltanLabs project.</p>
+      <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="#hall-of-fame" class="px-8 py-4 bg-[#FFD700] text-[#1A1A1A] rounded-xl hover:bg-yellow-300 transition font-bold">View Hall of Fame</a>
+        <a href="#submit" class="px-8 py-4 border border-white/70 rounded-xl hover:bg-white hover:text-[#1A1A1A] transition font-bold">Archive Workflow</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-4 py-16 bg-[#1A1A1A]">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-[#2C3E50] rounded-2xl p-6 border border-[#FFD700]/30">
+        <div class="text-4xl mb-4">📦</div>
+        <h2 class="text-2xl text-[#FFD700] mb-3">Curated, Not Random</h2>
+        <p class="text-gray-300">Every item gets reviewed before it enters the vault. The goal is a useful library, not a pile of links.</p>
+      </div>
+      <div class="bg-[#2C3E50] rounded-2xl p-6 border border-[#007BFF]/40">
+        <div class="text-4xl mb-4">🔒</div>
+        <h2 class="text-2xl text-[#FFD700] mb-3">Offline Priority</h2>
+        <p class="text-gray-300">Offline use is a major deciding factor. Tools that run locally, avoid paid APIs, and survive without the internet get priority.</p>
+      </div>
+      <div class="bg-[#2C3E50] rounded-2xl p-6 border border-emerald-300/30">
+        <div class="text-4xl mb-4">🚀</div>
+        <h2 class="text-2xl text-[#FFD700] mb-3">Built for Momentum</h2>
+        <p class="text-gray-300">The vault supports faster site builds, offline AI setups, creative tools, games, research, and future VoltanLabs systems.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-4 py-16 bg-black/20">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-10">
+        <h2 class="text-3xl sm:text-4xl text-[#FFD700] mb-4">Review Status</h2>
+        <p class="text-gray-300 max-w-3xl mx-auto">Each resource gets a simple status so we know whether to archive it immediately, save it for later, or skip it.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="rounded-2xl p-5 bg-emerald-400/10 border border-emerald-300/40"><h3 class="text-xl font-bold text-emerald-200">🟢 Archive Immediately</h3><p class="text-gray-300 mt-2 text-sm">High-value, useful now, preferably offline-capable.</p></div>
+        <div class="rounded-2xl p-5 bg-yellow-400/10 border border-yellow-300/40"><h3 class="text-xl font-bold text-yellow-200">🟡 Save for Evaluation</h3><p class="text-gray-300 mt-2 text-sm">Interesting or useful, but needs testing or comparison.</p></div>
+        <div class="rounded-2xl p-5 bg-sky-400/10 border border-sky-300/40"><h3 class="text-xl font-bold text-sky-200">🔵 Online Only</h3><p class="text-gray-300 mt-2 text-sm">Cloud-dependent but still valuable enough to track.</p></div>
+        <div class="rounded-2xl p-5 bg-red-400/10 border border-red-300/40"><h3 class="text-xl font-bold text-red-200">🔴 Skip</h3><p class="text-gray-300 mt-2 text-sm">Low value, redundant, abandoned, locked down, or not worth archiving.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="hall-of-fame" class="px-4 py-16 bg-[#1A1A1A]">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-10">
+        <span class="inline-block mb-4 text-[11px] px-4 py-2 rounded-full bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/40 tracking-wide uppercase">Archive Immediately</span>
+        <h2 class="text-3xl sm:text-4xl text-[#FFD700] mb-4">Hall of Fame</h2>
+        <p class="text-gray-300 max-w-3xl mx-auto">Foundational tools and resources worth keeping in the vault first.</p>
+      </div>
+      <div class="overflow-x-auto rounded-2xl border border-white/10 bg-[#2C3E50]">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-black/30 text-[#FFD700] uppercase text-xs tracking-wide">
+            <tr><th class="p-4">Item</th><th class="p-4">Category</th><th class="p-4">Offline</th><th class="p-4">Link</th><th class="p-4">Notes</th></tr>
+          </thead>
+          <tbody class="divide-y divide-white/10 text-gray-200">
+            <tr><td class="p-4 font-bold">Ollama</td><td class="p-4">Local AI</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://ollama.com">Open</a></td><td class="p-4">Primary local AI runtime.</td></tr>
+            <tr><td class="p-4 font-bold">llama.cpp</td><td class="p-4">Inference</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://github.com/ggml-org/llama.cpp">GitHub</a></td><td class="p-4">Runs GGUF models efficiently.</td></tr>
+            <tr><td class="p-4 font-bold">LocalAI</td><td class="p-4">AI Server</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://github.com/mudler/LocalAI">GitHub</a></td><td class="p-4">OpenAI-compatible local server.</td></tr>
+            <tr><td class="p-4 font-bold">KittenTTS</td><td class="p-4">Text-to-Speech</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://github.com/KittenML/KittenTTS">GitHub</a></td><td class="p-4">Lightweight offline voices.</td></tr>
+            <tr><td class="p-4 font-bold">whisper.cpp</td><td class="p-4">Speech-to-Text</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://github.com/ggml-org/whisper.cpp">GitHub</a></td><td class="p-4">Offline speech recognition.</td></tr>
+            <tr><td class="p-4 font-bold">Continue.dev</td><td class="p-4">Coding Assistant</td><td class="p-4">Partial</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://www.continue.dev">Open</a></td><td class="p-4">VS Code AI assistant.</td></tr>
+            <tr><td class="p-4 font-bold">Aider</td><td class="p-4">Coding</td><td class="p-4">Partial</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://github.com/Aider-AI/aider">GitHub</a></td><td class="p-4">Git-aware coding assistant.</td></tr>
+            <tr><td class="p-4 font-bold">OpenCode</td><td class="p-4">Coding Agent</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://github.com/sst/opencode">GitHub</a></td><td class="p-4">Local coding agent candidate.</td></tr>
+            <tr><td class="p-4 font-bold">Blender</td><td class="p-4">3D</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://www.blender.org">Open</a></td><td class="p-4">3D creation suite.</td></tr>
+            <tr><td class="p-4 font-bold">Krita</td><td class="p-4">Art</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://krita.org">Open</a></td><td class="p-4">Digital painting.</td></tr>
+            <tr><td class="p-4 font-bold">Godot</td><td class="p-4">Game Dev</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://godotengine.org">Open</a></td><td class="p-4">Open-source game engine.</td></tr>
+            <tr><td class="p-4 font-bold">FAISS</td><td class="p-4">Vector Search</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://github.com/facebookresearch/faiss">GitHub</a></td><td class="p-4">Fast similarity search.</td></tr>
+            <tr><td class="p-4 font-bold">ChromaDB</td><td class="p-4">Vector DB</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://www.trychroma.com">Open</a></td><td class="p-4">Embedding database.</td></tr>
+            <tr><td class="p-4 font-bold">Wikipedia Dumps</td><td class="p-4">Knowledge</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://dumps.wikimedia.org">Open</a></td><td class="p-4">Offline encyclopedia source.</td></tr>
+            <tr><td class="p-4 font-bold">Stack Exchange Data Dump</td><td class="p-4">Programming</td><td class="p-4">Yes</td><td class="p-4"><a class="text-[#FFD700] hover:underline" href="https://archive.org/details/stackexchange">Open</a></td><td class="p-4">Programming Q&A archive.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-4 py-16 bg-black/20">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-10">
+        <h2 class="text-3xl sm:text-4xl text-[#FFD700] mb-4">Archive Categories</h2>
+        <p class="text-gray-300 max-w-3xl mx-auto">These are the main folders we will keep growing as new resources are reviewed.</p>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">AI Models</div>
+        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Text-to-Speech</div>
+        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Speech-to-Text</div>
+        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Vision & OCR</div>
+        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Programming</div>
+        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Design</div>
+        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Game Development</div>
+        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Datasets</div>
+        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Documentation</div>
+        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Offline Knowledge</div>
+        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">Automation & Agents</div>
+        <div class="p-4 rounded-xl bg-[#2C3E50] border border-white/10">VoltanLabs Projects</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="submit" class="px-4 py-16 bg-[#1A1A1A]">
+    <div class="max-w-5xl mx-auto bg-[#2C3E50] rounded-3xl p-8 border border-[#007BFF]/40">
+      <h2 class="text-3xl text-[#FFD700] mb-4">Archive Workflow</h2>
+      <p class="text-gray-300 mb-6">When a new link, screenshot, repository, model, paper, tool, dataset, or codebase is found, it gets reviewed before becoming part of the vault.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="text-xl text-white font-bold mb-3">Review Checklist</h3>
+          <ul class="space-y-2 text-gray-300 list-disc list-inside">
+            <li>Does it work offline?</li>
+            <li>Is it open source or reusable?</li>
+            <li>Is it actively maintained?</li>
+            <li>Does it support VoltanLabs projects?</li>
+            <li>Is it better than what we already have?</li>
+            <li>Is it worth permanent storage?</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl text-white font-bold mb-3">Entry Fields</h3>
+          <ul class="space-y-2 text-gray-300 list-disc list-inside">
+            <li>Name and official link</li>
+            <li>Category and tags</li>
+            <li>Offline rating</li>
+            <li>Install difficulty</li>
+            <li>License notes</li>
+            <li>VoltanLabs use cases</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="vl-footer"></div>
+  <script src="/assets/includes.js"></script>
+</body>
+</html>
