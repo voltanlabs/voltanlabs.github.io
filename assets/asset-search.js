@@ -79,6 +79,25 @@
         sourceIndex: context.indexId,
         sourceRecord: item
       };
+    },
+
+    databytesprites(item, context) {
+      return {
+        recordType: "databytesprites",
+        id: item.id,
+        title: item.name,
+        category: item.systemType,
+        project: item.project || "DataByteSprites",
+        status: item.status || "active",
+        description: item.description,
+        keywords: asArray(item.tags),
+        dependencies: asArray(item.dependencies),
+        location: item.path,
+        preview: item.preview,
+        version: item.version,
+        sourceIndex: context.indexId,
+        sourceRecord: item
+      };
     }
   };
 
@@ -135,6 +154,7 @@
     if (type === "module") return "Module";
     if (type === "technology") return "Technology";
     if (type === "graph") return "Graph";
+    if (type === "databytesprites") return "DataByteSprites";
     if (type === "document") return "Document";
     if (type === "sourceFile") return "Source";
     return "Record";
