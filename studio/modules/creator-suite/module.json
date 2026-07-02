@@ -1,0 +1,13 @@
+{
+  "id": "creator-suite",
+  "name": "Creator Suite",
+  "version": "0.1.0",
+  "status": "active",
+  "category": "Production Tools",
+  "entry": "/tools.html",
+  "icon": "🛠️",
+  "description": "Browser-based creative tools for drawing, prompts, sprites, GIFs, and character assembly.",
+  "keywords": ["tools", "creator suite", "draw", "character forge", "gif forge", "sprite sheet", "promptcraft"],
+  "navigationGroup": "Production Tools",
+  "dependencies": ["asset-library"]
+}
