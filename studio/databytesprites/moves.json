@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "0.1.0",
+  "generatedBy": "VoltanLabs Studio Move Indexer",
+  "description": "Offline-first move-list foundation for future DataByteSprites battle actions. Current runtime still keeps the basic Attack button while these records prepare sprite-specific moves.",
+  "moveSchema": {
+    "requiredFields": ["id", "name", "moveType", "elements", "power", "accuracy", "stabilityEffect", "captureEffect", "tags", "description", "learnedBy", "version"]
+  },
+  "moves": [
+    {
+      "id": "signal-strike",
+      "name": "Signal Strike",
+      "moveType": "attack",
+      "elements": ["Signal"],
+      "power": 35,
+      "accuracy": 100,
+      "stabilityEffect": -1,
+      "captureEffect": 4,
+      "tags": ["basic", "attack", "starter-safe"],
+      "description": "A basic signal hit that every captured sprite can use until custom move sets are active.",
+      "learnedBy": ["*"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "volt-pounce",
+      "name": "Volt Pounce",
+      "moveType": "attack",
+      "elements": ["Electric", "Voltricity"],
+      "power": 48,
+      "accuracy": 95,
+      "stabilityEffect": -1,
+      "captureEffect": 6,
+      "tags": ["leovolt", "electric", "physical"],
+      "description": "Leovolt lunges through the signal field with a charged pounce.",
+      "learnedBy": ["leovolt"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "screen-guard",
+      "name": "Screen Guard",
+      "moveType": "defense",
+      "elements": ["Screen", "Guard"],
+      "power": 0,
+      "accuracy": 100,
+      "stabilityEffect": 0,
+      "captureEffect": 2,
+      "tags": ["screensavior", "monitor-man", "defense"],
+      "description": "A defensive display barrier that improves scanner lock and future shield logic.",
+      "learnedBy": ["screensavior", "monitor-man"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "mirror-feint",
+      "name": "Mirror Feint",
+      "moveType": "attack",
+      "elements": ["Mirror", "Trick"],
+      "power": 42,
+      "accuracy": 92,
+      "stabilityEffect": -1,
+      "captureEffect": 5,
+      "tags": ["displaydevil", "mirror-master", "trick"],
+      "description": "A reflection-based strike that bends the target signal before impact.",
+      "learnedBy": ["displaydevil", "mirror-master"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "shell-clamp",
+      "name": "Shell Clamp",
+      "moveType": "attack",
+      "elements": ["Shell", "Code"],
+      "power": 44,
+      "accuracy": 94,
+      "stabilityEffect": -1,
+      "captureEffect": 5,
+      "tags": ["crabician", "shell", "code"],
+      "description": "Crabician clamps down on unstable code fragments to weaken resistance.",
+      "learnedBy": ["crabician"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "glitch-sting",
+      "name": "Glitch Sting",
+      "moveType": "attack",
+      "elements": ["Bug", "Poison", "Glitch"],
+      "power": 46,
+      "accuracy": 90,
+      "stabilityEffect": -2,
+      "captureEffect": 3,
+      "tags": ["scorpy", "glitch", "poison"],
+      "description": "Scorpy injects a glitch sting that hits hard but is less stable for capture tuning.",
+      "learnedBy": ["scorpy"],
+      "version": "0.1.0"
+    }
+  ],
+  "speciesMoveSets": [
+    {"speciesId": "leovolt", "moves": ["signal-strike", "volt-pounce"]},
+    {"speciesId": "screensavior", "moves": ["signal-strike", "screen-guard"]},
+    {"speciesId": "monitor-man", "moves": ["signal-strike", "screen-guard"]},
+    {"speciesId": "displaydevil", "moves": ["signal-strike", "mirror-feint"]},
+    {"speciesId": "mirror-master", "moves": ["signal-strike", "mirror-feint"]},
+    {"speciesId": "crabician", "moves": ["signal-strike", "shell-clamp"]},
+    {"speciesId": "scorpy", "moves": ["signal-strike", "glitch-sting"]}
+  ],
+  "searchFields": ["id", "name", "moveType", "elements", "power", "accuracy", "stabilityEffect", "captureEffect", "tags", "description", "learnedBy", "version"],
+  "commonIndexModel": {
+    "recordType": "move",
+    "idField": "id",
+    "titleField": "name",
+    "typeField": "moveType",
+    "keywordFields": ["elements", "tags", "description", "learnedBy"],
+    "versionField": "version"
+  },
+  "nextSystems": ["moveRuntimeBridge", "typeEffectiveness", "spriteAbilityIndex"]
+}
