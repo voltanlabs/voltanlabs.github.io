@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "0.2.0",
+  "schemaVersion": "0.3.0",
   "generatedBy": "VoltanLabs Studio Knowledge Engine",
-  "description": "Searchable catalog for VoltanLabs Studio modules, projects, tools, planned systems, and Asset Library records.",
+  "description": "Searchable catalog for VoltanLabs Studio modules, projects, tools, planned systems, Asset Library records, and Technology Vault records.",
   "commonIndexModel": {
     "recordShape": {
       "recordType": "module | asset | technology | document | sourceFile | releaseNote",
@@ -44,6 +44,20 @@
       "location": "path",
       "preview": "preview",
       "version": "version"
+    },
+    "technologyMapping": {
+      "recordType": "technology",
+      "id": "id",
+      "title": "name",
+      "category": "technologyType",
+      "project": "project",
+      "status": "active",
+      "description": "description",
+      "keywords": "tags",
+      "dependencies": "dependencies",
+      "location": "path",
+      "preview": "preview",
+      "version": "version"
     }
   },
   "modules": [
@@ -65,7 +79,7 @@
       "entry": "/databyte-admin-briefing.html",
       "manifest": "/studio/modules/databytesprites/module.json",
       "keywords": ["databytesprites", "data discovery", "sprites", "codex", "battle", "capture", "voltarcade"],
-      "dependencies": ["creator-suite", "asset-library", "knowledge-engine"]
+      "dependencies": ["creator-suite", "asset-library", "knowledge-engine", "technology-vault"]
     },
     {
       "id": "creator-suite",
@@ -75,7 +89,7 @@
       "entry": "/tools.html",
       "manifest": "/studio/modules/creator-suite/module.json",
       "keywords": ["tools", "creator suite", "draw", "character forge", "gif forge", "sprite sheet", "promptcraft"],
-      "dependencies": ["asset-library"]
+      "dependencies": ["asset-library", "technology-vault"]
     },
     {
       "id": "technology-vault",
@@ -84,8 +98,8 @@
       "status": "active",
       "entry": "/technology-vault/",
       "manifest": "/studio/modules/technology-vault/module.json",
-      "keywords": ["technology", "vault", "open source", "licenses", "offline first", "local ai", "self hosted"],
-      "dependencies": ["knowledge-engine"]
+      "keywords": ["technology", "vault", "open source", "licenses", "offline first", "local ai", "self hosted", "commercial safety"],
+      "dependencies": ["knowledge-engine", "asset-library"]
     },
     {
       "id": "knowledge-engine",
@@ -95,7 +109,7 @@
       "entry": "#knowledge-engine",
       "manifest": "/studio/modules/knowledge-engine/module.json",
       "keywords": ["knowledge", "search", "index", "documentation", "memory", "source code", "decisions"],
-      "dependencies": ["dashboard", "asset-library"]
+      "dependencies": ["dashboard", "asset-library", "technology-vault"]
     },
     {
       "id": "simulation-lab",
@@ -105,7 +119,7 @@
       "entry": "#simulation-lab",
       "manifest": "/studio/modules/simulation-lab/module.json",
       "keywords": ["simulation", "sandbox", "experiments", "mechanics", "testing", "ai workflows", "world systems"],
-      "dependencies": ["knowledge-engine", "asset-library"]
+      "dependencies": ["knowledge-engine", "asset-library", "technology-vault"]
     },
     {
       "id": "asset-library",
@@ -115,7 +129,7 @@
       "entry": "#asset-library",
       "manifest": "/studio/modules/asset-library/module.json",
       "keywords": ["assets", "sprites", "images", "audio", "documents", "templates", "library", "asset index"],
-      "dependencies": ["dashboard", "knowledge-engine"]
+      "dependencies": ["dashboard", "knowledge-engine", "technology-vault"]
     }
   ],
   "indexes": [
@@ -136,10 +150,20 @@
       "collection": "assets",
       "status": "active",
       "description": "Offline-first searchable catalog of project-owned VoltanLabs assets and reusable files."
+    },
+    {
+      "id": "technology-vault",
+      "recordType": "technology",
+      "name": "Technology Vault Index",
+      "path": "/studio/technology/index.json",
+      "collection": "technologies",
+      "status": "active",
+      "description": "Offline-first searchable catalog of approved, review-needed, and research-only technology records."
     }
   ],
   "searchFields": ["id", "name", "category", "status", "keywords", "dependencies", "entry", "manifest"],
   "assetSearchFields": ["id", "name", "assetType", "project", "tags", "description", "license", "source", "path", "preview", "dependencies", "version"],
-  "nextIndexes": ["technologies", "sourceFiles", "documents", "releaseNotes"],
-  "nextSystems": ["assetSearchEngine", "technologyVaultIndexing", "projectDependencyGraph", "studioGlobalSearch", "databytespritesKnowledgeIntegration"]
+  "technologySearchFields": ["id", "name", "technologyType", "project", "tags", "description", "license", "source", "path", "preview", "dependencies", "version"],
+  "nextIndexes": ["sourceFiles", "documents", "releaseNotes"],
+  "nextSystems": ["projectDependencyGraph", "studioGlobalSearch", "databytespritesKnowledgeIntegration"]
 }
