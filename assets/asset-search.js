@@ -1,10 +1,86 @@
 // assets/asset-search.js
-// Offline-first unified Studio search for modules, assets, and Technology Vault records.
+// Offline-first Studio-wide global search driven by the Knowledge Engine index registry.
 
 (function () {
   const KNOWLEDGE_INDEX_URL = "/studio/knowledge/index.json";
-  const ASSET_INDEX_URL = "/studio/assets/index.json";
-  const TECHNOLOGY_INDEX_URL = "/studio/technology/index.json";
+
+  const recordAdapters = {
+    module(item, context) {
+      return {
+        recordType: "module",
+        id: item.id,
+        title: item.name,
+        category: item.category,
+        project: item.name,
+        status: item.status || "planned",
+        description: asArray(item.keywords).join(" • "),
+        keywords: asArray(item.keywords),
+        dependencies: asArray(item.dependencies),
+        location: item.entry,
+        preview: item.manifest,
+        version: context.schemaVersion,
+        sourceIndex: context.indexId,
+        sourceRecord: item
+      };
+    },
+
+    asset(item, context) {
+      return {
+        recordType: "asset",
+        id: item.id,
+        title: item.name,
+        category: item.assetType,
+        project: item.project,
+        status: "active",
+        description: item.description,
+        keywords: asArray(item.tags),
+        dependencies: asArray(item.dependencies),
+        location: item.path,
+        preview: item.preview,
+        version: item.version,
+        sourceIndex: context.indexId,
+        sourceRecord: item
+      };
+    },
+
+    technology(item, context) {
+      return {
+        recordType: "technology",
+        id: item.id,
+        title: item.name,
+        category: item.technologyType,
+        project: item.project,
+        status: "active",
+        description: item.description,
+        keywords: asArray(item.tags),
+        dependencies: asArray(item.dependencies),
+        location: item.path,
+        preview: item.preview,
+        version: item.version,
+        sourceIndex: context.indexId,
+        sourceRecord: item
+      };
+    },
+
+    graph(item, context) {
+      return {
+        recordType: "graph",
+        id: item.id,
+        title: item.label || item.name || item.id,
+        category: item.nodeType || item.edgeType || item.category,
+        project: item.category || context.indexName,
+        status: item.status || "active",
+        description: item.description || item.reason,
+        keywords: compact([item.category, item.nodeType, item.edgeType, item.source, item.target]),
+        dependencies: compact([item.source, item.target]),
+        location: item.path || context.indexPath,
+        preview: item.path || context.indexPath,
+        version: context.schemaVersion,
+        sourceIndex: context.indexId,
+        sourceRecord: item
+      };
+    }
+  };
 
   function normalize(value) {
     return String(value || "").toLowerCase().trim();
@@ -22,58 +98,18 @@
     return [...new Set(values)];
   }
 
-  function moduleToRecord(module) {
-    return {
-      recordType: "module",
-      id: module.id,
-      title: module.name,
-      category: module.category,
-      project: module.name,
-      status: module.status || "planned",
-      description: asArray(module.keywords).join(" • "),
-      keywords: asArray(module.keywords),
-      dependencies: asArray(module.dependencies),
-      location: module.entry,
-      preview: module.manifest,
-      version: "0.3.0",
-      sourceRecord: module
-    };
+  function recordKey(record) {
+    return `${record.recordType}:${record.id}:${record.sourceIndex || "unknown"}`;
   }
 
-  function assetToRecord(asset) {
-    return {
-      recordType: "asset",
-      id: asset.id,
-      title: asset.name,
-      category: asset.assetType,
-      project: asset.project,
-      status: "active",
-      description: asset.description,
-      keywords: asArray(asset.tags),
-      dependencies: asArray(asset.dependencies),
-      location: asset.path,
-      preview: asset.preview,
-      version: asset.version,
-      sourceRecord: asset
-    };
-  }
-
-  function technologyToRecord(technology) {
-    return {
-      recordType: "technology",
-      id: technology.id,
-      title: technology.name,
-      category: technology.technologyType,
-      project: technology.project,
-      status: "active",
-      description: technology.description,
-      keywords: asArray(technology.tags),
-      dependencies: asArray(technology.dependencies),
-      location: technology.path,
-      preview: technology.preview,
-      version: technology.version,
-      sourceRecord: technology
-    };
+  function dedupe(records) {
+    const seen = new Set();
+    return records.filter((record) => {
+      const key = recordKey(record);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   }
 
   function searchableText(record) {
@@ -88,6 +124,7 @@
       record.location,
       record.preview,
       record.version,
+      record.sourceIndex,
       ...asArray(record.keywords),
       ...asArray(record.dependencies)
     ]).map(normalize).join(" ");
@@ -97,7 +134,9 @@
     if (type === "asset") return "Asset";
     if (type === "module") return "Module";
     if (type === "technology") return "Technology";
+    if (type === "graph") return "Graph";
     if (type === "document") return "Document";
+    if (type === "sourceFile") return "Source";
     return "Record";
   }
 
@@ -134,7 +173,7 @@
       const action = href ? "Open" : "Indexed";
       const keywords = asArray(record.keywords).slice(0, 6).join(" • ");
       const dependencyText = asArray(record.dependencies).length
-        ? `<p class=\"text-gray-400 text-xs mt-3\">Depends on: ${record.dependencies.join(" • ")}</p>`
+        ? `<p class=\"text-gray-400 text-xs mt-3\">Links: ${record.dependencies.join(" • ")}</p>`
         : "";
 
       return `
@@ -154,14 +193,34 @@
     }).join("");
   }
 
+  function scoreRecord(record, query) {
+    if (!query) return 1;
+    const q = normalize(query);
+    let score = 0;
+
+    if (normalize(record.title) === q) score += 20;
+    if (normalize(record.title).includes(q)) score += 12;
+    if (normalize(record.id).includes(q)) score += 8;
+    if (normalize(record.recordType).includes(q)) score += 6;
+    if (normalize(record.category).includes(q)) score += 5;
+    if (normalize(record.project).includes(q)) score += 4;
+    if (asArray(record.keywords).some((keyword) => normalize(keyword).includes(q))) score += 4;
+    if (asArray(record.dependencies).some((dependency) => normalize(dependency).includes(q))) score += 3;
+    if (normalize(record.description).includes(q)) score += 2;
+
+    return score;
+  }
+
   function applySearch(records, query, activeFilter) {
     const normalizedQuery = normalize(query);
 
-    return records.filter((record) => {
-      const matchesFilter = activeFilter === "all" || record.recordType === activeFilter;
-      const matchesQuery = !normalizedQuery || searchableText(record).includes(normalizedQuery);
-      return matchesFilter && matchesQuery;
-    });
+    return records
+      .filter((record) => {
+        const matchesFilter = activeFilter === "all" || record.recordType === activeFilter;
+        const matchesQuery = !normalizedQuery || searchableText(record).includes(normalizedQuery);
+        return matchesFilter && matchesQuery;
+      })
+      .sort((a, b) => scoreRecord(b, query) - scoreRecord(a, query));
   }
 
   async function fetchJson(url) {
@@ -170,7 +229,62 @@
     return response.json();
   }
 
-  async function initAssetSearch() {
+  function extractCollection(indexData, descriptor) {
+    const collection = descriptor.collection || "";
+    const collectionNames = collection.split(",").map((item) => item.trim()).filter(Boolean);
+
+    if (!collectionNames.length) return [];
+
+    return collectionNames.flatMap((name) => {
+      const value = indexData[name];
+      return Array.isArray(value) ? value : [];
+    });
+  }
+
+  async function loadRegisteredIndex(descriptor) {
+    if (!descriptor.path || descriptor.path === KNOWLEDGE_INDEX_URL) {
+      return [];
+    }
+
+    const indexData = await fetchJson(descriptor.path);
+    const adapter = recordAdapters[descriptor.recordType];
+
+    if (!adapter) return [];
+
+    const context = {
+      indexId: descriptor.id,
+      indexName: descriptor.name,
+      indexPath: descriptor.path,
+      schemaVersion: indexData.schemaVersion || "0.1.0"
+    };
+
+    return extractCollection(indexData, descriptor).map((item) => adapter(item, context));
+  }
+
+  async function buildGlobalIndex(knowledgeIndex) {
+    const moduleDescriptor = {
+      id: "studio-modules",
+      name: "Studio Module Index",
+      path: KNOWLEDGE_INDEX_URL,
+      collection: "modules",
+      recordType: "module"
+    };
+
+    const moduleRecords = asArray(knowledgeIndex.modules).map((item) => {
+      return recordAdapters.module(item, {
+        indexId: moduleDescriptor.id,
+        indexName: moduleDescriptor.name,
+        indexPath: moduleDescriptor.path,
+        schemaVersion: knowledgeIndex.schemaVersion || "0.1.0"
+      });
+    });
+
+    const dynamicRecords = (await Promise.all(asArray(knowledgeIndex.indexes).map(loadRegisteredIndex))).flat();
+
+    return dedupe([...moduleRecords, ...dynamicRecords]);
+  }
+
+  async function initGlobalSearch() {
     const input = document.querySelector("[data-knowledge-search]");
     const output = document.querySelector("[data-knowledge-results]");
     const filters = document.querySelector("[data-search-filters]");
@@ -178,18 +292,8 @@
     if (!input || !output) return;
 
     try {
-      const [knowledgeIndex, assetIndex, technologyIndex] = await Promise.all([
-        fetchJson(KNOWLEDGE_INDEX_URL),
-        fetchJson(ASSET_INDEX_URL),
-        fetchJson(TECHNOLOGY_INDEX_URL)
-      ]);
-
-      const records = [
-        ...asArray(knowledgeIndex.modules).map(moduleToRecord),
-        ...asArray(assetIndex.assets).map(assetToRecord),
-        ...asArray(technologyIndex.technologies).map(technologyToRecord)
-      ];
-
+      const knowledgeIndex = await fetchJson(KNOWLEDGE_INDEX_URL);
+      const records = await buildGlobalIndex(knowledgeIndex);
       let activeFilter = "all";
 
       renderFilters(records, filters);
@@ -221,8 +325,8 @@
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initAssetSearch);
+    document.addEventListener("DOMContentLoaded", initGlobalSearch);
   } else {
-    initAssetSearch();
+    initGlobalSearch();
   }
 })();
