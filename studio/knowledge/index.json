@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "0.1.0",
+  "generatedBy": "VoltanLabs Studio Knowledge Engine",
+  "description": "Initial searchable catalog for VoltanLabs Studio modules, projects, tools, and planned systems.",
+  "modules": [
+    {
+      "id": "dashboard",
+      "name": "Dashboard",
+      "category": "Core",
+      "status": "active",
+      "entry": "/studio/",
+      "manifest": "/studio/modules/dashboard/module.json",
+      "keywords": ["studio", "dashboard", "hub", "navigation", "operations"],
+      "dependencies": []
+    },
+    {
+      "id": "databytesprites",
+      "name": "DataByteSprites",
+      "category": "Flagship Project",
+      "status": "active",
+      "entry": "/databyte-admin-briefing.html",
+      "manifest": "/studio/modules/databytesprites/module.json",
+      "keywords": ["databytesprites", "data discovery", "sprites", "codex", "battle", "capture", "voltarcade"],
+      "dependencies": ["creator-suite", "asset-library", "knowledge-engine"]
+    },
+    {
+      "id": "creator-suite",
+      "name": "Creator Suite",
+      "category": "Production Tools",
+      "status": "active",
+      "entry": "/tools.html",
+      "manifest": "/studio/modules/creator-suite/module.json",
+      "keywords": ["tools", "creator suite", "draw", "character forge", "gif forge", "sprite sheet", "promptcraft"],
+      "dependencies": ["asset-library"]
+    },
+    {
+      "id": "technology-vault",
+      "name": "Technology Vault",
+      "category": "Knowledge Base",
+      "status": "active",
+      "entry": "/technology-vault/",
+      "manifest": "/studio/modules/technology-vault/module.json",
+      "keywords": ["technology", "vault", "open source", "licenses", "offline first", "local ai", "self hosted"],
+      "dependencies": ["knowledge-engine"]
+    },
+    {
+      "id": "knowledge-engine",
+      "name": "Knowledge Engine",
+      "category": "Studio Intelligence",
+      "status": "planned",
+      "entry": "#knowledge-engine",
+      "manifest": "/studio/modules/knowledge-engine/module.json",
+      "keywords": ["knowledge", "search", "index", "documentation", "memory", "source code", "decisions"],
+      "dependencies": ["dashboard"]
+    },
+    {
+      "id": "simulation-lab",
+      "name": "Simulation Lab",
+      "category": "Experimentation",
+      "status": "planned",
+      "entry": "#simulation-lab",
+      "manifest": "/studio/modules/simulation-lab/module.json",
+      "keywords": ["simulation", "sandbox", "experiments", "mechanics", "testing", "ai workflows", "world systems"],
+      "dependencies": ["knowledge-engine", "asset-library"]
+    },
+    {
+      "id": "asset-library",
+      "name": "Asset Library",
+      "category": "Production Assets",
+      "status": "planned",
+      "entry": "#asset-library",
+      "manifest": "/studio/modules/asset-library/module.json",
+      "keywords": ["assets", "sprites", "images", "audio", "documents", "templates", "library"],
+      "dependencies": ["dashboard"]
+    }
+  ],
+  "searchFields": ["id", "name", "category", "status", "keywords", "dependencies", "entry", "manifest"],
+  "nextIndexes": ["assets", "documents", "technologies", "sourceFiles", "releaseNotes"]
+}
