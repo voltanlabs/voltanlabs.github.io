@@ -1,0 +1,13 @@
+{
+  "id": "technology-vault",
+  "name": "Technology Vault",
+  "version": "0.1.0",
+  "status": "active",
+  "category": "Knowledge Base",
+  "entry": "/technology-vault/",
+  "icon": "🏛️",
+  "description": "Catalog of reusable technologies, local-first stacks, licenses, and implementation notes.",
+  "keywords": ["technology", "vault", "open source", "licenses", "offline first", "local ai", "self hosted"],
+  "navigationGroup": "Knowledge Systems",
+  "dependencies": ["knowledge-engine"]
+}
