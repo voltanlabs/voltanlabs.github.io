@@ -1,18 +1,18 @@
 {
-  "schemaVersion": "0.4.0",
+  "schemaVersion": "0.5.0",
   "generatedBy": "VoltanLabs Studio Knowledge Engine",
-  "description": "Searchable catalog for VoltanLabs Studio modules, projects, tools, planned systems, Asset Library records, Technology Vault records, and the project dependency graph.",
+  "description": "Searchable catalog for VoltanLabs Studio modules, projects, tools, planned systems, Asset Library records, Technology Vault records, the project dependency graph, and DataByteSprites project systems.",
   "commonIndexModel": {
     "recordShape": {
-      "recordType": "module | asset | technology | graph | document | sourceFile | releaseNote",
+      "recordType": "module | asset | technology | graph | databytesprites | document | sourceFile | releaseNote",
       "id": "Stable unique identifier.",
       "title": "Human-readable display name.",
       "category": "High-level grouping for browsing and filtering.",
       "project": "Owning project, module, or Studio system.",
-      "status": "active | planned | archived | experimental",
+      "status": "active | planned | archived | experimental | rebuilt | partial | pending | legacy-reference",
       "description": "Short searchable summary.",
       "keywords": "Searchable string array.",
-      "dependencies": "Related module, asset, technology, graph, or source identifiers.",
+      "dependencies": "Related module, asset, technology, graph, project, or source identifiers.",
       "location": "Primary URL, file path, manifest path, or entry point.",
       "preview": "Optional preview URL or file path.",
       "version": "Record or source version."
@@ -72,6 +72,20 @@
       "location": "path",
       "preview": "path",
       "version": "schemaVersion"
+    },
+    "databytespritesMapping": {
+      "recordType": "databytesprites",
+      "id": "id",
+      "title": "name",
+      "category": "systemType",
+      "project": "project",
+      "status": "status",
+      "description": "description",
+      "keywords": "tags",
+      "dependencies": "dependencies",
+      "location": "path",
+      "preview": "preview",
+      "version": "version"
     }
   },
   "modules": [
@@ -92,8 +106,8 @@
       "status": "active",
       "entry": "/databyte-admin-briefing.html",
       "manifest": "/studio/modules/databytesprites/module.json",
-      "keywords": ["databytesprites", "data discovery", "sprites", "codex", "battle", "capture", "voltarcade"],
-      "dependencies": ["creator-suite", "asset-library", "knowledge-engine", "technology-vault", "project-dependency-graph"]
+      "keywords": ["databytesprites", "data discovery", "sprites", "codex", "battle", "capture", "voltarcade", "knowledge integration"],
+      "dependencies": ["creator-suite", "asset-library", "knowledge-engine", "technology-vault", "project-dependency-graph", "databytesprites-project-index"]
     },
     {
       "id": "creator-suite",
@@ -122,8 +136,8 @@
       "status": "planned-active-foundation",
       "entry": "#knowledge-engine",
       "manifest": "/studio/modules/knowledge-engine/module.json",
-      "keywords": ["knowledge", "search", "index", "documentation", "memory", "source code", "decisions", "dependency graph"],
-      "dependencies": ["dashboard", "asset-library", "technology-vault", "project-dependency-graph"]
+      "keywords": ["knowledge", "search", "index", "documentation", "memory", "source code", "decisions", "dependency graph", "databytesprites"],
+      "dependencies": ["dashboard", "asset-library", "technology-vault", "project-dependency-graph", "databytesprites-project-index"]
     },
     {
       "id": "simulation-lab",
@@ -133,7 +147,7 @@
       "entry": "#simulation-lab",
       "manifest": "/studio/modules/simulation-lab/module.json",
       "keywords": ["simulation", "sandbox", "experiments", "mechanics", "testing", "ai workflows", "world systems"],
-      "dependencies": ["knowledge-engine", "asset-library", "technology-vault", "project-dependency-graph"]
+      "dependencies": ["knowledge-engine", "asset-library", "technology-vault", "project-dependency-graph", "databytesprites-project-index"]
     },
     {
       "id": "asset-library",
@@ -143,7 +157,7 @@
       "entry": "#asset-library",
       "manifest": "/studio/modules/asset-library/module.json",
       "keywords": ["assets", "sprites", "images", "audio", "documents", "templates", "library", "asset index", "dependency graph"],
-      "dependencies": ["dashboard", "knowledge-engine", "technology-vault", "project-dependency-graph"]
+      "dependencies": ["dashboard", "knowledge-engine", "technology-vault", "project-dependency-graph", "databytesprites-project-index"]
     },
     {
       "id": "project-dependency-graph",
@@ -153,7 +167,17 @@
       "entry": "/studio/graph/index.json",
       "manifest": "/studio/graph/index.json",
       "keywords": ["graph", "dependencies", "projects", "modules", "assets", "technologies", "relationships"],
-      "dependencies": ["knowledge-engine", "asset-library", "technology-vault"]
+      "dependencies": ["knowledge-engine", "asset-library", "technology-vault", "databytesprites-project-index"]
+    },
+    {
+      "id": "databytesprites-project-index",
+      "name": "DataByteSprites Project Index",
+      "category": "Flagship Project Intelligence",
+      "status": "active-foundation",
+      "entry": "/studio/databytesprites/index.json",
+      "manifest": "/studio/databytesprites/index.json",
+      "keywords": ["databytesprites", "scanner", "battle", "capture", "codex", "progression", "lore", "admin console"],
+      "dependencies": ["knowledge-engine", "asset-library", "technology-vault", "project-dependency-graph"]
     }
   ],
   "indexes": [
@@ -192,12 +216,22 @@
       "collection": "nodes,edges",
       "status": "active",
       "description": "Offline-first graph of Studio systems, project dependencies, index relationships, and planned intelligence layers."
+    },
+    {
+      "id": "databytesprites-project-index",
+      "recordType": "databytesprites",
+      "name": "DataByteSprites Project Index",
+      "path": "/studio/databytesprites/index.json",
+      "collection": "systems",
+      "status": "active",
+      "description": "Offline-first index of DataByteSprites systems, rebuild status, game mechanics, lore foundations, and implementation priorities."
     }
   ],
   "searchFields": ["id", "name", "category", "status", "keywords", "dependencies", "entry", "manifest"],
   "assetSearchFields": ["id", "name", "assetType", "project", "tags", "description", "license", "source", "path", "preview", "dependencies", "version"],
   "technologySearchFields": ["id", "name", "technologyType", "project", "tags", "description", "license", "source", "path", "preview", "dependencies", "version"],
   "graphSearchFields": ["nodes.id", "nodes.label", "nodes.nodeType", "nodes.category", "nodes.status", "nodes.description", "edges.source", "edges.target", "edges.edgeType", "edges.reason"],
-  "nextIndexes": ["sourceFiles", "documents", "releaseNotes"],
-  "nextSystems": ["studioGlobalSearch", "databytespritesKnowledgeIntegration"]
+  "databytespritesSearchFields": ["id", "name", "systemType", "project", "status", "tags", "description", "source", "path", "preview", "dependencies", "version"],
+  "nextIndexes": ["sourceFiles", "documents", "releaseNotes", "databytespritesSpriteSpecies", "databytespritesLore"],
+  "nextSystems": ["databytespritesSourceFileIndex", "databytespritesSpriteSpeciesIndex", "databytespritesMechanicsGraph"]
 }
