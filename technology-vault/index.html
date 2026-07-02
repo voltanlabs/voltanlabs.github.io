@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technology Vault - VoltanLabs</title>
+  <meta name="description" content="Commercial-safe, security-reviewed Technology Vault for VoltanLabs and DataByteSprites.">
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto&display=swap" rel="stylesheet">
+  <style>body{font-family:'Roboto',sans-serif}h1,h2,h3{font-family:'Orbitron',sans-serif}.card{background:#2C3E50;border:1px solid rgba(255,255,255,.12);border-radius:1.25rem;padding:1.25rem}</style>
+</head>
+<body class="bg-[#1A1A1A] text-white">
+  <div id="vl-header"></div>
+
+  <section class="px-4 py-20 bg-gradient-to-b from-[#2C3E50] to-[#1A1A1A]">
+    <div class="max-w-7xl mx-auto text-center">
+      <span class="inline-block mb-5 text-[11px] px-4 py-2 rounded-full bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/40 tracking-wide uppercase">VoltanLabs Verified Pipeline</span>
+      <h1 class="text-4xl sm:text-6xl font-bold mb-6 text-[#007BFF]">Technology Vault</h1>
+      <p class="text-lg sm:text-xl text-gray-200 max-w-4xl mx-auto">A searchable technology library for VoltanLabs and DataByteSprites. Every resource is tracked for license safety, commercial use, security review, offline value, and project fit.</p>
+    </div>
+  </section>
+
+  <section class="px-4 py-10 bg-[#1A1A1A]">
+    <div id="vaultStats" class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center text-gray-300"></div>
+  </section>
+
+  <section class="px-4 py-14 bg-black/20">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-3xl text-[#FFD700] mb-6">Acceptance Policy</h2>
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
+        <div class="card"><b class="text-[#FFD700]">1. Security</b><p class="text-gray-300 mt-2">Repo activity, maintainers, issues, dependencies, supply-chain risk.</p></div>
+        <div class="card"><b class="text-[#FFD700]">2. License</b><p class="text-gray-300 mt-2">Commercial use, attribution, redistribution, source disclosure.</p></div>
+        <div class="card"><b class="text-[#FFD700]">3. Integration</b><p class="text-gray-300 mt-2">Fits VoltanLabs, DataByteSprites, Odysseus, and local workflows.</p></div>
+        <div class="card"><b class="text-[#FFD700]">4. Performance</b><p class="text-gray-300 mt-2">CPU, RAM, disk, offline support, mobile/browser practicality.</p></div>
+        <div class="card"><b class="text-[#FFD700]">5. Long-Term Value</b><p class="text-gray-300 mt-2">Still useful years from now and better than alternatives.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-4 py-14 bg-[#1A1A1A]">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
+        <div><h2 class="text-3xl text-[#FFD700]">Resource Database</h2><p class="text-gray-300 mt-2">Green means commercially safer. Review means verify before building with it. Red means research only.</p></div>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input id="vaultSearch" class="px-4 py-3 rounded-xl bg-black/30 border border-white/20 text-white" placeholder="Search vault..." />
+          <select id="trackFilter" class="px-4 py-3 rounded-xl bg-black/30 border border-white/20 text-white"></select>
+        </div>
+      </div>
+      <div id="vaultGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
+    </div>
+  </section>
+
+  <section class="px-4 py-14 bg-black/20">
+    <div class="max-w-5xl mx-auto card border-[#007BFF]/40">
+      <h2 class="text-3xl text-[#FFD700] mb-4">DataByteSprites First-Use Recommendations</h2>
+      <p class="text-gray-300">Use free/open foundations first: plain HTML/CSS/JS for the current browser game, JSON assets for sprite data, TheAlgorithms for reference, Graphify/olmOCR/TurboVec only after license review, and Ollama/Continue/Aider/skills.sh for development assistance. Avoid shipping research-only or non-commercial licensed code inside DataByteSprites.</p>
+    </div>
+  </section>
+
+  <div id="vl-footer"></div>
+  <script src="/assets/includes.js"></script>
+  <script src="/technology-vault/js/vault.js"></script>
+</body>
+</html>
