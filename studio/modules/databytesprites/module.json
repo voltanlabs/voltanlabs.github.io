@@ -1,0 +1,13 @@
+{
+  "id": "databytesprites",
+  "name": "DataByteSprites",
+  "version": "0.1.0",
+  "status": "active",
+  "category": "Flagship Project",
+  "entry": "/databyte-admin-briefing.html",
+  "icon": "📡",
+  "description": "Discovery, capture, codex, battle, and worldbuilding systems for the DataByteSprites universe.",
+  "keywords": ["databytesprites", "data discovery", "sprites", "codex", "battle", "capture", "voltarcade"],
+  "navigationGroup": "Flagship Projects",
+  "dependencies": ["creator-suite", "asset-library", "knowledge-engine"]
+}
