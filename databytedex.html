@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DataByteDex - VoltanLabs</title>
-  <meta name="description" content="The canon DataByteDex roster for DataByteSprites, based on the Rev 5 lore book." />
+  <meta name="description" content="The Knowledge Engine powered DataByteDex roster for DataByteSprites." />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
   <style>body{font-family:Roboto,sans-serif}h1,h2,h3{font-family:Orbitron,sans-serif}</style>
@@ -13,61 +13,28 @@
   <div id="vl-header"></div>
   <main>
     <section class="py-16 text-center bg-gradient-to-b from-[#2C3E50] to-[#1A1A1A] px-6">
-      <p class="text-[#FFD700] uppercase tracking-[0.3em] text-xs mb-4">VoltArcade Canon Database</p>
+      <p class="text-[#FFD700] uppercase tracking-[0.3em] text-xs mb-4">VoltArcade Knowledge Database</p>
       <h1 class="text-5xl md:text-7xl font-bold text-[#007BFF] mb-5">DataByteDex</h1>
-      <p class="text-gray-300 text-lg max-w-3xl mx-auto">The canon roster for DataByteSprites. Seen status now tracks discoveries separately from captures.</p>
-      <div class="mt-6 flex flex-wrap gap-3 justify-center"><a href="/databyte-admin-briefing.html" class="px-5 py-3 rounded-xl bg-[#007BFF] hover:bg-[#005FCC] font-bold">Play Data Discovery</a><a href="/voltarcade.html" class="px-5 py-3 rounded-xl border border-white hover:bg-white hover:text-[#1A1A1A] font-bold">Back to VoltArcade</a></div>
+      <p class="text-gray-300 text-lg max-w-3xl mx-auto">The Knowledge Engine powered roster for DataByteSprites, generated from species and lore indexes while preserving seen and captured progress.</p>
+      <p id="dexStatus" class="text-sm text-gray-400 mt-4">Loading Knowledge Engine source...</p>
+      <div class="mt-6 flex flex-wrap gap-3 justify-center"><a href="/databyte-admin-briefing.html" class="px-5 py-3 rounded-xl bg-[#007BFF] hover:bg-[#005FCC] font-bold">Play Data Discovery</a><a href="/studio/" class="px-5 py-3 rounded-xl border border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-[#1A1A1A] font-bold">Open Studio</a><a href="/voltarcade.html" class="px-5 py-3 rounded-xl border border-white hover:bg-white hover:text-[#1A1A1A] font-bold">Back to VoltArcade</a></div>
     </section>
     <section class="max-w-7xl mx-auto px-6 pb-20">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div class="bg-[#2C3E50] rounded-2xl p-5 border border-white/10"><div class="text-sm text-gray-300">Canon Entries</div><div id="totalCount" class="text-3xl font-bold text-[#FFD700]">0</div></div>
+        <div class="bg-[#2C3E50] rounded-2xl p-5 border border-white/10"><div class="text-sm text-gray-300">Indexed Species</div><div id="totalCount" class="text-3xl font-bold text-[#FFD700]">0</div></div>
         <div class="bg-[#2C3E50] rounded-2xl p-5 border border-white/10"><div class="text-sm text-gray-300">Seen</div><div id="seenCount" class="text-3xl font-bold text-[#FFD700]">0</div></div>
         <div class="bg-[#2C3E50] rounded-2xl p-5 border border-white/10"><div class="text-sm text-gray-300">Captured</div><div id="capturedCount" class="text-3xl font-bold text-[#FFD700]">0</div></div>
-        <div class="bg-[#2C3E50] rounded-2xl p-5 border border-white/10"><div class="text-sm text-gray-300">Current Source</div><div class="text-3xl font-bold text-[#FFD700]">Rev 5</div></div>
+        <div class="bg-[#2C3E50] rounded-2xl p-5 border border-white/10"><div class="text-sm text-gray-300">Current Source</div><div id="dexSource" class="text-2xl font-bold text-[#FFD700]">Knowledge</div></div>
       </div>
       <div class="bg-[#2C3E50] rounded-3xl border border-white/10 p-5 mb-8">
         <label for="dexSearch" class="block text-sm text-gray-300 mb-2">Search DataByteDex</label>
-        <input id="dexSearch" class="w-full px-4 py-4 rounded-2xl bg-black/30 border border-white/15 text-white outline-none focus:border-[#FFD700]" placeholder="Search by name, number, or configuration..." />
+        <input id="dexSearch" class="w-full px-4 py-4 rounded-2xl bg-black/30 border border-white/15 text-white outline-none focus:border-[#FFD700]" placeholder="Search by name, element, rarity, lore, capture, battle stats, or system link..." />
       </div>
       <div id="dexGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
     </section>
   </main>
   <div id="vl-footer"></div>
   <script src="/assets/includes.js"></script>
-  <script>
-    const COLLECTION_KEY='vl_databyte_discovery_collection_v2';
-    const SEEN_KEY='vl_databyte_seen_v1';
-    const dex=[
-      ['001','Leovolt','Voltricity / Unstained','Kilobyte','Lion cub with blue electric fur, circuit lines, and a lightning bolt tail.'],
-      ['002','Leothor','Voltricity / Unstained','Megabyte','Adolescent lion with blue electric fur, circuit lines, and a lightning bolt tail.'],
-      ['003','Leozues','Voltricity / Unstained','Gigabyte','Full grown lion with blue electric fur, charged mane, and a larger lightning bolt tail.'],
-      ['004','Crabician','Mystic','Kilobyte','Apprentice mage crab.'],['005','Crabizard','Mystic / Stained','Megabyte','Full fledged wizard crab.'],['006','Crabzaster','Mystic / Stained','Gigabyte','Sorcerer supreme master crab.'],
-      ['007','Scorpyone','Stained','Kilobyte','One-eyed orange robotic stained configuration scorpion.'],['008','Scorpytwo','Stained / Unstained','Megabyte','Robotic scorpion duo: one unstained and one stained configuration.'],['009','Scorpyus','Stained / Unstained','Gigabyte','Robotic combined form of the stained and unstained scorpion duo.'],
-      ['010','SeismaGoat','Seismic','Kilobyte','Seismic goat line base form.'],['011','GigantaGoat','Flora / Seismic','Megabyte','Flora and seismic goat upgrade.'],['012','TitantaGoat','Flora / Seismic','Gigabyte','Titan-level flora and seismic goat upgrade.'],
-      ['013','SwimPig','Aquatic','Kilobyte','Aquatic pig line base form.'],['014','DiveSwine','Aquatic','Megabyte','Aquatic swine upgrade.'],['015','PorkFloat','Aquatic','Gigabyte','Aquatic floating pig upgrade.'],
-      ['016','ByteBull','Signal','Kilobyte','Bull-themed data sprite.'],['017','Crowupt','Stained / Signal','Kilobyte','Crow corruption line base form.'],['018','Crowuption','Stained / Signal','Megabyte','Crow corruption line upgrade.'],['019','Crowtastrophe','Stained / Signal','Gigabyte','Crow corruption catastrophe form.'],
-      ['020','DoughDawg','Financial / Signal','Kilobyte','Money hound line base form.'],['021','MoneyMutt','Financial / Signal','Megabyte','Money hound line upgrade.'],['022','HundredHound','Financial / Signal','Gigabyte','High-value hound upgrade.'],
-      ['023','Primateicore','Tech','Kilobyte','Primate tech line base form.'],['024','Primateican','Tech','Megabyte','Primate tech line upgrade.'],['025','Primateicon','Tech','Gigabyte','Iconic primate tech form.'],
-      ['026','Clockadile','Tech / Time','Kilobyte','Clock crocodile line base form.'],['027','Aligatorithm','Tech / Algorithm','Megabyte','Algorithm alligator upgrade.'],['028','Technogatorus','Tech','Gigabyte','Advanced technology gator form.'],
-      ['029','Financialfish','Financial / Aquatic','Kilobyte','Financial fish line base form.'],['030','LoanShark','Financial / Aquatic','Megabyte','Loan shark upgrade.'],['031','AFKWHALE','Financial / Aquatic','Gigabyte','Massive idle whale data sprite.'],
-      ['032','PrankCaller','Signal','Kilobyte','Prank communication sprite.'],['033','Keyboardwarrior','Signal / Tech','Kilobyte','Internet argument sprite.'],['034','Troll','Stained / Signal','Kilobyte','Hostile internet signal sprite.'],
-      ['035','Landline','Signal / Tech','Kilobyte','Cable communication line base.'],['036','Octocable','Signal / Tech','Megabyte','Cable cephalopod upgrade.'],['037','Fiberoptopus','Signal / Tech','Gigabyte','Fiber optic octopus upgrade.'],
-      ['038','CassetteKid','Retro Tech','Kilobyte','Retro cassette data sprite.'],['039','Diskdaddy','Retro Tech','Megabyte','Disk-based retro tech upgrade.'],
-      ['040','Technoblin','Tech','Kilobyte','Tech goblin line base form.'],['041','Technomoly','Tech','Megabyte','Tech goblin line upgrade.'],['042','Technareality','Tech / Reality','Gigabyte','Reality-bending technology sprite.'],
-      ['043','Glitchwyrm','Glitch','Kilobyte','Glitch dragon/wyrm data sprite.'],['044','Screensavior','Display / Tech','Kilobyte','Screen guardian data sprite.'],['045','Monitorman','Display / Tech','Megabyte','Monitor humanoid data sprite.'],['046','Displaydevil','Display / Stained','Gigabyte','Stained display demon data sprite.'],['047','Mirrormaster','Display / Mystic','Terabyte','Mirror and display master sprite.'],
-      ['048','Compressaur','Tech','Kilobyte','Compression dinosaur data sprite.'],['049','Pixelpigeon','Signal / Pixel','Kilobyte','Pixel bird data sprite.'],['050','Binarybear','Binary / Tech','Kilobyte','Binary bear data sprite.'],['051','Proxentity','Proxy / Signal','Megabyte','Proxy entity data sprite.'],['052','Proxsentience','Proxy / Signal','Gigabyte','Sentient proxy data sprite.']
-    ];
-    const grid=document.getElementById('dexGrid'), search=document.getElementById('dexSearch');
-    function readList(key){try{return JSON.parse(localStorage.getItem(key))||[]}catch{return[]}}
-    function capturedNames(){return new Set(readList(COLLECTION_KEY).map(s=>s.name))}
-    function seenNames(){const seen=new Set(readList(SEEN_KEY).map(s=>typeof s==='string'?s:s.name)); capturedNames().forEach(n=>seen.add(n)); return seen}
-    function render(q=''){
-      const term=q.toLowerCase(), captured=capturedNames(), seen=seenNames();
-      document.getElementById('totalCount').textContent=dex.length;
-      document.getElementById('seenCount').textContent=seen.size;
-      document.getElementById('capturedCount').textContent=captured.size;
-      grid.innerHTML=dex.filter(s=>s.join(' ').toLowerCase().includes(term)).map(s=>{const isCap=captured.has(s[1]);const isSeen=seen.has(s[1]);return `<article class="bg-[#2C3E50] border ${isCap?'border-[#FFD700]/60':isSeen?'border-emerald-300/40':'border-white/10'} rounded-3xl p-5 shadow-lg"><p class="text-xs tracking-[0.25em] text-[#FFD700] mb-2">#${s[0]} • ${s[3]}</p><h2 class="text-2xl font-bold text-white">${s[1]}</h2><p class="text-sky-200 text-sm mt-1">${s[2]}</p><p class="text-gray-300 text-sm mt-4">${s[4]}</p><div class="mt-4 grid grid-cols-2 gap-2 text-xs"><span class="px-3 py-2 rounded-xl ${isSeen?'bg-emerald-400/15 text-emerald-200':'bg-black/25 text-gray-400'}">Seen: ${isSeen?'✓':'—'}</span><span class="px-3 py-2 rounded-xl ${isCap?'bg-[#FFD700]/15 text-[#FFD700]':'bg-black/25 text-gray-400'}">Captured: ${isCap?'✓':'—'}</span></div></article>`}).join('')||'<div class="text-gray-300">No matching sprites found.</div>'}
-    search.addEventListener('input',e=>render(e.target.value)); render();
-  </script>
+  <script src="/assets/js/databytedex-knowledge-renderer.js"></script>
 </body>
 </html>
