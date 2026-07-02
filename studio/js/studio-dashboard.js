@@ -1,0 +1,1 @@
+async function loadStudioProjects(){const r=await fetch('/studio/data/projects.json');const d=await r.json();console.log('VoltanLabs Studio Projects',d.projects);}document.addEventListener('DOMContentLoaded',loadStudioProjects);
