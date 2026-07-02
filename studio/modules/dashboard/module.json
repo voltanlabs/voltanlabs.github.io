@@ -1,0 +1,13 @@
+{
+  "id": "dashboard",
+  "name": "Dashboard",
+  "version": "0.1.0",
+  "status": "active",
+  "category": "Core",
+  "entry": "/studio/",
+  "icon": "⚡",
+  "description": "Central launchpad for VoltanLabs systems, projects, and development flow.",
+  "keywords": ["studio", "dashboard", "hub", "navigation", "operations"],
+  "navigationGroup": "Studio Core",
+  "dependencies": []
+}
