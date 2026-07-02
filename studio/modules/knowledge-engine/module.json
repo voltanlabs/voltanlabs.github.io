@@ -1,0 +1,13 @@
+{
+  "id": "knowledge-engine",
+  "name": "Knowledge Engine",
+  "version": "0.1.0",
+  "status": "planned",
+  "category": "Studio Intelligence",
+  "entry": "#knowledge-engine",
+  "icon": "🧠",
+  "description": "Searchable memory layer for projects, documentation, assets, decisions, and source code.",
+  "keywords": ["knowledge", "search", "index", "documentation", "memory", "source code", "decisions"],
+  "navigationGroup": "Knowledge Systems",
+  "dependencies": ["dashboard"]
+}
