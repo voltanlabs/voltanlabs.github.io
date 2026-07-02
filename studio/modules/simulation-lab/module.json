@@ -1,0 +1,13 @@
+{
+  "id": "simulation-lab",
+  "name": "Simulation Lab",
+  "version": "0.1.0",
+  "status": "planned",
+  "category": "Experimentation",
+  "entry": "#simulation-lab",
+  "icon": "🧪",
+  "description": "Sandbox for testing systems, game mechanics, AI workflows, and world simulations.",
+  "keywords": ["simulation", "sandbox", "experiments", "mechanics", "testing", "ai workflows", "world systems"],
+  "navigationGroup": "Labs",
+  "dependencies": ["knowledge-engine", "asset-library"]
+}
