@@ -1,0 +1,13 @@
+{
+  "id": "asset-library",
+  "name": "Asset Library",
+  "version": "0.1.0",
+  "status": "planned",
+  "category": "Production Assets",
+  "entry": "#asset-library",
+  "icon": "📦",
+  "description": "Organized library for sprites, images, audio, documents, templates, and reusable project files.",
+  "keywords": ["assets", "sprites", "images", "audio", "documents", "templates", "library"],
+  "navigationGroup": "Production Assets",
+  "dependencies": ["dashboard"]
+}
