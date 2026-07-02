@@ -1,9 +1,10 @@
 // assets/asset-search.js
-// Offline-first unified Studio search for modules and Asset Library records.
+// Offline-first unified Studio search for modules, assets, and Technology Vault records.
 
 (function () {
   const KNOWLEDGE_INDEX_URL = "/studio/knowledge/index.json";
   const ASSET_INDEX_URL = "/studio/assets/index.json";
+  const TECHNOLOGY_INDEX_URL = "/studio/technology/index.json";
 
   function normalize(value) {
     return String(value || "").toLowerCase().trim();
@@ -34,7 +35,7 @@
       dependencies: asArray(module.dependencies),
       location: module.entry,
       preview: module.manifest,
-      version: "0.2.0",
+      version: "0.3.0",
       sourceRecord: module
     };
   }
@@ -54,6 +55,24 @@
       preview: asset.preview,
       version: asset.version,
       sourceRecord: asset
+    };
+  }
+
+  function technologyToRecord(technology) {
+    return {
+      recordType: "technology",
+      id: technology.id,
+      title: technology.name,
+      category: technology.technologyType,
+      project: technology.project,
+      status: "active",
+      description: technology.description,
+      keywords: asArray(technology.tags),
+      dependencies: asArray(technology.dependencies),
+      location: technology.path,
+      preview: technology.preview,
+      version: technology.version,
+      sourceRecord: technology
     };
   }
 
@@ -159,14 +178,16 @@
     if (!input || !output) return;
 
     try {
-      const [knowledgeIndex, assetIndex] = await Promise.all([
+      const [knowledgeIndex, assetIndex, technologyIndex] = await Promise.all([
         fetchJson(KNOWLEDGE_INDEX_URL),
-        fetchJson(ASSET_INDEX_URL)
+        fetchJson(ASSET_INDEX_URL),
+        fetchJson(TECHNOLOGY_INDEX_URL)
       ]);
 
       const records = [
         ...asArray(knowledgeIndex.modules).map(moduleToRecord),
-        ...asArray(assetIndex.assets).map(assetToRecord)
+        ...asArray(assetIndex.assets).map(assetToRecord),
+        ...asArray(technologyIndex.technologies).map(technologyToRecord)
       ];
 
       let activeFilter = "all";
