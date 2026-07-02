@@ -1,7 +1,51 @@
 {
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.2.0",
   "generatedBy": "VoltanLabs Studio Knowledge Engine",
-  "description": "Initial searchable catalog for VoltanLabs Studio modules, projects, tools, and planned systems.",
+  "description": "Searchable catalog for VoltanLabs Studio modules, projects, tools, planned systems, and Asset Library records.",
+  "commonIndexModel": {
+    "recordShape": {
+      "recordType": "module | asset | technology | document | sourceFile | releaseNote",
+      "id": "Stable unique identifier.",
+      "title": "Human-readable display name.",
+      "category": "High-level grouping for browsing and filtering.",
+      "project": "Owning project, module, or Studio system.",
+      "status": "active | planned | archived | experimental",
+      "description": "Short searchable summary.",
+      "keywords": "Searchable string array.",
+      "dependencies": "Related module, asset, technology, or source identifiers.",
+      "location": "Primary URL, file path, manifest path, or entry point.",
+      "preview": "Optional preview URL or file path.",
+      "version": "Record or source version."
+    },
+    "moduleMapping": {
+      "recordType": "module",
+      "id": "id",
+      "title": "name",
+      "category": "category",
+      "project": "name",
+      "status": "status",
+      "description": "keywords",
+      "keywords": "keywords",
+      "dependencies": "dependencies",
+      "location": "entry",
+      "preview": "manifest",
+      "version": "schemaVersion"
+    },
+    "assetMapping": {
+      "recordType": "asset",
+      "id": "id",
+      "title": "name",
+      "category": "assetType",
+      "project": "project",
+      "status": "active",
+      "description": "description",
+      "keywords": "tags",
+      "dependencies": "dependencies",
+      "location": "path",
+      "preview": "preview",
+      "version": "version"
+    }
+  },
   "modules": [
     {
       "id": "dashboard",
@@ -51,7 +95,7 @@
       "entry": "#knowledge-engine",
       "manifest": "/studio/modules/knowledge-engine/module.json",
       "keywords": ["knowledge", "search", "index", "documentation", "memory", "source code", "decisions"],
-      "dependencies": ["dashboard"]
+      "dependencies": ["dashboard", "asset-library"]
     },
     {
       "id": "simulation-lab",
@@ -70,10 +114,32 @@
       "status": "planned",
       "entry": "#asset-library",
       "manifest": "/studio/modules/asset-library/module.json",
-      "keywords": ["assets", "sprites", "images", "audio", "documents", "templates", "library"],
-      "dependencies": ["dashboard"]
+      "keywords": ["assets", "sprites", "images", "audio", "documents", "templates", "library", "asset index"],
+      "dependencies": ["dashboard", "knowledge-engine"]
+    }
+  ],
+  "indexes": [
+    {
+      "id": "studio-modules",
+      "recordType": "module",
+      "name": "Studio Module Index",
+      "path": "/studio/knowledge/index.json",
+      "collection": "modules",
+      "status": "active",
+      "description": "Primary Studio module and manifest catalog."
+    },
+    {
+      "id": "asset-library",
+      "recordType": "asset",
+      "name": "Asset Library Index",
+      "path": "/studio/assets/index.json",
+      "collection": "assets",
+      "status": "active",
+      "description": "Offline-first searchable catalog of project-owned VoltanLabs assets and reusable files."
     }
   ],
   "searchFields": ["id", "name", "category", "status", "keywords", "dependencies", "entry", "manifest"],
-  "nextIndexes": ["assets", "documents", "technologies", "sourceFiles", "releaseNotes"]
+  "assetSearchFields": ["id", "name", "assetType", "project", "tags", "description", "license", "source", "path", "preview", "dependencies", "version"],
+  "nextIndexes": ["technologies", "sourceFiles", "documents", "releaseNotes"],
+  "nextSystems": ["assetSearchEngine", "technologyVaultIndexing", "projectDependencyGraph", "studioGlobalSearch", "databytespritesKnowledgeIntegration"]
 }
