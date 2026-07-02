@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "0.5.0",
+  "schemaVersion": "0.6.0",
   "generatedBy": "VoltanLabs Studio Knowledge Engine",
-  "description": "Searchable catalog for VoltanLabs Studio modules, projects, tools, planned systems, Asset Library records, Technology Vault records, the project dependency graph, and DataByteSprites project systems.",
+  "description": "Searchable catalog for VoltanLabs Studio modules, projects, tools, planned systems, Asset Library records, Technology Vault records, the project dependency graph, DataByteSprites project systems, and DataByteSprites source files.",
   "commonIndexModel": {
     "recordShape": {
-      "recordType": "module | asset | technology | graph | databytesprites | document | sourceFile | releaseNote",
+      "recordType": "module | asset | technology | graph | databytesprites | sourceFile | document | releaseNote",
       "id": "Stable unique identifier.",
       "title": "Human-readable display name.",
       "category": "High-level grouping for browsing and filtering.",
@@ -17,221 +17,39 @@
       "preview": "Optional preview URL or file path.",
       "version": "Record or source version."
     },
-    "moduleMapping": {
-      "recordType": "module",
-      "id": "id",
-      "title": "name",
-      "category": "category",
-      "project": "name",
-      "status": "status",
-      "description": "keywords",
-      "keywords": "keywords",
-      "dependencies": "dependencies",
-      "location": "entry",
-      "preview": "manifest",
-      "version": "schemaVersion"
-    },
-    "assetMapping": {
-      "recordType": "asset",
-      "id": "id",
-      "title": "name",
-      "category": "assetType",
-      "project": "project",
-      "status": "active",
-      "description": "description",
-      "keywords": "tags",
-      "dependencies": "dependencies",
-      "location": "path",
-      "preview": "preview",
-      "version": "version"
-    },
-    "technologyMapping": {
-      "recordType": "technology",
-      "id": "id",
-      "title": "name",
-      "category": "technologyType",
-      "project": "project",
-      "status": "active",
-      "description": "description",
-      "keywords": "tags",
-      "dependencies": "dependencies",
-      "location": "path",
-      "preview": "preview",
-      "version": "version"
-    },
-    "graphMapping": {
-      "recordType": "graph",
-      "id": "id",
-      "title": "label",
-      "category": "nodeType",
-      "project": "category",
-      "status": "status",
-      "description": "description",
-      "keywords": "category",
-      "dependencies": "edges",
-      "location": "path",
-      "preview": "path",
-      "version": "schemaVersion"
-    },
-    "databytespritesMapping": {
-      "recordType": "databytesprites",
-      "id": "id",
-      "title": "name",
-      "category": "systemType",
-      "project": "project",
-      "status": "status",
-      "description": "description",
-      "keywords": "tags",
-      "dependencies": "dependencies",
-      "location": "path",
-      "preview": "preview",
-      "version": "version"
-    }
+    "moduleMapping": {"recordType":"module","id":"id","title":"name","category":"category","project":"name","status":"status","description":"keywords","keywords":"keywords","dependencies":"dependencies","location":"entry","preview":"manifest","version":"schemaVersion"},
+    "assetMapping": {"recordType":"asset","id":"id","title":"name","category":"assetType","project":"project","status":"active","description":"description","keywords":"tags","dependencies":"dependencies","location":"path","preview":"preview","version":"version"},
+    "technologyMapping": {"recordType":"technology","id":"id","title":"name","category":"technologyType","project":"project","status":"active","description":"description","keywords":"tags","dependencies":"dependencies","location":"path","preview":"preview","version":"version"},
+    "graphMapping": {"recordType":"graph","id":"id","title":"label","category":"nodeType","project":"category","status":"status","description":"description","keywords":"category","dependencies":"edges","location":"path","preview":"path","version":"schemaVersion"},
+    "databytespritesMapping": {"recordType":"databytesprites","id":"id","title":"name","category":"systemType","project":"project","status":"status","description":"description","keywords":"tags","dependencies":"dependencies","location":"path","preview":"preview","version":"version"},
+    "sourceFileMapping": {"recordType":"sourceFile","id":"id","title":"name","category":"fileType","project":"project","status":"status","description":"description","keywords":"tags","dependencies":"dependencies","location":"path","preview":"preview","version":"version"}
   },
   "modules": [
-    {
-      "id": "dashboard",
-      "name": "Dashboard",
-      "category": "Core",
-      "status": "active",
-      "entry": "/studio/",
-      "manifest": "/studio/modules/dashboard/module.json",
-      "keywords": ["studio", "dashboard", "hub", "navigation", "operations"],
-      "dependencies": []
-    },
-    {
-      "id": "databytesprites",
-      "name": "DataByteSprites",
-      "category": "Flagship Project",
-      "status": "active",
-      "entry": "/databyte-admin-briefing.html",
-      "manifest": "/studio/modules/databytesprites/module.json",
-      "keywords": ["databytesprites", "data discovery", "sprites", "codex", "battle", "capture", "voltarcade", "knowledge integration"],
-      "dependencies": ["creator-suite", "asset-library", "knowledge-engine", "technology-vault", "project-dependency-graph", "databytesprites-project-index"]
-    },
-    {
-      "id": "creator-suite",
-      "name": "Creator Suite",
-      "category": "Production Tools",
-      "status": "active",
-      "entry": "/tools.html",
-      "manifest": "/studio/modules/creator-suite/module.json",
-      "keywords": ["tools", "creator suite", "draw", "character forge", "gif forge", "sprite sheet", "promptcraft"],
-      "dependencies": ["asset-library", "technology-vault", "project-dependency-graph"]
-    },
-    {
-      "id": "technology-vault",
-      "name": "Technology Vault",
-      "category": "Knowledge Base",
-      "status": "active",
-      "entry": "/technology-vault/",
-      "manifest": "/studio/modules/technology-vault/module.json",
-      "keywords": ["technology", "vault", "open source", "licenses", "offline first", "local ai", "self hosted", "commercial safety"],
-      "dependencies": ["knowledge-engine", "asset-library", "project-dependency-graph"]
-    },
-    {
-      "id": "knowledge-engine",
-      "name": "Knowledge Engine",
-      "category": "Studio Intelligence",
-      "status": "planned-active-foundation",
-      "entry": "#knowledge-engine",
-      "manifest": "/studio/modules/knowledge-engine/module.json",
-      "keywords": ["knowledge", "search", "index", "documentation", "memory", "source code", "decisions", "dependency graph", "databytesprites"],
-      "dependencies": ["dashboard", "asset-library", "technology-vault", "project-dependency-graph", "databytesprites-project-index"]
-    },
-    {
-      "id": "simulation-lab",
-      "name": "Simulation Lab",
-      "category": "Experimentation",
-      "status": "planned",
-      "entry": "#simulation-lab",
-      "manifest": "/studio/modules/simulation-lab/module.json",
-      "keywords": ["simulation", "sandbox", "experiments", "mechanics", "testing", "ai workflows", "world systems"],
-      "dependencies": ["knowledge-engine", "asset-library", "technology-vault", "project-dependency-graph", "databytesprites-project-index"]
-    },
-    {
-      "id": "asset-library",
-      "name": "Asset Library",
-      "category": "Production Assets",
-      "status": "planned-active-foundation",
-      "entry": "#asset-library",
-      "manifest": "/studio/modules/asset-library/module.json",
-      "keywords": ["assets", "sprites", "images", "audio", "documents", "templates", "library", "asset index", "dependency graph"],
-      "dependencies": ["dashboard", "knowledge-engine", "technology-vault", "project-dependency-graph", "databytesprites-project-index"]
-    },
-    {
-      "id": "project-dependency-graph",
-      "name": "Project Dependency Graph",
-      "category": "Studio Intelligence",
-      "status": "active-foundation",
-      "entry": "/studio/graph/index.json",
-      "manifest": "/studio/graph/index.json",
-      "keywords": ["graph", "dependencies", "projects", "modules", "assets", "technologies", "relationships"],
-      "dependencies": ["knowledge-engine", "asset-library", "technology-vault", "databytesprites-project-index"]
-    },
-    {
-      "id": "databytesprites-project-index",
-      "name": "DataByteSprites Project Index",
-      "category": "Flagship Project Intelligence",
-      "status": "active-foundation",
-      "entry": "/studio/databytesprites/index.json",
-      "manifest": "/studio/databytesprites/index.json",
-      "keywords": ["databytesprites", "scanner", "battle", "capture", "codex", "progression", "lore", "admin console"],
-      "dependencies": ["knowledge-engine", "asset-library", "technology-vault", "project-dependency-graph"]
-    }
+    {"id":"dashboard","name":"Dashboard","category":"Core","status":"active","entry":"/studio/","manifest":"/studio/modules/dashboard/module.json","keywords":["studio","dashboard","hub","navigation","operations"],"dependencies":[]},
+    {"id":"databytesprites","name":"DataByteSprites","category":"Flagship Project","status":"active","entry":"/databyte-admin-briefing.html","manifest":"/studio/modules/databytesprites/module.json","keywords":["databytesprites","data discovery","sprites","codex","battle","capture","voltarcade","knowledge integration","source files"],"dependencies":["creator-suite","asset-library","knowledge-engine","technology-vault","project-dependency-graph","databytesprites-project-index","databytesprites-source-files"]},
+    {"id":"creator-suite","name":"Creator Suite","category":"Production Tools","status":"active","entry":"/tools.html","manifest":"/studio/modules/creator-suite/module.json","keywords":["tools","creator suite","draw","character forge","gif forge","sprite sheet","promptcraft"],"dependencies":["asset-library","technology-vault","project-dependency-graph"]},
+    {"id":"technology-vault","name":"Technology Vault","category":"Knowledge Base","status":"active","entry":"/technology-vault/","manifest":"/studio/modules/technology-vault/module.json","keywords":["technology","vault","open source","licenses","offline first","local ai","self hosted","commercial safety"],"dependencies":["knowledge-engine","asset-library","project-dependency-graph"]},
+    {"id":"knowledge-engine","name":"Knowledge Engine","category":"Studio Intelligence","status":"planned-active-foundation","entry":"#knowledge-engine","manifest":"/studio/modules/knowledge-engine/module.json","keywords":["knowledge","search","index","documentation","memory","source code","decisions","dependency graph","databytesprites"],"dependencies":["dashboard","asset-library","technology-vault","project-dependency-graph","databytesprites-project-index","databytesprites-source-files"]},
+    {"id":"simulation-lab","name":"Simulation Lab","category":"Experimentation","status":"planned","entry":"#simulation-lab","manifest":"/studio/modules/simulation-lab/module.json","keywords":["simulation","sandbox","experiments","mechanics","testing","ai workflows","world systems"],"dependencies":["knowledge-engine","asset-library","technology-vault","project-dependency-graph","databytesprites-project-index"]},
+    {"id":"asset-library","name":"Asset Library","category":"Production Assets","status":"planned-active-foundation","entry":"#asset-library","manifest":"/studio/modules/asset-library/module.json","keywords":["assets","sprites","images","audio","documents","templates","library","asset index","dependency graph"],"dependencies":["dashboard","knowledge-engine","technology-vault","project-dependency-graph","databytesprites-project-index","databytesprites-source-files"]},
+    {"id":"project-dependency-graph","name":"Project Dependency Graph","category":"Studio Intelligence","status":"active-foundation","entry":"/studio/graph/index.json","manifest":"/studio/graph/index.json","keywords":["graph","dependencies","projects","modules","assets","technologies","relationships"],"dependencies":["knowledge-engine","asset-library","technology-vault","databytesprites-project-index","databytesprites-source-files"]},
+    {"id":"databytesprites-project-index","name":"DataByteSprites Project Index","category":"Flagship Project Intelligence","status":"active-foundation","entry":"/studio/databytesprites/index.json","manifest":"/studio/databytesprites/index.json","keywords":["databytesprites","scanner","battle","capture","codex","progression","lore","admin console"],"dependencies":["knowledge-engine","asset-library","technology-vault","project-dependency-graph","databytesprites-source-files"]},
+    {"id":"databytesprites-source-files","name":"DataByteSprites Source Files Index","category":"Code Intelligence","status":"active-foundation","entry":"/studio/databytesprites/source-files.json","manifest":"/studio/databytesprites/source-files.json","keywords":["databytesprites","source files","runtime ownership","legacy references","scanner os","battle owner","future rebuilds"],"dependencies":["knowledge-engine","databytesprites-project-index","project-dependency-graph"]}
   ],
   "indexes": [
-    {
-      "id": "studio-modules",
-      "recordType": "module",
-      "name": "Studio Module Index",
-      "path": "/studio/knowledge/index.json",
-      "collection": "modules",
-      "status": "active",
-      "description": "Primary Studio module and manifest catalog."
-    },
-    {
-      "id": "asset-library",
-      "recordType": "asset",
-      "name": "Asset Library Index",
-      "path": "/studio/assets/index.json",
-      "collection": "assets",
-      "status": "active",
-      "description": "Offline-first searchable catalog of project-owned VoltanLabs assets and reusable files."
-    },
-    {
-      "id": "technology-vault",
-      "recordType": "technology",
-      "name": "Technology Vault Index",
-      "path": "/studio/technology/index.json",
-      "collection": "technologies",
-      "status": "active",
-      "description": "Offline-first searchable catalog of approved, review-needed, and research-only technology records."
-    },
-    {
-      "id": "project-dependency-graph",
-      "recordType": "graph",
-      "name": "Project Dependency Graph",
-      "path": "/studio/graph/index.json",
-      "collection": "nodes,edges",
-      "status": "active",
-      "description": "Offline-first graph of Studio systems, project dependencies, index relationships, and planned intelligence layers."
-    },
-    {
-      "id": "databytesprites-project-index",
-      "recordType": "databytesprites",
-      "name": "DataByteSprites Project Index",
-      "path": "/studio/databytesprites/index.json",
-      "collection": "systems",
-      "status": "active",
-      "description": "Offline-first index of DataByteSprites systems, rebuild status, game mechanics, lore foundations, and implementation priorities."
-    }
+    {"id":"studio-modules","recordType":"module","name":"Studio Module Index","path":"/studio/knowledge/index.json","collection":"modules","status":"active","description":"Primary Studio module and manifest catalog."},
+    {"id":"asset-library","recordType":"asset","name":"Asset Library Index","path":"/studio/assets/index.json","collection":"assets","status":"active","description":"Offline-first searchable catalog of project-owned VoltanLabs assets and reusable files."},
+    {"id":"technology-vault","recordType":"technology","name":"Technology Vault Index","path":"/studio/technology/index.json","collection":"technologies","status":"active","description":"Offline-first searchable catalog of approved, review-needed, and research-only technology records."},
+    {"id":"project-dependency-graph","recordType":"graph","name":"Project Dependency Graph","path":"/studio/graph/index.json","collection":"nodes,edges","status":"active","description":"Offline-first graph of Studio systems, project dependencies, index relationships, and planned intelligence layers."},
+    {"id":"databytesprites-project-index","recordType":"databytesprites","name":"DataByteSprites Project Index","path":"/studio/databytesprites/index.json","collection":"systems","status":"active","description":"Offline-first index of DataByteSprites systems, rebuild status, game mechanics, lore foundations, and implementation priorities."},
+    {"id":"databytesprites-source-files","recordType":"sourceFile","name":"DataByteSprites Source Files Index","path":"/studio/databytesprites/source-files.json","collection":"sourceFiles","status":"active","description":"Offline-first index of DataByteSprites active owners, legacy references, patch layers, and future rebuild targets."}
   ],
-  "searchFields": ["id", "name", "category", "status", "keywords", "dependencies", "entry", "manifest"],
-  "assetSearchFields": ["id", "name", "assetType", "project", "tags", "description", "license", "source", "path", "preview", "dependencies", "version"],
-  "technologySearchFields": ["id", "name", "technologyType", "project", "tags", "description", "license", "source", "path", "preview", "dependencies", "version"],
-  "graphSearchFields": ["nodes.id", "nodes.label", "nodes.nodeType", "nodes.category", "nodes.status", "nodes.description", "edges.source", "edges.target", "edges.edgeType", "edges.reason"],
-  "databytespritesSearchFields": ["id", "name", "systemType", "project", "status", "tags", "description", "source", "path", "preview", "dependencies", "version"],
-  "nextIndexes": ["sourceFiles", "documents", "releaseNotes", "databytespritesSpriteSpecies", "databytespritesLore"],
-  "nextSystems": ["databytespritesSourceFileIndex", "databytespritesSpriteSpeciesIndex", "databytespritesMechanicsGraph"]
+  "searchFields": ["id","name","category","status","keywords","dependencies","entry","manifest"],
+  "assetSearchFields": ["id","name","assetType","project","tags","description","license","source","path","preview","dependencies","version"],
+  "technologySearchFields": ["id","name","technologyType","project","tags","description","license","source","path","preview","dependencies","version"],
+  "graphSearchFields": ["nodes.id","nodes.label","nodes.nodeType","nodes.category","nodes.status","nodes.description","edges.source","edges.target","edges.edgeType","edges.reason"],
+  "databytespritesSearchFields": ["id","name","systemType","project","status","tags","description","source","path","preview","dependencies","version"],
+  "sourceFileSearchFields": ["id","name","fileType","project","status","tags","description","path","preview","dependencies","version"],
+  "nextIndexes": ["documents","releaseNotes","databytespritesSpriteSpecies","databytespritesLore"],
+  "nextSystems": ["databytespritesSpriteSpeciesIndex","databytespritesMechanicsGraph","runtimeLoadOrderMap"]
 }
