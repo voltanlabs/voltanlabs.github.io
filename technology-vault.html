@@ -3,112 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="refresh" content="0; url=/technology-vault/" />
   <title>Technology Vault - VoltanLabs</title>
-  <meta name="description" content="The VoltanLabs Technology Vault is a curated technology library for AI, programming, web development, design, documentation, games, and offline-first systems.">
-  <link rel="icon" type="image/png" href="/images/favicon.png">
-  <link rel="shortcut icon" href="/images/favicon.png">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto&display=swap" rel="stylesheet">
-  <style>
-    body{font-family:'Roboto',sans-serif}h1,h2,h3,h4{font-family:'Orbitron',sans-serif}.card{background:#2C3E50;border:1px solid rgba(255,255,255,.12);border-radius:1.25rem;padding:1.25rem}.pill{display:inline-flex;align-items:center;border-radius:999px;padding:.35rem .7rem;font-size:.75rem;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.22)}
-  </style>
+  <link rel="canonical" href="/technology-vault/" />
 </head>
-<body class="bg-[#1A1A1A] text-white">
-  <div id="vl-header"></div>
-
-  <section class="px-4 py-20 bg-gradient-to-b from-[#2C3E50] to-[#1A1A1A]">
-    <div class="max-w-7xl mx-auto">
-      <div class="text-center max-w-4xl mx-auto">
-        <span class="inline-block mb-5 text-[11px] px-4 py-2 rounded-full bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/40 tracking-wide uppercase">Technology Vault 2.0</span>
-        <h1 class="text-4xl sm:text-6xl font-bold mb-6 text-[#007BFF]">VoltanLabs Knowledge Engine</h1>
-        <p class="text-lg sm:text-xl text-gray-200">A curated archive of AI systems, programming tools, design resources, workflows, datasets, documentation, and offline-first building blocks.</p>
-      </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 text-center">
-        <a href="#hall" class="card hover:border-[#FFD700] transition"><div class="text-3xl">🏛</div><div class="mt-2 font-bold text-[#FFD700]">Hall of Fame</div></a>
-        <a href="#stack" class="card hover:border-[#FFD700] transition"><div class="text-3xl">🚀</div><div class="mt-2 font-bold text-[#FFD700]">Official Stack</div></a>
-        <a href="#tracks" class="card hover:border-[#FFD700] transition"><div class="text-3xl">🧭</div><div class="mt-2 font-bold text-[#FFD700]">Tracks</div></a>
-        <a href="#queue" class="card hover:border-[#FFD700] transition"><div class="text-3xl">🔬</div><div class="mt-2 font-bold text-[#FFD700]">Research Queue</div></a>
-      </div>
-    </div>
-  </section>
-
-  <section class="px-4 py-16 bg-[#1A1A1A]">
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4">
-      <div class="card"><div class="text-3xl text-[#FFD700] font-bold">40+</div><p class="text-gray-300">tracked resources</p></div>
-      <div class="card"><div class="text-3xl text-[#FFD700] font-bold">12</div><p class="text-gray-300">technology tracks</p></div>
-      <div class="card"><div class="text-3xl text-[#FFD700] font-bold">Offline</div><p class="text-gray-300">priority scoring</p></div>
-      <div class="card"><div class="text-3xl text-[#FFD700] font-bold">Scout</div><p class="text-gray-300">discover → evaluate → archive</p></div>
-    </div>
-  </section>
-
-  <section id="hall" class="px-4 py-16 bg-black/20">
-    <div class="max-w-7xl mx-auto">
-      <div class="text-center mb-10"><h2 class="text-3xl sm:text-4xl text-[#FFD700] mb-3">🏛 Hall of Fame</h2><p class="text-gray-300">Foundational resources we would archive first and recommend without hesitation.</p></div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <a class="card hover:border-[#FFD700] transition" href="https://ollama.com"><span class="pill text-emerald-200">Local AI</span><h3 class="text-2xl text-[#FFD700] mt-3">Ollama</h3><p class="text-gray-300 mt-2">Primary local model runtime for offline AI workflows.</p></a>
-        <a class="card hover:border-[#FFD700] transition" href="https://github.com/ggml-org/llama.cpp"><span class="pill text-emerald-200">Inference</span><h3 class="text-2xl text-[#FFD700] mt-3">llama.cpp</h3><p class="text-gray-300 mt-2">Core GGUF inference engine for CPU and GPU local models.</p></a>
-        <a class="card hover:border-[#FFD700] transition" href="https://github.com/ggml-org/whisper.cpp"><span class="pill text-emerald-200">Speech</span><h3 class="text-2xl text-[#FFD700] mt-3">whisper.cpp</h3><p class="text-gray-300 mt-2">Offline speech-to-text foundation.</p></a>
-        <a class="card hover:border-[#FFD700] transition" href="https://github.com/allenai/olmocr"><span class="pill text-emerald-200">OCR</span><h3 class="text-2xl text-[#FFD700] mt-3">olmOCR</h3><p class="text-gray-300 mt-2">Turns scans, PDFs, and documents into searchable text.</p></a>
-        <a class="card hover:border-[#FFD700] transition" href="https://github.com/TheAlgorithms/Python"><span class="pill text-emerald-200">Programming</span><h3 class="text-2xl text-[#FFD700] mt-3">TheAlgorithms</h3><p class="text-gray-300 mt-2">Offline-friendly algorithm and data-structure reference.</p></a>
-        <a class="card hover:border-[#FFD700] transition" href="https://github.com/KittenML/KittenTTS"><span class="pill text-emerald-200">Voice</span><h3 class="text-2xl text-[#FFD700] mt-3">KittenTTS</h3><p class="text-gray-300 mt-2">Small offline text-to-speech candidate.</p></a>
-      </div>
-    </div>
-  </section>
-
-  <section id="stack" class="px-4 py-16 bg-[#1A1A1A]">
-    <div class="max-w-7xl mx-auto">
-      <div class="text-center mb-10"><h2 class="text-3xl sm:text-4xl text-[#FFD700] mb-3">🚀 Official VoltanLabs Stack</h2><p class="text-gray-300">Current preferred tools and systems for building VoltanLabs projects.</p></div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div class="card"><h3 class="text-xl text-[#FFD700]">AI Core</h3><p class="text-gray-300 mt-2">Ollama, llama.cpp, LocalAI, DeepSeek/Qwen models</p></div>
-        <div class="card"><h3 class="text-xl text-[#FFD700]">Speech & Documents</h3><p class="text-gray-300 mt-2">whisper.cpp, KittenTTS, olmOCR, Wikipedia dumps</p></div>
-        <div class="card"><h3 class="text-xl text-[#FFD700]">Coding</h3><p class="text-gray-300 mt-2">Aider, Continue.dev, Smart Ralph, skills.sh, TheAlgorithms</p></div>
-        <div class="card"><h3 class="text-xl text-[#FFD700]">Web</h3><p class="text-gray-300 mt-2">HTML, CSS, JavaScript, Tailwind, Logto, 21st.dev</p></div>
-        <div class="card"><h3 class="text-xl text-[#FFD700]">Creative</h3><p class="text-gray-300 mt-2">Krita, Blender, Inkscape, Audacity, VoltanLabs Forge tools</p></div>
-        <div class="card"><h3 class="text-xl text-[#FFD700]">Games</h3><p class="text-gray-300 mt-2">Godot, Tiled, LDtk, DataByteSprites systems</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="tracks" class="px-4 py-16 bg-black/20">
-    <div class="max-w-7xl mx-auto">
-      <div class="text-center mb-10"><h2 class="text-3xl sm:text-4xl text-[#FFD700] mb-3">🧭 Technology Tracks</h2><p class="text-gray-300">The vault is organized by complete project tracks, not just loose folders.</p></div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="card">🤖 <b class="text-[#FFD700]">Local AI</b><p class="text-gray-300 text-sm mt-2">Models, inference, embeddings, memory.</p></div>
-        <div class="card">🧠 <b class="text-[#FFD700]">AI Agents</b><p class="text-gray-300 text-sm mt-2">MCP, skills, planning, automation.</p></div>
-        <div class="card">💻 <b class="text-[#FFD700]">Programming</b><p class="text-gray-300 text-sm mt-2">Languages, algorithms, CLI, testing.</p></div>
-        <div class="card">🌐 <b class="text-[#FFD700]">Web Development</b><p class="text-gray-300 text-sm mt-2">Frontend, backend, auth, performance.</p></div>
-        <div class="card">🎮 <b class="text-[#FFD700]">Game Development</b><p class="text-gray-300 text-sm mt-2">Engines, sprites, audio, levels.</p></div>
-        <div class="card">🎨 <b class="text-[#FFD700]">Creative</b><p class="text-gray-300 text-sm mt-2">Art, 3D, audio, video, UI.</p></div>
-        <div class="card">📄 <b class="text-[#FFD700]">Knowledge</b><p class="text-gray-300 text-sm mt-2">OCR, books, papers, datasets, docs.</p></div>
-        <div class="card">🔐 <b class="text-[#FFD700]">Security</b><p class="text-gray-300 text-sm mt-2">Auth, networking, encryption, monitoring.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="queue" class="px-4 py-16 bg-[#1A1A1A]">
-    <div class="max-w-7xl mx-auto">
-      <div class="text-center mb-10"><h2 class="text-3xl sm:text-4xl text-[#FFD700] mb-3">🔬 Research Queue</h2><p class="text-gray-300">Promising finds waiting for testing, license review, or deeper comparison.</p></div>
-      <div class="overflow-x-auto rounded-2xl border border-white/10 bg-[#2C3E50]">
-        <table class="w-full text-left text-sm"><thead class="bg-black/30 text-[#FFD700] uppercase text-xs"><tr><th class="p-4">Resource</th><th class="p-4">Track</th><th class="p-4">Status</th><th class="p-4">Next Step</th></tr></thead><tbody class="divide-y divide-white/10 text-gray-200">
-          <tr><td class="p-4 font-bold">Scrapling</td><td class="p-4">Web Research</td><td class="p-4">Evaluate</td><td class="p-4">Review ethical use and capabilities.</td></tr>
-          <tr><td class="p-4 font-bold">RTK AI</td><td class="p-4">AI Infrastructure</td><td class="p-4">Evaluate</td><td class="p-4">Verify repo and token-reduction claims.</td></tr>
-          <tr><td class="p-4 font-bold">Free Claude Code</td><td class="p-4">Coding</td><td class="p-4">Evaluate</td><td class="p-4">Check licensing and whether it bypasses services.</td></tr>
-          <tr><td class="p-4 font-bold">Agent-Reach</td><td class="p-4">Research Agents</td><td class="p-4">Evaluate</td><td class="p-4">Review data-source policies and usefulness.</td></tr>
-          <tr><td class="p-4 font-bold">WiFi Radar</td><td class="p-4">Networking</td><td class="p-4">Evaluate</td><td class="p-4">Keep as learning/demo project.</td></tr>
-        </tbody></table>
-      </div>
-    </div>
-  </section>
-
-  <section class="px-4 py-16 bg-black/20">
-    <div class="max-w-5xl mx-auto card border-[#007BFF]/40">
-      <h2 class="text-3xl text-[#FFD700] mb-4">Technology Scout Pipeline</h2>
-      <p class="text-gray-300 mb-6">Every new discovery follows the same path: discover → research → evaluate → archive → document → test → integrate → publish.</p>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-center text-sm"><div class="pill justify-center">1. Discover</div><div class="pill justify-center">2. Evaluate</div><div class="pill justify-center">3. Archive</div><div class="pill justify-center">4. Integrate</div></div>
-    </div>
-  </section>
-
-  <div id="vl-footer"></div>
-  <script src="/assets/includes.js"></script>
+<body style="background:#1A1A1A;color:white;font-family:Arial,sans-serif;padding:2rem;">
+  <p>Technology Vault moved to <a href="/technology-vault/" style="color:#FFD700;">/technology-vault/</a>.</p>
 </body>
 </html>
