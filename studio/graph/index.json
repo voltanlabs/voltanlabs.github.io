@@ -1,0 +1,170 @@
+{
+  "schemaVersion": "0.1.0",
+  "generatedBy": "VoltanLabs Studio Dependency Graph",
+  "description": "Offline-first graph of Studio systems, project modules, asset indexes, technology indexes, and planned dependency-aware development phases.",
+  "graphModel": {
+    "nodeTypes": ["module", "assetIndex", "technologyIndex", "searchEngine", "project", "futureSystem"],
+    "edgeTypes": ["dependsOn", "indexes", "powers", "feeds", "uses", "plannedFor"],
+    "direction": "source depends on target unless edgeType says feeds, powers, or indexes"
+  },
+  "nodes": [
+    {
+      "id": "dashboard",
+      "label": "Studio Dashboard",
+      "nodeType": "module",
+      "status": "active",
+      "category": "Core",
+      "path": "/studio/",
+      "description": "Central Studio launchpad and UI shell."
+    },
+    {
+      "id": "knowledge-engine",
+      "label": "Knowledge Engine",
+      "nodeType": "module",
+      "status": "planned-active-foundation",
+      "category": "Studio Intelligence",
+      "path": "/studio/knowledge/index.json",
+      "description": "Common index model and searchable registry for Studio records."
+    },
+    {
+      "id": "asset-library",
+      "label": "Asset Library",
+      "nodeType": "module",
+      "status": "planned-active-foundation",
+      "category": "Production Assets",
+      "path": "/studio/assets/index.json",
+      "description": "Offline-first asset schema and catalog for reusable files."
+    },
+    {
+      "id": "technology-vault",
+      "label": "Technology Vault",
+      "nodeType": "module",
+      "status": "active",
+      "category": "Knowledge Base",
+      "path": "/studio/technology/index.json",
+      "description": "Commercial-safety technology catalog and implementation pipeline."
+    },
+    {
+      "id": "creator-suite",
+      "label": "Creator Suite",
+      "nodeType": "module",
+      "status": "active",
+      "category": "Production Tools",
+      "path": "/tools.html",
+      "description": "Browser-based creative tools for sprites, drawing, GIFs, prompts, and characters."
+    },
+    {
+      "id": "databytesprites",
+      "label": "DataByteSprites",
+      "nodeType": "project",
+      "status": "active",
+      "category": "Flagship Project",
+      "path": "/databyte-admin-briefing.html",
+      "description": "Flagship discovery, capture, battle, codex, and worldbuilding project."
+    },
+    {
+      "id": "simulation-lab",
+      "label": "Simulation Lab",
+      "nodeType": "module",
+      "status": "planned",
+      "category": "Experimentation",
+      "path": "#simulation-lab",
+      "description": "Sandbox for game mechanics, AI workflows, experiments, and world systems."
+    },
+    {
+      "id": "studio-modules-index",
+      "label": "Studio Modules Index",
+      "nodeType": "assetIndex",
+      "status": "active",
+      "category": "Index",
+      "path": "/studio/knowledge/index.json",
+      "description": "Module and index registry used by Studio search."
+    },
+    {
+      "id": "asset-library-index",
+      "label": "Asset Library Index",
+      "nodeType": "assetIndex",
+      "status": "active",
+      "category": "Index",
+      "path": "/studio/assets/index.json",
+      "description": "Asset catalog consumed by the unified Studio search engine."
+    },
+    {
+      "id": "technology-vault-index",
+      "label": "Technology Vault Index",
+      "nodeType": "technologyIndex",
+      "status": "active",
+      "category": "Index",
+      "path": "/studio/technology/index.json",
+      "description": "Technology catalog consumed by the unified Studio search engine."
+    },
+    {
+      "id": "studio-global-search",
+      "label": "Studio Global Search",
+      "nodeType": "searchEngine",
+      "status": "active-foundation",
+      "category": "Search",
+      "path": "/assets/asset-search.js",
+      "description": "Unified browser search across modules, assets, and technologies."
+    },
+    {
+      "id": "source-files-index",
+      "label": "Source Files Index",
+      "nodeType": "futureSystem",
+      "status": "planned",
+      "category": "Code Intelligence",
+      "path": "#source-files-index",
+      "description": "Future searchable map of important source files, ownership, and runtime hooks."
+    },
+    {
+      "id": "documents-index",
+      "label": "Documents Index",
+      "nodeType": "futureSystem",
+      "status": "planned",
+      "category": "Documentation",
+      "path": "#documents-index",
+      "description": "Future searchable map of design docs, manuals, notes, and lore documents."
+    }
+  ],
+  "edges": [
+    { "source": "knowledge-engine", "target": "dashboard", "edgeType": "dependsOn", "reason": "Knowledge search is surfaced in the Studio dashboard." },
+    { "source": "asset-library", "target": "knowledge-engine", "edgeType": "dependsOn", "reason": "Asset records use the common Knowledge Engine indexing model." },
+    { "source": "technology-vault", "target": "knowledge-engine", "edgeType": "dependsOn", "reason": "Technology records use the common Knowledge Engine indexing model." },
+    { "source": "creator-suite", "target": "asset-library", "edgeType": "dependsOn", "reason": "Creator tools produce reusable assets for the Asset Library." },
+    { "source": "creator-suite", "target": "technology-vault", "edgeType": "dependsOn", "reason": "Creator tools rely on vetted web and creative technologies." },
+    { "source": "databytesprites", "target": "creator-suite", "edgeType": "dependsOn", "reason": "DataByteSprites needs tools for art, sprites, prompts, and characters." },
+    { "source": "databytesprites", "target": "asset-library", "edgeType": "dependsOn", "reason": "Sprites, icons, lore files, and previews belong in a searchable asset system." },
+    { "source": "databytesprites", "target": "knowledge-engine", "edgeType": "dependsOn", "reason": "Game data, lore, codex, and implementation notes need searchable project memory." },
+    { "source": "databytesprites", "target": "technology-vault", "edgeType": "dependsOn", "reason": "Game architecture should use vetted local-first and commercial-safe technologies." },
+    { "source": "simulation-lab", "target": "knowledge-engine", "edgeType": "dependsOn", "reason": "Experiments should be searchable and connected to decisions." },
+    { "source": "simulation-lab", "target": "asset-library", "edgeType": "dependsOn", "reason": "Simulations need reusable assets and fixtures." },
+    { "source": "simulation-lab", "target": "technology-vault", "edgeType": "dependsOn", "reason": "Simulations should use vetted frameworks and local tools." },
+    { "source": "studio-modules-index", "target": "knowledge-engine", "edgeType": "feeds", "reason": "Module records feed the Knowledge Engine." },
+    { "source": "asset-library-index", "target": "knowledge-engine", "edgeType": "feeds", "reason": "Asset records feed the Knowledge Engine." },
+    { "source": "technology-vault-index", "target": "knowledge-engine", "edgeType": "feeds", "reason": "Technology records feed the Knowledge Engine." },
+    { "source": "studio-global-search", "target": "studio-modules-index", "edgeType": "indexes", "reason": "Global search loads the module index." },
+    { "source": "studio-global-search", "target": "asset-library-index", "edgeType": "indexes", "reason": "Global search loads the asset index." },
+    { "source": "studio-global-search", "target": "technology-vault-index", "edgeType": "indexes", "reason": "Global search loads the technology index." },
+    { "source": "source-files-index", "target": "knowledge-engine", "edgeType": "plannedFor", "reason": "Source file indexing is the next code intelligence layer." },
+    { "source": "documents-index", "target": "knowledge-engine", "edgeType": "plannedFor", "reason": "Document indexing is the next documentation intelligence layer." }
+  ],
+  "derivedViews": {
+    "activeIndexes": ["studio-modules-index", "asset-library-index", "technology-vault-index"],
+    "activeSearchInputs": ["modules", "assets", "technologies"],
+    "highestRiskDependencies": [
+      {
+        "id": "databytesprites-to-asset-library",
+        "source": "databytesprites",
+        "target": "asset-library",
+        "risk": "DataByteSprites will grow faster than its asset metadata unless asset capture is automated."
+      },
+      {
+        "id": "knowledge-engine-to-source-files",
+        "source": "knowledge-engine",
+        "target": "source-files-index",
+        "risk": "Search will remain metadata-only until important source files are indexed."
+      }
+    ]
+  },
+  "nextSystems": ["studioGlobalSearch", "databytespritesKnowledgeIntegration", "sourceFilesIndex", "documentsIndex"]
+}
