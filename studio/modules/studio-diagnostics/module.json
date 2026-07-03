@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "studio-diagnostics",
+  "name": "System Diagnostics",
+  "category": "Studio Operations",
+  "status": "active",
+  "entry": "/studio/diagnostics/",
+  "description": "Dashboard for checking Studio indexes, runtime manifests, and DataByteSprites content health.",
+  "keywords": ["diagnostics", "health", "indexes", "runtime", "databytesprites"],
+  "dependencies": ["knowledge-engine", "runtime-visualizer"],
+  "ownedFiles": ["/studio/diagnostics/index.html"],
+  "nextSystems": ["diagnosticReportPersistence", "missingReferenceScanner"]
+}
