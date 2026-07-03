@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "runtime-visualizer",
+  "name": "Runtime Visualizer",
+  "category": "Studio Operations",
+  "status": "active",
+  "entry": "/studio/runtime/",
+  "description": "Studio page for viewing Data Discovery boot phases, runtime modules, dependencies, and failure behavior.",
+  "keywords": ["runtime", "loader", "manifest", "boot phases", "dependencies", "scanner os", "data discovery"],
+  "dependencies": ["knowledge-engine", "databytesprites-project-index"],
+  "ownedFiles": ["/studio/runtime/index.html", "/studio/runtime/load-order.json"],
+  "nextSystems": ["runtimeGraphView", "runtimeEventLog"]
+}
