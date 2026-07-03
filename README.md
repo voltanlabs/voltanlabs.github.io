@@ -48,20 +48,29 @@ Core file:
 
 - `/assets/asset-search.js`
 
-Current searchable record families include:
+Current searchable record families include modules, assets, technologies, dependency graph records, DataByteSprites systems, source files, species, lore, mechanics, moves, type chart rules, and passive abilities.
 
-- Modules
-- Assets
-- Technologies
-- Dependency graph records
-- DataByteSprites systems
-- DataByteSprites source files
-- DataByteSprites sprite species
-- DataByteSprites lore
-- DataByteSprites mechanics graph records
-- DataByteSprites moves
-- DataByteSprites type chart rules
-- DataByteSprites passive abilities
+### Studio Diagnostics
+
+The Studio diagnostics dashboard checks the core offline indexes, DataByteSprites content files, and runtime manifest from one page.
+
+Core file:
+
+- `/studio/diagnostics/index.html`
+
+It reports loaded sources, record counts, warnings, failed JSON loads, missing schema versions, missing species battle stats, missing move learn rules, ability assignment issues, and runtime dependency problems. It can also copy a JSON diagnostic report.
+
+### Runtime Visualizer
+
+The runtime visualizer renders the manifest-driven boot phases, modules, dependencies, and failure behavior.
+
+Core files:
+
+- `/studio/runtime/index.html`
+- `/studio/runtime/load-order.json`
+- `/assets/js/studio-runtime-loader.js`
+- `/assets/js/studio-runtime-health.js`
+- `/assets/js/studio-runtime-bridge-checks.js`
 
 ### Asset Library
 
@@ -117,27 +126,28 @@ The DataByteSprites knowledge system is organized into layers:
 
 Together these form the first project-level knowledge model inside VoltanLabs Studio.
 
-## Data Discovery Runtime Bridges
+## Data Discovery Runtime
 
-`databyte-discovery.html` currently boots the Scanner OS with additive bridge scripts before the main scanner app. The current order is:
+`databyte-discovery.html` now boots through the manifest-driven runtime loader instead of directly listing every bridge script.
 
-1. `/assets/js/databyte-capture-pool.js`
-2. `/assets/js/databyte-balance-bridge.js`
-3. `/assets/js/databyte-move-bridge.js`
-4. `/assets/js/databyte-type-bridge.js`
-5. `/assets/js/databyte-ability-bridge.js`
-6. `/assets/js/databyte-standalone-app.js`
-7. `/assets/js/dd-scan-bg.js`
+Current boot entry:
 
-Bridge responsibilities:
+- `/assets/js/studio-runtime-loader.js`
 
-- **Capture pool bridge** loads species data and maps discovery codes to indexed species.
-- **Balance bridge** displays species-driven HP, ATK, DEF, SPD, SPC, and Power values.
-- **Move bridge** exposes move buttons while keeping basic Attack as the fallback resolver.
-- **Type bridge** evaluates move elements against species elements and applies type/capture modifiers.
-- **Ability bridge** displays passive abilities and applies small capture/stat bonuses.
+Current runtime manifest:
 
-The next architecture improvement is a dedicated runtime load-order manager so the system no longer relies only on script tag order.
+- `/studio/runtime/load-order.json`
+
+The manifest loads:
+
+1. Capture pool bridge
+2. Battle balance bridge
+3. Move runtime bridge
+4. Type-effectiveness bridge
+5. Passive ability bridge
+6. Scanner OS runtime
+7. Scanner background effects
+8. Runtime bridge health checks
 
 ## DataByteDex Runtime
 
@@ -166,7 +176,7 @@ This repository follows repository-first development rules:
 5. Report only real commit messages and SHAs returned by GitHub.
 6. Keep data structures reusable and offline-first.
 7. Prefer adding new indexes through `/studio/knowledge/index.json` instead of hard-coding new search behavior.
-8. Prefer additive runtime bridges until the scanner can be safely consolidated under a deterministic loader.
+8. Prefer additive runtime bridges until the scanner can be safely consolidated into stable runtime modules.
 
 ## Completed Studio Foundation Phases
 
@@ -194,16 +204,22 @@ This repository follows repository-first development rules:
 - Type chart index and type-effectiveness bridge
 - Passive ability index and ability runtime bridge
 - Gameplay indexes registered with Studio global search
+- Runtime load-order manifest
+- Studio runtime loader
+- Runtime health panel
+- Bridge health checks
+- Runtime visualizer page
+- Studio diagnostics dashboard
 
 ## Next Highest-Value Work
 
 Recommended next phases:
 
-1. Build a runtime load-order manager for Scanner OS and bridge dependencies.
-2. Add runtime load-order documentation and validation output in Studio.
-3. Promote bridge metadata into the mechanics graph.
+1. Register diagnostics in the Studio dashboard/module registry.
+2. Promote bridge health results into a persistent diagnostics report format.
+3. Add missing asset/reference detection across species, lore, moves, abilities, and source files.
 4. Add DataByteDex ability and move display sections.
-5. Begin consolidating capture, battle, moves, types, and abilities into a cleaner Data Discovery runtime module.
+5. Begin consolidating capture, battle, moves, types, and abilities into cleaner Data Discovery runtime modules.
 
 ## Architecture Principle
 
@@ -216,5 +232,6 @@ Every future Studio system should be able to answer:
 - What depends on it?
 - Is it active, legacy, planned, locked, or experimental?
 - Can Studio search it offline?
+- Can diagnostics validate it?
 
-If the answer is no, the system should gain an index before it grows further.
+If the answer is no, the system should gain an index, runtime check, or documentation before it grows further.
