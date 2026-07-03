@@ -22,6 +22,24 @@ window.VOLTAN_STUDIO_MODULES = [
     description: "Discovery, capture, codex, battle, and worldbuilding systems for the DataByteSprites universe."
   },
   {
+    id: "studio-diagnostics",
+    title: "System Diagnostics",
+    icon: "🩺",
+    href: "/studio/diagnostics/",
+    status: "active",
+    category: "Studio Operations",
+    description: "Mission-control dashboard for validating Studio indexes, DataByteSprites content, runtime manifests, and diagnostic reports."
+  },
+  {
+    id: "runtime-visualizer",
+    title: "Runtime Visualizer",
+    icon: "🧭",
+    href: "/studio/runtime/",
+    status: "active",
+    category: "Studio Operations",
+    description: "Manifest-driven view of Data Discovery boot phases, runtime modules, dependencies, and failure behavior."
+  },
+  {
     id: "creator-suite",
     title: "Creator Suite",
     icon: "🛠️",
@@ -44,9 +62,9 @@ window.VOLTAN_STUDIO_MODULES = [
     title: "Knowledge Engine",
     icon: "🧠",
     href: "#knowledge-engine",
-    status: "planned",
+    status: "planned-active-foundation",
     category: "Studio Intelligence",
-    description: "Future searchable memory layer for projects, documentation, assets, decisions, and source code."
+    description: "Searchable memory layer for projects, documentation, assets, decisions, runtime systems, and source code."
   },
   {
     id: "simulation-lab",
@@ -62,9 +80,9 @@ window.VOLTAN_STUDIO_MODULES = [
     title: "Asset Library",
     icon: "📦",
     href: "#asset-library",
-    status: "planned",
+    status: "planned-active-foundation",
     category: "Production Assets",
-    description: "Future organized library for sprites, images, audio, documents, templates, and reusable project files."
+    description: "Organized library for sprites, images, audio, documents, templates, and reusable project files."
   },
   {
     id: "future-projects",
