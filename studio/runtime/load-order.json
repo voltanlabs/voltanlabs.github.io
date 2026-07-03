@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "0.1.0",
+  "generatedBy": "VoltanLabs Studio Runtime Loader",
+  "description": "Deterministic load-order manifest for Data Discovery runtime bridges and Scanner OS boot.",
+  "runtime": "databyte-discovery",
+  "phases": [
+    {
+      "id": "studio:boot",
+      "description": "Runtime loader starts and validates the manifest."
+    },
+    {
+      "id": "databytesprites:data-ready",
+      "description": "Data-driven bridge scripts are loaded and able to fetch their own indexes."
+    },
+    {
+      "id": "scanner:bridges-ready",
+      "description": "Capture pool, balance, move, type, and ability bridges have been injected."
+    },
+    {
+      "id": "scanner:ready",
+      "description": "Scanner OS runtime script has been loaded."
+    },
+    {
+      "id": "scanner:background-ready",
+      "description": "Scanner background effects have been loaded."
+    }
+  ],
+  "modules": [
+    {
+      "id": "databyte-capture-pool",
+      "label": "Species Capture Pool Bridge",
+      "script": "/assets/js/databyte-capture-pool.js?v=knowledge-pool-1",
+      "phase": "databytesprites:data-ready",
+      "requires": [],
+      "emits": ["databytesprites:capture-pool-loaded"],
+      "required": true,
+      "failureBehavior": "show-runtime-error"
+    },
+    {
+      "id": "databyte-balance-bridge",
+      "label": "Battle Balance Bridge",
+      "script": "/assets/js/databyte-balance-bridge.js?v=balance-1",
+      "phase": "scanner:bridges-ready",
+      "requires": ["databyte-capture-pool"],
+      "emits": ["databytesprites:balance-loaded"],
+      "required": true,
+      "failureBehavior": "show-runtime-error"
+    },
+    {
+      "id": "databyte-move-bridge",
+      "label": "Move Runtime Bridge",
+      "script": "/assets/js/databyte-move-bridge.js?v=moves-1",
+      "phase": "scanner:bridges-ready",
+      "requires": ["databyte-capture-pool", "databyte-balance-bridge"],
+      "emits": ["databytesprites:moves-loaded"],
+      "required": true,
+      "failureBehavior": "show-runtime-error"
+    },
+    {
+      "id": "databyte-type-bridge",
+      "label": "Type Effectiveness Bridge",
+      "script": "/assets/js/databyte-type-bridge.js?v=types-1",
+      "phase": "scanner:bridges-ready",
+      "requires": ["databyte-move-bridge"],
+      "emits": ["databytesprites:types-loaded"],
+      "required": true,
+      "failureBehavior": "show-runtime-error"
+    },
+    {
+      "id": "databyte-ability-bridge",
+      "label": "Passive Ability Bridge",
+      "script": "/assets/js/databyte-ability-bridge.js?v=abilities-1",
+      "phase": "scanner:bridges-ready",
+      "requires": ["databyte-type-bridge"],
+      "emits": ["databytesprites:abilities-loaded"],
+      "required": true,
+      "failureBehavior": "show-runtime-error"
+    },
+    {
+      "id": "databyte-standalone-app",
+      "label": "Scanner OS Runtime",
+      "script": "/assets/js/databyte-standalone-app.js?v=0912-direct-os",
+      "phase": "scanner:ready",
+      "requires": ["databyte-capture-pool", "databyte-balance-bridge", "databyte-move-bridge", "databyte-type-bridge", "databyte-ability-bridge"],
+      "emits": ["scanner:ready"],
+      "required": true,
+      "failureBehavior": "show-runtime-error"
+    },
+    {
+      "id": "dd-scan-bg",
+      "label": "Scanner Background Effects",
+      "script": "/assets/js/dd-scan-bg.js?v=0912-direct-os",
+      "phase": "scanner:background-ready",
+      "requires": ["databyte-standalone-app"],
+      "emits": ["scanner:background-ready"],
+      "required": false,
+      "failureBehavior": "warn-only"
+    }
+  ],
+  "events": {
+    "loaderStarted": "studio:boot",
+    "manifestReady": "runtime:manifest-ready",
+    "moduleLoaded": "runtime:module-loaded",
+    "moduleFailed": "runtime:module-failed",
+    "allReady": "runtime:ready"
+  },
+  "nextSystems": ["runtimeStatusPanel", "bridgeHealthChecks", "studioRuntimeVisualizer"]
+}
