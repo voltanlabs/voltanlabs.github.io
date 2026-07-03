@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "0.1.0",
+  "generatedBy": "VoltanLabs Studio Knowledge Engine",
+  "description": "Companion index for Studio Operations modules that are visible from the Studio dashboard and should be searchable by future Knowledge Engine passes.",
+  "modules": [
+    {
+      "id": "studio-diagnostics",
+      "name": "System Diagnostics",
+      "category": "Studio Operations",
+      "status": "active",
+      "entry": "/studio/diagnostics/",
+      "manifest": "/studio/modules/studio-diagnostics/module.json",
+      "keywords": ["diagnostics", "health", "indexes", "runtime", "databytesprites"],
+      "dependencies": ["knowledge-engine", "runtime-visualizer"]
+    },
+    {
+      "id": "runtime-visualizer",
+      "name": "Runtime Visualizer",
+      "category": "Studio Operations",
+      "status": "active",
+      "entry": "/studio/runtime/",
+      "manifest": "/studio/modules/runtime-visualizer/module.json",
+      "keywords": ["runtime", "loader", "manifest", "boot phases", "scanner os"],
+      "dependencies": ["knowledge-engine", "studio-diagnostics"]
+    }
+  ],
+  "searchFields": ["id", "name", "category", "status", "entry", "manifest", "keywords", "dependencies"],
+  "nextSystems": ["mergeOperationsIndexIntoKnowledgeRegistry", "diagnosticReportPersistence"]
+}
