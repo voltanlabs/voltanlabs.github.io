@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Runtime Visualizer - VoltanLabs Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#1A1A1A] text-white min-h-screen">
+  <main class="max-w-6xl mx-auto px-6 py-12">
+    <p class="text-[#FFD700] uppercase tracking-[0.25em] text-xs mb-3">VoltanLabs Studio</p>
+    <h1 class="text-4xl md:text-6xl font-bold text-[#007BFF]">Runtime Visualizer</h1>
+    <p class="text-gray-300 mt-4 max-w-3xl">Manifest-driven view of Data Discovery boot phases, runtime modules, dependencies, and failure behavior.</p>
+    <div class="mt-6 flex gap-3 flex-wrap">
+      <a href="/studio/" class="px-4 py-2 rounded-xl bg-[#007BFF] font-bold">Back to Studio</a>
+      <a href="/databyte-discovery.html" class="px-4 py-2 rounded-xl border border-[#FFD700] text-[#FFD700] font-bold">Open Data Discovery</a>
+    </div>
+    <section id="runtimeOutput" class="grid gap-5 mt-10"></section>
+  </main>
+  <script>
+    async function init() {
+      const output = document.getElementById('runtimeOutput');
+      try {
+        const response = await fetch('/studio/runtime/load-order.json', { cache: 'no-store' });
+        const manifest = await response.json();
+        const phaseCards = manifest.phases.map((phase) => `<article class="rounded-2xl border border-white/10 bg-[#2C3E50] p-5"><p class="text-[#FFD700] text-xs uppercase tracking-wide">Phase</p><h2 class="text-xl font-bold mt-1">${phase.id}</h2><p class="text-gray-300 mt-2">${phase.description}</p></article>`).join('');
+        const moduleCards = manifest.modules.map((module) => `<article class="rounded-2xl border border-white/10 bg-black/25 p-5"><div class="flex items-start justify-between gap-3"><div><p class="text-[#FFD700] text-xs uppercase tracking-wide">${module.phase}</p><h2 class="text-xl font-bold mt-1">${module.label}</h2></div><span class="text-xs border border-white/20 rounded-full px-3 py-1">${module.required ? 'required' : 'optional'}</span></div><p class="text-gray-300 text-sm mt-3">${module.script}</p><p class="text-gray-400 text-xs mt-3">Requires: ${(module.requires || []).join(' • ') || 'none'}</p><p class="text-gray-400 text-xs mt-1">Emits: ${(module.emits || []).join(' • ') || 'none'}</p><p class="text-gray-400 text-xs mt-1">Failure: ${module.failureBehavior}</p></article>`).join('');
+        output.innerHTML = `<section><h2 class="text-2xl font-bold mb-4">Boot Phases</h2><div class="grid md:grid-cols-2 gap-4">${phaseCards}</div></section><section><h2 class="text-2xl font-bold mb-4 mt-8">Runtime Modules</h2><div class="grid md:grid-cols-2 gap-4">${moduleCards}</div></section>`;
+      } catch (error) {
+        output.innerHTML = '<p class="text-red-200">Unable to load runtime manifest.</p>';
+      }
+    }
+    init();
+  </script>
+</body>
+</html>
