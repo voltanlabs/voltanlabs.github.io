@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "2.0.0",
+  "generatedBy": "VoltanLabs Studio Knowledge Engine v2",
+  "description": "Modular Knowledge Engine registry for VoltanLabs Studio. This v2 file is intended to replace the legacy monolithic registry after validation.",
+  "registryType": "knowledge-engine-v2",
+  "modules": [
+    {"id":"dashboard","name":"Dashboard","category":"Core","status":"active","entry":"/studio/","manifest":"/studio/modules/dashboard/module.json","keywords":["studio","dashboard","hub","navigation"]},
+    {"id":"studio-diagnostics","name":"System Diagnostics","category":"Studio Operations","status":"active","entry":"/studio/diagnostics/","manifest":"/studio/modules/studio-diagnostics/module.json","keywords":["diagnostics","health","indexes","runtime","report"]},
+    {"id":"runtime-visualizer","name":"Runtime Visualizer","category":"Studio Operations","status":"active","entry":"/studio/runtime/","manifest":"/studio/modules/runtime-visualizer/module.json","keywords":["runtime","loader","manifest","boot phases"]},
+    {"id":"databytesprites","name":"DataByteSprites","category":"Flagship Project","status":"active","entry":"/databyte-admin-briefing.html","manifest":"/studio/modules/databytesprites/module.json","keywords":["databytesprites","scanner","sprites","battle","capture","codex"]},
+    {"id":"creator-suite","name":"Creator Suite","category":"Production Tools","status":"active","entry":"/tools.html","manifest":"/studio/modules/creator-suite/module.json","keywords":["tools","draw","gif","sprites","promptcraft"]},
+    {"id":"technology-vault","name":"Technology Vault","category":"Knowledge Base","status":"active","entry":"/technology-vault/","manifest":"/studio/modules/technology-vault/module.json","keywords":["technology","licenses","offline first","local ai"]},
+    {"id":"knowledge-engine","name":"Knowledge Engine","category":"Studio Intelligence","status":"active-foundation","entry":"/studio/knowledge/index.v2.json","manifest":"/studio/knowledge/index.v2.json","keywords":["knowledge","search","index","registry"]},
+    {"id":"asset-library","name":"Asset Library","category":"Production Assets","status":"active-foundation","entry":"/studio/assets/index.json","manifest":"/studio/assets/index.json","keywords":["assets","sprites","images","library"]},
+    {"id":"project-dependency-graph","name":"Project Dependency Graph","category":"Studio Intelligence","status":"active-foundation","entry":"/studio/graph/index.json","manifest":"/studio/graph/index.json","keywords":["graph","dependencies","relationships"]},
+    {"id":"simulation-lab","name":"Simulation Lab","category":"Experimentation","status":"planned","entry":"#simulation-lab","manifest":"/studio/modules/simulation-lab/module.json","keywords":["simulation","sandbox","testing"]}
+  ],
+  "indexes": [
+    {"id":"studio-modules","recordType":"module","name":"Studio Module Index","path":"/studio/knowledge/index.v2.json","collection":"modules","status":"active","description":"Primary v2 Studio module registry."},
+    {"id":"studio-operations","recordType":"module","name":"Studio Operations Index","path":"/studio/knowledge/studio-operations.json","collection":"modules","status":"active","description":"Operations modules such as diagnostics and runtime visualizer."},
+    {"id":"asset-library","recordType":"asset","name":"Asset Library Index","path":"/studio/assets/index.json","collection":"assets","status":"active","description":"Offline-first catalog of VoltanLabs assets."},
+    {"id":"technology-vault","recordType":"technology","name":"Technology Vault Index","path":"/studio/technology/index.json","collection":"technologies","status":"active","description":"Offline-first technology catalog."},
+    {"id":"project-dependency-graph","recordType":"graph","name":"Project Dependency Graph","path":"/studio/graph/index.json","collection":"nodes,edges","status":"active","description":"Studio project dependency graph."},
+    {"id":"databytesprites-project-index","recordType":"databytesprites","name":"DataByteSprites Project Index","path":"/studio/databytesprites/index.json","collection":"systems","status":"active","description":"DataByteSprites systems and priorities."},
+    {"id":"databytesprites-source-files","recordType":"sourceFile","name":"DataByteSprites Source Files Index","path":"/studio/databytesprites/source-files.json","collection":"sourceFiles","status":"active","description":"DataByteSprites source ownership."},
+    {"id":"databytesprites-species-index","recordType":"spriteSpecies","name":"DataByteSprites Sprite Species Index","path":"/studio/databytesprites/species.json","collection":"species","status":"active","description":"DataByteSprites species metadata."},
+    {"id":"databytesprites-lore-index","recordType":"lore","name":"DataByteSprites Lore Index","path":"/studio/databytesprites/lore.json","collection":"lore","status":"active","description":"DataByteSprites lore and timeline."},
+    {"id":"databytesprites-mechanics-graph","recordType":"mechanicsGraph","name":"DataByteSprites Mechanics Graph","path":"/studio/databytesprites/mechanics-graph.json","collection":"nodes,edges","status":"active","description":"Gameplay relationship graph."},
+    {"id":"databytesprites-move-index","recordType":"move","name":"DataByteSprites Move Index","path":"/studio/databytesprites/moves.json","collection":"moves","status":"active","description":"Move list records."},
+    {"id":"databytesprites-type-chart","recordType":"typeChart","name":"DataByteSprites Type Chart","path":"/studio/databytesprites/type-chart.json","collection":"rules","status":"active","description":"Type effectiveness rules."},
+    {"id":"databytesprites-ability-index","recordType":"ability","name":"DataByteSprites Ability Index","path":"/studio/databytesprites/abilities.json","collection":"abilities","status":"active","description":"Passive ability records."},
+    {"id":"runtime-load-order","recordType":"runtime","name":"Runtime Load Order","path":"/studio/runtime/load-order.json","collection":"modules,phases","status":"active","description":"Manifest-driven Data Discovery boot order."}
+  ],
+  "recordTypes": ["module","asset","technology","graph","databytesprites","sourceFile","spriteSpecies","lore","mechanicsGraph","move","typeChart","ability","runtime"],
+  "searchFields": ["id","name","category","status","entry","manifest","keywords","dependencies","description"],
+  "migration": {
+    "from": "/studio/knowledge/index.json",
+    "strategy": "parallel-v2-registry",
+    "safeToDeleteLegacy": false,
+    "nextSteps": ["point Studio search at v2", "validate diagnostics", "archive legacy registry after confirmation"]
+  }
+}
