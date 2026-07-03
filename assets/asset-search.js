@@ -2,7 +2,7 @@
 // Offline-first Studio-wide global search driven by the Knowledge Engine index registry.
 
 (function () {
-  const KNOWLEDGE_INDEX_URL = "/studio/knowledge/index.json";
+  const KNOWLEDGE_INDEX_URL = "/studio/knowledge/index.v2.json";
 
   function asArray(value) { return Array.isArray(value) ? value : []; }
   function compact(value) { return value.filter(Boolean); }
@@ -40,7 +40,8 @@
     mechanicsGraph(item, context) { return recordAdapters.graph(item, context); },
     move(item, context) { return makeRecord("move", item, context, { id: item.id, title: item.name, category: item.moveType, description: item.description, keywords: compact([...(item.elements || []), ...(item.tags || []), "power " + item.power, "accuracy " + item.accuracy]), dependencies: item.learnedBy, version: item.version }); },
     typeChart(item, context) { return makeRecord("typeChart", item, context, { id: item.attackingElement, title: item.attackingElement + " Type Rule", category: "type-rule", description: item.notes, keywords: compact([...(item.strongAgainst || []), ...(item.weakAgainst || []), ...(item.captureBonusAgainst || [])]), dependencies: compact([...(item.strongAgainst || []), ...(item.weakAgainst || [])]) }); },
-    ability(item, context) { return makeRecord("ability", item, context, { id: item.id, title: item.name, category: item.abilityType, description: item.description, keywords: compact([...(item.tags || []), item.trigger]), dependencies: item.assignedTo, version: item.version }); }
+    ability(item, context) { return makeRecord("ability", item, context, { id: item.id, title: item.name, category: item.abilityType, description: item.description, keywords: compact([...(item.tags || []), item.trigger]), dependencies: item.assignedTo, version: item.version }); },
+    runtime(item, context) { return makeRecord("runtime", item, context, { id: item.id, title: item.label || item.id, category: item.phase || "runtime", project: "DataByteSprites", status: item.required ? "required" : "optional", description: item.script, keywords: compact([item.phase, item.failureBehavior, ...(item.emits || [])]), dependencies: item.requires, location: item.script, preview: context.indexPath }); }
   };
 
   function recordKey(record) { return record.recordType + ":" + record.id + ":" + (record.sourceIndex || "unknown"); }
@@ -48,7 +49,7 @@
   function searchableText(record) { return compact([record.recordType, record.id, record.title, record.category, record.project, record.status, record.description, record.location, record.preview, record.version, record.sourceIndex, ...asArray(record.keywords), ...asArray(record.dependencies)]).map(normalize).join(" "); }
 
   function recordTypeLabel(type) {
-    const labels = { asset: "Asset", module: "Module", technology: "Technology", graph: "Graph", databytesprites: "DataByteSprites", sourceFile: "Source", spriteSpecies: "Species", lore: "Lore", mechanicsGraph: "Mechanics", move: "Move", typeChart: "Type", ability: "Ability", document: "Document" };
+    const labels = { asset: "Asset", module: "Module", technology: "Technology", graph: "Graph", databytesprites: "DataByteSprites", sourceFile: "Source", spriteSpecies: "Species", lore: "Lore", mechanicsGraph: "Mechanics", move: "Move", typeChart: "Type", ability: "Ability", runtime: "Runtime", document: "Document" };
     return labels[type] || "Record";
   }
 
