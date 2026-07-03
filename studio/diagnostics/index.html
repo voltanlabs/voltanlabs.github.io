@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diagnostics - VoltanLabs Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#1A1A1A] text-white min-h-screen">
+  <main class="max-w-7xl mx-auto px-6 py-12">
+    <p class="text-[#FFD700] uppercase tracking-[0.25em] text-xs mb-3">VoltanLabs Studio</p>
+    <h1 class="text-4xl md:text-6xl font-bold text-[#007BFF]">System Diagnostics</h1>
+    <p class="text-gray-300 mt-4 max-w-3xl">Mission control for the offline-first Studio indexes, runtime manifest, and DataByteSprites content integrity.</p>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href="/studio/" class="px-4 py-2 rounded-xl bg-[#007BFF] font-bold">Back to Studio</a>
+      <a href="/studio/runtime/" class="px-4 py-2 rounded-xl border border-[#FFD700] text-[#FFD700] font-bold">Runtime Visualizer</a>
+      <button id="copyReport" class="px-4 py-2 rounded-xl border border-white/20 font-bold">Copy Report</button>
+    </div>
+    <section id="summary" class="grid md:grid-cols-4 gap-4 mt-10"></section>
+    <section id="diagnostics" class="grid lg:grid-cols-2 gap-5 mt-8"></section>
+  </main>
+  <script>
+    const sources = [
+      { id: 'knowledge', label: 'Knowledge Engine', path: '/studio/knowledge/index.json', count: data => (data.indexes || []).length, kind: 'registry' },
+      { id: 'assets', label: 'Asset Library', path: '/studio/assets/index.json', count: data => (data.assets || []).length, kind: 'assets' },
+      { id: 'technology', label: 'Technology Vault', path: '/studio/technology/index.json', count: data => (data.technologies || []).length, kind: 'technology' },
+      { id: 'graph', label: 'Project Dependency Graph', path: '/studio/graph/index.json', count: data => (data.nodes || []).length + (data.edges || []).length, kind: 'graph' },
+      { id: 'dbs-systems', label: 'DataByteSprites Systems', path: '/studio/databytesprites/index.json', count: data => (data.systems || []).length, kind: 'systems' },
+      { id: 'dbs-source', label: 'DBS Source Files', path: '/studio/databytesprites/source-files.json', count: data => (data.sourceFiles || []).length, kind: 'source' },
+      { id: 'dbs-species', label: 'DBS Species', path: '/studio/databytesprites/species.json', count: data => (data.species || []).length, kind: 'species' },
+      { id: 'dbs-lore', label: 'DBS Lore', path: '/studio/databytesprites/lore.json', count: data => (data.lore || []).length, kind: 'lore' },
+      { id: 'dbs-mechanics', label: 'DBS Mechanics Graph', path: '/studio/databytesprites/mechanics-graph.json', count: data => (data.nodes || []).length + (data.edges || []).length, kind: 'mechanics' },
+      { id: 'dbs-moves', label: 'DBS Moves', path: '/studio/databytesprites/moves.json', count: data => (data.moves || []).length, kind: 'moves' },
+      { id: 'dbs-types', label: 'DBS Type Chart', path: '/studio/databytesprites/type-chart.json', count: data => (data.rules || []).length, kind: 'types' },
+      { id: 'dbs-abilities', label: 'DBS Abilities', path: '/studio/databytesprites/abilities.json', count: data => (data.abilities || []).length, kind: 'abilities' },
+      { id: 'runtime', label: 'Runtime Manifest', path: '/studio/runtime/load-order.json', count: data => (data.modules || []).length, kind: 'runtime' }
+    ];
+
+    let latestReport = [];
+
+    async function loadJson(source) {
+      const started = performance.now();
+      try {
+        const response = await fetch(source.path, { cache: 'no-store' });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const data = await response.json();
+        return { source, ok: true, data, count: source.count(data), ms: Math.round(performance.now() - started), issues: validate(source, data) };
+      } catch (error) {
+        return { source, ok: false, data: null, count: 0, ms: Math.round(performance.now() - started), issues: [String(error)] };
+      }
+    }
+
+    function validate(source, data) {
+      const issues = [];
+      if (!data.schemaVersion) issues.push('Missing schemaVersion');
+      if (source.kind === 'species') {
+        (data.species || []).forEach(item => { if (!item.id || !item.name) issues.push('Species missing id/name'); if (!item.battleStats) issues.push(item.name + ' missing battleStats'); });
+      }
+      if (source.kind === 'moves') {
+        (data.moves || []).forEach(item => { if (!item.id || !item.name) issues.push('Move missing id/name'); if (!Array.isArray(item.learnedBy)) issues.push(item.name + ' missing learnedBy'); });
+      }
+      if (source.kind === 'types') {
+        (data.rules || []).forEach(item => { if (!item.attackingElement) issues.push('Type rule missing attackingElement'); });
+      }
+      if (source.kind === 'abilities') {
+        (data.abilities || []).forEach(item => { if (!item.id || !item.name) issues.push('Ability missing id/name'); if (!Array.isArray(item.assignedTo)) issues.push(item.name + ' missing assignedTo'); });
+      }
+      if (source.kind === 'runtime') {
+        const ids = new Set((data.modules || []).map(item => item.id));
+        (data.modules || []).forEach(item => (item.requires || []).forEach(req => { if (!ids.has(req)) issues.push(item.id + ' requires missing module ' + req); }));
+      }
+      return [...new Set(issues)];
+    }
+
+    function statusClass(result) {
+      if (!result.ok) return 'border-red-400/50 bg-red-950/30';
+      if (result.issues.length) return 'border-yellow-300/50 bg-yellow-950/20';
+      return 'border-emerald-300/40 bg-emerald-950/20';
+    }
+
+    function render(results) {
+      latestReport = results;
+      const total = results.length;
+      const passing = results.filter(r => r.ok && !r.issues.length).length;
+      const warnings = results.filter(r => r.ok && r.issues.length).length;
+      const failed = results.filter(r => !r.ok).length;
+      document.getElementById('summary').innerHTML = [
+        ['Sources', total], ['Passing', passing], ['Warnings', warnings], ['Failed', failed]
+      ].map(([label, value]) => `<div class="rounded-2xl border border-white/10 bg-[#2C3E50] p-5"><p class="text-gray-300 text-sm">${label}</p><strong class="text-3xl text-[#FFD700]">${value}</strong></div>`).join('');
+      document.getElementById('diagnostics').innerHTML = results.map(result => `<article class="rounded-2xl border ${statusClass(result)} p-5"><div class="flex justify-between gap-3"><div><p class="text-[#FFD700] text-xs uppercase tracking-wide">${result.source.kind}</p><h2 class="text-xl font-bold mt-1">${result.source.label}</h2></div><span class="text-xs rounded-full border border-white/20 px-3 py-1 h-fit">${result.ok ? 'loaded' : 'failed'}</span></div><p class="text-gray-300 text-sm mt-3">${result.source.path}</p><p class="text-gray-400 text-xs mt-2">Records: ${result.count} • ${result.ms}ms</p>${result.issues.length ? `<div class="mt-4 text-sm text-yellow-100"><strong>Issues</strong><ul class="list-disc ml-5 mt-2">${result.issues.slice(0, 8).map(issue => `<li>${issue}</li>`).join('')}</ul></div>` : '<p class="text-emerald-200 text-sm mt-4">No issues detected.</p>'}</article>`).join('');
+    }
+
+    async function init() {
+      const results = await Promise.all(sources.map(loadJson));
+      render(results);
+    }
+
+    document.getElementById('copyReport').addEventListener('click', async () => {
+      const report = JSON.stringify({ generatedAt: new Date().toISOString(), results: latestReport.map(r => ({ id: r.source.id, label: r.source.label, ok: r.ok, count: r.count, issues: r.issues })) }, null, 2);
+      await navigator.clipboard.writeText(report);
+      document.getElementById('copyReport').textContent = 'Copied';
+    });
+
+    init();
+  </script>
+</body>
+</html>
