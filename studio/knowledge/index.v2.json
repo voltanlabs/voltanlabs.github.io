@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "2.0.0",
+  "generatedBy": "VoltanLabs Studio Knowledge Engine v2",
+  "description": "Live modular Knowledge Engine registry for VoltanLabs Studio.",
+  "registryType": "knowledge-engine-v2",
+  "modules": [
+    {"id":"dashboard","name":"Dashboard","category":"Core","status":"active","entry":"/studio/","manifest":"/studio/modules/dashboard/module.json","keywords":["studio","dashboard","hub","navigation"]},
+    {"id":"studio-diagnostics","name":"System Diagnostics","category":"Studio Operations","status":"active","entry":"/studio/diagnostics/","manifest":"/studio/modules/studio-diagnostics/module.json","keywords":["diagnostics","health","indexes","runtime","report"]},
+    {"id":"runtime-visualizer","name":"Runtime Visualizer","category":"Studio Operations","status":"active","entry":"/studio/runtime/","manifest":"/studio/modules/runtime-visualizer/module.json","keywords":["runtime","loader","manifest","boot phases"]},
+    {"id":"databytesprites","name":"DataByteSprites","category":"Flagship Project","status":"active","entry":"/databyte-admin-briefing.html","manifest":"/studio/modules/databytesprites/module.json","keywords":["databytesprites","scanner","sprites","battle","capture","codex"]},
+    {"id":"creator-suite","name":"Creator Suite","category":"Production Tools","status":"active","entry":"/tools.html","manifest":"/studio/modules/creator-suite/module.json","keywords":["tools","draw","gif","sprites","promptcraft"]},
+    {"id":"technology-vault","name":"Technology Vault","category":"Knowledge Base","status":"active","entry":"/technology-vault/","manifest":"/studio/modules/technology-vault/module.json","keywords":["technology","licenses","offline first","local ai"]},
+    {"id":"knowledge-engine","name":"Knowledge Engine","category":"Studio Intelligence","status":"active-foundation","entry":"/studio/knowledge/index.v2.json","manifest":"/studio/knowledge/index.v2.json","keywords":["knowledge","search","index","registry"]},
+    {"id":"asset-library","name":"Asset Library","category":"Production Assets","status":"active-foundation","entry":"#asset-library","manifest":"/studio/assets/index.json","keywords":["assets","sprites","images","library"]},
+    {"id":"simulation-lab","name":"Simulation Lab","category":"Experimentation","status":"planned","entry":"#simulation-lab","manifest":"/studio/modules/simulation-lab/module.json","keywords":["simulation","sandbox","testing"]}
+  ],
+  "indexes": [
+    {"id":"studio-modules","recordType":"module","name":"Studio Module Index","path":"/studio/knowledge/index.v2.json","collection":"modules","status":"active","description":"Primary live Studio module registry."},
+    {"id":"studio-operations","recordType":"module","name":"Studio Operations Index","path":"/studio/knowledge/studio-operations.json","collection":"modules","status":"active","description":"Operations modules such as diagnostics and runtime visualizer."}
+  ],
+  "recordTypes": ["module"],
+  "searchFields": ["id","name","category","status","entry","manifest","keywords","dependencies","description"],
+  "migration": {"from":"/studio/knowledge/index.json","strategy":"live-v2-registry","safeToDeleteLegacy":false}
+}
