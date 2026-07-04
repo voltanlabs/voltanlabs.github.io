@@ -49,15 +49,16 @@ Resolved in Phase 2.1 so far:
 - Phase 2.0 Studio Intelligence is marked complete.
 - The six new diagnostics modules are listed in README.
 - Architecture and repository maps now exist.
-- README now links the audit, architecture map, repository map, diagnostics reference, and validation reference.
+- README now links the audit, architecture map, repository map, diagnostics reference, validation reference, Knowledge Engine reference, module index, roadmap, and release notes.
 - Diagnostics and validation now have dedicated technical references.
+- Knowledge Engine and Module Index shells are active.
+- Roadmap and Phase 2 release notes are active.
 
 Remaining documentation updates:
 
-- Add a Knowledge Engine reference.
-- Add a module index.
-- Add a standalone roadmap.
-- Add Phase 2 release notes.
+- Expand `KNOWLEDGE_ENGINE.md` with full registry/index conventions.
+- Expand `MODULE_INDEX.md` with full module catalog details.
+- Continue updating all maps as new systems are added.
 
 ## Active Architecture Map
 
@@ -108,6 +109,10 @@ See `REPOSITORY_MAP.md` for directory status, ownership, and documentation mappi
 
 See `DIAGNOSTICS.md` and `VALIDATION.md` for technical references covering the Studio Control Center and validation rules.
 
+See `KNOWLEDGE_ENGINE.md` and `MODULE_INDEX.md` for registry and module documentation.
+
+See `ROADMAP.md` and `RELEASE_NOTES_PHASE2.md` for planning and release history.
+
 ## Phase 2.1 Documentation Deliverables
 
 | Document | Path | Status |
@@ -118,10 +123,10 @@ See `DIAGNOSTICS.md` and `VALIDATION.md` for technical references covering the S
 | Repository Map | `REPOSITORY_MAP.md` | Active |
 | Diagnostics Reference | `DIAGNOSTICS.md` | Active |
 | Validation Reference | `VALIDATION.md` | Active |
-| Roadmap | `ROADMAP.md` | Planned |
-| Knowledge Engine Reference | `KNOWLEDGE_ENGINE.md` | Planned |
-| Module Index | `MODULE_INDEX.md` | Planned |
-| Release Notes | `RELEASE_NOTES_PHASE2.md` | Planned |
+| Knowledge Engine Reference | `KNOWLEDGE_ENGINE.md` | Active shell |
+| Module Index | `MODULE_INDEX.md` | Active shell |
+| Roadmap | `ROADMAP.md` | Active |
+| Release Notes | `RELEASE_NOTES_PHASE2.md` | Active |
 
 ## Immediate Findings
 
@@ -130,14 +135,14 @@ See `DIAGNOSTICS.md` and `VALIDATION.md` for technical references covering the S
 3. Validation now has an explicit reference describing rules, source registry expectations, report output, and best practices.
 4. DataByteSprites has a strong metadata foundation, but its runtime/gameplay systems still need deeper integration with the indexes.
 5. Creator Suite, Asset Library, Technology Vault, and Simulation Lab need clearer documentation boundaries.
-6. The repository is ready for continued documentation reference work before any new feature expansion.
+6. The repository is ready for continued documentation expansion before any new feature expansion.
 
 ## Recommended Next Actions
 
-1. Add `KNOWLEDGE_ENGINE.md` documenting registry, indexes, ID conventions, and search fields.
-2. Add `MODULE_INDEX.md` documenting each Studio module and status.
-3. Add `ROADMAP.md` and `RELEASE_NOTES_PHASE2.md`.
-4. Continue updating README, architecture, and repository maps as each reference document is added.
+1. Expand `KNOWLEDGE_ENGINE.md` documenting registry, indexes, ID conventions, and search fields.
+2. Expand `MODULE_INDEX.md` documenting each Studio module and status.
+3. Begin Phase 2.2 planning for Predictive Diagnostics.
+4. Continue updating README, architecture, and repository maps as each reference document is expanded.
 
 ## Phase 2.1 Acceptance Criteria
 
