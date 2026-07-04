@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.1.1",
+  "schemaVersion": "0.1.2",
   "generatedBy": "VoltanLabs Studio DataByteSprites Mechanics Graph",
   "description": "Offline-first gameplay relationship graph connecting DataByteSprites systems, source owners, sprite species, lore records, assets, and future runtime integrations.",
   "graphModel": {
@@ -32,6 +32,14 @@
     {"id":"src-databyte-standalone-app","label":"databyte-standalone-app.js","nodeType":"sourceFile","status":"rebuilt","category":"scanner-runtime","path":"/assets/js/databyte-standalone-app.js","description":"Core Scanner OS state and rendering owner."},
     {"id":"src-dd-battle-os-v2","label":"dd-battle-os-v2.js","nodeType":"sourceFile","status":"rebuilt","category":"battle-runtime","path":"/assets/js/dd-battle-os-v2.js","description":"Current battle flow owner."},
     {"id":"src-dd-dex-progress","label":"dd-dex-progress.js","nodeType":"sourceFile","status":"rebuilt","category":"dex-runtime","path":"/assets/js/dd-dex-progress.js","description":"Dex progress UI owner."},
+    {"id":"src-databyte-discovery-journal","label":"databyte-discovery-journal.js","nodeType":"sourceFile","status":"legacy-reference","category":"journal-runtime","path":"/assets/js/databyte-discovery-journal.js","description":"Legacy journal reference used by the future Scanner OS journal rebuild."},
+    {"id":"src-databyte-missions","label":"databyte-missions.js","nodeType":"sourceFile","status":"legacy-reference","category":"missions-runtime","path":"/assets/js/databyte-missions.js","description":"Legacy missions reference used by the future Scanner OS missions rebuild."},
+    {"id":"src-databyte-admin-console","label":"databyte-admin-console.js","nodeType":"sourceFile","status":"legacy-reference","category":"admin-runtime","path":"/assets/js/databyte-admin-console.js","description":"Legacy admin console reference used by the future Scanner OS admin rebuild."},
+    {"id":"src-databyte-discovery-progression","label":"databyte-discovery-progression.js","nodeType":"sourceFile","status":"legacy-reference","category":"progression-runtime","path":"/assets/js/databyte-discovery-progression.js","description":"Legacy progression reference used by the future Scanner OS progression rebuild."},
+    {"id":"future-dd-journal-os","label":"dd-journal-os.js","nodeType":"futureSystem","status":"planned","category":"journal","path":"#future-dd-journal-os","description":"Future Scanner OS journal rebuild target that should consume lore and discovery history."},
+    {"id":"future-dd-missions-os","label":"dd-missions-os.js","nodeType":"futureSystem","status":"planned","category":"missions","path":"#future-dd-missions-os","description":"Future Scanner OS missions rebuild target for objectives and progression tasks."},
+    {"id":"future-dd-admin-os","label":"dd-admin-os.js","nodeType":"futureSystem","status":"planned","category":"admin","path":"#future-dd-admin-os","description":"Future Scanner OS admin rebuild target for profile, party, arena, missions, inventory, DataByteDex, evolution, signals, and research."},
+    {"id":"future-dd-progression-os","label":"dd-progression-os.js","nodeType":"futureSystem","status":"planned","category":"progression","path":"#future-dd-progression-os","description":"Future Scanner OS XP/rank rebuild target for scanner progression UI."},
     {"id":"leovolt","label":"Leovolt","nodeType":"spriteSpecies","status":"canon","category":"species","path":"/studio/databytesprites/species.json#leovolt","description":"Rogue starter and first-capture sprite."},
     {"id":"screensavior-line","label":"Screensavior Line","nodeType":"spriteSpecies","status":"design-seed","category":"species-line","path":"/studio/databytesprites/species.json#screensavior","description":"Screensavior to Monitor Man screen-guardian line."},
     {"id":"displaydevil-line","label":"DisplayDevil Line","nodeType":"spriteSpecies","status":"design-seed","category":"species-line","path":"/studio/databytesprites/species.json#displaydevil","description":"DisplayDevil to Mirror Master reflection/trickster line."},
@@ -77,11 +85,20 @@
     {"source":"dbs-missions","target":"lore-index","edgeType":"futureHook","reason":"Missions can be seeded from lore events and timeline beats."},
     {"source":"source-files-index","target":"dbs-scanner-shell","edgeType":"documents","reason":"Source-file ownership documents which file owns the scanner."},
     {"source":"source-files-index","target":"dbs-battle-system","edgeType":"documents","reason":"Source-file ownership documents battle runtime ownership."},
-    {"source":"source-files-index","target":"dbs-dex-progress","edgeType":"documents","reason":"Source-file ownership documents Dex progress runtime ownership."}
+    {"source":"source-files-index","target":"dbs-dex-progress","edgeType":"documents","reason":"Source-file ownership documents Dex progress runtime ownership."},
+    {"source":"future-dd-journal-os","target":"dbs-journal","edgeType":"implements","reason":"The future journal OS module is the rebuild target for the journal system."},
+    {"source":"future-dd-journal-os","target":"src-databyte-discovery-journal","edgeType":"references","reason":"The future journal rebuild should use the legacy journal script as a behavior reference."},
+    {"source":"future-dd-missions-os","target":"dbs-missions","edgeType":"implements","reason":"The future missions OS module is the rebuild target for scanner objectives."},
+    {"source":"future-dd-missions-os","target":"src-databyte-missions","edgeType":"references","reason":"The future missions rebuild should use the legacy missions script as a behavior reference."},
+    {"source":"future-dd-admin-os","target":"dbs-admin-console","edgeType":"implements","reason":"The future admin OS module is the rebuild target for the admin console feature set."},
+    {"source":"future-dd-admin-os","target":"src-databyte-admin-console","edgeType":"references","reason":"The future admin rebuild should use the legacy admin console script as a behavior reference."},
+    {"source":"future-dd-progression-os","target":"dbs-progression-rank","edgeType":"implements","reason":"The future progression OS module is the rebuild target for XP/rank scanner progression."},
+    {"source":"future-dd-progression-os","target":"src-databyte-discovery-progression","edgeType":"references","reason":"The future progression rebuild should use the legacy progression script as a behavior reference."}
   ],
   "derivedViews": {
     "coreRuntimeLoop": ["dbs-scanner-shell", "dbs-encounter-discovery", "dbs-battle-system", "dbs-capture-flow", "dbs-dex-progress", "dbs-xp-rewards"],
     "contentInputs": ["species-index", "lore-index", "source-files-index"],
+    "futureScannerTargets": ["future-dd-journal-os", "future-dd-missions-os", "future-dd-admin-os", "future-dd-progression-os"],
     "nextRuntimeIntegrations": ["capture-pool-integration", "battle-balance-pass", "dex-renderer-integration"],
     "highestRiskGaps": [
       {"id":"party-battle-gap","summary":"Party management exists but still needs real battle integration."},
