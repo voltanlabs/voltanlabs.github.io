@@ -6,17 +6,19 @@ The project has grown from a collection of browser tools into a modular Studio a
 
 ## Current Focus
 
-The current milestone is **Phase 1: Validation Engine**.
+**Phase 1.2: Repository Integrity & Actionable Diagnostics is complete as a foundation.**
 
-The goal is to make the repository start validating itself before more gameplay systems are added. Studio should be able to detect missing IDs, broken references, invalid dependencies, duplicate records, runtime load-order issues, and documentation drift.
+The current handoff is **Phase 2: Runtime Intelligence Dashboard**. Phase 2 should connect runtime health, runtime load order, bridge checks, and DataByteSprites runtime dependencies to the repository health report created by Phase 1.2.
 
 ## Live Studio Areas
 
 - `/studio/` — VoltanLabs Studio shell and global search UI.
-- `/studio/diagnostics/` — live diagnostics and source checks.
+- `/studio/diagnostics/` — live Repository Health Dashboard and source checks.
 - `/studio/runtime/` — runtime load-order visualizer.
 - `/studio/knowledge/index.v2.json` — Knowledge Engine v2 registry.
 - `/studio/diagnostics/sources.json` — diagnostics source registry.
+- `/studio/validation/rules.json` — validation rules manifest.
+- `/studio/validation/phase-1.2-completion.json` — Phase 1.2 completion and Phase 2 handoff manifest.
 
 ## Architecture Overview
 
@@ -34,9 +36,13 @@ VoltanLabs Studio
 │   └── Common search model
 ├── Diagnostics
 │   ├── Source registry
-│   ├── Runtime manifest checks
-│   ├── Index availability checks
-│   └── Validation Engine foundation
+│   ├── Validation rules
+│   ├── Repository Integrity Engine
+│   ├── Repository Health Dashboard
+│   ├── Dependency Explorer
+│   ├── Knowledge coverage metrics
+│   ├── Documentation drift validation
+│   └── Actionable repair suggestions
 ├── Runtime System
 │   ├── Load-order manifest
 │   ├── Runtime loader
@@ -57,7 +63,7 @@ VoltanLabs Studio
 
 ### Studio Foundation
 
-Status: nearly complete.
+Status: complete foundation.
 
 - Studio shell published to the live `main` branch.
 - Module registry is live.
@@ -70,7 +76,7 @@ Status: nearly complete.
 
 ### DataByteSprites Knowledge Base
 
-Status: nearly complete.
+Status: complete foundation.
 
 Live indexes include:
 
@@ -97,39 +103,70 @@ Live runtime files include:
 
 The current runtime work focuses on making boot order, bridge health, and DataByteSprites runtime dependencies visible to the Studio.
 
+### Phase 1.2 Repository Integrity Engine
+
+Status: complete foundation.
+
+Phase 1.2 upgraded Diagnostics from basic source checks into a repository-wide architecture analyzer.
+
+Completed capabilities:
+
+- Repository-wide ID graph.
+- Cross-index validation.
+- Duplicate ID detection.
+- Orphan record detection.
+- Runtime dependency validation.
+- Mechanics graph validation.
+- Knowledge coverage metrics.
+- Dependency Explorer.
+- Source-aware findings.
+- Actionable repair suggestions.
+- Documentation drift validation.
+- Repository Health Dashboard.
+
+The completion manifest lives at `studio/validation/phase-1.2-completion.json`.
+
 ## Roadmap
 
 ### Phase 1 — Validation Engine
 
-Status: current phase.
+Status: complete foundation.
 
-Build a reusable validation layer that can inspect the Studio registry, all registered indexes, runtime manifests, mechanics graph relationships, and source ownership maps.
+Built a reusable validation layer that can inspect the Studio registry, all registered indexes, runtime manifests, mechanics graph relationships, source ownership maps, documentation drift, and milestone handoff manifests.
 
-Validation goals:
+Validation outputs:
 
-- Detect missing IDs.
-- Detect duplicate IDs.
-- Detect invalid dependencies.
-- Detect broken mechanics graph edges.
-- Detect orphaned records.
-- Detect missing schema versions.
-- Detect invalid runtime load order.
-- Detect missing runtime scripts.
-- Produce a single Studio health report.
+- Missing IDs.
+- Duplicate IDs.
+- Invalid dependencies.
+- Broken mechanics graph edges.
+- Orphaned records.
+- Missing schema versions.
+- Invalid runtime load order.
+- Missing runtime scripts.
+- Knowledge coverage metrics.
+- Dependency Explorer edges.
+- Actionable repair suggestions.
+- Documentation drift warnings.
+- Single Studio health report.
 
 ### Phase 2 — Runtime Intelligence Dashboard
 
-Status: planned.
+Status: next phase.
 
 Turn Diagnostics and Runtime Visualizer into a live development dashboard that reports:
 
 - Studio health score.
 - Knowledge integrity.
 - Runtime modules loaded.
+- Runtime load-order status.
+- Runtime bridge status.
 - Broken references.
 - DataByteSprites index coverage.
-- Runtime bridge status.
 - Highest-risk gaps.
+- Phase 1.2 validation report integration.
+
+Recommended first build: connect runtime visualizer output to `window.VOLTAN_VALIDATION_REPORT` so runtime health and repository health can be viewed together.
 
 ### Phase 3 — DataByteSprites Runtime Integration
 
@@ -179,4 +216,4 @@ Example goals:
 
 ## Current Highest-Value Task
 
-Finish **Phase 1: Validation Engine** by adding reusable validation rules and wiring them into Diagnostics so the Studio can automatically find broken cross-index references instead of relying on manual audits.
+Begin **Phase 2: Runtime Intelligence Dashboard** by connecting runtime status, runtime bridge checks, and runtime load order into the Repository Health Dashboard created by Phase 1.2.
