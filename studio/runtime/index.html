@@ -1,11 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Runtime Visualizer - VoltanLabs Studio</title><script src="https://cdn.tailwindcss.com"></script></head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Runtime Visualizer - VoltanLabs Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
 <body class="bg-[#1A1A1A] text-white min-h-screen">
   <main class="max-w-6xl mx-auto px-6 py-12">
-    <p class="text-[#FFD700] uppercase tracking-[0.25em] text-xs mb-3">VoltanLabs Studio</p><h1 class="text-4xl md:text-6xl font-bold text-[#007BFF]">Runtime Visualizer</h1><p class="text-gray-300 mt-4 max-w-3xl">Manifest-driven view of Data Discovery boot phases, runtime modules, dependencies, and failure behavior.</p><div class="mt-6 flex gap-3 flex-wrap"><a href="/studio/" class="px-4 py-2 rounded-xl bg-[#007BFF] font-bold">Back to Studio</a><a href="/studio/diagnostics/" class="px-4 py-2 rounded-xl border border-[#FFD700] text-[#FFD700] font-bold">Diagnostics</a></div><section id="runtimeOutput" class="grid gap-5 mt-10"></section>
+    <p class="text-[#FFD700] uppercase tracking-[0.25em] text-xs mb-3">VoltanLabs Studio</p>
+    <h1 class="text-4xl md:text-6xl font-bold text-[#007BFF]">Runtime Visualizer</h1>
+    <p class="text-gray-300 mt-4 max-w-3xl">Phase 2 Runtime Intelligence view of Data Discovery boot phases, runtime modules, dependencies, session events, and failure behavior.</p>
+    <div class="mt-6 flex gap-3 flex-wrap">
+      <a href="/studio/" class="px-4 py-2 rounded-xl bg-[#007BFF] font-bold">Back to Studio</a>
+      <a href="/studio/diagnostics/" class="px-4 py-2 rounded-xl border border-[#FFD700] text-[#FFD700] font-bold">Diagnostics</a>
+      <button id="copyRuntimeSession" class="px-4 py-2 rounded-xl border border-white/20 font-bold">Copy Runtime Session</button>
+    </div>
+    <section id="sessionSummary" class="grid md:grid-cols-5 gap-4 mt-10">
+      <div class="rounded-2xl border border-white/10 bg-[#2C3E50] p-5"><p class="text-gray-300 text-sm">Runtime</p><strong class="text-3xl text-[#FFD700]">Loading</strong></div>
+    </section>
+    <section id="runtimeOutput" class="grid gap-5 mt-10"></section>
+    <section id="runtimeSessionEvents" class="grid gap-5 mt-10"></section>
   </main>
+  <script src="/assets/js/studio-runtime-session-monitor.js?v=phase2-build1"></script>
   <script>
-    async function init(){const output=document.getElementById('runtimeOutput');try{const response=await fetch('/studio/runtime/load-order.json',{cache:'no-store'});if(!response.ok)throw new Error('missing manifest');const manifest=await response.json();const phases=(manifest.phases||[]).map(p=>`<article class="rounded-2xl border border-white/10 bg-[#2C3E50] p-5"><p class="text-[#FFD700] text-xs uppercase tracking-wide">Phase</p><h2 class="text-xl font-bold mt-1">${p.id}</h2><p class="text-gray-300 mt-2">${p.description}</p></article>`).join('');const modules=(manifest.modules||[]).map(m=>`<article class="rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-[#FFD700] text-xs uppercase tracking-wide">${m.phase}</p><h2 class="text-xl font-bold mt-1">${m.label}</h2><p class="text-gray-300 text-sm mt-3">${m.script}</p><p class="text-gray-400 text-xs mt-3">Requires: ${(m.requires||[]).join(' • ')||'none'}</p><p class="text-gray-400 text-xs mt-1">Failure: ${m.failureBehavior}</p></article>`).join('');output.innerHTML=`<section><h2 class="text-2xl font-bold mb-4">Boot Phases</h2><div class="grid md:grid-cols-2 gap-4">${phases}</div></section><section><h2 class="text-2xl font-bold mb-4 mt-8">Runtime Modules</h2><div class="grid md:grid-cols-2 gap-4">${modules}</div></section>`;}catch(e){output.innerHTML='<p class="text-yellow-200">Runtime manifest is not published to main yet. The visualizer page is live.</p>';}}init();
+    function escapeHtml(value){return String(value??'').replace(/[&<>"]/g,(char)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[char]));}
+    async function init(){
+      const output=document.getElementById('runtimeOutput');
+      try{
+        const response=await fetch('/studio/runtime/load-order.json',{cache:'no-store'});
+        if(!response.ok)throw new Error('missing manifest');
+        const manifest=await response.json();
+        document.dispatchEvent(new CustomEvent('studio:boot',{detail:{manifestUrl:'/studio/runtime/load-order.json',visualizer:true}}));
+        document.dispatchEvent(new CustomEvent('runtime:manifest-ready',{detail:{manifest}}));
+        const phases=(manifest.phases||[]).map(p=>`<article class="rounded-2xl border border-white/10 bg-[#2C3E50] p-5"><p class="text-[#FFD700] text-xs uppercase tracking-wide">Phase</p><h2 class="text-xl font-bold mt-1">${escapeHtml(p.id)}</h2><p class="text-gray-300 mt-2">${escapeHtml(p.description)}</p></article>`).join('');
+        const modules=(manifest.modules||[]).map(m=>`<article class="rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-[#FFD700] text-xs uppercase tracking-wide">${escapeHtml(m.phase)}</p><h2 class="text-xl font-bold mt-1">${escapeHtml(m.label)}</h2><p class="text-gray-300 text-sm mt-3">${escapeHtml(m.script)}</p><p class="text-gray-400 text-xs mt-3">Requires: ${escapeHtml((m.requires||[]).join(' • ')||'none')}</p><p class="text-gray-400 text-xs mt-1">Failure: ${escapeHtml(m.failureBehavior)}</p></article>`).join('');
+        output.innerHTML=`<section><h2 class="text-2xl font-bold mb-4">Boot Phases</h2><div class="grid md:grid-cols-2 gap-4">${phases}</div></section><section><h2 class="text-2xl font-bold mb-4 mt-8">Runtime Modules</h2><div class="grid md:grid-cols-2 gap-4">${modules}</div></section>`;
+      }catch(e){
+        output.innerHTML='<p class="text-yellow-200">Runtime manifest is not published to main yet. The visualizer page is live.</p>';
+        document.dispatchEvent(new CustomEvent('runtime:failed',{detail:{error:String(e),visualizer:true}}));
+      }
+    }
+    function renderSession(event){
+      const session=event.detail&&event.detail.session||window.VOLTAN_RUNTIME_SESSION;
+      if(!session)return;
+      const summary=document.getElementById('sessionSummary');
+      const events=document.getElementById('runtimeSessionEvents');
+      const cards=[['Status',session.status],['Modules',`${session.summary.loadedModules}/${session.summary.totalModules}`],['Failed',session.summary.failedModules],['Warnings',session.summary.warningModules],['Elapsed',`${session.summary.elapsedMs}ms`]];
+      summary.innerHTML=cards.map(([label,value])=>`<div class="rounded-2xl border border-white/10 bg-[#2C3E50] p-5"><p class="text-gray-300 text-sm">${escapeHtml(label)}</p><strong class="text-3xl text-[#FFD700]">${escapeHtml(value)}</strong></div>`).join('');
+      const rows=session.events.slice(-12).reverse().map(item=>`<li class="border-t border-white/10 py-2"><span class="text-[#FFD700]">${item.elapsedMs}ms</span> ${escapeHtml(item.name)}</li>`).join('');
+      events.innerHTML=`<article class="rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-xs uppercase tracking-wide text-[#FFD700]">Build 1</p><h2 class="text-2xl font-bold text-[#FFD700] mt-1">Runtime Session Monitor</h2><p class="text-gray-300 mt-3">Tracks runtime boot state, module totals, failure count, warning count, elapsed time, and recent runtime events.</p><ul class="mt-4 text-sm">${rows||'<li>No runtime events yet.</li>'}</ul></article>`;
+    }
+    document.addEventListener('runtime:session-updated',renderSession);
+    document.getElementById('copyRuntimeSession').addEventListener('click',async()=>{
+      const monitor=window.VoltanRuntimeSessionMonitor;
+      const payload=monitor?monitor.exportMarkdown():JSON.stringify(window.VOLTAN_RUNTIME_SESSION,null,2);
+      await navigator.clipboard.writeText(payload);
+      document.getElementById('copyRuntimeSession').textContent='Copied';
+    });
+    init();
   </script>
-</body></html>
+</body>
+</html>
