@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "0.1.0",
+  "generatedBy": "VoltanLabs Studio Diagnostics",
+  "description": "Registry of live Studio and DataByteSprites sources that Diagnostics should validate.",
+  "sources": [
+    {"id":"knowledge-v2","label":"Knowledge Engine v2","path":"/studio/knowledge/index.v2.json","kind":"registry","collection":"modules,indexes"},
+    {"id":"studio-operations","label":"Studio Operations","path":"/studio/knowledge/studio-operations.json","kind":"modules","collection":"modules"},
+    {"id":"dbs-species","label":"DataByteSprites Species","path":"/studio/databytesprites/species.json","kind":"species","collection":"species"},
+    {"id":"dbs-lore","label":"DataByteSprites Lore","path":"/studio/databytesprites/lore.json","kind":"lore","collection":"lore"},
+    {"id":"dbs-source-files","label":"DataByteSprites Source Files","path":"/studio/databytesprites/source-files.json","kind":"sourceFile","collection":"sourceFiles"},
+    {"id":"dbs-mechanics-graph","label":"DataByteSprites Mechanics Graph","path":"/studio/databytesprites/mechanics-graph.json","kind":"mechanicsGraph","collection":"nodes,edges"},
+    {"id":"dbs-moves","label":"DataByteSprites Moves","path":"/studio/databytesprites/moves.json","kind":"move","collection":"moves"},
+    {"id":"dbs-type-chart","label":"DataByteSprites Type Chart","path":"/studio/databytesprites/type-chart.json","kind":"typeChart","collection":"rules"},
+    {"id":"dbs-abilities","label":"DataByteSprites Abilities","path":"/studio/databytesprites/abilities.json","kind":"ability","collection":"abilities"},
+    {"id":"runtime-manifest","label":"Runtime Manifest","path":"/studio/runtime/load-order.json","kind":"runtime","collection":"modules,phases"},
+    {"id":"studio-registry-js","label":"Studio Registry JS","path":"/assets/studio-registry.js","kind":"script","collection":"file"},
+    {"id":"studio-shell-js","label":"Studio Shell JS","path":"/assets/studio-shell.js","kind":"script","collection":"file"},
+    {"id":"studio-search-js","label":"Studio Search JS","path":"/assets/asset-search.js","kind":"script","collection":"file"},
+    {"id":"runtime-loader-js","label":"Runtime Loader Script","path":"/assets/js/studio-runtime-loader.js","kind":"script","collection":"file"},
+    {"id":"runtime-health-js","label":"Runtime Health Script","path":"/assets/js/studio-runtime-health.js","kind":"script","collection":"file"},
+    {"id":"runtime-bridge-checks-js","label":"Bridge Health Checks Script","path":"/assets/js/studio-runtime-bridge-checks.js","kind":"script","collection":"file"}
+  ],
+  "validationHints": {
+    "species": ["id", "name", "battleStats", "elements"],
+    "move": ["id", "name", "learnedBy"],
+    "ability": ["id", "name", "assignedTo"],
+    "typeChart": ["attackingElement"],
+    "runtime": ["id", "script", "requires"]
+  },
+  "nextStep": "Wire diagnostics page to consume this source registry instead of maintaining the source list inline."
+}
