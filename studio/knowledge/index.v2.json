@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "2.0.0",
+  "schemaVersion": "2.1.0",
   "generatedBy": "VoltanLabs Studio Knowledge Engine v2",
-  "description": "Live modular Knowledge Engine registry for VoltanLabs Studio.",
+  "description": "Live modular Knowledge Engine registry for VoltanLabs Studio and DataByteSprites project intelligence.",
   "registryType": "knowledge-engine-v2",
   "modules": [
     {"id":"dashboard","name":"Dashboard","category":"Core","status":"active","entry":"/studio/","manifest":"/studio/modules/dashboard/module.json","keywords":["studio","dashboard","hub","navigation"]},
@@ -16,9 +16,17 @@
   ],
   "indexes": [
     {"id":"studio-modules","recordType":"module","name":"Studio Module Index","path":"/studio/knowledge/index.v2.json","collection":"modules","status":"active","description":"Primary live Studio module registry."},
-    {"id":"studio-operations","recordType":"module","name":"Studio Operations Index","path":"/studio/knowledge/studio-operations.json","collection":"modules","status":"active","description":"Operations modules such as diagnostics and runtime visualizer."}
+    {"id":"studio-operations","recordType":"module","name":"Studio Operations Index","path":"/studio/knowledge/studio-operations.json","collection":"modules","status":"active","description":"Operations modules such as diagnostics and runtime visualizer."},
+    {"id":"databytesprites-species-index","recordType":"spriteSpecies","name":"DataByteSprites Species Index","path":"/studio/databytesprites/species.json","collection":"species","status":"active","description":"Live sprite species metadata, rarity, evolution lines, capture hooks, lore, and stat seeds."},
+    {"id":"databytesprites-lore-index","recordType":"lore","name":"DataByteSprites Lore Index","path":"/studio/databytesprites/lore.json","collection":"lore","status":"active","description":"Live lore records for origin, characters, artifacts, events, rules, and threat seeds."},
+    {"id":"databytesprites-source-files","recordType":"sourceFile","name":"DataByteSprites Source Files Index","path":"/studio/databytesprites/source-files.json","collection":"sourceFiles","status":"active","description":"Live source ownership, legacy references, patch layers, and future rebuild targets."},
+    {"id":"databytesprites-mechanics-graph","recordType":"mechanicsGraph","name":"DataByteSprites Mechanics Graph","path":"/studio/databytesprites/mechanics-graph.json","collection":"nodes,edges","status":"active","description":"Live gameplay relationship graph for systems, species, lore, source files, and runtime integrations."},
+    {"id":"databytesprites-move-index","recordType":"move","name":"DataByteSprites Move Index","path":"/studio/databytesprites/moves.json","collection":"moves","status":"active","description":"Live move list records for battle actions."},
+    {"id":"databytesprites-type-chart","recordType":"typeChart","name":"DataByteSprites Type Chart","path":"/studio/databytesprites/type-chart.json","collection":"rules","status":"active","description":"Live element effectiveness and capture bonus rules."},
+    {"id":"databytesprites-ability-index","recordType":"ability","name":"DataByteSprites Ability Index","path":"/studio/databytesprites/abilities.json","collection":"abilities","status":"active","description":"Live passive abilities and species ability mappings."}
   ],
-  "recordTypes": ["module"],
-  "searchFields": ["id","name","category","status","entry","manifest","keywords","dependencies","description"],
-  "migration": {"from":"/studio/knowledge/index.json","strategy":"live-v2-registry","safeToDeleteLegacy":false}
+  "recordTypes": ["module", "spriteSpecies", "lore", "sourceFile", "mechanicsGraph", "move", "typeChart", "ability"],
+  "searchFields": ["id", "name", "category", "status", "entry", "manifest", "keywords", "dependencies", "description"],
+  "migration": {"from":"/studio/knowledge/index.json","strategy":"live-v2-registry","safeToDeleteLegacy":false},
+  "nextSystems": ["fullDataByteSearchAdapters", "fullDiagnosticsValidation", "dependencyGraphVisualizer"]
 }
