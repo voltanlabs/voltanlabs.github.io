@@ -10,7 +10,7 @@
   <main class="max-w-7xl mx-auto px-6 py-12">
     <p class="text-[#FFD700] uppercase tracking-[0.25em] text-xs mb-3">VoltanLabs Studio</p>
     <h1 class="text-4xl md:text-6xl font-bold text-[#007BFF]">System Diagnostics</h1>
-    <p class="text-gray-300 mt-4 max-w-3xl">Phase 2.0 Studio Intelligence dashboard for live Studio modules, Knowledge Engine indexes, DataByteSprites records, runtime manifests, grouped diagnostics, exportable reports, repository health history, auto repair plans, dependency graph mapping, coverage heat maps, and cross-index references.</p>
+    <p class="text-gray-300 mt-4 max-w-3xl">Phase 2.0 Studio Intelligence dashboard for live Studio modules, Knowledge Engine indexes, DataByteSprites records, runtime manifests, grouped diagnostics, exportable reports, repository health history, auto repair plans, dependency graph mapping, coverage heat maps, repository evolution tracking, and cross-index references.</p>
     <div class="mt-6 flex flex-wrap gap-3">
       <a href="/studio/" class="px-4 py-2 rounded-xl bg-[#007BFF] font-bold">Back to Studio</a>
       <a href="/studio/runtime/" class="px-4 py-2 rounded-xl border border-[#FFD700] text-[#FFD700] font-bold">Runtime Visualizer</a>
@@ -18,7 +18,7 @@
       <button id="copyReport" class="px-4 py-2 rounded-xl border border-white/20 font-bold">Copy Report Text</button>
       <button id="saveReport" class="px-4 py-2 rounded-xl border border-[#FFD700] text-[#FFD700] font-bold">Save Report File</button>
     </div>
-    <p class="text-gray-400 text-sm mt-3">Copy keeps the report in your clipboard as raw JSON text. Save downloads the generated report. Health History stores snapshots locally. Auto Repair exports dry-run repair plans. Dependency Graph exports relationship maps. Coverage Heat Map exports JSON and Markdown subsystem reports.</p>
+    <p class="text-gray-400 text-sm mt-3">Copy keeps the report in your clipboard as raw JSON text. Save downloads the generated report. Health History stores snapshots locally. Auto Repair exports dry-run repair plans. Dependency Graph exports relationship maps. Coverage Heat Map exports subsystem reports. Evolution Dashboard exports executive summaries.</p>
     <section id="summary" class="grid md:grid-cols-5 gap-4 mt-10">
       <div class="rounded-2xl border border-white/10 bg-[#2C3E50] p-5"><p class="text-gray-300 text-sm">Status</p><strong class="text-3xl text-[#FFD700]">Loading</strong></div>
     </section>
@@ -33,5 +33,6 @@
   <script src="/assets/js/studio-auto-repair-engine.js?v=phase2-auto-repair-1"></script>
   <script src="/assets/js/studio-dependency-graph-viewer.js?v=phase2-dependency-graph-1"></script>
   <script src="/assets/js/studio-coverage-heat-map.js?v=phase2-coverage-heat-map-1"></script>
+  <script src="/assets/js/studio-repository-evolution-dashboard.js?v=phase2-evolution-dashboard-1"></script>
 </body>
 </html>
