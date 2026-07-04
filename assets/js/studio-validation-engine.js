@@ -4,7 +4,7 @@
 (function () {
   const SOURCE_REGISTRY = "/studio/diagnostics/sources.json";
   const RULES_MANIFEST = "/studio/validation/rules.json";
-  const ENGINE_VERSION = "1.2.1";
+  const ENGINE_VERSION = "1.2.2";
   let latestReport = null;
 
   function asArray(value) { return Array.isArray(value) ? value : []; }
@@ -145,6 +145,17 @@
     return records.filter((source) => source.data && !source.data.schemaVersion).map((source) => finding("error", "registry-availability", `${source.label} missing schemaVersion`, source.path));
   }
 
+  function validateDocumentationDrift(sources, rules) {
+    const required = asArray(rules.documentationDrift && rules.documentationDrift.requiredReadmePhrases);
+    const readme = sources.find((source) => source.kind === "documentation" && source.ok && source.text);
+    if (!required.length) return [];
+    if (!readme) return [finding("warning", "documentation-drift", "README documentation source is not registered or failed to load", { path: "/README.md" })];
+    const text = normalize(readme.text);
+    return required
+      .filter((phrase) => !text.includes(normalize(phrase)))
+      .map((phrase) => finding("warning", "documentation-drift", `README missing current milestone phrase: ${phrase}`, { sourcePath: readme.path, phrase }));
+  }
+
   function validateRequiredFields(records) {
     const findings = [];
     records.forEach((record) => record.items.forEach((item) => {
@@ -264,6 +275,7 @@
       const sourcePath = item.detail && (item.detail.sourcePath || item.detail.path || (typeof item.detail === "string" ? item.detail : null));
       const target = item.detail && item.detail.target;
       const base = { rule: item.rule, severity: item.severity, finding: item.message, sourcePath };
+      if (item.rule === "documentation-drift") return { ...base, action: "Update README roadmap wording so it reflects the current Phase 1.2 diagnostics capabilities." };
       if (item.rule === "cross-index-references") return { ...base, action: `Add or rename an indexed record for "${target}" or update the referencing field to an existing ID.` };
       if (item.rule === "duplicate-ids") return { ...base, action: "Rename one duplicate ID and update every reference that points to the old ID." };
       if (item.rule === "orphan-detection") return { ...base, action: "Link this record from a lore, mechanics, runtime, move, or ability index, or mark it planned/design-seed if it is intentionally parked." };
@@ -272,6 +284,18 @@
       if (item.rule === "required-fields") return { ...base, action: "Add the missing required field to the source record so it can join the repository ID graph." };
       return { ...base, action: "Review the source file and reconcile it with the active validation rule." };
     });
+  }
+
+  function buildMilestoneStatus(report) {
+    const hasDocumentationDrift = report.findings.some((item) => item.rule === "documentation-drift");
+    return [
+      { label: "Repository ID Graph", status: "active", detail: `${report.idCount} IDs indexed` },
+      { label: "Cross-Index Validation", status: "active", detail: `${report.linkCount} links scanned` },
+      { label: "Dependency Explorer", status: "active", detail: `${report.dependencyExplorer.length} source-aware edges` },
+      { label: "Knowledge Coverage", status: "active", detail: `${report.coverageScore}% average coverage` },
+      { label: "Repair Suggestions", status: "active", detail: `${report.repairSuggestions.length} suggested repairs` },
+      { label: "Documentation Drift", status: hasDocumentationDrift ? "attention" : "active", detail: hasDocumentationDrift ? "README needs sync" : "README synced" }
+    ];
   }
 
   function dedupeFindings(findings) {
@@ -312,6 +336,11 @@
     return `<article class="rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-xs uppercase tracking-wide text-[#FFD700]">Actionable Diagnostics</p><h2 class="text-2xl font-bold text-[#FFD700] mt-1">Repair Suggestions</h2><ul class="mt-4 text-sm list-disc ml-5">${items || "<li>No repair suggestions needed.</li>"}</ul></article>`;
   }
 
+  function renderMilestoneStatus(report) {
+    const cards = report.milestones.map((item) => `<div class="rounded-xl border ${item.status === "active" ? "border-emerald-300/30 bg-emerald-950/20" : "border-yellow-300/40 bg-yellow-950/20"} p-4"><p class="text-xs uppercase tracking-wide text-gray-400">${escapeHtml(item.status)}</p><h3 class="font-bold text-white mt-1">${escapeHtml(item.label)}</h3><p class="text-sm text-gray-300 mt-2">${escapeHtml(item.detail)}</p></div>`).join("");
+    return `<article class="lg:col-span-2 rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-xs uppercase tracking-wide text-[#FFD700]">Phase 1.2 Milestone</p><h2 class="text-2xl font-bold text-[#FFD700] mt-1">Repository Integrity Systems</h2><div class="grid md:grid-cols-3 gap-3 mt-4">${cards}</div></article>`;
+  }
+
   function renderSources(report) {
     const output = document.getElementById("diagnostics");
     if (!output) return;
@@ -324,7 +353,7 @@
     const sourceCards = report.sources.map((item) => `<article class="rounded-2xl border ${item.ok ? "border-emerald-300/40 bg-emerald-950/20" : "border-red-400/50 bg-red-950/30"} p-5"><p class="text-[#FFD700] text-xs uppercase tracking-wide">${escapeHtml(item.kind)}</p><h2 class="text-xl font-bold mt-1">${escapeHtml(item.label)}</h2><p class="text-gray-300 text-sm mt-3">${escapeHtml(item.path)}</p><p class="text-gray-400 text-xs mt-2">Records: ${item.count} • ${item.ms}ms</p>${item.ok ? "<p class=\"text-emerald-200 text-sm mt-4\">Loaded.</p>" : `<p class="text-red-200 text-sm mt-4">${escapeHtml(item.error)}</p>`}</article>`).join("");
 
     const lead = report.findings.length ? grouped : "<p class=\"text-emerald-200 mt-4\">No repository integrity findings.</p>";
-    output.innerHTML = `<article class="lg:col-span-2 rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-xs uppercase tracking-wide text-[#FFD700]">Phase 1.2</p><h2 class="text-2xl font-bold text-[#FFD700] mt-1">Repository Integrity Report</h2><p class="text-gray-300 mt-3">Engine ${ENGINE_VERSION} validates source availability, required fields, cross-index references, mechanics graph edges, runtime load order, duplicate IDs, orphan records, knowledge coverage, and actionable repair paths.</p>${lead}</article>${renderCoverage(report)}${renderDependencyExplorer(report)}${renderRepairSuggestions(report)}${sourceCards}`;
+    output.innerHTML = `<article class="lg:col-span-2 rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-xs uppercase tracking-wide text-[#FFD700]">Phase 1.2</p><h2 class="text-2xl font-bold text-[#FFD700] mt-1">Repository Integrity Report</h2><p class="text-gray-300 mt-3">Engine ${ENGINE_VERSION} validates source availability, required fields, cross-index references, mechanics graph edges, runtime load order, duplicate IDs, orphan records, knowledge coverage, documentation drift, and actionable repair paths.</p>${lead}</article>${renderMilestoneStatus(report)}${renderCoverage(report)}${renderDependencyExplorer(report)}${renderRepairSuggestions(report)}${sourceCards}`;
   }
 
   async function loadSource(source) {
@@ -350,6 +379,7 @@
     const findings = dedupeFindings([
       ...validateAvailability(sources),
       ...validateSchema(loaded),
+      ...validateDocumentationDrift(sources, rules),
       ...validateRequiredFields(loaded),
       ...validateDuplicateIds(model),
       ...validateReferences(model),
@@ -384,6 +414,7 @@
       dependencyExplorer,
       repairSuggestions
     };
+    latestReport.milestones = buildMilestoneStatus(latestReport);
     window.VOLTAN_VALIDATION_REPORT = latestReport;
     renderSummary(latestReport);
     renderSources(latestReport);
