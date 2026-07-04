@@ -10,9 +10,11 @@ The project has grown from a collection of browser tools into a modular Studio a
 
 The active handoff is **Phase 2.1: Documentation & Architecture Audit**. Phase 2.1 brings the repository documentation, architecture maps, module maps, and roadmaps back into alignment with the systems now implemented in the Studio.
 
-Primary Phase 2.1 audit document:
+Primary Phase 2.1 documents:
 
 - `docs/phase-2.1-repository-audit.md`
+- `ARCHITECTURE.md`
+- `REPOSITORY_MAP.md`
 
 ## Live Studio Areas
 
@@ -27,6 +29,20 @@ Primary Phase 2.1 audit document:
 - `/studio/assets/index.json` — Asset Library index.
 - `/technology-vault/` — Technology Vault foundation.
 - `/tools.html` — Creator Suite entry point.
+
+## Documentation Map
+
+| Document | Path | Status |
+| --- | --- | --- |
+| Repository Audit | `docs/phase-2.1-repository-audit.md` | Active |
+| Architecture Map | `ARCHITECTURE.md` | Active |
+| Repository Map | `REPOSITORY_MAP.md` | Active |
+| Roadmap | `ROADMAP.md` | Planned |
+| Diagnostics Reference | `DIAGNOSTICS.md` | Planned |
+| Validation Reference | `VALIDATION.md` | Planned |
+| Knowledge Engine Reference | `KNOWLEDGE_ENGINE.md` | Planned |
+| Module Index | `MODULE_INDEX.md` | Planned |
+| Release Notes | `RELEASE_NOTES_PHASE2.md` | Planned |
 
 ## Architecture Overview
 
@@ -73,6 +89,8 @@ VoltanLabs Studio
         ├── Type chart
         └── Ability index
 ```
+
+For the full architecture map, see `ARCHITECTURE.md`. For the repository directory/status map, see `REPOSITORY_MAP.md`.
 
 ## Completed Foundation
 
@@ -279,4 +297,4 @@ Example goals:
 
 ## Current Highest-Value Task
 
-Continue **Phase 2.1: Documentation & Architecture Audit** by adding the architecture map, repository map, diagnostics reference, and roadmap documents that match the completed Phase 2.0 Studio Intelligence suite.
+Continue **Phase 2.1: Documentation & Architecture Audit** by adding the diagnostics reference, validation reference, Knowledge Engine reference, module index, roadmap, and release notes that match the completed Phase 2.0 Studio Intelligence suite.
