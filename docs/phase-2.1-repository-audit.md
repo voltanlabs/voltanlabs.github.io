@@ -41,15 +41,24 @@ The diagnostics page now acts as the Studio Control Center. It consumes the vali
 
 ## Documentation Drift Found
 
-The root README still described Phase 2 as the next phase and did not yet reflect the completed Phase 2.0 Studio Intelligence suite.
+The root README previously described Phase 2 as the next phase and did not reflect the completed Phase 2.0 Studio Intelligence suite.
 
-Required documentation updates:
+Resolved in Phase 2.1 so far:
 
-- Update README current focus to Phase 2.1.
-- Mark Phase 2.0 Studio Intelligence as complete.
-- Add the six new diagnostics modules to the architecture overview.
-- Replace the old Phase 2 roadmap with a completed Phase 2.0 section and an active Phase 2.1 section.
-- Add a dedicated docs map for architecture, diagnostics, validation, Knowledge Engine, module index, repository map, and release notes.
+- README current focus now points to Phase 2.1.
+- Phase 2.0 Studio Intelligence is marked complete.
+- The six new diagnostics modules are listed in README.
+- Architecture and repository maps now exist.
+- README now links the audit, architecture map, and repository map.
+
+Remaining documentation updates:
+
+- Add a dedicated diagnostics reference.
+- Add a validation reference.
+- Add a Knowledge Engine reference.
+- Add a module index.
+- Add a standalone roadmap.
+- Add Phase 2 release notes.
 
 ## Active Architecture Map
 
@@ -94,15 +103,19 @@ VoltanLabs Studio
     └── Ability index
 ```
 
+See `ARCHITECTURE.md` for the full architecture reference.
+
+See `REPOSITORY_MAP.md` for directory status, ownership, and documentation mapping.
+
 ## Phase 2.1 Documentation Deliverables
 
 | Document | Path | Status |
 | --- | --- | --- |
-| Repository Audit | `docs/phase-2.1-repository-audit.md` | Started |
-| README Refresh | `README.md` | In progress |
-| Architecture Map | `ARCHITECTURE.md` | Planned |
+| Repository Audit | `docs/phase-2.1-repository-audit.md` | Active |
+| README Refresh | `README.md` | Active |
+| Architecture Map | `ARCHITECTURE.md` | Active |
+| Repository Map | `REPOSITORY_MAP.md` | Active |
 | Roadmap | `ROADMAP.md` | Planned |
-| Repository Map | `REPOSITORY_MAP.md` | Planned |
 | Diagnostics Reference | `DIAGNOSTICS.md` | Planned |
 | Validation Reference | `VALIDATION.md` | Planned |
 | Knowledge Engine Reference | `KNOWLEDGE_ENGINE.md` | Planned |
@@ -111,20 +124,19 @@ VoltanLabs Studio
 
 ## Immediate Findings
 
-1. Documentation is behind implementation.
-2. Phase 2.0 modules are implemented as companion scripts rather than one large monolithic diagnostics rewrite, which is good for stability.
-3. Diagnostics has become the strongest architectural control point in the repository.
-4. DataByteSprites has a strong metadata foundation, but its runtime/gameplay systems still need deeper integration with the indexes.
-5. Creator Suite, Asset Library, Technology Vault, and Simulation Lab need clearer documentation boundaries.
-6. The repository is ready for a documentation map pass before any new feature expansion.
+1. Phase 2.0 modules are implemented as companion scripts rather than one large monolithic diagnostics rewrite, which is good for stability.
+2. Diagnostics has become the strongest architectural control point in the repository.
+3. DataByteSprites has a strong metadata foundation, but its runtime/gameplay systems still need deeper integration with the indexes.
+4. Creator Suite, Asset Library, Technology Vault, and Simulation Lab need clearer documentation boundaries.
+5. The repository is ready for continued documentation reference work before any new feature expansion.
 
 ## Recommended Next Actions
 
-1. Refresh `README.md` to mark Phase 2.0 complete and Phase 2.1 active.
-2. Add `ARCHITECTURE.md` with the current Studio architecture map.
-3. Add `REPOSITORY_MAP.md` to separate active, foundation, planned, and legacy areas.
-4. Add `DIAGNOSTICS.md` documenting the full Studio Intelligence stack.
-5. Add `ROADMAP.md` with Phase 2.1 and Phase 2.2 planning.
+1. Add `DIAGNOSTICS.md` documenting the full Studio Intelligence stack.
+2. Add `VALIDATION.md` documenting validation rules, report shape, and source registry expectations.
+3. Add `KNOWLEDGE_ENGINE.md` documenting registry, indexes, ID conventions, and search fields.
+4. Add `MODULE_INDEX.md` documenting each Studio module and status.
+5. Add `ROADMAP.md` and `RELEASE_NOTES_PHASE2.md`.
 
 ## Phase 2.1 Acceptance Criteria
 
