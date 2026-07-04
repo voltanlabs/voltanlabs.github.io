@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "0.1.0",
+  "generatedBy": "VoltanLabs Studio Type Chart Indexer",
+  "description": "Offline-first type-effectiveness foundation for DataByteSprites moves, species elements, damage tuning, and capture modifiers.",
+  "rules": [
+    {"attackingElement":"Electric","strongAgainst":["Water","Screen","Signal"],"weakAgainst":["Shell","Code"],"noEffectAgainst":[],"captureBonusAgainst":["Water","Screen"],"notes":"Electric pressure destabilizes water and display-based signals."},
+    {"attackingElement":"Voltricity","strongAgainst":["Signal","Glitch","Null"],"weakAgainst":["Shell"],"noEffectAgainst":[],"captureBonusAgainst":["Signal","Glitch"],"notes":"Voltricity is Leovolt's signature signal-electric force."},
+    {"attackingElement":"Screen","strongAgainst":["Glitch","Mirror"],"weakAgainst":["Electric","Null"],"noEffectAgainst":[],"captureBonusAgainst":["Glitch"],"notes":"Screen defenses can contain glitches but are vulnerable to overloads."},
+    {"attackingElement":"Mirror","strongAgainst":["Screen","Signal"],"weakAgainst":["Glitch","Null"],"noEffectAgainst":[],"captureBonusAgainst":["Screen"],"notes":"Mirror attacks reflect signal reads and disrupt screen-born sprites."},
+    {"attackingElement":"Trick","strongAgainst":["Guard","Admin"],"weakAgainst":["Signal"],"noEffectAgainst":[],"captureBonusAgainst":["Guard"],"notes":"Trick moves bypass rigid defensive patterns."},
+    {"attackingElement":"Shell","strongAgainst":["Electric","Bug","Poison"],"weakAgainst":["Water","Code"],"noEffectAgainst":[],"captureBonusAgainst":["Bug","Poison"],"notes":"Shell moves resist physical signal spikes and contain small threats."},
+    {"attackingElement":"Code","strongAgainst":["Shell","Admin","Signal"],"weakAgainst":["Glitch","Null"],"noEffectAgainst":[],"captureBonusAgainst":["Shell","Signal"],"notes":"Code moves rewrite stable patterns but can be corrupted."},
+    {"attackingElement":"Bug","strongAgainst":["Code","Signal"],"weakAgainst":["Screen","Shell"],"noEffectAgainst":[],"captureBonusAgainst":["Code"],"notes":"Bug moves exploit code paths and active signal routes."},
+    {"attackingElement":"Poison","strongAgainst":["Guard","Shell"],"weakAgainst":["Code","Admin"],"noEffectAgainst":[],"captureBonusAgainst":["Shell"],"notes":"Poison corrupts defensive layers over time."},
+    {"attackingElement":"Glitch","strongAgainst":["Code","Screen","Mirror"],"weakAgainst":["Voltricity","Signal"],"noEffectAgainst":[],"captureBonusAgainst":["Code","Screen"],"notes":"Glitch attacks break normal rules but become unstable under strong signal control."},
+    {"attackingElement":"Signal","strongAgainst":["Glitch","Trick"],"weakAgainst":["Mirror","Null"],"noEffectAgainst":[],"captureBonusAgainst":["Glitch","Trick"],"notes":"Signal is the neutral baseline with small advantages against unstable patterns."},
+    {"attackingElement":"Null","strongAgainst":["Signal","Screen","Code"],"weakAgainst":["Voltricity"],"noEffectAgainst":[],"captureBonusAgainst":[],"notes":"Null is intentionally dangerous and should stay limited to locked or boss encounters."}
+  ],
+  "multipliers": { "strong": 1.25, "neutral": 1, "weak": 0.8, "none": 0, "captureBonus": 3 },
+  "searchFields": ["attackingElement", "strongAgainst", "weakAgainst", "noEffectAgainst", "captureBonusAgainst", "notes"],
+  "commonIndexModel": { "recordType": "typeChart", "idField": "attackingElement", "titleField": "attackingElement", "keywordFields": ["strongAgainst", "weakAgainst", "noEffectAgainst", "captureBonusAgainst", "notes"], "versionField": "schemaVersion" }
+}
