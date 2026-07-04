@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.1.1",
   "generatedBy": "VoltanLabs Studio DataByteSprites Lore Indexer",
   "description": "Offline-first DataByteSprites lore index for story canon, characters, factions, events, locations, rules, and timeline foundations.",
   "sourceDocuments": [
@@ -8,25 +8,7 @@
     "VoltanLabs Studio project canon"
   ],
   "loreSchema": {
-    "requiredFields": [
-      "id",
-      "name",
-      "loreType",
-      "project",
-      "status",
-      "tags",
-      "summary",
-      "canon",
-      "timeline",
-      "relatedCharacters",
-      "relatedSpecies",
-      "relatedSystems",
-      "source",
-      "path",
-      "preview",
-      "dependencies",
-      "version"
-    ],
+    "requiredFields": ["id", "name", "loreType", "project", "status", "tags", "summary", "canon", "timeline", "relatedCharacters", "relatedSpecies", "relatedSystems", "source", "path", "preview", "dependencies", "version"],
     "fieldNotes": {
       "id": "Stable lore identifier used by Studio search, DataByteDex, quests, and future story tooling.",
       "name": "Human-readable lore record name.",
@@ -65,7 +47,7 @@
       "path": "/studio/databytesprites/lore.json#lore-null-signal-origin",
       "preview": "/studio/databytesprites/lore.json",
       "dependencies": ["dbs-lore-core", "dbs-encounter-discovery", "databytesprites-species-index"],
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "id": "lore-voltaverse",
@@ -83,8 +65,8 @@
       "source": "VoltanLabs Studio project canon",
       "path": "/studio/databytesprites/lore.json#lore-voltaverse",
       "preview": "/studio/databytesprites/lore.json",
-      "dependencies": ["dbs-lore-core", "dbs-journal", "databytesprites-project-index"],
-      "version": "0.1.0"
+      "dependencies": ["dbs-lore-core", "dbs-journal", "databytesprites"],
+      "version": "0.1.1"
     },
     {
       "id": "char-vic",
@@ -102,8 +84,8 @@
       "source": "VoltanLabs Studio project canon",
       "path": "/studio/databytesprites/lore.json#char-vic",
       "preview": "/studio/databytesprites/lore.json",
-      "dependencies": ["lore-null-signal-origin", "species-leovolt", "dbs-capture-flow"],
-      "version": "0.1.0"
+      "dependencies": ["lore-null-signal-origin", "leovolt", "dbs-capture-flow"],
+      "version": "0.1.1"
     },
     {
       "id": "char-dennis",
@@ -122,7 +104,7 @@
       "path": "/studio/databytesprites/lore.json#char-dennis",
       "preview": "/studio/databytesprites/lore.json",
       "dependencies": ["char-vic", "lore-null-signal-origin"],
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "id": "artifact-databyte-coin",
@@ -141,7 +123,7 @@
       "path": "/studio/databytesprites/lore.json#artifact-databyte-coin",
       "preview": "/studio/databytesprites/lore.json",
       "dependencies": ["dbs-capture-flow", "dbs-inventory-expansion", "databytesprites-species-index"],
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "id": "event-first-capture",
@@ -160,7 +142,7 @@
       "path": "/studio/databytesprites/lore.json#event-first-capture",
       "preview": "/studio/databytesprites/lore.json",
       "dependencies": ["char-vic", "char-dennis", "artifact-databyte-coin", "leovolt"],
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "id": "rule-screens-and-signals",
@@ -179,7 +161,7 @@
       "path": "/studio/databytesprites/lore.json#rule-screens-and-signals",
       "preview": "/studio/databytesprites/lore.json",
       "dependencies": ["databytesprites-species-index", "dbs-encounter-discovery"],
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "id": "threat-nullking",
@@ -198,28 +180,10 @@
       "path": "/studio/databytesprites/lore.json#threat-nullking",
       "preview": "/studio/databytesprites/lore.json",
       "dependencies": ["nullking", "dbs-battle-system", "dbs-admin-console", "simulation-lab"],
-      "version": "0.1.0"
+      "version": "0.1.1"
     }
   ],
-  "searchFields": [
-    "id",
-    "name",
-    "loreType",
-    "project",
-    "status",
-    "tags",
-    "summary",
-    "canon",
-    "timeline",
-    "relatedCharacters",
-    "relatedSpecies",
-    "relatedSystems",
-    "source",
-    "path",
-    "preview",
-    "dependencies",
-    "version"
-  ],
+  "searchFields": ["id", "name", "loreType", "project", "status", "tags", "summary", "canon", "timeline", "relatedCharacters", "relatedSpecies", "relatedSystems", "source", "path", "preview", "dependencies", "version"],
   "commonIndexModel": {
     "recordType": "lore",
     "idField": "id",
