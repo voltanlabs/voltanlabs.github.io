@@ -1,21 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Diagnostics - VoltanLabs Studio</title><script src="https://cdn.tailwindcss.com"></script></head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diagnostics - VoltanLabs Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
 <body class="bg-[#1A1A1A] text-white min-h-screen">
   <main class="max-w-7xl mx-auto px-6 py-12">
     <p class="text-[#FFD700] uppercase tracking-[0.25em] text-xs mb-3">VoltanLabs Studio</p>
     <h1 class="text-4xl md:text-6xl font-bold text-[#007BFF]">System Diagnostics</h1>
-    <p class="text-gray-300 mt-4 max-w-3xl">Mission control for live Studio modules, Knowledge Engine v2 registry status, DataByteSprites indexes, and runtime support files.</p>
-    <div class="mt-6 flex flex-wrap gap-3"><a href="/studio/" class="px-4 py-2 rounded-xl bg-[#007BFF] font-bold">Back to Studio</a><a href="/studio/runtime/" class="px-4 py-2 rounded-xl border border-[#FFD700] text-[#FFD700] font-bold">Runtime Visualizer</a><button id="copyReport" class="px-4 py-2 rounded-xl border border-white/20 font-bold">Copy Report</button></div>
-    <section id="summary" class="grid md:grid-cols-4 gap-4 mt-10"></section><section id="diagnostics" class="grid lg:grid-cols-2 gap-5 mt-8"></section>
+    <p class="text-gray-300 mt-4 max-w-3xl">Phase 1 Validation Engine dashboard for live Studio modules, Knowledge Engine indexes, DataByteSprites records, runtime manifests, and cross-index references.</p>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href="/studio/" class="px-4 py-2 rounded-xl bg-[#007BFF] font-bold">Back to Studio</a>
+      <a href="/studio/runtime/" class="px-4 py-2 rounded-xl border border-[#FFD700] text-[#FFD700] font-bold">Runtime Visualizer</a>
+      <a href="/studio/validation/rules.json" class="px-4 py-2 rounded-xl border border-white/20 font-bold">Validation Rules</a>
+      <button id="copyReport" class="px-4 py-2 rounded-xl border border-white/20 font-bold">Copy Report</button>
+    </div>
+    <section id="summary" class="grid md:grid-cols-5 gap-4 mt-10">
+      <div class="rounded-2xl border border-white/10 bg-[#2C3E50] p-5"><p class="text-gray-300 text-sm">Status</p><strong class="text-3xl text-[#FFD700]">Loading</strong></div>
+    </section>
+    <section id="diagnostics" class="grid lg:grid-cols-2 gap-5 mt-8">
+      <article class="rounded-2xl border border-white/10 bg-black/25 p-5"><h2 class="text-2xl font-bold text-[#FFD700]">Validation Engine</h2><p class="text-gray-300 mt-3">Loading diagnostics source registry and validation rules...</p></article>
+    </section>
   </main>
-  <script>
-    const SOURCE_REGISTRY='/studio/diagnostics/sources.json';
-    let latestReport=[];
-    function getCount(data,source){return String(source.collection||'').split(',').map(s=>s.trim()).filter(Boolean).reduce((sum,key)=>sum+((data[key]||[]).length||0),0)||1;}
-    function validate(source,data){const issues=[];if(!data.schemaVersion)issues.push('Missing schemaVersion');if(source.kind==='species'&&(data.species||[]).some(x=>!x.battleStats))issues.push('One or more species missing battleStats');if(source.kind==='move'&&(data.moves||[]).some(x=>!x.learnedBy))issues.push('One or more moves missing learnedBy');if(source.kind==='ability'&&(data.abilities||[]).some(x=>!x.assignedTo))issues.push('One or more abilities missing assignedTo');if(source.kind==='runtime'){const ids=new Set((data.modules||[]).map(m=>m.id));(data.modules||[]).forEach(m=>(m.requires||[]).forEach(req=>{if(!ids.has(req))issues.push(m.id+' requires missing '+req)}));}return issues;}
-    async function check(source){const started=performance.now();try{const res=await fetch(source.path,{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);let count=1;let issues=[];if(source.collection==='file'){const text=await res.text();if(text.length<20)issues.push('File appears too small');}else{const data=await res.json();count=getCount(data,source);issues=validate(source,data);}return{source,ok:true,count,ms:Math.round(performance.now()-started),issues};}catch(e){return{source,ok:false,count:0,ms:Math.round(performance.now()-started),issues:[String(e)]};}}
-    function render(results){latestReport=results;const passing=results.filter(r=>r.ok&&!r.issues.length).length;const warnings=results.filter(r=>r.ok&&r.issues.length).length;const failed=results.filter(r=>!r.ok).length;document.getElementById('summary').innerHTML=[['Sources',results.length],['Passing',passing],['Warnings',warnings],['Failed',failed]].map(([l,v])=>`<div class="rounded-2xl border border-white/10 bg-[#2C3E50] p-5"><p class="text-gray-300 text-sm">${l}</p><strong class="text-3xl text-[#FFD700]">${v}</strong></div>`).join('');document.getElementById('diagnostics').innerHTML=results.map(r=>`<article class="rounded-2xl border ${!r.ok?'border-red-400/50 bg-red-950/30':r.issues.length?'border-yellow-300/50 bg-yellow-950/20':'border-emerald-300/40 bg-emerald-950/20'} p-5"><p class="text-[#FFD700] text-xs uppercase tracking-wide">${r.source.kind}</p><h2 class="text-xl font-bold mt-1">${r.source.label}</h2><p class="text-gray-300 text-sm mt-3">${r.source.path}</p><p class="text-gray-400 text-xs mt-2">Records: ${r.count} • ${r.ms}ms</p>${r.issues.length?`<p class="text-yellow-100 text-sm mt-4">${r.issues.join(' • ')}</p>`:'<p class="text-emerald-200 text-sm mt-4">No issues detected.</p>'}</article>`).join('');}
-    async function init(){const res=await fetch(SOURCE_REGISTRY,{cache:'no-store'});const registry=await res.json();render(await Promise.all((registry.sources||[]).map(check)));}document.getElementById('copyReport').addEventListener('click',async()=>{await navigator.clipboard.writeText(JSON.stringify({generatedAt:new Date().toISOString(),results:latestReport},null,2));document.getElementById('copyReport').textContent='Copied';});init();
-  </script>
-</body></html>
+  <script src="/assets/js/studio-validation-engine.js?v=phase1-validation-1"></script>
+</body>
+</html>
