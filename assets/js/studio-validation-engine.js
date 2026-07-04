@@ -4,7 +4,7 @@
 (function () {
   const SOURCE_REGISTRY = "/studio/diagnostics/sources.json";
   const RULES_MANIFEST = "/studio/validation/rules.json";
-  const ENGINE_VERSION = "1.2.0";
+  const ENGINE_VERSION = "1.2.1";
   let latestReport = null;
 
   function asArray(value) { return Array.isArray(value) ? value : []; }
@@ -23,6 +23,9 @@
   function idOf(item) { return item.id || item.attackingElement || item.name || item.label || ""; }
   function titleOf(item) { return item.name || item.label || item.attackingElement || item.id || "record"; }
   function normalize(value) { return String(value || "").trim().toLowerCase(); }
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[char]));
+  }
 
   async function fetchJson(path) {
     const response = await fetch(path, { cache: "no-store" });
@@ -43,13 +46,16 @@
     const references = [];
     const graphNodes = new Set();
     const graphEdges = [];
+    const reverseReferences = new Map();
+    const sourceIndex = new Map();
 
     function addId(id, record, item) {
       if (!id) return;
       const key = String(id);
       if (!ids.has(key)) ids.set(key, []);
-      ids.get(key).push({ sourceId: record.id, kind: record.kind, label: record.label, itemTitle: titleOf(item) });
+      ids.get(key).push({ sourceId: record.id, kind: record.kind, label: record.label, itemTitle: titleOf(item), path: record.path });
       aliases.set(normalize(key), key);
+      sourceIndex.set(key, { sourceId: record.id, kind: record.kind, label: record.label, path: record.path });
     }
 
     function addAlias(alias, canonical) {
@@ -58,7 +64,7 @@
     }
 
     asArray(rules.knownGlobalIds).forEach((id) => {
-      ids.set(id, [{ sourceId: "validation-rules", kind: "knownGlobalId", label: "Validation Rules", itemTitle: id }]);
+      ids.set(id, [{ sourceId: "validation-rules", kind: "knownGlobalId", label: "Validation Rules", itemTitle: id, path: RULES_MANIFEST }]);
       addAlias(id, id);
     });
 
@@ -81,12 +87,25 @@
       }
     });
 
-    ids.set("*", [{ sourceId: "wildcard", kind: "wildcard", label: "Wildcard", itemTitle: "*" }]);
+    ids.set("*", [{ sourceId: "wildcard", kind: "wildcard", label: "Wildcard", itemTitle: "*", path: null }]);
     aliases.set("*", "*");
 
-    records.forEach((record) => record.items.forEach((item) => collectReferences(record, item).forEach((ref) => references.push(ref))));
+    records.forEach((record) => record.items.forEach((item) => collectReferences(record, item).forEach((ref) => {
+      references.push(ref);
+      const canonicalTarget = resolveCanonicalId(ref.target, { ids, aliases });
+      if (!canonicalTarget) return;
+      if (!reverseReferences.has(canonicalTarget)) reverseReferences.set(canonicalTarget, []);
+      reverseReferences.get(canonicalTarget).push(ref);
+    })));
 
-    return { ids, aliases, references, graphNodes, graphEdges };
+    return { ids, aliases, references, graphNodes, graphEdges, reverseReferences, sourceIndex };
+  }
+
+  function resolveCanonicalId(value, model) {
+    if (!value) return null;
+    const direct = String(value);
+    if (model.ids && model.ids.has(direct)) return direct;
+    return model.aliases ? model.aliases.get(normalize(direct)) || null : null;
   }
 
   function collectReferences(record, item) {
@@ -96,12 +115,12 @@
     fields.forEach((field) => {
       flatten(item[field]).forEach((value) => {
         if (!value) return;
-        refs.push({ owner, ownerTitle: titleOf(item), ownerKind: record.kind, field, target: value, source: record.label });
+        refs.push({ owner, ownerTitle: titleOf(item), ownerKind: record.kind, field, target: value, source: record.label, sourceId: record.id, sourcePath: record.path });
       });
     });
     if (record.kind === "mechanicsGraph") {
-      if (item.source) refs.push({ owner, ownerTitle: titleOf(item), ownerKind: record.kind, field: "edge.source", target: item.source, source: record.label });
-      if (item.target) refs.push({ owner, ownerTitle: titleOf(item), ownerKind: record.kind, field: "edge.target", target: item.target, source: record.label });
+      if (item.source) refs.push({ owner, ownerTitle: titleOf(item), ownerKind: record.kind, field: "edge.source", target: item.source, source: record.label, sourceId: record.id, sourcePath: record.path });
+      if (item.target) refs.push({ owner, ownerTitle: titleOf(item), ownerKind: record.kind, field: "edge.target", target: item.target, source: record.label, sourceId: record.id, sourcePath: record.path });
     }
     return refs;
   }
@@ -191,7 +210,7 @@
   }
 
   function validateOrphans(records, model) {
-    const referenced = new Set(model.references.map((ref) => ref.target));
+    const referenced = new Set(model.references.map((ref) => resolveCanonicalId(ref.target, model) || ref.target));
     const ignoredKinds = new Set(["registry", "runtime", "modules", "script"]);
     const findings = [];
     records.forEach((record) => {
@@ -201,10 +220,58 @@
         if (!id || referenced.has(id)) return;
         const status = String(item.status || "").toLowerCase();
         if (["planned", "pending", "design-seed", "locked", "active-foundation"].includes(status)) return;
-        findings.push(finding("info", "orphan-detection", `${titleOf(item)} is not referenced by another indexed record`, { id, kind: record.kind }));
+        findings.push(finding("info", "orphan-detection", `${titleOf(item)} is not referenced by another indexed record`, { id, kind: record.kind, source: record.label, path: record.path }));
       });
     });
     return findings;
+  }
+
+  function buildKnowledgeCoverage(records, model) {
+    const trackedKinds = ["species", "move", "ability", "lore", "sourceFile", "mechanicsGraph", "runtime"];
+    return trackedKinds.map((kind) => {
+      const items = records.filter((record) => record.kind === kind).flatMap((record) => record.items.map((item) => ({ record, item })));
+      const total = items.length;
+      const referenced = items.filter(({ item }) => model.reverseReferences.has(idOf(item))).length;
+      const documented = items.filter(({ item }) => item.description || item.summary || item.notes || item.status).length;
+      const withDependencies = items.filter(({ item }) => collectReferences({ kind, label: "coverage", id: "coverage", path: null }, item).length).length;
+      const score = total ? Math.round(((referenced + documented + withDependencies) / (total * 3)) * 100) : 100;
+      return { kind, total, referenced, documented, withDependencies, score };
+    });
+  }
+
+  function buildDependencyExplorer(model) {
+    return model.references.slice(0, 80).map((ref) => {
+      const targetId = resolveCanonicalId(ref.target, model);
+      const targetSource = targetId ? model.sourceIndex.get(targetId) : null;
+      return {
+        from: ref.owner,
+        fromTitle: ref.ownerTitle,
+        fromKind: ref.ownerKind,
+        field: ref.field,
+        target: ref.target,
+        resolvedTarget: targetId,
+        source: ref.source,
+        sourcePath: ref.sourcePath,
+        targetSource: targetSource ? targetSource.label : null,
+        targetPath: targetSource ? targetSource.path : null,
+        status: targetId ? "resolved" : "unresolved"
+      };
+    });
+  }
+
+  function buildRepairSuggestions(findings) {
+    return findings.slice(0, 12).map((item) => {
+      const sourcePath = item.detail && (item.detail.sourcePath || item.detail.path || (typeof item.detail === "string" ? item.detail : null));
+      const target = item.detail && item.detail.target;
+      const base = { rule: item.rule, severity: item.severity, finding: item.message, sourcePath };
+      if (item.rule === "cross-index-references") return { ...base, action: `Add or rename an indexed record for "${target}" or update the referencing field to an existing ID.` };
+      if (item.rule === "duplicate-ids") return { ...base, action: "Rename one duplicate ID and update every reference that points to the old ID." };
+      if (item.rule === "orphan-detection") return { ...base, action: "Link this record from a lore, mechanics, runtime, move, or ability index, or mark it planned/design-seed if it is intentionally parked." };
+      if (item.rule === "runtime-load-order") return { ...base, action: "Move required modules earlier in load-order.json and confirm every runtime module has a script path." };
+      if (item.rule === "mechanics-graph-integrity") return { ...base, action: "Add the missing mechanics graph node or correct the edge source, target, or edgeType." };
+      if (item.rule === "required-fields") return { ...base, action: "Add the missing required field to the source record so it can join the repository ID graph." };
+      return { ...base, action: "Review the source file and reconcile it with the active validation rule." };
+    });
   }
 
   function dedupeFindings(findings) {
@@ -225,9 +292,24 @@
       ["Links", report.linkCount],
       ["Errors", report.errorCount],
       ["Warnings", report.warningCount],
-      ["Info", report.infoCount]
+      ["Coverage", report.coverageScore + "%"]
     ];
     summary.innerHTML = cards.map(([label, value]) => `<div class="rounded-2xl border border-white/10 bg-[#2C3E50] p-5"><p class="text-gray-300 text-sm">${label}</p><strong class="text-3xl text-[#FFD700]">${value}</strong></div>`).join("");
+  }
+
+  function renderCoverage(report) {
+    const rows = report.coverage.map((item) => `<tr class="border-t border-white/10"><td class="py-2 pr-4 text-[#FFD700]">${escapeHtml(item.kind)}</td><td class="py-2 pr-4">${item.total}</td><td class="py-2 pr-4">${item.referenced}</td><td class="py-2 pr-4">${item.documented}</td><td class="py-2 pr-4">${item.withDependencies}</td><td class="py-2">${item.score}%</td></tr>`).join("");
+    return `<article class="rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-xs uppercase tracking-wide text-[#FFD700]">Repository Health Dashboard</p><h2 class="text-2xl font-bold text-[#FFD700] mt-1">Knowledge Coverage</h2><p class="text-gray-300 mt-3">Coverage scores blend references, documentation/status fields, and dependency metadata for each indexed kind.</p><div class="overflow-x-auto mt-4"><table class="w-full text-sm text-left"><thead class="text-gray-300"><tr><th class="py-2 pr-4">Kind</th><th class="py-2 pr-4">Total</th><th class="py-2 pr-4">Referenced</th><th class="py-2 pr-4">Documented</th><th class="py-2 pr-4">Linked</th><th class="py-2">Score</th></tr></thead><tbody>${rows}</tbody></table></div></article>`;
+  }
+
+  function renderDependencyExplorer(report) {
+    const items = report.dependencyExplorer.slice(0, 20).map((edge) => `<li class="mb-2"><span class="text-[#FFD700]">${escapeHtml(edge.fromTitle)}</span> <span class="text-gray-400">${escapeHtml(edge.field)}</span> → <span class="${edge.status === "resolved" ? "text-emerald-200" : "text-red-200"}">${escapeHtml(edge.target)}</span><span class="text-gray-500"> ${edge.targetSource ? `(${escapeHtml(edge.targetSource)})` : "(unresolved)"}</span></li>`).join("");
+    return `<article class="rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-xs uppercase tracking-wide text-[#FFD700]">Dependency Explorer</p><h2 class="text-2xl font-bold text-[#FFD700] mt-1">Cross-Index Edges</h2><p class="text-gray-300 mt-3">Source-aware links generated from runtime requirements, move/ability ownership, lore relations, assets, dex refs, and mechanics graph edges.</p><ul class="mt-4 text-sm">${items || "<li>No dependency edges found.</li>"}</ul></article>`;
+  }
+
+  function renderRepairSuggestions(report) {
+    const items = report.repairSuggestions.map((item) => `<li class="mb-3"><p class="font-bold text-white">${escapeHtml(item.finding)}</p><p class="text-gray-300">${escapeHtml(item.action)}</p>${item.sourcePath ? `<p class="text-xs text-gray-500 mt-1">Source: ${escapeHtml(item.sourcePath)}</p>` : ""}</li>`).join("");
+    return `<article class="rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-xs uppercase tracking-wide text-[#FFD700]">Actionable Diagnostics</p><h2 class="text-2xl font-bold text-[#FFD700] mt-1">Repair Suggestions</h2><ul class="mt-4 text-sm list-disc ml-5">${items || "<li>No repair suggestions needed.</li>"}</ul></article>`;
   }
 
   function renderSources(report) {
@@ -236,13 +318,13 @@
     const grouped = ["error", "warning", "info"].map((severity) => {
       const items = report.findings.filter((finding) => finding.severity === severity);
       if (!items.length) return "";
-      return `<section class="mt-5"><h3 class="text-lg font-bold text-[#FFD700]">${severity.toUpperCase()} Findings</h3><ul class="mt-3 text-sm text-gray-100 list-disc ml-5">${items.map((item) => `<li class="mb-2"><span class="text-gray-300">${item.rule}</span>: ${item.message}</li>`).join("")}</ul></section>`;
+      return `<section class="mt-5"><h3 class="text-lg font-bold text-[#FFD700]">${severity.toUpperCase()} Findings</h3><ul class="mt-3 text-sm text-gray-100 list-disc ml-5">${items.map((item) => `<li class="mb-2"><span class="text-gray-300">${escapeHtml(item.rule)}</span>: ${escapeHtml(item.message)}</li>`).join("")}</ul></section>`;
     }).join("");
 
-    const sourceCards = report.sources.map((item) => `<article class="rounded-2xl border ${item.ok ? "border-emerald-300/40 bg-emerald-950/20" : "border-red-400/50 bg-red-950/30"} p-5"><p class="text-[#FFD700] text-xs uppercase tracking-wide">${item.kind}</p><h2 class="text-xl font-bold mt-1">${item.label}</h2><p class="text-gray-300 text-sm mt-3">${item.path}</p><p class="text-gray-400 text-xs mt-2">Records: ${item.count} • ${item.ms}ms</p>${item.ok ? "<p class=\"text-emerald-200 text-sm mt-4\">Loaded.</p>" : `<p class="text-red-200 text-sm mt-4">${item.error}</p>`}</article>`).join("");
+    const sourceCards = report.sources.map((item) => `<article class="rounded-2xl border ${item.ok ? "border-emerald-300/40 bg-emerald-950/20" : "border-red-400/50 bg-red-950/30"} p-5"><p class="text-[#FFD700] text-xs uppercase tracking-wide">${escapeHtml(item.kind)}</p><h2 class="text-xl font-bold mt-1">${escapeHtml(item.label)}</h2><p class="text-gray-300 text-sm mt-3">${escapeHtml(item.path)}</p><p class="text-gray-400 text-xs mt-2">Records: ${item.count} • ${item.ms}ms</p>${item.ok ? "<p class=\"text-emerald-200 text-sm mt-4\">Loaded.</p>" : `<p class="text-red-200 text-sm mt-4">${escapeHtml(item.error)}</p>`}</article>`).join("");
 
     const lead = report.findings.length ? grouped : "<p class=\"text-emerald-200 mt-4\">No repository integrity findings.</p>";
-    output.innerHTML = `<article class="lg:col-span-2 rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-xs uppercase tracking-wide text-[#FFD700]">Phase 1.2</p><h2 class="text-2xl font-bold text-[#FFD700] mt-1">Repository Integrity Report</h2><p class="text-gray-300 mt-3">Engine ${ENGINE_VERSION} validates source availability, required fields, cross-index references, mechanics graph edges, runtime load order, duplicate IDs, and orphan records.</p>${lead}</article>${sourceCards}`;
+    output.innerHTML = `<article class="lg:col-span-2 rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-xs uppercase tracking-wide text-[#FFD700]">Phase 1.2</p><h2 class="text-2xl font-bold text-[#FFD700] mt-1">Repository Integrity Report</h2><p class="text-gray-300 mt-3">Engine ${ENGINE_VERSION} validates source availability, required fields, cross-index references, mechanics graph edges, runtime load order, duplicate IDs, orphan records, knowledge coverage, and actionable repair paths.</p>${lead}</article>${renderCoverage(report)}${renderDependencyExplorer(report)}${renderRepairSuggestions(report)}${sourceCards}`;
   }
 
   async function loadSource(source) {
@@ -275,16 +357,21 @@
       ...validateRuntime(loaded),
       ...validateOrphans(loaded, model)
     ]);
+    const coverage = buildKnowledgeCoverage(loaded, model);
+    const dependencyExplorer = buildDependencyExplorer(model);
+    const repairSuggestions = buildRepairSuggestions(findings);
     const errorCount = classify(findings, "error");
     const warningCount = classify(findings, "warning");
     const infoCount = classify(findings, "info");
     const recordCount = sources.reduce((sum, source) => sum + source.count, 0);
-    const healthScore = Math.max(0, Math.round(100 - errorCount * 10 - warningCount * 4 - infoCount * 1));
+    const coverageScore = coverage.length ? Math.round(coverage.reduce((sum, item) => sum + item.score, 0) / coverage.length) : 100;
+    const healthScore = Math.max(0, Math.round(100 - errorCount * 10 - warningCount * 4 - infoCount * 1 - Math.max(0, 100 - coverageScore) * 0.15));
     latestReport = {
       generatedAt: new Date().toISOString(),
       engineVersion: ENGINE_VERSION,
       rulesVersion: rules.schemaVersion,
       healthScore,
+      coverageScore,
       errorCount,
       warningCount,
       infoCount,
@@ -292,7 +379,10 @@
       idCount: model.ids.size,
       linkCount: model.references.length,
       sources,
-      findings
+      findings,
+      coverage,
+      dependencyExplorer,
+      repairSuggestions
     };
     window.VOLTAN_VALIDATION_REPORT = latestReport;
     renderSummary(latestReport);
@@ -309,6 +399,7 @@
   }
 
   window.VoltnValidationEngine = { init: initValidationEngine, version: ENGINE_VERSION };
+  window.VoltanValidationEngine = window.VoltnValidationEngine;
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => { wireCopyButton(); initValidationEngine(); });
   else { wireCopyButton(); initValidationEngine(); }
 })();
