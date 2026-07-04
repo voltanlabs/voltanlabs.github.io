@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.1.1",
   "generatedBy": "VoltanLabs Studio Diagnostics",
   "description": "Registry of live Studio and DataByteSprites sources that Diagnostics should validate.",
   "sources": [
@@ -13,6 +13,7 @@
     {"id":"dbs-type-chart","label":"DataByteSprites Type Chart","path":"/studio/databytesprites/type-chart.json","kind":"typeChart","collection":"rules"},
     {"id":"dbs-abilities","label":"DataByteSprites Abilities","path":"/studio/databytesprites/abilities.json","kind":"ability","collection":"abilities"},
     {"id":"runtime-manifest","label":"Runtime Manifest","path":"/studio/runtime/load-order.json","kind":"runtime","collection":"modules,phases"},
+    {"id":"readme","label":"README Roadmap","path":"/README.md","kind":"documentation","collection":"file"},
     {"id":"studio-registry-js","label":"Studio Registry JS","path":"/assets/studio-registry.js","kind":"script","collection":"file"},
     {"id":"studio-shell-js","label":"Studio Shell JS","path":"/assets/studio-shell.js","kind":"script","collection":"file"},
     {"id":"studio-search-js","label":"Studio Search JS","path":"/assets/asset-search.js","kind":"script","collection":"file"},
@@ -25,7 +26,8 @@
     "move": ["id", "name", "learnedBy"],
     "ability": ["id", "name", "assignedTo"],
     "typeChart": ["attackingElement"],
-    "runtime": ["id", "script", "requires"]
+    "runtime": ["id", "script", "requires"],
+    "documentation": ["Phase 1.2", "Repository Integrity", "Validation Engine"]
   },
-  "nextStep": "Wire diagnostics page to consume this source registry instead of maintaining the source list inline."
+  "nextStep": "Use README as a documentation source so Diagnostics can detect roadmap and implementation drift alongside JSON and runtime sources."
 }
