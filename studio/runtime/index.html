@@ -10,18 +10,21 @@
   <main class="max-w-6xl mx-auto px-6 py-12">
     <p class="text-[#FFD700] uppercase tracking-[0.25em] text-xs mb-3">VoltanLabs Studio</p>
     <h1 class="text-4xl md:text-6xl font-bold text-[#007BFF]">Runtime Visualizer</h1>
-    <p class="text-gray-300 mt-4 max-w-3xl">Phase 2 Runtime Intelligence view of Data Discovery boot phases, runtime modules, dependencies, session events, and failure behavior.</p>
+    <p class="text-gray-300 mt-4 max-w-3xl">Phase 2 Runtime Intelligence view of Data Discovery boot phases, runtime modules, dependencies, session events, event bus traffic, and failure behavior.</p>
     <div class="mt-6 flex gap-3 flex-wrap">
       <a href="/studio/" class="px-4 py-2 rounded-xl bg-[#007BFF] font-bold">Back to Studio</a>
       <a href="/studio/diagnostics/" class="px-4 py-2 rounded-xl border border-[#FFD700] text-[#FFD700] font-bold">Diagnostics</a>
       <button id="copyRuntimeSession" class="px-4 py-2 rounded-xl border border-white/20 font-bold">Copy Runtime Session</button>
+      <button id="copyRuntimeEvents" class="px-4 py-2 rounded-xl border border-white/20 font-bold">Copy Event Bus</button>
     </div>
     <section id="sessionSummary" class="grid md:grid-cols-5 gap-4 mt-10">
       <div class="rounded-2xl border border-white/10 bg-[#2C3E50] p-5"><p class="text-gray-300 text-sm">Runtime</p><strong class="text-3xl text-[#FFD700]">Loading</strong></div>
     </section>
     <section id="runtimeOutput" class="grid gap-5 mt-10"></section>
     <section id="runtimeSessionEvents" class="grid gap-5 mt-10"></section>
+    <section id="runtimeEventBus" class="grid gap-5 mt-10"></section>
   </main>
+  <script src="/assets/js/studio-runtime-event-bus.js?v=phase2-build2"></script>
   <script src="/assets/js/studio-runtime-session-monitor.js?v=phase2-build1"></script>
   <script>
     function escapeHtml(value){return String(value??'').replace(/[&<>"]/g,(char)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[char]));}
@@ -51,14 +54,31 @@
       const rows=session.events.slice(-12).reverse().map(item=>`<li class="border-t border-white/10 py-2"><span class="text-[#FFD700]">${item.elapsedMs}ms</span> ${escapeHtml(item.name)}</li>`).join('');
       events.innerHTML=`<article class="rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-xs uppercase tracking-wide text-[#FFD700]">Build 1</p><h2 class="text-2xl font-bold text-[#FFD700] mt-1">Runtime Session Monitor</h2><p class="text-gray-300 mt-3">Tracks runtime boot state, module totals, failure count, warning count, elapsed time, and recent runtime events.</p><ul class="mt-4 text-sm">${rows||'<li>No runtime events yet.</li>'}</ul></article>`;
     }
+    function renderEventBus(){
+      const bus=window.VoltanRuntimeEventBus;
+      const output=document.getElementById('runtimeEventBus');
+      if(!bus||!output)return;
+      const history=bus.getHistory().slice(-16).reverse();
+      const rows=history.map(item=>`<li class="border-t border-white/10 py-2"><span class="text-[#FFD700]">${item.elapsedMs}ms</span> <span class="text-gray-300">[${escapeHtml(item.severity)}]</span> ${escapeHtml(item.name)} <span class="text-gray-500">${escapeHtml(item.source)}</span></li>`).join('');
+      output.innerHTML=`<article class="rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-xs uppercase tracking-wide text-[#FFD700]">Build 2</p><h2 class="text-2xl font-bold text-[#FFD700] mt-1">Runtime Event Bus</h2><p class="text-gray-300 mt-3">Unified event stream for Runtime Visualizer, Diagnostics, Scanner OS, and future AI Development Assistant tooling.</p><ul class="mt-4 text-sm">${rows||'<li>No bus events yet.</li>'}</ul></article>`;
+    }
     document.addEventListener('runtime:session-updated',renderSession);
+    document.addEventListener('runtime:event-bus-published',renderEventBus);
+    if(window.VoltanRuntimeEventBus) window.VoltanRuntimeEventBus.subscribe(renderEventBus,{replay:true});
     document.getElementById('copyRuntimeSession').addEventListener('click',async()=>{
       const monitor=window.VoltanRuntimeSessionMonitor;
       const payload=monitor?monitor.exportMarkdown():JSON.stringify(window.VOLTAN_RUNTIME_SESSION,null,2);
       await navigator.clipboard.writeText(payload);
       document.getElementById('copyRuntimeSession').textContent='Copied';
     });
+    document.getElementById('copyRuntimeEvents').addEventListener('click',async()=>{
+      const bus=window.VoltanRuntimeEventBus;
+      const payload=bus?bus.exportMarkdown():JSON.stringify(window.VOLTAN_RUNTIME_EVENTS,null,2);
+      await navigator.clipboard.writeText(payload);
+      document.getElementById('copyRuntimeEvents').textContent='Copied';
+    });
     init();
+    renderEventBus();
   </script>
 </body>
 </html>
