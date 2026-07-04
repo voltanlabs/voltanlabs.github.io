@@ -1,21 +1,21 @@
 {
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.1.1",
   "generatedBy": "VoltanLabs Studio Validation Engine",
-  "description": "Reusable validation rules for Studio registries, DataByteSprites indexes, runtime manifests, source ownership maps, and mechanics graphs.",
+  "description": "Reusable validation rules for Studio registries, DataByteSprites indexes, runtime manifests, source ownership maps, documentation drift checks, and mechanics graphs.",
   "validationEngine": {
     "id": "studio-validation-engine",
     "status": "active-foundation",
-    "phase": "Phase 1",
-    "goal": "Detect broken references, malformed records, invalid runtime load order, duplicate IDs, and documentation drift before new gameplay systems are added."
+    "phase": "Phase 1.2",
+    "goal": "Detect broken references, malformed records, invalid runtime load order, duplicate IDs, documentation drift, and source-aware repair paths before new gameplay systems are added."
   },
   "ruleSets": [
     {
       "id": "registry-availability",
       "name": "Registry Availability",
       "severity": "error",
-      "targetKinds": ["registry", "modules", "species", "lore", "sourceFile", "mechanicsGraph", "move", "typeChart", "ability", "runtime"],
+      "targetKinds": ["registry", "modules", "species", "lore", "sourceFile", "mechanicsGraph", "move", "typeChart", "ability", "runtime", "documentation"],
       "checks": ["sourceExists", "jsonParses", "schemaVersionPresent", "collectionHasRecords"],
-      "description": "Every registered Knowledge Engine or diagnostics source must load, parse, declare a schemaVersion, and expose at least one expected collection record."
+      "description": "Every registered Knowledge Engine or diagnostics source must load, parse, declare a schemaVersion when JSON-backed, and expose at least one expected collection record."
     },
     {
       "id": "required-fields",
@@ -56,6 +56,14 @@
       "targetKinds": ["species", "lore", "sourceFile", "move", "ability"],
       "checks": ["recordReferencedSomewhere", "plannedRecordsClearlyMarked"],
       "description": "Useful records should either be referenced by another system or clearly marked as planned/design-seed/future content."
+    },
+    {
+      "id": "documentation-drift",
+      "name": "Documentation Drift",
+      "severity": "warning",
+      "targetKinds": ["documentation"],
+      "checks": ["readmeMentionsCurrentPhase", "readmeMentionsRepositoryIntegrity", "readmeMentionsActionableDiagnostics", "readmeMentionsDependencyExplorer"],
+      "description": "README and roadmap documentation should mention the active repository-integrity capabilities exposed by the Diagnostics engine."
     }
   ],
   "knownGlobalIds": [
@@ -69,11 +77,21 @@
     "asset-library",
     "simulation-lab"
   ],
+  "documentationDrift": {
+    "requiredReadmePhrases": [
+      "Phase 1.2",
+      "Repository Integrity Engine",
+      "Dependency Explorer",
+      "Actionable repair suggestions",
+      "Knowledge coverage metrics"
+    ]
+  },
   "nextImplementationSteps": [
-    "Load this rules manifest from Diagnostics.",
-    "Build a common ID map from all sources in /studio/diagnostics/sources.json.",
+    "Keep the Diagnostics source registry as the single list of validation targets.",
+    "Build the common ID map from all JSON-backed sources in /studio/diagnostics/sources.json.",
     "Validate mechanics graph edges against graph nodes.",
     "Validate species, lore, moves, abilities, and source files against the common ID map.",
-    "Surface health score, errors, warnings, and info-level findings in the Diagnostics UI."
+    "Validate README roadmap wording against active Phase 1.2 capabilities.",
+    "Surface health score, coverage score, dependency edges, repair suggestions, errors, warnings, and info-level findings in the Diagnostics UI."
   ]
 }
