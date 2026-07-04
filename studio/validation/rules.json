@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "0.1.0",
+  "generatedBy": "VoltanLabs Studio Validation Engine",
+  "description": "Reusable validation rules for Studio registries, DataByteSprites indexes, runtime manifests, source ownership maps, and mechanics graphs.",
+  "validationEngine": {
+    "id": "studio-validation-engine",
+    "status": "active-foundation",
+    "phase": "Phase 1",
+    "goal": "Detect broken references, malformed records, invalid runtime load order, duplicate IDs, and documentation drift before new gameplay systems are added."
+  },
+  "ruleSets": [
+    {
+      "id": "registry-availability",
+      "name": "Registry Availability",
+      "severity": "error",
+      "targetKinds": ["registry", "modules", "species", "lore", "sourceFile", "mechanicsGraph", "move", "typeChart", "ability", "runtime"],
+      "checks": ["sourceExists", "jsonParses", "schemaVersionPresent", "collectionHasRecords"],
+      "description": "Every registered Knowledge Engine or diagnostics source must load, parse, declare a schemaVersion, and expose at least one expected collection record."
+    },
+    {
+      "id": "required-fields",
+      "name": "Required Fields",
+      "severity": "error",
+      "targetKinds": ["species", "lore", "sourceFile", "mechanicsGraph", "move", "typeChart", "ability", "runtime"],
+      "checks": ["idPresent", "titlePresent", "statusPresentWhereExpected", "pathPresentWhereExpected"],
+      "description": "Records must expose stable IDs and readable titles so they can participate in Studio search, graph validation, and future AI tooling."
+    },
+    {
+      "id": "cross-index-references",
+      "name": "Cross-Index References",
+      "severity": "warning",
+      "targetKinds": ["species", "lore", "sourceFile", "mechanicsGraph", "move", "ability"],
+      "checks": ["dependencyIdExists", "relatedSpeciesExists", "learnedBySpeciesExists", "assignedToSpeciesExists", "sourceTargetExists"],
+      "description": "Dependencies, relationships, learnedBy fields, assignedTo fields, and graph edges should point to known Studio or DataByteSprites IDs."
+    },
+    {
+      "id": "mechanics-graph-integrity",
+      "name": "Mechanics Graph Integrity",
+      "severity": "error",
+      "targetKinds": ["mechanicsGraph"],
+      "checks": ["nodeIdsUnique", "edgeSourcesExist", "edgeTargetsExist", "edgeTypesDeclared"],
+      "description": "Every mechanics graph edge must reference existing graph nodes and use a declared edge type."
+    },
+    {
+      "id": "runtime-load-order",
+      "name": "Runtime Load Order",
+      "severity": "error",
+      "targetKinds": ["runtime"],
+      "checks": ["runtimeModuleIdsUnique", "runtimeRequiredDependenciesExist", "runtimeScriptsPresent", "requiredModulesLoadBeforeDependents"],
+      "description": "Runtime modules must have unique IDs, valid dependencies, and reachable scripts before the runtime can be trusted."
+    },
+    {
+      "id": "orphan-detection",
+      "name": "Orphan Detection",
+      "severity": "info",
+      "targetKinds": ["species", "lore", "sourceFile", "move", "ability"],
+      "checks": ["recordReferencedSomewhere", "plannedRecordsClearlyMarked"],
+      "description": "Useful records should either be referenced by another system or clearly marked as planned/design-seed/future content."
+    }
+  ],
+  "knownGlobalIds": [
+    "dashboard",
+    "studio-diagnostics",
+    "runtime-visualizer",
+    "databytesprites",
+    "creator-suite",
+    "technology-vault",
+    "knowledge-engine",
+    "asset-library",
+    "simulation-lab"
+  ],
+  "nextImplementationSteps": [
+    "Load this rules manifest from Diagnostics.",
+    "Build a common ID map from all sources in /studio/diagnostics/sources.json.",
+    "Validate mechanics graph edges against graph nodes.",
+    "Validate species, lore, moves, abilities, and source files against the common ID map.",
+    "Surface health score, errors, warnings, and info-level findings in the Diagnostics UI."
+  ]
+}
