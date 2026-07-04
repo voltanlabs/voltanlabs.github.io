@@ -24,6 +24,12 @@ It separates active systems, active foundations, planned systems, and areas that
 | `/README.md` | Active | Main project summary and roadmap handoff. |
 | `/ARCHITECTURE.md` | Active | Current Studio architecture map. |
 | `/REPOSITORY_MAP.md` | Active | Repository area and ownership map. |
+| `/DIAGNOSTICS.md` | Active | Studio Intelligence reference. |
+| `/VALIDATION.md` | Active | Validation rules and report reference. |
+| `/KNOWLEDGE_ENGINE.md` | Active | Knowledge Engine registry and index reference. |
+| `/MODULE_INDEX.md` | Active | Studio module catalog. |
+| `/ROADMAP.md` | Active | Dedicated project roadmap. |
+| `/RELEASE_NOTES_PHASE2.md` | Active | Phase 2 release notes. |
 | `/docs/` | Active foundation | Phase audits and future documentation set. |
 | `/studio/` | Active | Main VoltanLabs Studio shell and internal systems. |
 | `/assets/` | Active | Shared JavaScript, CSS, images, runtime helpers, and tool support files. |
@@ -98,12 +104,12 @@ assets/
 | Phase 2.1 Audit | `docs/phase-2.1-repository-audit.md` | Active | Current documentation and architecture audit. |
 | Architecture | `ARCHITECTURE.md` | Active | Layered Studio architecture and data flow. |
 | Repository Map | `REPOSITORY_MAP.md` | Active | Directory map and ownership/status classification. |
-| Roadmap | `ROADMAP.md` | Planned | Dedicated roadmap beyond README summary. |
-| Diagnostics Reference | `DIAGNOSTICS.md` | Planned | Full Studio Intelligence module reference. |
-| Validation Reference | `VALIDATION.md` | Planned | Validation engine and rules guide. |
-| Knowledge Engine Reference | `KNOWLEDGE_ENGINE.md` | Planned | Registry, index, ID, and search conventions. |
-| Module Index | `MODULE_INDEX.md` | Planned | Human-readable map of Studio modules. |
-| Release Notes | `RELEASE_NOTES_PHASE2.md` | Planned | Phase 2 completion notes. |
+| Diagnostics Reference | `DIAGNOSTICS.md` | Active | Full Studio Intelligence module reference. |
+| Validation Reference | `VALIDATION.md` | Active | Validation engine and rules guide. |
+| Knowledge Engine Reference | `KNOWLEDGE_ENGINE.md` | Active | Registry, index, ID, and search conventions. |
+| Module Index | `MODULE_INDEX.md` | Active | Human-readable map of Studio modules. |
+| Roadmap | `ROADMAP.md` | Active | Dedicated roadmap beyond README summary. |
+| Release Notes | `RELEASE_NOTES_PHASE2.md` | Active | Phase 2 completion notes. |
 
 ## Active Systems
 
@@ -261,6 +267,6 @@ When a new module, index, major page, or diagnostic system is added, update at l
 - `ARCHITECTURE.md`
 - `REPOSITORY_MAP.md`
 - `docs/phase-2.1-repository-audit.md`
-- Future `MODULE_INDEX.md`
+- `MODULE_INDEX.md`
 
 This keeps VoltanLabs Studio self-documenting as it grows.
