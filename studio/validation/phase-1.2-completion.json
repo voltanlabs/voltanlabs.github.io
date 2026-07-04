@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "phase-1.2-repository-integrity-completion",
+  "title": "Phase 1.2 Repository Integrity Completion",
+  "status": "complete-foundation",
+  "completedMilestone": "Repository Integrity & Actionable Diagnostics",
+  "validationEngineVersion": "1.2.2",
+  "summary": "Phase 1.2 turns Diagnostics from file-existence checks into a repository-wide integrity analyzer with source-aware findings and actionable repair guidance.",
+  "completedCapabilities": [
+    {
+      "id": "repository-id-graph",
+      "name": "Repository-wide ID Graph",
+      "status": "complete-foundation",
+      "source": "/assets/js/studio-validation-engine.js",
+      "notes": "Builds a shared ID, alias, source, reverse-reference, and dependency model from registered JSON-backed sources."
+    },
+    {
+      "id": "cross-index-validation",
+      "name": "Cross-index Validation",
+      "status": "complete-foundation",
+      "source": "/assets/js/studio-validation-engine.js",
+      "notes": "Validates references across species, lore, moves, abilities, source files, runtime dependencies, and mechanics graph records."
+    },
+    {
+      "id": "duplicate-id-detection",
+      "name": "Duplicate ID Detection",
+      "status": "complete-foundation",
+      "source": "/assets/js/studio-validation-engine.js",
+      "notes": "Detects duplicate IDs within active record kinds while preserving known global IDs."
+    },
+    {
+      "id": "orphan-record-detection",
+      "name": "Orphan Record Detection",
+      "status": "complete-foundation",
+      "source": "/assets/js/studio-validation-engine.js",
+      "notes": "Flags useful records that are not referenced by another indexed record unless intentionally marked as planned or design-seed."
+    },
+    {
+      "id": "runtime-dependency-validation",
+      "name": "Runtime Dependency Validation",
+      "status": "complete-foundation",
+      "source": "/assets/js/studio-validation-engine.js",
+      "notes": "Validates runtime module requirements, missing module references, missing scripts, and load-order risk."
+    },
+    {
+      "id": "mechanics-graph-validation",
+      "name": "Mechanics Graph Validation",
+      "status": "complete-foundation",
+      "source": "/assets/js/studio-validation-engine.js",
+      "notes": "Checks mechanics graph nodes, edges, and declared edge types."
+    },
+    {
+      "id": "knowledge-coverage-metrics",
+      "name": "Knowledge Coverage Metrics",
+      "status": "complete-foundation",
+      "source": "/assets/js/studio-validation-engine.js",
+      "notes": "Reports per-kind reference, documentation/status, dependency, and coverage score metrics."
+    },
+    {
+      "id": "dependency-explorer",
+      "name": "Dependency Explorer",
+      "status": "complete-foundation",
+      "source": "/assets/js/studio-validation-engine.js",
+      "notes": "Builds source-aware dependency edges and exposes resolved/unresolved target information in the Diagnostics report."
+    },
+    {
+      "id": "source-aware-findings",
+      "name": "Source-aware Findings",
+      "status": "complete-foundation",
+      "source": "/assets/js/studio-validation-engine.js",
+      "notes": "Includes source labels, IDs, and paths on collected references and repair suggestions."
+    },
+    {
+      "id": "actionable-repair-suggestions",
+      "name": "Actionable Repair Suggestions",
+      "status": "complete-foundation",
+      "source": "/assets/js/studio-validation-engine.js",
+      "notes": "Maps findings to plain-language repair guidance and affected source paths."
+    },
+    {
+      "id": "documentation-drift-validation",
+      "name": "Documentation Drift Validation",
+      "status": "complete-foundation",
+      "source": "/studio/validation/rules.json",
+      "notes": "Registers README as a diagnostics source and validates roadmap wording against current Phase 1.2 capabilities."
+    },
+    {
+      "id": "repository-health-dashboard",
+      "name": "Repository Health Dashboard",
+      "status": "complete-foundation",
+      "source": "/studio/diagnostics/",
+      "notes": "Displays health, coverage, milestone cards, findings, dependency edges, repair suggestions, and source status cards."
+    }
+  ],
+  "phase2Handoff": {
+    "nextPhase": "Phase 2 — Runtime Intelligence Dashboard",
+    "entryPoint": "/studio/runtime/",
+    "dependsOn": [
+      "repository-id-graph",
+      "dependency-explorer",
+      "runtime-dependency-validation",
+      "repository-health-dashboard"
+    ],
+    "recommendedFirstBuild": "Connect runtime visualizer output to the Phase 1.2 validation report so runtime health and repository health can be viewed together."
+  }
+}
