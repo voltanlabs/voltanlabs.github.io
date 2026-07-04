@@ -17,6 +17,10 @@ Primary Phase 2.1 documents:
 - `REPOSITORY_MAP.md`
 - `DIAGNOSTICS.md`
 - `VALIDATION.md`
+- `KNOWLEDGE_ENGINE.md`
+- `MODULE_INDEX.md`
+- `ROADMAP.md`
+- `RELEASE_NOTES_PHASE2.md`
 
 ## Live Studio Areas
 
@@ -41,10 +45,10 @@ Primary Phase 2.1 documents:
 | Repository Map | `REPOSITORY_MAP.md` | Active |
 | Diagnostics Reference | `DIAGNOSTICS.md` | Active |
 | Validation Reference | `VALIDATION.md` | Active |
-| Roadmap | `ROADMAP.md` | Planned |
-| Knowledge Engine Reference | `KNOWLEDGE_ENGINE.md` | Planned |
-| Module Index | `MODULE_INDEX.md` | Planned |
-| Release Notes | `RELEASE_NOTES_PHASE2.md` | Planned |
+| Knowledge Engine Reference | `KNOWLEDGE_ENGINE.md` | Active |
+| Module Index | `MODULE_INDEX.md` | Active |
+| Roadmap | `ROADMAP.md` | Active |
+| Release Notes | `RELEASE_NOTES_PHASE2.md` | Active |
 
 ## Architecture Overview
 
@@ -92,7 +96,7 @@ VoltanLabs Studio
         └── Ability index
 ```
 
-For the full architecture map, see `ARCHITECTURE.md`. For the repository directory/status map, see `REPOSITORY_MAP.md`. For technical references, see `DIAGNOSTICS.md` and `VALIDATION.md`.
+For the full architecture map, see `ARCHITECTURE.md`. For the repository directory/status map, see `REPOSITORY_MAP.md`. For technical references, see `DIAGNOSTICS.md`, `VALIDATION.md`, `KNOWLEDGE_ENGINE.md`, and `MODULE_INDEX.md`. For planning and history, see `ROADMAP.md` and `RELEASE_NOTES_PHASE2.md`.
 
 ## Completed Foundation
 
@@ -178,113 +182,18 @@ Implemented modules:
 
 ## Roadmap
 
-### Phase 1 — Validation Engine
+See `ROADMAP.md` for the dedicated roadmap.
 
-Status: complete foundation.
+Summary:
 
-Built a reusable validation layer that can inspect the Studio registry, all registered indexes, runtime manifests, mechanics graph relationships, source ownership maps, documentation drift, and milestone handoff manifests.
-
-Validation outputs:
-
-- Missing IDs.
-- Duplicate IDs.
-- Invalid dependencies.
-- Broken mechanics graph edges.
-- Orphaned records.
-- Missing schema versions.
-- Invalid runtime load order.
-- Missing runtime scripts.
-- Knowledge coverage metrics.
-- Dependency Explorer edges.
-- Actionable repair suggestions.
-- Documentation drift warnings.
-- Single Studio health report.
-
-### Phase 2.0 — Studio Intelligence Dashboard
-
-Status: complete foundation.
-
-Turned Diagnostics into a layered development dashboard that reports:
-
-- Studio health score.
-- Knowledge integrity.
-- Runtime and dependency relationships.
-- Broken references.
-- DataByteSprites index coverage.
-- Highest-risk gaps.
-- Repair plans.
-- Coverage heat maps.
-- Repository maturity.
-- Next recommended milestone.
-
-### Phase 2.1 — Documentation & Architecture Audit
-
-Status: active.
-
-Bring documentation and maps back into alignment with the implementation.
-
-Deliverables:
-
-- Repository audit.
-- README refresh.
-- Architecture map.
-- Repository map.
-- Diagnostics reference.
-- Validation reference.
-- Knowledge Engine reference.
-- Module index.
-- Release notes.
-- Updated roadmap.
-
-### Phase 2.2 — Predictive Diagnostics
-
-Status: planned.
-
-Use the Phase 2.0 Studio Intelligence foundation to begin correlating findings, predicting maintenance needs, and recommending architecture improvements.
-
-Priority goals:
-
-- Correlate repeated warning categories.
-- Predict likely technical debt growth.
-- Recommend safest next repairs.
-- Detect stale documentation automatically.
-- Generate architecture recommendations from repository state.
-
-### Phase 3 — DataByteSprites Runtime Integration
-
-Status: planned.
-
-Begin consuming the knowledge indexes in actual gameplay systems.
-
-Priority integrations:
-
-- Species-driven capture pool.
-- Battle balance pass from species stats, moves, abilities, and type chart.
-- DataByteDex renderer from species and lore indexes.
-- Journal OS from lore and discovery history.
-- Mission OS from lore, graph nodes, and progression goals.
-
-### Phase 4 — Asset Library and Technology Vault Expansion
-
-Status: active foundation / planned expansion.
-
-- Expand the Asset Library into a searchable production asset system.
-- Expand the Technology Vault into a reusable engineering reference.
-- Link assets, technologies, source files, and project systems through the Knowledge Engine.
-
-### Phase 5 — Studio AI Development Assistant
-
-Status: future milestone.
-
-Once validation and indexing are stable, the Studio should support an AI-assisted development layer that can answer repository-aware questions, suggest refactors, detect drift, and help maintain documentation.
-
-Example goals:
-
-- Find every file related to capture flow.
-- Explain what depends on the battle system.
-- Detect missing DataByteDex records.
-- Recommend the next safest refactor.
-- Generate or update indexes from repository state.
+- Phase 1: Validation Engine — complete foundation.
+- Phase 1.2: Repository Integrity & Actionable Diagnostics — complete foundation.
+- Phase 2.0: Studio Intelligence Dashboard — complete foundation.
+- Phase 2.1: Documentation & Architecture Audit — active.
+- Phase 2.2: Predictive Diagnostics — planned.
+- Phase 3: DataByteSprites Runtime Integration — planned.
+- Phase 4: Asset Library and Technology Vault Expansion — planned expansion.
+- Phase 5: Studio AI Development Assistant — future milestone.
 
 ## Development Rules
 
@@ -299,4 +208,4 @@ Example goals:
 
 ## Current Highest-Value Task
 
-Continue **Phase 2.1: Documentation & Architecture Audit** by adding the Knowledge Engine reference, module index, roadmap, and release notes that match the completed Phase 2.0 Studio Intelligence suite.
+Complete **Phase 2.1: Documentation & Architecture Audit** by expanding `KNOWLEDGE_ENGINE.md` and `MODULE_INDEX.md`, then move into **Phase 2.2: Predictive Diagnostics**.
