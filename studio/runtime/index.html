@@ -10,22 +10,25 @@
   <main class="max-w-6xl mx-auto px-6 py-12">
     <p class="text-[#FFD700] uppercase tracking-[0.25em] text-xs mb-3">VoltanLabs Studio</p>
     <h1 class="text-4xl md:text-6xl font-bold text-[#007BFF]">Runtime Visualizer</h1>
-    <p class="text-gray-300 mt-4 max-w-3xl">Phase 2 Runtime Intelligence view of Data Discovery boot phases, runtime modules, dependencies, session events, event bus traffic, and failure behavior.</p>
+    <p class="text-gray-300 mt-4 max-w-3xl">Phase 2 Runtime Intelligence view of Data Discovery boot phases, runtime modules, dependencies, session events, event bus traffic, live dependency graph, and failure behavior.</p>
     <div class="mt-6 flex gap-3 flex-wrap">
       <a href="/studio/" class="px-4 py-2 rounded-xl bg-[#007BFF] font-bold">Back to Studio</a>
       <a href="/studio/diagnostics/" class="px-4 py-2 rounded-xl border border-[#FFD700] text-[#FFD700] font-bold">Diagnostics</a>
       <button id="copyRuntimeSession" class="px-4 py-2 rounded-xl border border-white/20 font-bold">Copy Runtime Session</button>
       <button id="copyRuntimeEvents" class="px-4 py-2 rounded-xl border border-white/20 font-bold">Copy Event Bus</button>
+      <button id="copyRuntimeGraph" class="px-4 py-2 rounded-xl border border-white/20 font-bold">Copy Graph</button>
     </div>
     <section id="sessionSummary" class="grid md:grid-cols-5 gap-4 mt-10">
       <div class="rounded-2xl border border-white/10 bg-[#2C3E50] p-5"><p class="text-gray-300 text-sm">Runtime</p><strong class="text-3xl text-[#FFD700]">Loading</strong></div>
     </section>
+    <section id="runtimeDependencyGraph" class="grid gap-5 mt-10"></section>
     <section id="runtimeOutput" class="grid gap-5 mt-10"></section>
     <section id="runtimeSessionEvents" class="grid gap-5 mt-10"></section>
     <section id="runtimeEventBus" class="grid gap-5 mt-10"></section>
   </main>
   <script src="/assets/js/studio-runtime-event-bus.js?v=phase2-build2"></script>
   <script src="/assets/js/studio-runtime-session-monitor.js?v=phase2-build1"></script>
+  <script src="/assets/js/studio-runtime-dependency-graph.js?v=phase2-build3"></script>
   <script>
     function escapeHtml(value){return String(value??'').replace(/[&<>"]/g,(char)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[char]));}
     async function init(){
@@ -34,11 +37,13 @@
         const response=await fetch('/studio/runtime/load-order.json',{cache:'no-store'});
         if(!response.ok)throw new Error('missing manifest');
         const manifest=await response.json();
+        window.VOLTAN_RUNTIME_MANIFEST=manifest;
         document.dispatchEvent(new CustomEvent('studio:boot',{detail:{manifestUrl:'/studio/runtime/load-order.json',visualizer:true}}));
         document.dispatchEvent(new CustomEvent('runtime:manifest-ready',{detail:{manifest}}));
         const phases=(manifest.phases||[]).map(p=>`<article class="rounded-2xl border border-white/10 bg-[#2C3E50] p-5"><p class="text-[#FFD700] text-xs uppercase tracking-wide">Phase</p><h2 class="text-xl font-bold mt-1">${escapeHtml(p.id)}</h2><p class="text-gray-300 mt-2">${escapeHtml(p.description)}</p></article>`).join('');
         const modules=(manifest.modules||[]).map(m=>`<article class="rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-[#FFD700] text-xs uppercase tracking-wide">${escapeHtml(m.phase)}</p><h2 class="text-xl font-bold mt-1">${escapeHtml(m.label)}</h2><p class="text-gray-300 text-sm mt-3">${escapeHtml(m.script)}</p><p class="text-gray-400 text-xs mt-3">Requires: ${escapeHtml((m.requires||[]).join(' • ')||'none')}</p><p class="text-gray-400 text-xs mt-1">Failure: ${escapeHtml(m.failureBehavior)}</p></article>`).join('');
         output.innerHTML=`<section><h2 class="text-2xl font-bold mb-4">Boot Phases</h2><div class="grid md:grid-cols-2 gap-4">${phases}</div></section><section><h2 class="text-2xl font-bold mb-4 mt-8">Runtime Modules</h2><div class="grid md:grid-cols-2 gap-4">${modules}</div></section>`;
+        if(window.VoltanRuntimeDependencyGraph) window.VoltanRuntimeDependencyGraph.update('visualizer-init');
       }catch(e){
         output.innerHTML='<p class="text-yellow-200">Runtime manifest is not published to main yet. The visualizer page is live.</p>';
         document.dispatchEvent(new CustomEvent('runtime:failed',{detail:{error:String(e),visualizer:true}}));
@@ -76,6 +81,11 @@
       const payload=bus?bus.exportMarkdown():JSON.stringify(window.VOLTAN_RUNTIME_EVENTS,null,2);
       await navigator.clipboard.writeText(payload);
       document.getElementById('copyRuntimeEvents').textContent='Copied';
+    });
+    document.getElementById('copyRuntimeGraph').addEventListener('click',async()=>{
+      const graph=window.VOLTAN_RUNTIME_GRAPH||null;
+      await navigator.clipboard.writeText(JSON.stringify(graph,null,2));
+      document.getElementById('copyRuntimeGraph').textContent='Copied';
     });
     init();
     renderEventBus();
