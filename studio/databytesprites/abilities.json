@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "0.1.0",
+  "generatedBy": "VoltanLabs Studio Ability Indexer",
+  "description": "Offline-first passive ability foundation for DataByteSprites species, moves, type interactions, capture tuning, and future battle logic.",
+  "abilities": [
+    {"id":"static-spark","name":"Static Spark","abilityType":"passive","trigger":"encounter-start","effects":{"captureBonus":2,"powerBonus":3,"typeTags":["Electric","Voltricity"]},"tags":["electric","leovolt","capture","power"],"description":"Electric signal pressure slightly improves capture lock and battle power at encounter start.","assignedTo":["leovolt"],"version":"0.1.0"},
+    {"id":"screen-shield","name":"Screen Shield","abilityType":"passive","trigger":"encounter-start","effects":{"defenseBonus":3,"captureBonus":1,"typeTags":["Screen","Guard"]},"tags":["screen","guard","defense","screensavior","monitor-man"],"description":"Screen-based sprites stabilize the scanner lock with a defensive display layer.","assignedTo":["screensavior","monitor-man"],"version":"0.1.0"},
+    {"id":"reflection-trick","name":"Reflection Trick","abilityType":"passive","trigger":"move-preview","effects":{"speedBonus":2,"captureBonus":1,"typeTags":["Mirror","Trick"]},"tags":["mirror","trick","displaydevil","mirror-master","speed"],"description":"Reflection sprites bend scanner readings, improving speed and giving a small capture timing bonus.","assignedTo":["displaydevil","mirror-master"],"version":"0.1.0"},
+    {"id":"code-shell","name":"Code Shell","abilityType":"passive","trigger":"encounter-start","effects":{"defenseBonus":4,"powerBonus":1,"typeTags":["Code","Shell"]},"tags":["code","shell","crabician","defense"],"description":"A hardened code shell improves defense and gives a small power increase.","assignedTo":["crabician"],"version":"0.1.0"},
+    {"id":"glitch-venom","name":"Glitch Venom","abilityType":"passive","trigger":"move-preview","effects":{"powerBonus":4,"capturePenalty":1,"typeTags":["Glitch","Poison","Bug"]},"tags":["glitch","poison","scorpy","power","risk"],"description":"A risky venomous glitch increases pressure but can make capture slightly less stable.","assignedTo":["scorpy"],"version":"0.1.0"},
+    {"id":"null-pressure","name":"Null Pressure","abilityType":"locked-passive","trigger":"encounter-start","effects":{"powerBonus":10,"capturePenalty":99,"typeTags":["Null","Admin"]},"tags":["null","boss","locked","nullking"],"description":"Locked boss-layer pressure. Not intended for normal capture pools.","assignedTo":["nullking"],"version":"0.1.0"}
+  ],
+  "speciesAbilities": [
+    {"speciesId":"leovolt","abilities":["static-spark"]},
+    {"speciesId":"screensavior","abilities":["screen-shield"]},
+    {"speciesId":"monitor-man","abilities":["screen-shield"]},
+    {"speciesId":"displaydevil","abilities":["reflection-trick"]},
+    {"speciesId":"mirror-master","abilities":["reflection-trick"]},
+    {"speciesId":"crabician","abilities":["code-shell"]},
+    {"speciesId":"scorpy","abilities":["glitch-venom"]},
+    {"speciesId":"nullking","abilities":["null-pressure"]}
+  ],
+  "searchFields": ["id", "name", "abilityType", "trigger", "effects", "tags", "description", "assignedTo", "version"],
+  "commonIndexModel": { "recordType": "ability", "idField": "id", "titleField": "name", "typeField": "abilityType", "keywordFields": ["trigger", "effects", "tags", "description", "assignedTo"], "versionField": "version" }
+}
