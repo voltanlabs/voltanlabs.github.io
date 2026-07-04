@@ -19,6 +19,14 @@ VoltanLabs Studio is an offline-first modular software studio. It is organized a
 
 The architecture favors searchable indexes, manifests, registries, local browser tools, and small companion modules over monolithic rewrites.
 
+## Related References
+
+- `README.md` — current project status and roadmap handoff.
+- `REPOSITORY_MAP.md` — directory ownership and status map.
+- `DIAGNOSTICS.md` — Studio Intelligence and diagnostics module reference.
+- `VALIDATION.md` — validation rules, source registry, report shape, and best practices.
+- `docs/phase-2.1-repository-audit.md` — active documentation audit.
+
 ## High-Level Map
 
 ```text
@@ -103,6 +111,8 @@ Diagnostics started as source validation and has evolved into the Studio Control
 
 Phase 1.2 provided repository integrity validation. Phase 2.0 added companion intelligence modules that consume the validation report.
 
+For the full technical reference, see `DIAGNOSTICS.md`.
+
 #### Validation Engine
 
 Primary file: `assets/js/studio-validation-engine.js`
@@ -122,6 +132,8 @@ Responsibilities:
 - Build coverage metrics.
 - Build dependency explorer edges.
 - Emit a health report.
+
+For validation rule details, see `VALIDATION.md`.
 
 #### Health Calibrator
 
