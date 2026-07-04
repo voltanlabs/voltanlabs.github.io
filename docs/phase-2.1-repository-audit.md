@@ -49,12 +49,11 @@ Resolved in Phase 2.1 so far:
 - Phase 2.0 Studio Intelligence is marked complete.
 - The six new diagnostics modules are listed in README.
 - Architecture and repository maps now exist.
-- README now links the audit, architecture map, and repository map.
+- README now links the audit, architecture map, repository map, diagnostics reference, and validation reference.
+- Diagnostics and validation now have dedicated technical references.
 
 Remaining documentation updates:
 
-- Add a dedicated diagnostics reference.
-- Add a validation reference.
 - Add a Knowledge Engine reference.
 - Add a module index.
 - Add a standalone roadmap.
@@ -107,6 +106,8 @@ See `ARCHITECTURE.md` for the full architecture reference.
 
 See `REPOSITORY_MAP.md` for directory status, ownership, and documentation mapping.
 
+See `DIAGNOSTICS.md` and `VALIDATION.md` for technical references covering the Studio Control Center and validation rules.
+
 ## Phase 2.1 Documentation Deliverables
 
 | Document | Path | Status |
@@ -115,9 +116,9 @@ See `REPOSITORY_MAP.md` for directory status, ownership, and documentation mappi
 | README Refresh | `README.md` | Active |
 | Architecture Map | `ARCHITECTURE.md` | Active |
 | Repository Map | `REPOSITORY_MAP.md` | Active |
+| Diagnostics Reference | `DIAGNOSTICS.md` | Active |
+| Validation Reference | `VALIDATION.md` | Active |
 | Roadmap | `ROADMAP.md` | Planned |
-| Diagnostics Reference | `DIAGNOSTICS.md` | Planned |
-| Validation Reference | `VALIDATION.md` | Planned |
 | Knowledge Engine Reference | `KNOWLEDGE_ENGINE.md` | Planned |
 | Module Index | `MODULE_INDEX.md` | Planned |
 | Release Notes | `RELEASE_NOTES_PHASE2.md` | Planned |
@@ -126,17 +127,17 @@ See `REPOSITORY_MAP.md` for directory status, ownership, and documentation mappi
 
 1. Phase 2.0 modules are implemented as companion scripts rather than one large monolithic diagnostics rewrite, which is good for stability.
 2. Diagnostics has become the strongest architectural control point in the repository.
-3. DataByteSprites has a strong metadata foundation, but its runtime/gameplay systems still need deeper integration with the indexes.
-4. Creator Suite, Asset Library, Technology Vault, and Simulation Lab need clearer documentation boundaries.
-5. The repository is ready for continued documentation reference work before any new feature expansion.
+3. Validation now has an explicit reference describing rules, source registry expectations, report output, and best practices.
+4. DataByteSprites has a strong metadata foundation, but its runtime/gameplay systems still need deeper integration with the indexes.
+5. Creator Suite, Asset Library, Technology Vault, and Simulation Lab need clearer documentation boundaries.
+6. The repository is ready for continued documentation reference work before any new feature expansion.
 
 ## Recommended Next Actions
 
-1. Add `DIAGNOSTICS.md` documenting the full Studio Intelligence stack.
-2. Add `VALIDATION.md` documenting validation rules, report shape, and source registry expectations.
-3. Add `KNOWLEDGE_ENGINE.md` documenting registry, indexes, ID conventions, and search fields.
-4. Add `MODULE_INDEX.md` documenting each Studio module and status.
-5. Add `ROADMAP.md` and `RELEASE_NOTES_PHASE2.md`.
+1. Add `KNOWLEDGE_ENGINE.md` documenting registry, indexes, ID conventions, and search fields.
+2. Add `MODULE_INDEX.md` documenting each Studio module and status.
+3. Add `ROADMAP.md` and `RELEASE_NOTES_PHASE2.md`.
+4. Continue updating README, architecture, and repository maps as each reference document is added.
 
 ## Phase 2.1 Acceptance Criteria
 
