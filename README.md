@@ -2,23 +2,31 @@
 
 VoltanLabs Studio is an offline-first software development platform for building games, AI tools, creative software, documentation systems, simulations, and future commercial products.
 
-The project has grown from a collection of browser tools into a modular Studio architecture built around a shared runtime, searchable knowledge indexes, diagnostics, reusable assets, and project-specific intelligence.
+The project has grown from a collection of browser tools into a modular Studio architecture built around a shared runtime, searchable knowledge indexes, diagnostics, reusable assets, project-specific intelligence, and repository health automation.
 
 ## Current Focus
 
-**Phase 1.2: Repository Integrity & Actionable Diagnostics is complete as a foundation.**
+**Phase 2.0: Studio Intelligence Dashboard is complete as a foundation.**
 
-The current handoff is **Phase 2: Runtime Intelligence Dashboard**. Phase 2 should connect runtime health, runtime load order, bridge checks, and DataByteSprites runtime dependencies to the repository health report created by Phase 1.2.
+The active handoff is **Phase 2.1: Documentation & Architecture Audit**. Phase 2.1 brings the repository documentation, architecture maps, module maps, and roadmaps back into alignment with the systems now implemented in the Studio.
+
+Primary Phase 2.1 audit document:
+
+- `docs/phase-2.1-repository-audit.md`
 
 ## Live Studio Areas
 
 - `/studio/` — VoltanLabs Studio shell and global search UI.
-- `/studio/diagnostics/` — live Repository Health Dashboard and source checks.
+- `/studio/diagnostics/` — Studio Intelligence dashboard and repository health control center.
 - `/studio/runtime/` — runtime load-order visualizer.
 - `/studio/knowledge/index.v2.json` — Knowledge Engine v2 registry.
 - `/studio/diagnostics/sources.json` — diagnostics source registry.
 - `/studio/validation/rules.json` — validation rules manifest.
-- `/studio/validation/phase-1.2-completion.json` — Phase 1.2 completion and Phase 2 handoff manifest.
+- `/studio/validation/phase-1.2-completion.json` — Phase 1.2 completion and handoff manifest.
+- `/studio/databytesprites/` — DataByteSprites project indexes.
+- `/studio/assets/index.json` — Asset Library index.
+- `/technology-vault/` — Technology Vault foundation.
+- `/tools.html` — Creator Suite entry point.
 
 ## Architecture Overview
 
@@ -34,20 +42,27 @@ VoltanLabs Studio
 │   ├── Technology indexes
 │   ├── DataByteSprites indexes
 │   └── Common search model
-├── Diagnostics
+├── Diagnostics / Studio Intelligence
 │   ├── Source registry
 │   ├── Validation rules
 │   ├── Repository Integrity Engine
-│   ├── Repository Health Dashboard
-│   ├── Dependency Explorer
-│   ├── Knowledge coverage metrics
-│   ├── Documentation drift validation
-│   └── Actionable repair suggestions
+│   ├── Health Calibrator
+│   ├── Repository Intelligence
+│   ├── Repository Health History
+│   ├── Auto Repair Engine
+│   ├── Dependency Graph Viewer
+│   ├── Coverage Heat Map
+│   └── Repository Evolution Dashboard
 ├── Runtime System
 │   ├── Load-order manifest
 │   ├── Runtime loader
 │   ├── Runtime health panel
 │   └── Bridge health checks
+├── Creator Suite
+│   ├── Draw Tool
+│   ├── Gif Forge
+│   ├── PromptCraft
+│   └── Future production tools
 └── Projects
     └── DataByteSprites
         ├── Species index
@@ -126,6 +141,21 @@ Completed capabilities:
 
 The completion manifest lives at `studio/validation/phase-1.2-completion.json`.
 
+### Phase 2.0 Studio Intelligence Dashboard
+
+Status: complete foundation.
+
+Phase 2.0 turned `/studio/diagnostics/` into the Studio Control Center.
+
+Implemented modules:
+
+- `assets/js/studio-diagnostics-intelligence.js` — grouped findings, top priorities, and repair categories.
+- `assets/js/studio-health-history.js` — local report snapshots, trends, sparklines, export, and history reset.
+- `assets/js/studio-auto-repair-engine.js` — dry-run repair plans, fix classifications, projected health impact, and repair exports.
+- `assets/js/studio-dependency-graph-viewer.js` — dependency graph model, node cloud, edge stream, unresolved edges, endpoint hints, and graph export.
+- `assets/js/studio-coverage-heat-map.js` — subsystem readiness scoring, drill-down findings, JSON export, and Markdown export.
+- `assets/js/studio-repository-evolution-dashboard.js` — maturity score, readiness stage, milestone tracker, technical debt summary, highest-risk subsystem, next milestone, and executive exports.
+
 ## Roadmap
 
 ### Phase 1 — Validation Engine
@@ -150,23 +180,55 @@ Validation outputs:
 - Documentation drift warnings.
 - Single Studio health report.
 
-### Phase 2 — Runtime Intelligence Dashboard
+### Phase 2.0 — Studio Intelligence Dashboard
 
-Status: next phase.
+Status: complete foundation.
 
-Turn Diagnostics and Runtime Visualizer into a live development dashboard that reports:
+Turned Diagnostics into a layered development dashboard that reports:
 
 - Studio health score.
 - Knowledge integrity.
-- Runtime modules loaded.
-- Runtime load-order status.
-- Runtime bridge status.
+- Runtime and dependency relationships.
 - Broken references.
 - DataByteSprites index coverage.
 - Highest-risk gaps.
-- Phase 1.2 validation report integration.
+- Repair plans.
+- Coverage heat maps.
+- Repository maturity.
+- Next recommended milestone.
 
-Recommended first build: connect runtime visualizer output to `window.VOLTAN_VALIDATION_REPORT` so runtime health and repository health can be viewed together.
+### Phase 2.1 — Documentation & Architecture Audit
+
+Status: active.
+
+Bring documentation and maps back into alignment with the implementation.
+
+Deliverables:
+
+- Repository audit.
+- README refresh.
+- Architecture map.
+- Repository map.
+- Diagnostics reference.
+- Validation reference.
+- Knowledge Engine reference.
+- Module index.
+- Release notes.
+- Updated roadmap.
+
+### Phase 2.2 — Predictive Diagnostics
+
+Status: planned.
+
+Use the Phase 2.0 Studio Intelligence foundation to begin correlating findings, predicting maintenance needs, and recommending architecture improvements.
+
+Priority goals:
+
+- Correlate repeated warning categories.
+- Predict likely technical debt growth.
+- Recommend safest next repairs.
+- Detect stale documentation automatically.
+- Generate architecture recommendations from repository state.
 
 ### Phase 3 — DataByteSprites Runtime Integration
 
@@ -213,7 +275,8 @@ Example goals:
 - Do not invent commits or SHAs.
 - Prefer indexes, manifests, and registries over hardcoded one-off wiring.
 - Keep live `main` and development branches reconciled where possible.
+- Documentation must match the implementation state after each major phase.
 
 ## Current Highest-Value Task
 
-Begin **Phase 2: Runtime Intelligence Dashboard** by connecting runtime status, runtime bridge checks, and runtime load order into the Repository Health Dashboard created by Phase 1.2.
+Continue **Phase 2.1: Documentation & Architecture Audit** by adding the architecture map, repository map, diagnostics reference, and roadmap documents that match the completed Phase 2.0 Studio Intelligence suite.
