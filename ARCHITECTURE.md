@@ -25,6 +25,10 @@ The architecture favors searchable indexes, manifests, registries, local browser
 - `REPOSITORY_MAP.md` — directory ownership and status map.
 - `DIAGNOSTICS.md` — Studio Intelligence and diagnostics module reference.
 - `VALIDATION.md` — validation rules, source registry, report shape, and best practices.
+- `KNOWLEDGE_ENGINE.md` — Knowledge Engine registry and index reference.
+- `MODULE_INDEX.md` — Studio module catalog.
+- `ROADMAP.md` — phase roadmap.
+- `RELEASE_NOTES_PHASE2.md` — Phase 2 release notes.
 - `docs/phase-2.1-repository-audit.md` — active documentation audit.
 
 ## High-Level Map
@@ -102,6 +106,8 @@ Key concepts:
 - Common search fields
 - Record types
 - Source-aware paths
+
+For details, see `KNOWLEDGE_ENGINE.md`.
 
 ### 3. Diagnostics / Studio Intelligence
 
