@@ -2,7 +2,7 @@
 // Phase 2 Repository Intelligence companion layer for VoltanLabs Studio Diagnostics.
 
 (function () {
-  const SCRIPT_VERSION = "2.0.0";
+  const SCRIPT_VERSION = "2.0.1";
   const GROUP_RULES = [
     { key: "missing-ids", label: "Missing IDs", rules: ["required-fields"], autoFixable: "partial", repair: "Add stable IDs or accepted id-like fields to records that cannot join the repository graph." },
     { key: "broken-references", label: "Broken References", rules: ["cross-index-references"], autoFixable: "partial", repair: "Create the referenced record, add a known global ID, or update the field to an existing ID." },
@@ -89,7 +89,7 @@
 
   function saveReportFile(report) {
     const activeReport = report || window.VOLTAN_VALIDATION_REPORT;
-    if (!activeReport) return;
+    if (!activeReport) return false;
     const blob = new Blob([reportJson(activeReport)], { type: "application/json;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -99,21 +99,34 @@
     link.click();
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return true;
+  }
+
+  function wireSaveButton(button) {
+    if (!button || button.dataset.voltanSaveWired === "true") return;
+    button.dataset.voltanSaveWired = "true";
+    button.type = "button";
+    button.addEventListener("click", () => {
+      const saved = saveReportFile(window.VOLTAN_VALIDATION_REPORT);
+      const original = "Save Report File";
+      button.textContent = saved ? "Saved File" : "Report Not Ready";
+      window.setTimeout(() => { button.textContent = original; }, 1800);
+    });
   }
 
   function ensureSaveButton() {
     const copyButton = document.getElementById("copyReport");
-    if (!copyButton || document.getElementById("saveReport")) return;
+    const existing = document.getElementById("saveReport");
+    if (existing) {
+      wireSaveButton(existing);
+      return;
+    }
+    if (!copyButton) return;
     const button = document.createElement("button");
     button.id = "saveReport";
-    button.type = "button";
     button.className = "px-4 py-2 rounded-xl border border-[#FFD700] text-[#FFD700] font-bold";
     button.textContent = "Save Report File";
-    button.addEventListener("click", () => {
-      saveReportFile(window.VOLTAN_VALIDATION_REPORT);
-      button.textContent = "Saved File";
-      window.setTimeout(() => { button.textContent = "Save Report File"; }, 1800);
-    });
+    wireSaveButton(button);
     copyButton.insertAdjacentElement("afterend", button);
   }
 
