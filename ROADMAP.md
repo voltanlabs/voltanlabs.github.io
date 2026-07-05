@@ -1,7 +1,7 @@
 # VoltanLabs Roadmap
 
 Status: active  
-Current focus: site clarity, Data Discovery product push, and Studio-as-support
+Current focus: Data Discovery product build and shared roster alignment
 
 ## Purpose
 
@@ -54,7 +54,7 @@ The Studio should not replace the public website. Studio should support product 
 
 VoltArcade should remain the game hub.
 
-Data Discovery should become the flagship playable product.
+Data Discovery is the flagship playable product.
 
 ## Completed Foundations
 
@@ -76,7 +76,7 @@ Completed:
 
 ### Data Discovery Foundation
 
-Status: playable foundation.
+Status: active product build.
 
 Completed:
 
@@ -90,11 +90,16 @@ Completed:
 - Encounter creation.
 - Battle/capture loop foundation.
 - Party local storage.
-- Floating menu foundation.
+- Inventory foundation.
+- Admin profile panel.
+- 52-sprite shared canon roster bridge.
+- Product app layer wired to Data Discovery.
 
-Current issue:
+Current focus:
 
-- DataByteDex lists 52 canon sprites, but the live scanner currently uses a much smaller hardcoded sprite template list.
+- Test the new 52-sprite product build.
+- Continue improving scanner → encounter → battle → capture → scanner flow.
+- Move DataByteDex to consume the same shared roster bridge.
 
 ### DataByteDex Foundation
 
@@ -110,7 +115,7 @@ Completed:
 
 Current issue:
 
-- DataByteDex roster is hardcoded separately from the scanner and Studio indexes.
+- DataByteDex should consume the shared roster bridge next instead of keeping a separate hardcoded roster.
 
 ### Creator Suite Foundation
 
@@ -152,43 +157,40 @@ Current issue:
 
 - Studio is powerful, but it should now be used to support Data Discovery instead of expanding for its own sake.
 
-## Active Strategy Phase — Site Clarity & Product Focus
+## Active Product Phase — Data Discovery Expansion
 
 Status: active.
 
 Goal:
 
-Clarify the site hierarchy and shift development priority back toward playable products.
-
-Tasks:
-
-- Keep the homepage public-facing.
-- Keep VoltArcade as the game hub.
-- Keep Studio as the internal operating hub.
-- Use `SITE_STRATEGY.md` as the strategic reference.
-- Update future docs and roadmap language around product-first development.
-
-## Next Product Phase — Data Discovery Expansion
-
-Status: next.
-
-Goal:
-
 Make Data Discovery feel like the flagship game instead of a small prototype.
 
-Priority tasks:
+This phase combines the four immediate product priorities:
 
 1. Expand the scanner roster.
-2. Bring scanner content closer to the 52-sprite DataByteDex roster.
+2. Align scanner and DataByteDex around one sprite source.
 3. Improve the scanner → encounter → battle → capture → scanner loop.
-4. Improve party, inventory, and Admin profile panels.
-5. Improve save/load reliability.
-6. Add more sprite variety, rarity behavior, and encounter rules.
-7. Keep DataByteDex progress in sync with Data Discovery.
+4. Use Studio only to support those product goals.
+
+Completed in the first product pass:
+
+- Added `assets/js/dd-canon-roster.js`.
+- Added `assets/js/databyte-discovery-product-app.js`.
+- Wired `databyte-discovery.html` to the product app build.
+- Scanner now uses the 52-sprite canon roster bridge.
+- DataByteDex progress remains synced through the existing Seen/Captured local storage keys.
+
+Next tasks:
+
+- Test the new product app on mobile and desktop.
+- Move DataByteDex to consume `DD_CANON_ROSTER`.
+- Improve battle feel and capture feedback.
+- Add better rarity pools, code categories, and special encounters.
+- Add asset hooks for sprite art.
 
 ## Shared Data Phase — One Sprite Source of Truth
 
-Status: planned.
+Status: in progress.
 
 Goal:
 
@@ -196,10 +198,9 @@ Stop maintaining separate hardcoded sprite lists.
 
 Priority tasks:
 
-- Choose the canonical sprite data source.
-- Move scanner roster toward shared JSON data.
-- Move DataByteDex toward shared JSON data.
-- Align Studio species indexes, DataByteDex, and scanner data.
+- Use `assets/js/dd-canon-roster.js` as the current public shared roster bridge.
+- Move DataByteDex toward the shared roster bridge.
+- Later align the public roster bridge with `/studio/databytesprites/species.json`.
 - Validate sprite data through Studio diagnostics.
 
 ## Creator Pipeline Phase
