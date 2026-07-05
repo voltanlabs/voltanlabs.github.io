@@ -4,7 +4,7 @@
 (function () {
   const SOURCE_REGISTRY = "/studio/diagnostics/sources.json";
   const RULES_MANIFEST = "/studio/validation/rules.json";
-  const ENGINE_VERSION = "1.2.2";
+  const ENGINE_VERSION = "1.2.3";
   let latestReport = null;
 
   function asArray(value) { return Array.isArray(value) ? value : []; }
@@ -20,8 +20,18 @@
     if (collection === "file") return [];
     return splitCollection(collection).flatMap((name) => asArray(data[name]));
   }
-  function idOf(item) { return item.id || item.attackingElement || item.name || item.label || ""; }
-  function titleOf(item) { return item.name || item.label || item.attackingElement || item.id || "record"; }
+  function idOf(item) {
+    if (!item) return "";
+    if (item.id || item.attackingElement || item.name || item.label) return item.id || item.attackingElement || item.name || item.label;
+    if (item.source && item.target) return `${item.source}->${item.target}:${item.edgeType || "edge"}`;
+    return "";
+  }
+  function titleOf(item) {
+    if (!item) return "record";
+    if (item.name || item.label || item.attackingElement || item.id) return item.name || item.label || item.attackingElement || item.id;
+    if (item.source && item.target) return `${item.source} → ${item.target}`;
+    return "record";
+  }
   function normalize(value) { return String(value || "").trim().toLowerCase(); }
   function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[char]));
@@ -53,7 +63,10 @@
       if (!id) return;
       const key = String(id);
       if (!ids.has(key)) ids.set(key, []);
-      ids.get(key).push({ sourceId: record.id, kind: record.kind, label: record.label, itemTitle: titleOf(item), path: record.path });
+      const owner = { sourceId: record.id, kind: record.kind, label: record.label, itemTitle: titleOf(item), path: record.path };
+      const ownerKey = JSON.stringify(owner);
+      const existingKeys = new Set(ids.get(key).map((entry) => JSON.stringify(entry)));
+      if (!existingKeys.has(ownerKey)) ids.get(key).push(owner);
       aliases.set(normalize(key), key);
       sourceIndex.set(key, { sourceId: record.id, kind: record.kind, label: record.label, path: record.path });
     }
@@ -75,11 +88,6 @@
         addAlias(titleOf(item), id);
         if (item.name && item.id) addAlias(item.name, item.id);
       });
-
-      if (record.kind === "registry") {
-        asArray(record.data.indexes).forEach((item) => addId(item.id, record, item));
-        asArray(record.data.modules).forEach((item) => addId(item.id, record, item));
-      }
 
       if (record.kind === "mechanicsGraph") {
         asArray(record.data.nodes).forEach((node) => { addId(node.id, record, node); graphNodes.add(node.id); });
@@ -298,26 +306,14 @@
     ];
   }
 
-  function dedupeFindings(findings) {
-    return unique(findings.map((item) => JSON.stringify(item))).map((item) => JSON.parse(item));
-  }
-
+  function dedupeFindings(findings) { return unique(findings.map((item) => JSON.stringify(item))).map((item) => JSON.parse(item)); }
   function classify(findings, severity) { return findings.filter((finding) => finding.severity === severity).length; }
 
   function renderSummary(report) {
     const summary = document.getElementById("summary");
     if (!summary) return;
     summary.className = "grid md:grid-cols-4 xl:grid-cols-8 gap-4 mt-10";
-    const cards = [
-      ["Health", report.healthScore + "%"],
-      ["Sources", report.sources.length],
-      ["Records", report.recordCount],
-      ["IDs", report.idCount],
-      ["Links", report.linkCount],
-      ["Errors", report.errorCount],
-      ["Warnings", report.warningCount],
-      ["Coverage", report.coverageScore + "%"]
-    ];
+    const cards = [["Health", report.healthScore + "%"], ["Sources", report.sources.length], ["Records", report.recordCount], ["IDs", report.idCount], ["Links", report.linkCount], ["Errors", report.errorCount], ["Warnings", report.warningCount], ["Coverage", report.coverageScore + "%"]];
     summary.innerHTML = cards.map(([label, value]) => `<div class="rounded-2xl border border-white/10 bg-[#2C3E50] p-5"><p class="text-gray-300 text-sm">${label}</p><strong class="text-3xl text-[#FFD700]">${value}</strong></div>`).join("");
   }
 
@@ -349,9 +345,7 @@
       if (!items.length) return "";
       return `<section class="mt-5"><h3 class="text-lg font-bold text-[#FFD700]">${severity.toUpperCase()} Findings</h3><ul class="mt-3 text-sm text-gray-100 list-disc ml-5">${items.map((item) => `<li class="mb-2"><span class="text-gray-300">${escapeHtml(item.rule)}</span>: ${escapeHtml(item.message)}</li>`).join("")}</ul></section>`;
     }).join("");
-
     const sourceCards = report.sources.map((item) => `<article class="rounded-2xl border ${item.ok ? "border-emerald-300/40 bg-emerald-950/20" : "border-red-400/50 bg-red-950/30"} p-5"><p class="text-[#FFD700] text-xs uppercase tracking-wide">${escapeHtml(item.kind)}</p><h2 class="text-xl font-bold mt-1">${escapeHtml(item.label)}</h2><p class="text-gray-300 text-sm mt-3">${escapeHtml(item.path)}</p><p class="text-gray-400 text-xs mt-2">Records: ${item.count} • ${item.ms}ms</p>${item.ok ? "<p class=\"text-emerald-200 text-sm mt-4\">Loaded.</p>" : `<p class="text-red-200 text-sm mt-4">${escapeHtml(item.error)}</p>`}</article>`).join("");
-
     const lead = report.findings.length ? grouped : "<p class=\"text-emerald-200 mt-4\">No repository integrity findings.</p>";
     output.innerHTML = `<article class="lg:col-span-2 rounded-2xl border border-white/10 bg-black/25 p-5"><p class="text-xs uppercase tracking-wide text-[#FFD700]">Phase 1.2</p><h2 class="text-2xl font-bold text-[#FFD700] mt-1">Repository Integrity Report</h2><p class="text-gray-300 mt-3">Engine ${ENGINE_VERSION} validates source availability, required fields, cross-index references, mechanics graph edges, runtime load order, duplicate IDs, orphan records, knowledge coverage, documentation drift, and actionable repair paths.</p>${lead}</article>${renderMilestoneStatus(report)}${renderCoverage(report)}${renderDependencyExplorer(report)}${renderRepairSuggestions(report)}${sourceCards}`;
   }
@@ -376,17 +370,7 @@
     const sources = await Promise.all(asArray(sourceRegistry.sources).map(loadSource));
     const loaded = sources.filter((source) => source.ok && source.data);
     const model = buildRepositoryModel(loaded, rules);
-    const findings = dedupeFindings([
-      ...validateAvailability(sources),
-      ...validateSchema(loaded),
-      ...validateDocumentationDrift(sources, rules),
-      ...validateRequiredFields(loaded),
-      ...validateDuplicateIds(model),
-      ...validateReferences(model),
-      ...validateMechanicsGraph(loaded),
-      ...validateRuntime(loaded),
-      ...validateOrphans(loaded, model)
-    ]);
+    const findings = dedupeFindings([...validateAvailability(sources), ...validateSchema(loaded), ...validateDocumentationDrift(sources, rules), ...validateRequiredFields(loaded), ...validateDuplicateIds(model), ...validateReferences(model), ...validateMechanicsGraph(loaded), ...validateRuntime(loaded), ...validateOrphans(loaded, model)]);
     const coverage = buildKnowledgeCoverage(loaded, model);
     const dependencyExplorer = buildDependencyExplorer(model);
     const repairSuggestions = buildRepairSuggestions(findings);
@@ -396,24 +380,7 @@
     const recordCount = sources.reduce((sum, source) => sum + source.count, 0);
     const coverageScore = coverage.length ? Math.round(coverage.reduce((sum, item) => sum + item.score, 0) / coverage.length) : 100;
     const healthScore = Math.max(0, Math.round(100 - errorCount * 10 - warningCount * 4 - infoCount * 1 - Math.max(0, 100 - coverageScore) * 0.15));
-    latestReport = {
-      generatedAt: new Date().toISOString(),
-      engineVersion: ENGINE_VERSION,
-      rulesVersion: rules.schemaVersion,
-      healthScore,
-      coverageScore,
-      errorCount,
-      warningCount,
-      infoCount,
-      recordCount,
-      idCount: model.ids.size,
-      linkCount: model.references.length,
-      sources,
-      findings,
-      coverage,
-      dependencyExplorer,
-      repairSuggestions
-    };
+    latestReport = { generatedAt: new Date().toISOString(), engineVersion: ENGINE_VERSION, rulesVersion: rules.schemaVersion, healthScore, coverageScore, errorCount, warningCount, infoCount, recordCount, idCount: model.ids.size, linkCount: model.references.length, sources, findings, coverage, dependencyExplorer, repairSuggestions };
     latestReport.milestones = buildMilestoneStatus(latestReport);
     window.VOLTAN_VALIDATION_REPORT = latestReport;
     renderSummary(latestReport);
@@ -424,8 +391,9 @@
     const copyButton = document.getElementById("copyReport");
     if (!copyButton) return;
     copyButton.addEventListener("click", async () => {
-      await navigator.clipboard.writeText(JSON.stringify(latestReport, null, 2));
+      await navigator.clipboard.writeText(JSON.stringify(latestReport || window.VOLTAN_VALIDATION_REPORT || {}, null, 2));
       copyButton.textContent = "Copied";
+      window.setTimeout(() => { copyButton.textContent = "Copy Report Text"; }, 1800);
     });
   }
 
