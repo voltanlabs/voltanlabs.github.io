@@ -1,12 +1,12 @@
 {
-  "schemaVersion": "0.1.1",
+  "schemaVersion": "0.1.2",
   "generatedBy": "VoltanLabs Studio Validation Engine",
   "description": "Reusable validation rules for Studio registries, DataByteSprites indexes, runtime manifests, source ownership maps, documentation drift checks, and mechanics graphs.",
   "validationEngine": {
     "id": "studio-validation-engine",
     "status": "active-foundation",
-    "phase": "Phase 1.2",
-    "goal": "Detect broken references, malformed records, invalid runtime load order, duplicate IDs, documentation drift, and source-aware repair paths before new gameplay systems are added."
+    "phase": "Phase 2.2",
+    "goal": "Detect broken references, malformed records, invalid runtime load order, duplicate IDs, documentation drift, source-aware repair paths, and predictive diagnostics pressure before new gameplay systems are added."
   },
   "ruleSets": [
     {
@@ -23,7 +23,7 @@
       "severity": "error",
       "targetKinds": ["species", "lore", "sourceFile", "mechanicsGraph", "move", "typeChart", "ability", "runtime"],
       "checks": ["idPresent", "titlePresent", "statusPresentWhereExpected", "pathPresentWhereExpected"],
-      "description": "Records must expose stable IDs and readable titles so they can participate in Studio search, graph validation, and future AI tooling."
+      "description": "Records must expose stable IDs and readable titles so they can participate in Studio search, graph validation, and future AI tooling. Mechanics graph edges may use synthetic IDs generated from source, target, and edge type."
     },
     {
       "id": "cross-index-references",
@@ -31,7 +31,7 @@
       "severity": "warning",
       "targetKinds": ["species", "lore", "sourceFile", "mechanicsGraph", "move", "ability"],
       "checks": ["dependencyIdExists", "relatedSpeciesExists", "learnedBySpeciesExists", "assignedToSpeciesExists", "sourceTargetExists"],
-      "description": "Dependencies, relationships, learnedBy fields, assignedTo fields, and graph edges should point to known Studio or DataByteSprites IDs."
+      "description": "Dependencies, relationships, learnedBy fields, assignedTo fields, dex refs, and graph edges should point to known Studio or DataByteSprites IDs. Canon story references may be registered as known global IDs until their full records are added."
     },
     {
       "id": "mechanics-graph-integrity",
@@ -75,7 +75,25 @@
     "technology-vault",
     "knowledge-engine",
     "asset-library",
-    "simulation-lab"
+    "simulation-lab",
+    "vic",
+    "first-capture-record"
+  ],
+  "canonGlobalIds": [
+    {
+      "id": "vic",
+      "type": "character",
+      "label": "Vic",
+      "status": "canon-reference",
+      "description": "Primary DataByteSprites protagonist referenced by lore records. A full character record should replace this global ID later."
+    },
+    {
+      "id": "first-capture-record",
+      "type": "dex-record",
+      "label": "First Capture Record",
+      "status": "canon-reference",
+      "description": "Canon DataByteDex reference attached to Leovolt and the first capture event. A full DataByteDex record should replace this global ID later."
+    }
   ],
   "documentationDrift": {
     "requiredReadmePhrases": [
@@ -92,6 +110,6 @@
     "Validate mechanics graph edges against graph nodes.",
     "Validate species, lore, moves, abilities, and source files against the common ID map.",
     "Validate README roadmap wording against active Phase 1.2 capabilities.",
-    "Surface health score, coverage score, dependency edges, repair suggestions, errors, warnings, and info-level findings in the Diagnostics UI."
+    "Surface health score, coverage score, dependency edges, repair suggestions, errors, warnings, info-level findings, and predictive maintenance pressure in the Diagnostics UI."
   ]
 }
