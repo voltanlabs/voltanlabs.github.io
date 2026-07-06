@@ -1,5 +1,5 @@
 // assets/js/studio-runtime-bridge-checks.js
-// Runtime bridge health checks for the active Data Discovery Phase 3 Product App chain.
+// Phase 3.7 Diagnostics Alignment: runtime bridge health checks for Data Discovery Product App v3.5.
 
 (function () {
   if (!location.pathname.includes("databyte-discovery")) return;
@@ -10,14 +10,17 @@
     { id: "game-data-manifest", label: "Game Data Manifest", test: () => !!window.DD_GAME_DATA_MANIFEST && !!window.DD_GAME_DATA_MANIFEST.schemaVersion && !!window.DD_GAME_DATA_MANIFEST.id },
     { id: "move-index", label: "Move Index", test: () => !!window.DD_MOVE_INDEX && Array.isArray(window.DD_MOVE_INDEX.moves) && window.DD_MOVE_INDEX.moves.length > 0 },
     { id: "type-chart", label: "Type Chart", test: () => !!window.DD_TYPE_CHART && Array.isArray(window.DD_TYPE_CHART.rules) && window.DD_TYPE_CHART.rules.length > 0 },
-    { id: "battle-engine", label: "Battle Engine Hooks", test: () => !!window.DDBattle24 && typeof window.DDBattle24.typeResult === "function" && typeof window.DDBattle24.chooseEnemyMove === "function" },
+    { id: "battle-engine", label: "Battle Engine Hooks", test: () => !!window.DDBattle24 && typeof window.DDBattle24.typeResult === "function" },
     { id: "gameplay-rules", label: "Gameplay Rules", test: () => !!window.DD_GAMEPLAY_RULES && typeof window.DD_GAMEPLAY_RULES.odds === "function" && typeof window.DD_GAMEPLAY_RULES.tuneSprite === "function" },
     { id: "capture-runtime", label: "Capture Runtime", test: () => !!window.DD_CAPTURE_RUNTIME && typeof window.DD_CAPTURE_RUNTIME.attempt === "function" && typeof window.DD_CAPTURE_RUNTIME.odds === "function" },
     { id: "encounter-runtime", label: "Encounter Runtime", test: () => !!window.DD_ENCOUNTER_RUNTIME && typeof window.DD_ENCOUNTER_RUNTIME.create === "function" && typeof window.DD_ENCOUNTER_RUNTIME.randomCode === "function" },
     { id: "battle-balance", label: "Battle Balance", test: () => !!window.DD_BATTLE_BALANCE && !!window.DD_BATTLE_BALANCE.version },
-    { id: "product-app-v3", label: "Product App v3", test: () => !!document.getElementById("ddApp") && !!document.getElementById("stage") && !!document.getElementById("controls") },
+    { id: "battle-resolver", label: "Battle Resolver", test: () => !!window.DD_BATTLE_RESOLVER && typeof window.DD_BATTLE_RESOLVER.resolve === "function" && typeof window.DD_BATTLE_RESOLVER.turnOrder === "function" && typeof window.DD_BATTLE_RESOLVER.chooseEnemyMove === "function" },
+    { id: "product-app-v3-5", label: "Product App v3.5", test: () => !!document.getElementById("ddApp") && !!document.getElementById("stage") && !!document.getElementById("controls") && document.body.textContent.includes("Phase 3.5") },
+    { id: "hp-ring-ui", label: "HP Ring UI", test: () => !!document.querySelector(".ring.hp") || !!document.querySelector(".ring") },
+    { id: "signal-meter-ui", label: "Signal Meter UI", test: () => !!document.querySelector(".signalBox") || !!document.body.textContent.includes("Signal") },
     { id: "local-storage-keys", label: "Local Storage Keys", test: () => typeof localStorage !== "undefined" },
-    { id: "scanner-background", label: "Scanner Background", test: () => true }
+    { id: "visual-compatibility", label: "Visual Compatibility Layers", test: () => true }
   ];
 
   function runChecks() {
@@ -28,9 +31,17 @@
     });
 
     window.DD_RUNTIME_HEALTH = {
-      version: "0.4.0",
-      phase: "3.1-runtime-stabilization",
-      runtime: "databyte-discovery-product-app-v3",
+      version: "0.5.0",
+      phase: "3.7-diagnostics-alignment",
+      runtime: "databyte-discovery-product-app-v3-5",
+      canonicalOwners: {
+        app: "databyte-discovery-product-app-v3-5",
+        battle: "dd-battle-resolver",
+        capture: "dd-capture-runtime",
+        encounter: "dd-encounter-runtime",
+        rules: "dd-gameplay-rules-2-4",
+        visuals: ["dd-health-signal-bridge", "dd-scan-bg"]
+      },
       checkedAt: new Date().toISOString(),
       results,
       passCount: results.filter((result) => result.ok).length,
@@ -60,9 +71,10 @@
   document.addEventListener("dd:capture-runtime-ready", () => setTimeout(runChecks, 220));
   document.addEventListener("dd:encounter-runtime-ready", () => setTimeout(runChecks, 220));
   document.addEventListener("dd:battle-balance-ready", () => setTimeout(runChecks, 220));
+  document.addEventListener("dd:battle-resolver-ready", () => setTimeout(runChecks, 220));
   document.addEventListener("runtime:ready", () => setTimeout(runChecks, 80));
   document.addEventListener("dd:screen", () => setTimeout(runChecks, 80));
   window.DBS_RUN_HEALTH_CHECKS = runChecks;
   window.DD_RUN_HEALTH_CHECKS = runChecks;
-  setTimeout(runChecks, 1600);
+  setTimeout(runChecks, 1800);
 })();
