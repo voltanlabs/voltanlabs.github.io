@@ -1,7 +1,7 @@
 # VoltanLabs Roadmap
 
 Status: active  
-Current focus: Studio to Data Discovery Integration Phase A
+Current focus: Phase 2.3 Shared Game Data Pipeline
 
 ## Purpose
 
@@ -24,10 +24,6 @@ For the most current project status, see:
 ```text
 VoltanLabs
 ├── Public Website
-│   ├── Home
-│   ├── About
-│   ├── Contact
-│   └── Programs
 ├── Product Layer
 │   ├── VoltArcade
 │   ├── Data Discovery
@@ -66,48 +62,18 @@ Data Discovery is the flagship playable product.
 
 ## Completed Foundations
 
-### Public Website Foundation
-
-Status: active foundation.
-
-Completed:
-
-- Public homepage.
-- Shared header/footer system.
-- VoltArcade game hub.
-- Data Discovery entry points.
-- DataByteDex page.
-- Databyte Arena page.
-- Voltan's Quest page.
-- Creator Suite page.
-- Technology Vault entry.
-
 ### Data Discovery Foundation
 
 Status: active product build.
 
 Completed:
 
-- Scanner OS shell.
 - New active `#ddApp` product container.
-- Admin profile seed.
-- Starter Leovolt seed.
-- Local collection storage.
-- Seen/Captured local progress.
-- Discovery code input.
-- Random scan code.
-- Signal Encounter state.
-- Battle Sequence state.
+- 52-sprite shared canon roster bridge.
+- Studio data bridge overlay foundation.
+- Scanner, encounter, battle, capture confirmation, result, party, items, Dex, and Admin panels.
 - Lead vs Wild battle arena foundation.
 - Health and Signal telemetry foundation.
-- Capture Confirmation screen.
-- Battle Result screen.
-- Party local storage.
-- Inventory foundation.
-- Admin profile panel.
-- 52-sprite shared canon roster bridge.
-- Product app layer wired to Data Discovery.
-- Studio data bridge overlay foundation.
 
 Current issue:
 
@@ -115,35 +81,16 @@ Current issue:
 
 ### DataByteDex Foundation
 
-Status: active foundation.
+Status: shared renderer foundation.
 
 Completed:
 
-- 52 canon entries.
 - Seen count.
 - Captured count.
 - Search.
 - Local storage integration with Data Discovery progress.
-
-Current issue:
-
-- DataByteDex should consume the shared roster bridge next instead of keeping a separate hardcoded roster.
-
-### Creator Suite Foundation
-
-Status: active foundation.
-
-Completed:
-
-- Draw Tool.
-- Character Forge.
-- Gif Forge.
-- Sprite Sheet Forge.
-- PromptCraft foundation.
-
-Current issue:
-
-- Creator Suite is useful, but it is not yet connected to a formal asset pipeline for Data Discovery.
+- Shared renderer consuming `DD_CANON_ROSTER`.
+- Studio bridge support through `dd-studio-data-bridge.js`.
 
 ### Studio Foundation
 
@@ -155,47 +102,43 @@ Completed:
 - Knowledge Engine v2.
 - Validation Engine.
 - Diagnostics dashboard.
-- Runtime Visualizer.
-- Repository Intelligence.
-- Health History.
-- Auto Repair Engine.
-- Dependency Graph Viewer.
-- Coverage Heat Map.
-- Repository Evolution Dashboard.
+- Repository Intelligence stack.
 - Predictive Diagnostics start.
-- Documentation maps and strategy docs.
 - Living project state document.
 - Studio to Data Discovery Integration Roadmap.
-- Diagnostics registry updated with game bridge scripts and new documentation.
+- Shared game-data manifest.
+- Diagnostics registry updated with game bridge scripts, Dex renderer, and manifest.
 
 Current issue:
 
 - Studio can validate and inform the game, but it does not yet auto-assemble full game content.
 
-## Active Phase — Studio to Data Discovery Integration Phase A
+## Active Phase — Phase 2.3 Shared Game Data Pipeline
 
 Status: active.
 
 Goal:
 
-Move Data Discovery from hand-wired game data toward Studio-backed shared content.
+Move Data Discovery and DataByteDex from duplicated hand-wired data toward one Studio-backed shared game-data pipeline.
 
-Completed in Phase A so far:
+Completed in Phase 2.3 so far:
 
-- Added `assets/js/dd-studio-data-bridge.js`.
-- Wired `databyte-discovery.html` to load the Studio bridge before the product app.
-- Added `PROJECT_STATE.md`.
-- Added `studio/docs/STUDIO_GAME_INTEGRATION_ROADMAP.md`.
-- Registered game bridge scripts and project docs in `studio/diagnostics/sources.json`.
+- Added `studio/databytesprites/game-data.v1.json`.
+- Upgraded `assets/js/dd-studio-data-bridge.js` to load the manifest.
+- Added manifest definitions for items and encounter pools.
+- Added `assets/js/databytedex-shared-renderer.js`.
+- Rewired `databytedex.html` to consume the shared roster and Studio bridge.
+- Registered the game-data manifest and shared Dex renderer in Diagnostics.
+- Updated `PROJECT_STATE.md` with Phase 2.3 state.
 
 Next tasks:
 
-1. Move DataByteDex to consume the shared roster bridge.
-2. Expand the Studio species index or generate a full game-data manifest.
-3. Add Studio validation coverage for playable roster entries.
-4. Add moves and abilities into the playable battle engine.
-5. Continue migrating legacy effects into `#ddApp`.
-6. Keep Diagnostics current as new game bridge files are added.
+1. Enable battle moves from the shared manifest and Studio move index.
+2. Make the product app consume manifest item and encounter definitions directly.
+3. Add diagnostics rules for game-data manifest relationships.
+4. Continue migrating legacy effects into `#ddApp`.
+5. Build healing/recovery and party management rules.
+6. Keep Diagnostics current as new bridge and product files are added.
 
 ## Shared Data Phase — One Sprite Source of Truth
 
@@ -209,8 +152,8 @@ Priority tasks:
 
 - Use `assets/js/dd-canon-roster.js` as the current public shared roster bridge.
 - Overlay Studio data from `/studio/databytesprites/species.json` through `dd-studio-data-bridge.js`.
-- Move DataByteDex toward the same shared roster bridge.
-- Later align the public roster bridge with a Studio-generated game-data manifest.
+- Move DataByteDex and Data Discovery toward the same runtime roster global.
+- Later align the public roster bridge with a Studio-generated game-data manifest export.
 - Validate sprite data through Studio diagnostics.
 
 ## Battle Engine Phase
@@ -246,47 +189,6 @@ Priority tasks:
 - Placeholder art for all sprite IDs.
 - Export paths from Creator Suite into game-ready assets.
 - Asset-to-species links in Studio indexes.
-
-## Studio Support Rule
-
-Status: ongoing.
-
-Goal:
-
-Improve Studio only when it directly supports product development.
-
-Allowed Studio work:
-
-- Data validation needed for Data Discovery.
-- Shared sprite data validation.
-- Missing asset detection.
-- Sprite/move/ability/lore consistency checks.
-- Repair plans that directly unblock game content.
-- Game data export/import structure.
-
-Deferred Studio work:
-
-- Large new diagnostics dashboards unrelated to product needs.
-- Studio AI assistant implementation before the shared game data pipeline works.
-- Deep automation not needed for Data Discovery right now.
-
-## Future Automation Phase
-
-Status: future.
-
-Goal:
-
-Let Studio help assemble game content.
-
-Future capabilities:
-
-- Generate sprite stubs.
-- Generate DataByteDex entries.
-- Detect missing moves, abilities, lore, and assets.
-- Recommend content additions.
-- Suggest safe commits.
-- Explain project architecture.
-- Export validated game-ready data.
 
 ## Development Rules
 
