@@ -1,11 +1,12 @@
 // assets/js/dd-studio-data-bridge.js
-// Phase 2.4: connect Data Discovery to Studio game data, species, and moves.
+// Phase 2.4: connect Data Discovery to Studio game data, species, moves, and type chart.
 (function () {
   if (!location.pathname.includes('databyte-discovery') && !location.pathname.includes('databytedex')) return;
 
   var MANIFEST_URL = '/studio/databytesprites/game-data.v1.json';
   var FALLBACK_SPECIES_URL = '/studio/databytesprites/species.json';
   var FALLBACK_MOVES_URL = '/studio/databytesprites/moves.json';
+  var FALLBACK_TYPE_URL = '/studio/databytesprites/type-chart.json';
   var baseRoster = Array.isArray(window.DD_CANON_ROSTER) ? window.DD_CANON_ROSTER.slice() : [];
 
   function normalizeName(value) { return String(value || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
@@ -54,21 +55,24 @@
     });
   }
 
-  function applyStudioData(manifest, speciesRecords, movesData) {
+  function applyStudioData(manifest, speciesRecords, movesData, typeChart) {
     var byName = new Map();
     speciesRecords.forEach(function (species) { byName.set(normalizeName(species.name), species); byName.set(normalizeName(species.id), species); });
     var merged = baseRoster.map(function (sprite) { return overlaySprite(sprite, byName.get(normalizeName(sprite.name)), movesData); });
     window.DD_CANON_ROSTER = merged;
     window.DD_GAME_DATA_MANIFEST = manifest || null;
     window.DD_MOVE_INDEX = movesData || null;
+    window.DD_TYPE_CHART = typeChart || null;
     window.DD_STUDIO_DATA_BRIDGE = {
       ok: true,
       phase: '2.4',
       manifest: manifest ? MANIFEST_URL : null,
       speciesSource: manifest && manifest.sources && manifest.sources.studioSpecies ? manifest.sources.studioSpecies.path : FALLBACK_SPECIES_URL,
       movesSource: manifest && manifest.sources && manifest.sources.moves ? manifest.sources.moves.path : FALLBACK_MOVES_URL,
+      typeChartSource: manifest && manifest.sources && manifest.sources.typeChart ? manifest.sources.typeChart.path : FALLBACK_TYPE_URL,
       studioRecordCount: speciesRecords.length,
       moveCount: Array.isArray(movesData && movesData.moves) ? movesData.moves.length : 0,
+      typeRuleCount: Array.isArray(typeChart && typeChart.rules) ? typeChart.rules.length : 0,
       playableRosterCount: merged.length,
       matchedCount: merged.filter(function (sprite) { return !!sprite.studioId; }).length,
       generatedAt: new Date().toISOString()
@@ -84,8 +88,13 @@
   fetchJson(MANIFEST_URL).catch(function () { return null; }).then(function (manifest) {
     var speciesPath = manifest && manifest.sources && manifest.sources.studioSpecies ? manifest.sources.studioSpecies.path : FALLBACK_SPECIES_URL;
     var movesPath = manifest && manifest.sources && manifest.sources.moves ? manifest.sources.moves.path : FALLBACK_MOVES_URL;
-    return Promise.all([fetchJson(speciesPath), fetchJson(movesPath).catch(function () { return { moves: [], speciesMoveSets: [] }; })]).then(function (results) {
-      applyStudioData(manifest, Array.isArray(results[0].species) ? results[0].species : [], results[1]);
+    var typePath = manifest && manifest.sources && manifest.sources.typeChart ? manifest.sources.typeChart.path : FALLBACK_TYPE_URL;
+    return Promise.all([
+      fetchJson(speciesPath),
+      fetchJson(movesPath).catch(function () { return { moves: [], speciesMoveSets: [] }; }),
+      fetchJson(typePath).catch(function () { return { rules: [], multipliers: { strong: 1.25, neutral: 1, weak: 0.8, none: 0, captureBonus: 3 } }; })
+    ]).then(function (results) {
+      applyStudioData(manifest, Array.isArray(results[0].species) ? results[0].species : [], results[1], results[2]);
     });
   }).catch(fail);
 })();
