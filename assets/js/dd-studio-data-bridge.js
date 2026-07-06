@@ -1,13 +1,21 @@
 // assets/js/dd-studio-data-bridge.js
-// Phase A: connect Studio species data into the playable Data Discovery roster.
+// Phase 2.3: connect Data Discovery to the Studio game-data manifest.
 (function () {
-  if (!location.pathname.includes('databyte-discovery')) return;
+  if (!location.pathname.includes('databyte-discovery') && !location.pathname.includes('databytedex')) return;
 
-  var SPECIES_URL = '/studio/databytesprites/species.json';
+  var MANIFEST_URL = '/studio/databytesprites/game-data.v1.json';
+  var FALLBACK_SPECIES_URL = '/studio/databytesprites/species.json';
   var baseRoster = Array.isArray(window.DD_CANON_ROSTER) ? window.DD_CANON_ROSTER.slice() : [];
 
   function normalizeName(value) {
     return String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  }
+
+  function fetchJson(path) {
+    return fetch(path, { cache: 'no-store' }).then(function (response) {
+      if (!response.ok) throw new Error(path + ' HTTP ' + response.status);
+      return response.json();
+    });
   }
 
   function toStage(species) {
@@ -23,7 +31,7 @@
   function toRarity(species, current) {
     var rarity = String((species && species.rarity) || '').trim();
     if (!rarity || rarity === 'TBD') return current;
-    if (rarity.includes('Legendary')) return 'Legendary';
+    if (rarity.indexOf('Legendary') >= 0) return 'Legendary';
     if (rarity === 'Locked') return 'Locked';
     return rarity;
   }
@@ -45,6 +53,9 @@
       lore: species.lore || species.description || sprite.lore,
       discovery: species.discovery || sprite.discovery || null,
       capture: species.capture || sprite.capture || null,
+      assetRefs: species.assetRefs || sprite.assetRefs || [],
+      dexRefs: species.dexRefs || sprite.dexRefs || [],
+      dependencies: species.dependencies || sprite.dependencies || [],
       hp: hp,
       maxHp: hp,
       atk: attack,
@@ -55,19 +66,24 @@
     });
   }
 
-  function applyStudioData(speciesRecords) {
+  function applyStudioData(manifest, speciesRecords) {
     var byName = new Map();
     speciesRecords.forEach(function (species) {
       byName.set(normalizeName(species.name), species);
       byName.set(normalizeName(species.id), species);
     });
+
     var merged = baseRoster.map(function (sprite) {
       return overlaySprite(sprite, byName.get(normalizeName(sprite.name)));
     });
+
     window.DD_CANON_ROSTER = merged;
+    window.DD_GAME_DATA_MANIFEST = manifest || null;
     window.DD_STUDIO_DATA_BRIDGE = {
       ok: true,
-      source: SPECIES_URL,
+      phase: '2.3',
+      manifest: manifest ? MANIFEST_URL : null,
+      speciesSource: manifest && manifest.sources && manifest.sources.studioSpecies ? manifest.sources.studioSpecies.path : FALLBACK_SPECIES_URL,
       studioRecordCount: speciesRecords.length,
       playableRosterCount: merged.length,
       matchedCount: merged.filter(function (sprite) { return !!sprite.studioId; }).length,
@@ -79,7 +95,8 @@
   function fail(error) {
     window.DD_STUDIO_DATA_BRIDGE = {
       ok: false,
-      source: SPECIES_URL,
+      phase: '2.3',
+      manifest: MANIFEST_URL,
       error: String(error),
       playableRosterCount: baseRoster.length,
       generatedAt: new Date().toISOString()
@@ -87,13 +104,13 @@
     document.dispatchEvent(new CustomEvent('dd:studio-data-ready', { detail: window.DD_STUDIO_DATA_BRIDGE }));
   }
 
-  fetch(SPECIES_URL, { cache: 'no-store' })
-    .then(function (response) {
-      if (!response.ok) throw new Error('HTTP ' + response.status);
-      return response.json();
-    })
-    .then(function (data) {
-      applyStudioData(Array.isArray(data.species) ? data.species : []);
+  fetchJson(MANIFEST_URL)
+    .catch(function () { return null; })
+    .then(function (manifest) {
+      var speciesPath = manifest && manifest.sources && manifest.sources.studioSpecies ? manifest.sources.studioSpecies.path : FALLBACK_SPECIES_URL;
+      return fetchJson(speciesPath).then(function (speciesData) {
+        applyStudioData(manifest, Array.isArray(speciesData.species) ? speciesData.species : []);
+      });
     })
     .catch(fail);
 })();
