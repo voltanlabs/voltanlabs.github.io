@@ -1,50 +1,37 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "generatedBy": "VoltanLabs Studio Game Data Pipeline",
   "phase": "2.3",
-  "description": "Shared game-data manifest for DataByteSprites: Data Discovery. This manifest connects public roster data, Studio species metadata, moves, abilities, type rules, and future encounter/item data into one discoverable source for the game and diagnostics.",
+  "description": "Shared game-data manifest for DataByteSprites: Data Discovery. This manifest connects public roster data, Studio species metadata, moves, abilities, type rules, item definitions, encounter pools, and future asset bindings into one discoverable source for the game and diagnostics.",
   "status": "active-foundation",
   "runtime": {
     "publicRosterScript": "/assets/js/dd-canon-roster.js",
     "studioDataBridgeScript": "/assets/js/dd-studio-data-bridge.js",
     "productAppScript": "/assets/js/databyte-discovery-product-app.js",
+    "dexRendererScript": "/assets/js/databytedex-shared-renderer.js",
     "dataReadyEvent": "dd:studio-data-ready",
     "runtimeRosterGlobal": "DD_CANON_ROSTER",
+    "manifestGlobal": "DD_GAME_DATA_MANIFEST",
     "bridgeStatusGlobal": "DD_STUDIO_DATA_BRIDGE"
   },
   "sources": {
-    "publicRoster": {
-      "id": "dd-canon-roster",
-      "path": "/assets/js/dd-canon-roster.js",
-      "kind": "public-playable-roster",
-      "recordCountTarget": 52,
-      "status": "active"
-    },
-    "studioSpecies": {
-      "id": "dbs-species",
-      "path": "/studio/databytesprites/species.json",
-      "kind": "studio-species-index",
-      "status": "active-foundation"
-    },
-    "moves": {
-      "id": "dbs-moves",
-      "path": "/studio/databytesprites/moves.json",
-      "kind": "move-index",
-      "status": "active-foundation"
-    },
-    "abilities": {
-      "id": "dbs-abilities",
-      "path": "/studio/databytesprites/abilities.json",
-      "kind": "ability-index",
-      "status": "active-foundation"
-    },
-    "typeChart": {
-      "id": "dbs-type-chart",
-      "path": "/studio/databytesprites/type-chart.json",
-      "kind": "type-chart-index",
-      "status": "active-foundation"
-    }
+    "publicRoster": {"id": "dd-canon-roster", "path": "/assets/js/dd-canon-roster.js", "kind": "public-playable-roster", "recordCountTarget": 52, "status": "active"},
+    "studioSpecies": {"id": "dbs-species", "path": "/studio/databytesprites/species.json", "kind": "studio-species-index", "status": "active-foundation"},
+    "moves": {"id": "dbs-moves", "path": "/studio/databytesprites/moves.json", "kind": "move-index", "status": "active-foundation"},
+    "abilities": {"id": "dbs-abilities", "path": "/studio/databytesprites/abilities.json", "kind": "ability-index", "status": "active-foundation"},
+    "typeChart": {"id": "dbs-type-chart", "path": "/studio/databytesprites/type-chart.json", "kind": "type-chart-index", "status": "active-foundation"}
   },
+  "items": [
+    {"id": "bytecoin", "name": "ByteCoin", "type": "capture", "startingQuantity": 8, "description": "Spent to attempt capturing a wild signal."},
+    {"id": "signal-boost", "name": "Signal Boost", "type": "battle-support", "startingQuantity": 3, "description": "Improves the capture window during battle."},
+    {"id": "repair-pulse", "name": "Repair Pulse", "type": "healing", "startingQuantity": 0, "description": "Future healing item for restoring lead sprite health."}
+  ],
+  "encounterPools": [
+    {"id": "common-signal", "label": "Common Signal", "weight": 55, "rarities": ["Common", "Uncommon"], "description": "Default scanner results for low-noise codes."},
+    {"id": "rare-signal", "label": "Rare Signal", "weight": 27, "rarities": ["Rare", "Uncommon"], "description": "Higher-quality scanner result for stronger codes."},
+    {"id": "epic-signal", "label": "Epic Signal", "weight": 14, "rarities": ["Epic", "Rare"], "description": "Unstable but powerful scanner result."},
+    {"id": "deep-signal", "label": "Deep Signal", "weight": 4, "rarities": ["Legendary", "Mythic", "Epic"], "description": "Rare deep-signal hit reserved for special codes and future story hooks."}
+  ],
   "mergeRules": {
     "identityMatch": ["name", "id"],
     "publicRosterKeeps": ["dex", "icon", "color", "chance", "stability"],
@@ -57,13 +44,14 @@
     "Moves should reference known species IDs before they are enabled in battle.",
     "Abilities should reference known species IDs before they are enabled in battle.",
     "Type chart rules should reference known type names before type effectiveness is enabled.",
+    "Items should have id, name, type, and startingQuantity.",
+    "Encounter pools should have id, label, weight, and rarity filters.",
     "DataByteDex and Data Discovery should consume the same runtime roster global."
   ],
   "nextSystems": [
-    "DataByteDex shared roster renderer",
     "battle move resolver",
-    "encounter table manifest",
-    "item manifest",
+    "encounter table runtime resolver",
+    "item runtime resolver",
     "asset binding manifest",
     "Studio export pipeline"
   ]
