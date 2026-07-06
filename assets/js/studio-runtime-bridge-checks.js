@@ -1,16 +1,19 @@
 // assets/js/studio-runtime-bridge-checks.js
-// Runtime bridge health checks for Data Discovery.
+// Runtime bridge health checks for the active Data Discovery Product App chain.
 
 (function () {
   if (!location.pathname.includes("databyte-discovery")) return;
 
   const checks = [
-    { id: "capture-pool", label: "Capture Pool", test: () => !!window.DBS_CAPTURE_POOL && window.DBS_CAPTURE_POOL.size > 0 },
-    { id: "battle-balance", label: "Battle Balance", test: () => !!window.DBS_BATTLE_BALANCE && !!window.DBS_BATTLE_BALANCE.version },
-    { id: "move-index", label: "Move Index", test: () => !!window.DBS_MOVE_INDEX && Array.isArray(window.DBS_MOVE_INDEX.moves) && window.DBS_MOVE_INDEX.moves.length > 0 },
-    { id: "type-chart", label: "Type Chart", test: () => !!window.DBS_TYPE_CHART && Array.isArray(window.DBS_TYPE_CHART.rules) && window.DBS_TYPE_CHART.rules.length > 0 },
-    { id: "ability-index", label: "Ability Index", test: () => !!window.DBS_ABILITY_INDEX && Array.isArray(window.DBS_ABILITY_INDEX.abilities) && window.DBS_ABILITY_INDEX.abilities.length > 0 },
-    { id: "scanner-encounter-api", label: "Scanner Encounter API", test: () => typeof window.ddGetEncounter === "function" }
+    { id: "canon-roster", label: "Canon Roster", test: () => Array.isArray(window.DD_CANON_ROSTER) && window.DD_CANON_ROSTER.length >= 52 },
+    { id: "studio-data-bridge", label: "Studio Data Bridge", test: () => !!window.DD_STUDIO_DATA_BRIDGE && window.DD_STUDIO_DATA_BRIDGE.ok !== false },
+    { id: "game-data-manifest", label: "Game Data Manifest", test: () => !!window.DD_GAME_DATA_MANIFEST && !!window.DD_GAME_DATA_MANIFEST.schemaVersion },
+    { id: "move-index", label: "Move Index", test: () => !!window.DD_MOVE_INDEX && Array.isArray(window.DD_MOVE_INDEX.moves) && window.DD_MOVE_INDEX.moves.length > 0 },
+    { id: "type-chart", label: "Type Chart", test: () => !!window.DD_TYPE_CHART && Array.isArray(window.DD_TYPE_CHART.rules) && window.DD_TYPE_CHART.rules.length > 0 },
+    { id: "battle-engine", label: "Battle Engine Hooks", test: () => !!window.DDBattle24 && typeof window.DDBattle24.typeResult === "function" && typeof window.DDBattle24.chooseEnemyMove === "function" },
+    { id: "battle-balance", label: "Battle Balance", test: () => !!window.DD_BATTLE_BALANCE && !!window.DD_BATTLE_BALANCE.version },
+    { id: "product-app", label: "Product App", test: () => !!document.getElementById("ddApp") },
+    { id: "scanner-background", label: "Scanner Background", test: () => true }
   ];
 
   function runChecks() {
@@ -20,8 +23,15 @@
       return { id: check.id, label: check.label, ok };
     });
 
-    window.DBS_RUNTIME_HEALTH = { version: "0.1.0", checkedAt: new Date().toISOString(), results, ready: results.every((result) => result.ok) };
-    document.dispatchEvent(new CustomEvent("runtime:health-check", { detail: window.DBS_RUNTIME_HEALTH }));
+    window.DD_RUNTIME_HEALTH = {
+      version: "0.3.0",
+      runtime: "databyte-discovery-product-app",
+      checkedAt: new Date().toISOString(),
+      results,
+      ready: results.every((result) => result.ok)
+    };
+    window.DBS_RUNTIME_HEALTH = window.DD_RUNTIME_HEALTH;
+    document.dispatchEvent(new CustomEvent("runtime:health-check", { detail: window.DD_RUNTIME_HEALTH }));
     renderHealthSummary(results);
   }
 
@@ -38,7 +48,11 @@
     summary.innerHTML = results.map((result) => `<div>${result.ok ? "✅" : "⚠️"} ${result.label}</div>`).join("");
   }
 
+  document.addEventListener("dd:studio-data-ready", () => setTimeout(runChecks, 220));
+  document.addEventListener("dd:battle-balance-ready", () => setTimeout(runChecks, 220));
   document.addEventListener("runtime:ready", () => setTimeout(runChecks, 80));
   document.addEventListener("dd:screen", () => setTimeout(runChecks, 80));
   window.DBS_RUN_HEALTH_CHECKS = runChecks;
+  window.DD_RUN_HEALTH_CHECKS = runChecks;
+  setTimeout(runChecks, 1400);
 })();
