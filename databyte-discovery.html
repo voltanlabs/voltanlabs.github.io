@@ -21,7 +21,7 @@
     <div class="dd-boot-card">
       <div class="dd-boot-kicker">Scanner OS Boot</div>
       <div class="dd-boot-title">Data Discovery</div>
-      <div class="dd-boot-sub">Loading Phase 3 capture runtime...</div>
+      <div class="dd-boot-sub">Loading Phase 3 encounter and capture runtimes...</div>
     </div>
   </div>
   <script src="/assets/js/dd-canon-roster.js?v=product-roster-1"></script>
@@ -29,6 +29,7 @@
   <script src="/assets/js/dd-battle-engine-2-4.js?v=battle-engine-2"></script>
   <script src="/assets/js/dd-gameplay-rules-2-4.js?v=gameplay-rules-1"></script>
   <script src="/assets/js/dd-capture-runtime.js?v=capture-runtime-1"></script>
+  <script src="/assets/js/dd-encounter-runtime.js?v=encounter-runtime-1"></script>
   <script src="/assets/js/dd-battle-balance-2-4.js?v=battle-balance-2"></script>
   <script>
     (function () {
@@ -41,10 +42,11 @@
         document.body.appendChild(app);
       }
       document.addEventListener('dd:battle-balance-ready', launch, { once: true });
-      document.addEventListener('dd:capture-runtime-ready', function () { setTimeout(launch, 160); }, { once: true });
-      document.addEventListener('dd:gameplay-rules-ready', function () { setTimeout(launch, 220); }, { once: true });
-      document.addEventListener('dd:studio-data-ready', function () { setTimeout(launch, 300); }, { once: true });
-      setTimeout(launch, 1250);
+      document.addEventListener('dd:encounter-runtime-ready', function () { setTimeout(launch, 140); }, { once: true });
+      document.addEventListener('dd:capture-runtime-ready', function () { setTimeout(launch, 180); }, { once: true });
+      document.addEventListener('dd:gameplay-rules-ready', function () { setTimeout(launch, 240); }, { once: true });
+      document.addEventListener('dd:studio-data-ready', function () { setTimeout(launch, 320); }, { once: true });
+      setTimeout(launch, 1300);
     })();
   </script>
   <script src="/assets/js/dd-health-signal-bridge.js?v=health-signal-1"></script>
