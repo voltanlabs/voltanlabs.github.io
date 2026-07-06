@@ -1,7 +1,7 @@
 # VoltanLabs Roadmap
 
 Status: active  
-Current focus: Phase 2.3 Shared Game Data Pipeline
+Current focus: Phase 3 Runtime Integration and Repository Stabilization
 
 ## Purpose
 
@@ -17,6 +17,9 @@ For the most current project status, see:
 
 - `PROJECT_STATE.md`
 - `SITE_STRATEGY.md`
+- `README.md`
+- `docs/databyte-runtime-ownership-audit.md`
+- `docs/databyte-gameplay-ownership-audit.md`
 - `studio/docs/STUDIO_GAME_INTEGRATION_ROADMAP.md`
 
 ## Strategic Model
@@ -42,11 +45,16 @@ VoltanLabs
 │   ├── Diagnostics
 │   ├── Runtime Visualizer
 │   ├── Repository Intelligence
-│   └── Predictive Diagnostics
+│   ├── Predictive Diagnostics
+│   ├── Repository Integrity Engine
+│   ├── Dependency Explorer
+│   ├── Coverage Heat Map
+│   └── Repository Evolution Dashboard
 └── Future Automation Layer
     ├── Studio AI Assistant
     ├── Automated index generation
     ├── Documentation repair
+    ├── Simulation Lab
     └── Game content assembly
 ```
 
@@ -64,20 +72,26 @@ Data Discovery is the flagship playable product.
 
 ### Data Discovery Foundation
 
-Status: active product build.
+Status: active Phase 3 runtime stabilization.
 
 Completed:
 
 - New active `#ddApp` product container.
 - 52-sprite shared canon roster bridge.
 - Studio data bridge overlay foundation.
+- Shared game-data manifest.
 - Scanner, encounter, battle, capture confirmation, result, party, items, Dex, and Admin panels.
 - Lead vs Wild battle arena foundation.
 - Health and Signal telemetry foundation.
+- Phase 3 Encounter Runtime.
+- Phase 3 Capture Runtime.
+- Shared Gameplay Rules runtime.
+- Battle Engine helper runtime.
+- Product App v3 functional cutover.
 
 Current issue:
 
-- Battle is functional but still a foundation. It needs real moves, turn rules, healing/recovery, enemy behavior, and balancing.
+- The game is functional as a foundation, but repository metadata, runtime ownership, and diagnostics must be stabilized before major gameplay expansion.
 
 ### DataByteDex Foundation
 
@@ -104,45 +118,69 @@ Completed:
 - Diagnostics dashboard.
 - Repository Intelligence stack.
 - Predictive Diagnostics start.
+- Repository Integrity Engine.
+- Dependency Explorer.
+- Dependency Graph Viewer.
+- Coverage Heat Map.
+- Repository Evolution Dashboard.
+- Knowledge coverage metrics.
+- Actionable repair suggestions.
 - Living project state document.
 - Studio to Data Discovery Integration Roadmap.
 - Shared game-data manifest.
-- Diagnostics registry updated with game bridge scripts, Dex renderer, and manifest.
+- Diagnostics registry updated with game bridge scripts, Dex renderer, runtime ownership audits, and manifest files.
 
 Current issue:
 
-- Studio can validate and inform the game, but it does not yet auto-assemble full game content.
+- Studio can validate and inform the game, but it does not yet auto-assemble full game content or export a complete balanced build.
 
-## Active Phase — Phase 2.3 Shared Game Data Pipeline
+## Active Phase — Phase 3 Runtime Integration and Repository Stabilization
 
 Status: active.
 
 Goal:
 
-Move Data Discovery and DataByteDex from duplicated hand-wired data toward one Studio-backed shared game-data pipeline.
+Make Data Discovery functional through dedicated runtime owners while stabilizing the repository metadata that Diagnostics uses to understand the architecture.
 
-Completed in Phase 2.3 so far:
+Current Phase 3 runtime chain:
 
-- Added `studio/databytesprites/game-data.v1.json`.
-- Upgraded `assets/js/dd-studio-data-bridge.js` to load the manifest.
-- Added manifest definitions for items and encounter pools.
-- Added `assets/js/databytedex-shared-renderer.js`.
-- Rewired `databytedex.html` to consume the shared roster and Studio bridge.
-- Registered the game-data manifest and shared Dex renderer in Diagnostics.
-- Updated `PROJECT_STATE.md` with Phase 2.3 state.
+```text
+databyte-discovery.html
+├── dd-canon-roster.js
+├── dd-studio-data-bridge.js
+├── dd-battle-engine-2-4.js
+├── dd-gameplay-rules-2-4.js
+├── dd-capture-runtime.js
+├── dd-encounter-runtime.js
+├── dd-battle-balance-2-4.js
+└── databyte-discovery-product-app-v3.js
+```
+
+Completed in Phase 3 so far:
+
+- Added `assets/js/dd-capture-runtime.js`.
+- Added `assets/js/dd-encounter-runtime.js`.
+- Added `assets/js/databyte-discovery-product-app-v3.js`.
+- Wired the live page to Product App v3.
+- Repaired `studio/databytesprites/game-data.v1.json` with root IDs and Phase 3 runtime references.
+- Rebuilt `studio/databytesprites/source-files.json` around Phase 3 runtime ownership.
+- Rebuilt `studio/databytesprites/mechanics-graph.json` around active runtime owners.
+- Updated README for Phase 3 stabilization.
+- Updated PROJECT_STATE and ROADMAP for Phase 3 stabilization.
 
 Next tasks:
 
-1. Enable battle moves from the shared manifest and Studio move index.
-2. Make the product app consume manifest item and encounter definitions directly.
-3. Add diagnostics rules for game-data manifest relationships.
-4. Continue migrating legacy effects into `#ddApp`.
-5. Build healing/recovery and party management rules.
-6. Keep Diagnostics current as new bridge and product files are added.
+1. Rerun Diagnostics and compare health/coverage against the previous report.
+2. Reduce remaining orphan records in Knowledge Engine outputs.
+3. Resolve remaining dependency graph edges.
+4. Update Studio integration roadmap with export and simulator milestones.
+5. Split Party Runtime out of Product App v3.
+6. Split Item Runtime out of Product App v3.
+7. Add battle move resolver and reward/progression hooks.
 
 ## Shared Data Phase — One Sprite Source of Truth
 
-Status: in progress.
+Status: active foundation.
 
 Goal:
 
@@ -153,26 +191,76 @@ Priority tasks:
 - Use `assets/js/dd-canon-roster.js` as the current public shared roster bridge.
 - Overlay Studio data from `/studio/databytesprites/species.json` through `dd-studio-data-bridge.js`.
 - Move DataByteDex and Data Discovery toward the same runtime roster global.
-- Later align the public roster bridge with a Studio-generated game-data manifest export.
+- Align the public roster bridge with a Studio-generated game-data manifest export.
 - Validate sprite data through Studio diagnostics.
+
+## Runtime Module Split Phase
+
+Status: active foundation.
+
+Goal:
+
+Move gameplay ownership out of Product App v3 and into dedicated runtime modules.
+
+Completed:
+
+- Encounter Runtime.
+- Capture Runtime.
+- Gameplay Rules Runtime.
+- Battle Engine helper runtime.
+
+Next runtime modules:
+
+- Party Runtime.
+- Item Runtime.
+- Progression Runtime.
+- Mission Runtime.
+- Journal Runtime.
+- Ability Runtime.
 
 ## Battle Engine Phase
 
-Status: active foundation / next gameplay push.
+Status: active foundation.
 
 Goal:
 
 Turn the current battle foundation into a real battle engine.
 
+Completed:
+
+- Move buttons from Studio move data.
+- Speed-based turn order foundation.
+- Type/effectiveness helper hooks.
+- Enemy move choice helper.
+- Basic health and signal resolution.
+- Basic capture flow integration.
+
 Priority tasks:
 
-- Add move selection.
-- Add turn order.
-- Add enemy actions.
-- Add health recovery/healing rules.
-- Add type/effectiveness hooks.
-- Add victory, defeat, and capture state rules.
+- Add dedicated battle move resolver.
+- Add deeper status effect handling.
+- Add victory, defeat, and reward rules.
+- Add healing/recovery balance.
+- Add boss and rare encounter behavior.
 - Add balance validation from Studio diagnostics.
+
+## Studio Export Pipeline Phase
+
+Status: planned foundation.
+
+Goal:
+
+Make Studio the authoring and validation layer for game-ready exports.
+
+Priority tasks:
+
+- Studio-authored species export.
+- Studio-authored moves export.
+- Studio-authored encounter tables.
+- Studio-authored item tables.
+- Studio balance simulator output.
+- Runtime export manifest.
+- One-click validation report.
 
 ## Creator Pipeline Phase
 
