@@ -21,7 +21,7 @@
     <div class="dd-boot-card">
       <div class="dd-boot-kicker">Scanner OS Boot</div>
       <div class="dd-boot-title">Data Discovery</div>
-      <div class="dd-boot-sub">Loading Phase 3 encounter and capture runtimes...</div>
+      <div class="dd-boot-sub">Loading functional Phase 3 runtime...</div>
     </div>
   </div>
   <script src="/assets/js/dd-canon-roster.js?v=product-roster-1"></script>
@@ -38,7 +38,7 @@
         if (launched) return;
         launched = true;
         var app = document.createElement('script');
-        app.src = '/assets/js/databyte-discovery-product-app.js?v=product-build-8';
+        app.src = '/assets/js/databyte-discovery-product-app-v3.js?v=phase3-runtime-1';
         document.body.appendChild(app);
       }
       document.addEventListener('dd:battle-balance-ready', launch, { once: true });
