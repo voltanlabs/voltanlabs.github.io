@@ -1,35 +1,43 @@
 {
-  "schemaVersion": "0.3.0",
+  "schemaVersion": "0.4.0",
   "generatedBy": "VoltanLabs Studio Runtime Loader",
-  "description": "Deterministic load-order manifest for the active Data Discovery product app runtime. Older Scanner OS bridges are retained as legacy references, not active page owners.",
-  "runtime": "databyte-discovery-product-app",
+  "description": "Deterministic load-order manifest for the active Phase 3 Data Discovery runtime. Older Scanner OS and Phase 2 product chains are retained as legacy references, not active page owners.",
+  "runtime": "databyte-discovery-product-app-v3",
+  "phase": "3.1-runtime-stabilization",
   "phases": [
     {"id":"studio:boot","description":"Runtime loader starts and validates the manifest."},
     {"id":"product:roster-ready","description":"Shared 52-sprite canon roster bridge is loaded."},
     {"id":"product:studio-bridge-ready","description":"Studio data bridge overlays manifest, species, move, and type data."},
-    {"id":"product:battle-engine-ready","description":"Phase 2.4 battle engine helper hooks are loaded."},
-    {"id":"product:balance-ready","description":"Phase 2.4 balance layer normalizes odds, stability, move power, and caps."},
-    {"id":"product:app-ready","description":"Data Discovery product app owns scanner, encounter, battle, capture, party, items, Dex, and Admin screens."},
+    {"id":"product:battle-engine-ready","description":"Battle engine helper hooks are loaded."},
+    {"id":"product:gameplay-rules-ready","description":"Shared gameplay rules are loaded for capture odds, caps, stability, and move tuning."},
+    {"id":"product:capture-runtime-ready","description":"Phase 3 Capture Runtime is loaded."},
+    {"id":"product:encounter-runtime-ready","description":"Phase 3 Encounter Runtime is loaded."},
+    {"id":"product:balance-ready","description":"Balance layer normalizes roster and move values before Product App v3 boots."},
+    {"id":"product:app-ready","description":"Product App v3 owns UI orchestration for scanner, encounter, battle, capture, party, items, Dex, and Admin screens."},
     {"id":"product:effects-ready","description":"Compatibility health/signal and background effects are loaded."},
-    {"id":"runtime:health-ready","description":"Bridge health checks can validate the product runtime globals."}
+    {"id":"runtime:health-ready","description":"Bridge health checks validate the Phase 3 runtime globals."}
   ],
   "modules": [
     {"id":"dd-canon-roster","label":"Data Discovery Canon Roster","script":"/assets/js/dd-canon-roster.js?v=product-roster-1","phase":"product:roster-ready","requires":[],"emits":["DD_CANON_ROSTER"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
     {"id":"dd-studio-data-bridge","label":"Studio Data Bridge","script":"/assets/js/dd-studio-data-bridge.js?v=studio-bridge-3","phase":"product:studio-bridge-ready","requires":["dd-canon-roster"],"emits":["dd:studio-data-ready","DD_GAME_DATA_MANIFEST","DD_STUDIO_DATA_BRIDGE","DD_MOVE_INDEX","DD_TYPE_CHART"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
-    {"id":"dd-battle-engine-2-4","label":"Phase 2.4 Battle Engine Hooks","script":"/assets/js/dd-battle-engine-2-4.js?v=battle-engine-2","phase":"product:battle-engine-ready","requires":["dd-studio-data-bridge"],"emits":["DDBattle24","dd:battle:*"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
-    {"id":"dd-battle-balance-2-4","label":"Phase 2.4 Battle Balance Layer","script":"/assets/js/dd-battle-balance-2-4.js?v=battle-balance-1","phase":"product:balance-ready","requires":["dd-studio-data-bridge","dd-battle-engine-2-4"],"emits":["dd:battle-balance-ready","DD_BATTLE_BALANCE"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
-    {"id":"databyte-discovery-product-app","label":"Data Discovery Product App","script":"/assets/js/databyte-discovery-product-app.js?v=product-build-7","phase":"product:app-ready","requires":["dd-canon-roster","dd-studio-data-bridge","dd-battle-engine-2-4","dd-battle-balance-2-4"],"emits":["ddApp"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
-    {"id":"dd-health-signal-bridge","label":"Health Signal Compatibility Bridge","script":"/assets/js/dd-health-signal-bridge.js?v=health-signal-1","phase":"product:effects-ready","requires":["databyte-discovery-product-app"],"emits":["health-signal-ui"],"required":false,"failureBehavior":"warn-only","status":"compatibility"},
-    {"id":"dd-scan-bg","label":"Scanner Background Effects","script":"/assets/js/dd-scan-bg.js?v=0912-direct-os","phase":"product:effects-ready","requires":["databyte-discovery-product-app"],"emits":["scanner:background-ready"],"required":false,"failureBehavior":"warn-only","status":"compatibility"},
-    {"id":"studio-runtime-bridge-checks","label":"Runtime Bridge Health Checks","script":"/assets/js/studio-runtime-bridge-checks.js?v=bridge-checks-2","phase":"runtime:health-ready","requires":["databyte-discovery-product-app"],"emits":["runtime:health-checks-ready"],"required":false,"failureBehavior":"warn-only","status":"active"}
+    {"id":"dd-battle-engine-2-4","label":"Battle Engine Hooks","script":"/assets/js/dd-battle-engine-2-4.js?v=battle-engine-2","phase":"product:battle-engine-ready","requires":["dd-studio-data-bridge"],"emits":["DDBattle24","dd:battle:*"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
+    {"id":"dd-gameplay-rules-2-4","label":"Gameplay Rules Runtime","script":"/assets/js/dd-gameplay-rules-2-4.js?v=gameplay-rules-1","phase":"product:gameplay-rules-ready","requires":["dd-studio-data-bridge"],"emits":["dd:gameplay-rules-ready","DD_GAMEPLAY_RULES"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
+    {"id":"dd-capture-runtime","label":"Capture Runtime","script":"/assets/js/dd-capture-runtime.js?v=capture-runtime-1","phase":"product:capture-runtime-ready","requires":["dd-gameplay-rules-2-4"],"emits":["dd:capture-runtime-ready","DD_CAPTURE_RUNTIME"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
+    {"id":"dd-encounter-runtime","label":"Encounter Runtime","script":"/assets/js/dd-encounter-runtime.js?v=encounter-runtime-1","phase":"product:encounter-runtime-ready","requires":["dd-canon-roster","dd-studio-data-bridge","dd-gameplay-rules-2-4","dd-capture-runtime"],"emits":["dd:encounter-runtime-ready","DD_ENCOUNTER_RUNTIME"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
+    {"id":"dd-battle-balance-2-4","label":"Battle Balance Layer","script":"/assets/js/dd-battle-balance-2-4.js?v=battle-balance-2","phase":"product:balance-ready","requires":["dd-studio-data-bridge","dd-battle-engine-2-4","dd-gameplay-rules-2-4"],"emits":["dd:battle-balance-ready","DD_BATTLE_BALANCE"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
+    {"id":"databyte-discovery-product-app-v3","label":"Data Discovery Product App v3","script":"/assets/js/databyte-discovery-product-app-v3.js?v=phase3-runtime-1","phase":"product:app-ready","requires":["dd-canon-roster","dd-studio-data-bridge","dd-battle-engine-2-4","dd-gameplay-rules-2-4","dd-capture-runtime","dd-encounter-runtime","dd-battle-balance-2-4"],"emits":["ddApp"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
+    {"id":"dd-health-signal-bridge","label":"Health Signal Compatibility Bridge","script":"/assets/js/dd-health-signal-bridge.js?v=health-signal-1","phase":"product:effects-ready","requires":["databyte-discovery-product-app-v3"],"emits":["health-signal-ui"],"required":false,"failureBehavior":"warn-only","status":"compatibility"},
+    {"id":"dd-scan-bg","label":"Scanner Background Effects","script":"/assets/js/dd-scan-bg.js?v=0912-direct-os","phase":"product:effects-ready","requires":["databyte-discovery-product-app-v3"],"emits":["scanner:background-ready"],"required":false,"failureBehavior":"warn-only","status":"compatibility"},
+    {"id":"studio-runtime-bridge-checks","label":"Runtime Bridge Health Checks","script":"/assets/js/studio-runtime-bridge-checks.js?v=bridge-checks-3","phase":"runtime:health-ready","requires":["databyte-discovery-product-app-v3"],"emits":["runtime:health-check","DD_RUNTIME_HEALTH"],"required":false,"failureBehavior":"warn-only","status":"active"}
   ],
   "legacyModules": [
-    {"id":"databyte-capture-pool","script":"/assets/js/databyte-capture-pool.js?v=knowledge-pool-1","status":"legacy-reference","replacement":"dd-studio-data-bridge"},
-    {"id":"databyte-balance-bridge","script":"/assets/js/databyte-balance-bridge.js?v=balance-1","status":"legacy-reference","replacement":"dd-battle-balance-2-4"},
+    {"id":"databyte-discovery-product-app","script":"/assets/js/databyte-discovery-product-app.js?v=product-build-8","status":"legacy-reference","replacement":"databyte-discovery-product-app-v3"},
+    {"id":"databyte-capture-pool","script":"/assets/js/databyte-capture-pool.js?v=knowledge-pool-1","status":"legacy-reference","replacement":"dd-encounter-runtime"},
+    {"id":"databyte-balance-bridge","script":"/assets/js/databyte-balance-bridge.js?v=balance-1","status":"legacy-reference","replacement":"dd-gameplay-rules-2-4"},
     {"id":"databyte-move-bridge","script":"/assets/js/databyte-move-bridge.js?v=moves-1","status":"legacy-reference","replacement":"dd-studio-data-bridge"},
     {"id":"databyte-type-bridge","script":"/assets/js/databyte-type-bridge.js?v=types-1","status":"legacy-reference","replacement":"dd-studio-data-bridge"},
     {"id":"databyte-ability-bridge","script":"/assets/js/databyte-ability-bridge.js?v=abilities-1","status":"legacy-reference","replacement":"future-ability-runtime"},
-    {"id":"databyte-standalone-app","script":"/assets/js/databyte-standalone-app.js?v=0912-direct-os","status":"legacy-reference","replacement":"databyte-discovery-product-app"}
+    {"id":"databyte-standalone-app","script":"/assets/js/databyte-standalone-app.js?v=0912-direct-os","status":"legacy-reference","replacement":"databyte-discovery-product-app-v3"}
   ],
   "events": {
     "loaderStarted":"studio:boot",
@@ -39,5 +47,18 @@
     "allReady":"runtime:ready",
     "healthCheck":"runtime:health-check"
   },
-  "nextSystems": ["productRuntimeHealthChecks", "legacyRetirementAudit", "nativeEffectsPort", "abilityRuntimeHook"]
+  "verificationTargets": [
+    "DD_CANON_ROSTER",
+    "DD_STUDIO_DATA_BRIDGE",
+    "DD_GAME_DATA_MANIFEST",
+    "DD_MOVE_INDEX",
+    "DD_TYPE_CHART",
+    "DDBattle24",
+    "DD_GAMEPLAY_RULES",
+    "DD_CAPTURE_RUNTIME",
+    "DD_ENCOUNTER_RUNTIME",
+    "DD_BATTLE_BALANCE",
+    "ddApp"
+  ],
+  "nextSystems": ["phase31RuntimeHealthBaseline", "partyRuntimeSplit", "itemRuntimeSplit", "legacyRetirementAudit", "studioExportPipeline"]
 }
