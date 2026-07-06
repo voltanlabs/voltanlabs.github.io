@@ -1,10 +1,11 @@
 {
-  "schemaVersion": "0.1.3",
+  "schemaVersion": "0.1.4",
   "generatedBy": "VoltanLabs Studio Diagnostics",
   "description": "Registry of live Studio, DataByteSprites, game bridge, documentation, and runtime sources that Diagnostics should validate.",
   "sources": [
     {"id":"knowledge-v2","label":"Knowledge Engine v2","path":"/studio/knowledge/index.v2.json","kind":"registry","collection":"modules,indexes"},
     {"id":"studio-operations","label":"Studio Operations","path":"/studio/knowledge/studio-operations.json","kind":"modules","collection":"modules"},
+    {"id":"dbs-game-data","label":"DataByteSprites Game Data Manifest","path":"/studio/databytesprites/game-data.v1.json","kind":"gameData","collection":"items,encounterPools,validationTargets,nextSystems"},
     {"id":"dbs-species","label":"DataByteSprites Species","path":"/studio/databytesprites/species.json","kind":"species","collection":"species"},
     {"id":"dbs-lore","label":"DataByteSprites Lore","path":"/studio/databytesprites/lore.json","kind":"lore","collection":"lore"},
     {"id":"dbs-source-files","label":"DataByteSprites Source Files","path":"/studio/databytesprites/source-files.json","kind":"sourceFile","collection":"sourceFiles"},
@@ -23,6 +24,7 @@
     {"id":"dd-studio-data-bridge-js","label":"Data Discovery Studio Data Bridge","path":"/assets/js/dd-studio-data-bridge.js","kind":"script","collection":"file"},
     {"id":"dd-product-app-js","label":"Data Discovery Product App","path":"/assets/js/databyte-discovery-product-app.js","kind":"script","collection":"file"},
     {"id":"dd-health-signal-bridge-js","label":"Data Discovery Health Signal Bridge","path":"/assets/js/dd-health-signal-bridge.js","kind":"script","collection":"file"},
+    {"id":"databytedex-renderer-js","label":"DataByteDex Shared Renderer","path":"/assets/js/databytedex-shared-renderer.js","kind":"script","collection":"file"},
     {"id":"studio-registry-js","label":"Studio Registry JS","path":"/assets/studio-registry.js","kind":"script","collection":"file"},
     {"id":"studio-shell-js","label":"Studio Shell JS","path":"/assets/studio-shell.js","kind":"script","collection":"file"},
     {"id":"studio-search-js","label":"Studio Search JS","path":"/assets/asset-search.js","kind":"script","collection":"file"},
@@ -31,6 +33,7 @@
     {"id":"runtime-bridge-checks-js","label":"Bridge Health Checks Script","path":"/assets/js/studio-runtime-bridge-checks.js","kind":"script","collection":"file"}
   ],
   "validationHints": {
+    "gameData": ["schemaVersion", "runtime", "sources", "items", "encounterPools", "validationTargets"],
     "species": ["id", "name", "battleStats", "elements"],
     "move": ["id", "name", "learnedBy"],
     "ability": ["id", "name", "assignedTo"],
@@ -40,5 +43,5 @@
     "documentation": ["Data Discovery", "Studio", "Roadmap"],
     "script": ["Data Discovery", "Studio", "runtime", "bridge"]
   },
-  "nextStep": "Continue Studio to Data Discovery Integration Phase A by moving DataByteDex and gameplay systems toward shared Studio-backed game data."
+  "nextStep": "Continue Phase 2.3 by enabling battle moves, runtime encounter pools, and item resolution from the shared game-data manifest."
 }
