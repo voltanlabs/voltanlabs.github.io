@@ -21,11 +21,25 @@
     <div class="dd-boot-card">
       <div class="dd-boot-kicker">Scanner OS Boot</div>
       <div class="dd-boot-title">Data Discovery</div>
-      <div class="dd-boot-sub">Loading 52-sprite battle build...</div>
+      <div class="dd-boot-sub">Loading Studio-connected battle build...</div>
     </div>
   </div>
   <script src="/assets/js/dd-canon-roster.js?v=product-roster-1"></script>
-  <script src="/assets/js/databyte-discovery-product-app.js?v=product-build-3"></script>
+  <script src="/assets/js/dd-studio-data-bridge.js?v=studio-bridge-1"></script>
+  <script>
+    (function () {
+      var launched = false;
+      function launch() {
+        if (launched) return;
+        launched = true;
+        var app = document.createElement('script');
+        app.src = '/assets/js/databyte-discovery-product-app.js?v=product-build-4';
+        document.body.appendChild(app);
+      }
+      document.addEventListener('dd:studio-data-ready', launch, { once: true });
+      setTimeout(launch, 900);
+    })();
+  </script>
   <script src="/assets/js/dd-health-signal-bridge.js?v=health-signal-1"></script>
   <script src="/assets/js/dd-scan-bg.js?v=0912-direct-os"></script>
 </body>
