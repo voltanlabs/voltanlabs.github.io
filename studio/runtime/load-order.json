@@ -1,33 +1,43 @@
 {
-  "schemaVersion": "0.2.0",
+  "schemaVersion": "0.3.0",
   "generatedBy": "VoltanLabs Studio Runtime Loader",
-  "description": "Deterministic load-order manifest for Data Discovery runtime bridges, Scanner OS boot, and bridge health checks.",
-  "runtime": "databyte-discovery",
+  "description": "Deterministic load-order manifest for the active Data Discovery product app runtime. Older Scanner OS bridges are retained as legacy references, not active page owners.",
+  "runtime": "databyte-discovery-product-app",
   "phases": [
-    { "id": "studio:boot", "description": "Runtime loader starts and validates the manifest." },
-    { "id": "databytesprites:data-ready", "description": "Data-driven bridge scripts are loaded and able to fetch their own indexes." },
-    { "id": "scanner:bridges-ready", "description": "Capture pool, balance, move, type, and ability bridges have been injected." },
-    { "id": "scanner:ready", "description": "Scanner OS runtime script has been loaded." },
-    { "id": "scanner:background-ready", "description": "Scanner background effects have been loaded." },
-    { "id": "runtime:health-ready", "description": "Bridge health checks have been loaded and can validate runtime globals." }
+    {"id":"studio:boot","description":"Runtime loader starts and validates the manifest."},
+    {"id":"product:roster-ready","description":"Shared 52-sprite canon roster bridge is loaded."},
+    {"id":"product:studio-bridge-ready","description":"Studio data bridge overlays manifest, species, move, and type data."},
+    {"id":"product:battle-engine-ready","description":"Phase 2.4 battle engine helper hooks are loaded."},
+    {"id":"product:balance-ready","description":"Phase 2.4 balance layer normalizes odds, stability, move power, and caps."},
+    {"id":"product:app-ready","description":"Data Discovery product app owns scanner, encounter, battle, capture, party, items, Dex, and Admin screens."},
+    {"id":"product:effects-ready","description":"Compatibility health/signal and background effects are loaded."},
+    {"id":"runtime:health-ready","description":"Bridge health checks can validate the product runtime globals."}
   ],
   "modules": [
-    { "id": "databyte-capture-pool", "label": "Species Capture Pool Bridge", "script": "/assets/js/databyte-capture-pool.js?v=knowledge-pool-1", "phase": "databytesprites:data-ready", "requires": [], "emits": ["databytesprites:capture-pool-loaded"], "required": true, "failureBehavior": "show-runtime-error" },
-    { "id": "databyte-balance-bridge", "label": "Battle Balance Bridge", "script": "/assets/js/databyte-balance-bridge.js?v=balance-1", "phase": "scanner:bridges-ready", "requires": ["databyte-capture-pool"], "emits": ["databytesprites:balance-loaded"], "required": true, "failureBehavior": "show-runtime-error" },
-    { "id": "databyte-move-bridge", "label": "Move Runtime Bridge", "script": "/assets/js/databyte-move-bridge.js?v=moves-1", "phase": "scanner:bridges-ready", "requires": ["databyte-capture-pool", "databyte-balance-bridge"], "emits": ["databytesprites:moves-loaded"], "required": true, "failureBehavior": "show-runtime-error" },
-    { "id": "databyte-type-bridge", "label": "Type Effectiveness Bridge", "script": "/assets/js/databyte-type-bridge.js?v=types-1", "phase": "scanner:bridges-ready", "requires": ["databyte-move-bridge"], "emits": ["databytesprites:types-loaded"], "required": true, "failureBehavior": "show-runtime-error" },
-    { "id": "databyte-ability-bridge", "label": "Passive Ability Bridge", "script": "/assets/js/databyte-ability-bridge.js?v=abilities-1", "phase": "scanner:bridges-ready", "requires": ["databyte-type-bridge"], "emits": ["databytesprites:abilities-loaded"], "required": true, "failureBehavior": "show-runtime-error" },
-    { "id": "databyte-standalone-app", "label": "Scanner OS Runtime", "script": "/assets/js/databyte-standalone-app.js?v=0912-direct-os", "phase": "scanner:ready", "requires": ["databyte-capture-pool", "databyte-balance-bridge", "databyte-move-bridge", "databyte-type-bridge", "databyte-ability-bridge"], "emits": ["scanner:ready"], "required": true, "failureBehavior": "show-runtime-error" },
-    { "id": "dd-scan-bg", "label": "Scanner Background Effects", "script": "/assets/js/dd-scan-bg.js?v=0912-direct-os", "phase": "scanner:background-ready", "requires": ["databyte-standalone-app"], "emits": ["scanner:background-ready"], "required": false, "failureBehavior": "warn-only" },
-    { "id": "studio-runtime-bridge-checks", "label": "Runtime Bridge Health Checks", "script": "/assets/js/studio-runtime-bridge-checks.js?v=bridge-checks-1", "phase": "runtime:health-ready", "requires": ["databyte-standalone-app"], "emits": ["runtime:health-checks-ready"], "required": false, "failureBehavior": "warn-only" }
+    {"id":"dd-canon-roster","label":"Data Discovery Canon Roster","script":"/assets/js/dd-canon-roster.js?v=product-roster-1","phase":"product:roster-ready","requires":[],"emits":["DD_CANON_ROSTER"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
+    {"id":"dd-studio-data-bridge","label":"Studio Data Bridge","script":"/assets/js/dd-studio-data-bridge.js?v=studio-bridge-3","phase":"product:studio-bridge-ready","requires":["dd-canon-roster"],"emits":["dd:studio-data-ready","DD_GAME_DATA_MANIFEST","DD_STUDIO_DATA_BRIDGE","DD_MOVE_INDEX","DD_TYPE_CHART"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
+    {"id":"dd-battle-engine-2-4","label":"Phase 2.4 Battle Engine Hooks","script":"/assets/js/dd-battle-engine-2-4.js?v=battle-engine-2","phase":"product:battle-engine-ready","requires":["dd-studio-data-bridge"],"emits":["DDBattle24","dd:battle:*"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
+    {"id":"dd-battle-balance-2-4","label":"Phase 2.4 Battle Balance Layer","script":"/assets/js/dd-battle-balance-2-4.js?v=battle-balance-1","phase":"product:balance-ready","requires":["dd-studio-data-bridge","dd-battle-engine-2-4"],"emits":["dd:battle-balance-ready","DD_BATTLE_BALANCE"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
+    {"id":"databyte-discovery-product-app","label":"Data Discovery Product App","script":"/assets/js/databyte-discovery-product-app.js?v=product-build-7","phase":"product:app-ready","requires":["dd-canon-roster","dd-studio-data-bridge","dd-battle-engine-2-4","dd-battle-balance-2-4"],"emits":["ddApp"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
+    {"id":"dd-health-signal-bridge","label":"Health Signal Compatibility Bridge","script":"/assets/js/dd-health-signal-bridge.js?v=health-signal-1","phase":"product:effects-ready","requires":["databyte-discovery-product-app"],"emits":["health-signal-ui"],"required":false,"failureBehavior":"warn-only","status":"compatibility"},
+    {"id":"dd-scan-bg","label":"Scanner Background Effects","script":"/assets/js/dd-scan-bg.js?v=0912-direct-os","phase":"product:effects-ready","requires":["databyte-discovery-product-app"],"emits":["scanner:background-ready"],"required":false,"failureBehavior":"warn-only","status":"compatibility"},
+    {"id":"studio-runtime-bridge-checks","label":"Runtime Bridge Health Checks","script":"/assets/js/studio-runtime-bridge-checks.js?v=bridge-checks-2","phase":"runtime:health-ready","requires":["databyte-discovery-product-app"],"emits":["runtime:health-checks-ready"],"required":false,"failureBehavior":"warn-only","status":"active"}
+  ],
+  "legacyModules": [
+    {"id":"databyte-capture-pool","script":"/assets/js/databyte-capture-pool.js?v=knowledge-pool-1","status":"legacy-reference","replacement":"dd-studio-data-bridge"},
+    {"id":"databyte-balance-bridge","script":"/assets/js/databyte-balance-bridge.js?v=balance-1","status":"legacy-reference","replacement":"dd-battle-balance-2-4"},
+    {"id":"databyte-move-bridge","script":"/assets/js/databyte-move-bridge.js?v=moves-1","status":"legacy-reference","replacement":"dd-studio-data-bridge"},
+    {"id":"databyte-type-bridge","script":"/assets/js/databyte-type-bridge.js?v=types-1","status":"legacy-reference","replacement":"dd-studio-data-bridge"},
+    {"id":"databyte-ability-bridge","script":"/assets/js/databyte-ability-bridge.js?v=abilities-1","status":"legacy-reference","replacement":"future-ability-runtime"},
+    {"id":"databyte-standalone-app","script":"/assets/js/databyte-standalone-app.js?v=0912-direct-os","status":"legacy-reference","replacement":"databyte-discovery-product-app"}
   ],
   "events": {
-    "loaderStarted": "studio:boot",
-    "manifestReady": "runtime:manifest-ready",
-    "moduleLoaded": "runtime:module-loaded",
-    "moduleFailed": "runtime:module-failed",
-    "allReady": "runtime:ready",
-    "healthCheck": "runtime:health-check"
+    "loaderStarted":"studio:boot",
+    "manifestReady":"runtime:manifest-ready",
+    "moduleLoaded":"runtime:module-loaded",
+    "moduleFailed":"runtime:module-failed",
+    "allReady":"runtime:ready",
+    "healthCheck":"runtime:health-check"
   },
-  "nextSystems": ["studioRuntimeVisualizer", "runtimeStatusPanel", "bridgeHealthChecksPanel"]
+  "nextSystems": ["productRuntimeHealthChecks", "legacyRetirementAudit", "nativeEffectsPort", "abilityRuntimeHook"]
 }
