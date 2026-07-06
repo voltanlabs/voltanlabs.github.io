@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "0.1.4",
+  "schemaVersion": "0.1.5",
   "generatedBy": "VoltanLabs Studio Diagnostics",
-  "description": "Registry of live Studio, DataByteSprites, game bridge, documentation, and runtime sources that Diagnostics should validate.",
+  "description": "Registry of live Studio, DataByteSprites, game bridge, documentation, ownership audits, and runtime sources that Diagnostics should validate.",
   "sources": [
     {"id":"knowledge-v2","label":"Knowledge Engine v2","path":"/studio/knowledge/index.v2.json","kind":"registry","collection":"modules,indexes"},
     {"id":"studio-operations","label":"Studio Operations","path":"/studio/knowledge/studio-operations.json","kind":"modules","collection":"modules"},
@@ -13,15 +13,19 @@
     {"id":"dbs-moves","label":"DataByteSprites Moves","path":"/studio/databytesprites/moves.json","kind":"move","collection":"moves"},
     {"id":"dbs-type-chart","label":"DataByteSprites Type Chart","path":"/studio/databytesprites/type-chart.json","kind":"typeChart","collection":"rules"},
     {"id":"dbs-abilities","label":"DataByteSprites Abilities","path":"/studio/databytesprites/abilities.json","kind":"ability","collection":"abilities"},
-    {"id":"runtime-manifest","label":"Runtime Manifest","path":"/studio/runtime/load-order.json","kind":"runtime","collection":"modules,phases"},
+    {"id":"runtime-manifest","label":"Runtime Manifest","path":"/studio/runtime/load-order.json","kind":"runtime","collection":"modules,phases,legacyModules"},
     {"id":"phase-1-2-completion","label":"Phase 1.2 Completion Manifest","path":"/studio/validation/phase-1.2-completion.json","kind":"milestone","collection":"completedCapabilities"},
     {"id":"project-state","label":"Living Project State","path":"/PROJECT_STATE.md","kind":"documentation","collection":"file"},
     {"id":"site-strategy","label":"Site Strategy Audit","path":"/SITE_STRATEGY.md","kind":"documentation","collection":"file"},
+    {"id":"runtime-ownership-audit","label":"Data Discovery Runtime Ownership Audit","path":"/docs/databyte-runtime-ownership-audit.md","kind":"documentation","collection":"file"},
+    {"id":"gameplay-ownership-audit","label":"Data Discovery Gameplay Ownership Audit","path":"/docs/databyte-gameplay-ownership-audit.md","kind":"documentation","collection":"file"},
     {"id":"integration-roadmap","label":"Studio Game Integration Roadmap","path":"/studio/docs/STUDIO_GAME_INTEGRATION_ROADMAP.md","kind":"documentation","collection":"file"},
     {"id":"readme","label":"README Roadmap","path":"/README.md","kind":"documentation","collection":"file"},
     {"id":"roadmap","label":"VoltanLabs Roadmap","path":"/ROADMAP.md","kind":"documentation","collection":"file"},
     {"id":"dd-roster-js","label":"Data Discovery Canon Roster","path":"/assets/js/dd-canon-roster.js","kind":"script","collection":"file"},
     {"id":"dd-studio-data-bridge-js","label":"Data Discovery Studio Data Bridge","path":"/assets/js/dd-studio-data-bridge.js","kind":"script","collection":"file"},
+    {"id":"dd-battle-engine-2-4-js","label":"Data Discovery Phase 2.4 Battle Engine","path":"/assets/js/dd-battle-engine-2-4.js","kind":"script","collection":"file"},
+    {"id":"dd-battle-balance-2-4-js","label":"Data Discovery Phase 2.4 Battle Balance","path":"/assets/js/dd-battle-balance-2-4.js","kind":"script","collection":"file"},
     {"id":"dd-product-app-js","label":"Data Discovery Product App","path":"/assets/js/databyte-discovery-product-app.js","kind":"script","collection":"file"},
     {"id":"dd-health-signal-bridge-js","label":"Data Discovery Health Signal Bridge","path":"/assets/js/dd-health-signal-bridge.js","kind":"script","collection":"file"},
     {"id":"databytedex-renderer-js","label":"DataByteDex Shared Renderer","path":"/assets/js/databytedex-shared-renderer.js","kind":"script","collection":"file"},
@@ -40,8 +44,8 @@
     "typeChart": ["attackingElement"],
     "runtime": ["id", "script", "requires"],
     "milestone": ["id", "name", "status", "source"],
-    "documentation": ["Data Discovery", "Studio", "Roadmap"],
+    "documentation": ["Data Discovery", "Studio", "Roadmap", "Ownership"],
     "script": ["Data Discovery", "Studio", "runtime", "bridge"]
   },
-  "nextStep": "Continue Phase 2.3 by enabling battle moves, runtime encounter pools, and item resolution from the shared game-data manifest."
+  "nextStep": "Continue the gameplay ownership audit by consolidating capture odds, signal stability, and move resolution into single-owner modules."
 }
