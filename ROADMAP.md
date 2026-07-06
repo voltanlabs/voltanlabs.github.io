@@ -1,7 +1,7 @@
 # VoltanLabs Roadmap
 
 Status: active  
-Current focus: Data Discovery product build and shared roster alignment
+Current focus: Studio to Data Discovery Integration Phase A
 
 ## Purpose
 
@@ -10,6 +10,14 @@ This roadmap tracks the full VoltanLabs website and product strategy, not only V
 The key decision:
 
 > VoltanLabs Studio is the internal workshop. Data Discovery and the public site are the product-facing priority.
+
+## Current Source of Truth
+
+For the most current project status, see:
+
+- `PROJECT_STATE.md`
+- `SITE_STRATEGY.md`
+- `studio/docs/STUDIO_GAME_INTEGRATION_ROADMAP.md`
 
 ## Strategic Model
 
@@ -48,11 +56,11 @@ VoltanLabs
 
 ## Current Site Decision
 
-The public homepage should remain the front door of VoltanLabs.
+The public homepage remains the front door of VoltanLabs.
 
-The Studio should not replace the public website. Studio should support product development behind the scenes.
+The Studio should not replace the public website. Studio supports product development behind the scenes.
 
-VoltArcade should remain the game hub.
+VoltArcade remains the game hub.
 
 Data Discovery is the flagship playable product.
 
@@ -81,25 +89,29 @@ Status: active product build.
 Completed:
 
 - Scanner OS shell.
+- New active `#ddApp` product container.
 - Admin profile seed.
 - Starter Leovolt seed.
 - Local collection storage.
 - Seen/Captured local progress.
 - Discovery code input.
 - Random scan code.
-- Encounter creation.
-- Battle/capture loop foundation.
+- Signal Encounter state.
+- Battle Sequence state.
+- Lead vs Wild battle arena foundation.
+- Health and Signal telemetry foundation.
+- Capture Confirmation screen.
+- Battle Result screen.
 - Party local storage.
 - Inventory foundation.
 - Admin profile panel.
 - 52-sprite shared canon roster bridge.
 - Product app layer wired to Data Discovery.
+- Studio data bridge overlay foundation.
 
-Current focus:
+Current issue:
 
-- Test the new 52-sprite product build.
-- Continue improving scanner → encounter → battle → capture → scanner flow.
-- Move DataByteDex to consume the same shared roster bridge.
+- Battle is functional but still a foundation. It needs real moves, turn rules, healing/recovery, enemy behavior, and balancing.
 
 ### DataByteDex Foundation
 
@@ -152,41 +164,38 @@ Completed:
 - Repository Evolution Dashboard.
 - Predictive Diagnostics start.
 - Documentation maps and strategy docs.
+- Living project state document.
+- Studio to Data Discovery Integration Roadmap.
+- Diagnostics registry updated with game bridge scripts and new documentation.
 
 Current issue:
 
-- Studio is powerful, but it should now be used to support Data Discovery instead of expanding for its own sake.
+- Studio can validate and inform the game, but it does not yet auto-assemble full game content.
 
-## Active Product Phase — Data Discovery Expansion
+## Active Phase — Studio to Data Discovery Integration Phase A
 
 Status: active.
 
 Goal:
 
-Make Data Discovery feel like the flagship game instead of a small prototype.
+Move Data Discovery from hand-wired game data toward Studio-backed shared content.
 
-This phase combines the four immediate product priorities:
+Completed in Phase A so far:
 
-1. Expand the scanner roster.
-2. Align scanner and DataByteDex around one sprite source.
-3. Improve the scanner → encounter → battle → capture → scanner loop.
-4. Use Studio only to support those product goals.
-
-Completed in the first product pass:
-
-- Added `assets/js/dd-canon-roster.js`.
-- Added `assets/js/databyte-discovery-product-app.js`.
-- Wired `databyte-discovery.html` to the product app build.
-- Scanner now uses the 52-sprite canon roster bridge.
-- DataByteDex progress remains synced through the existing Seen/Captured local storage keys.
+- Added `assets/js/dd-studio-data-bridge.js`.
+- Wired `databyte-discovery.html` to load the Studio bridge before the product app.
+- Added `PROJECT_STATE.md`.
+- Added `studio/docs/STUDIO_GAME_INTEGRATION_ROADMAP.md`.
+- Registered game bridge scripts and project docs in `studio/diagnostics/sources.json`.
 
 Next tasks:
 
-- Test the new product app on mobile and desktop.
-- Move DataByteDex to consume `DD_CANON_ROSTER`.
-- Improve battle feel and capture feedback.
-- Add better rarity pools, code categories, and special encounters.
-- Add asset hooks for sprite art.
+1. Move DataByteDex to consume the shared roster bridge.
+2. Expand the Studio species index or generate a full game-data manifest.
+3. Add Studio validation coverage for playable roster entries.
+4. Add moves and abilities into the playable battle engine.
+5. Continue migrating legacy effects into `#ddApp`.
+6. Keep Diagnostics current as new game bridge files are added.
 
 ## Shared Data Phase — One Sprite Source of Truth
 
@@ -199,9 +208,28 @@ Stop maintaining separate hardcoded sprite lists.
 Priority tasks:
 
 - Use `assets/js/dd-canon-roster.js` as the current public shared roster bridge.
-- Move DataByteDex toward the shared roster bridge.
-- Later align the public roster bridge with `/studio/databytesprites/species.json`.
+- Overlay Studio data from `/studio/databytesprites/species.json` through `dd-studio-data-bridge.js`.
+- Move DataByteDex toward the same shared roster bridge.
+- Later align the public roster bridge with a Studio-generated game-data manifest.
 - Validate sprite data through Studio diagnostics.
+
+## Battle Engine Phase
+
+Status: active foundation / next gameplay push.
+
+Goal:
+
+Turn the current battle foundation into a real battle engine.
+
+Priority tasks:
+
+- Add move selection.
+- Add turn order.
+- Add enemy actions.
+- Add health recovery/healing rules.
+- Add type/effectiveness hooks.
+- Add victory, defeat, and capture state rules.
+- Add balance validation from Studio diagnostics.
 
 ## Creator Pipeline Phase
 
@@ -219,9 +247,9 @@ Priority tasks:
 - Export paths from Creator Suite into game-ready assets.
 - Asset-to-species links in Studio indexes.
 
-## Studio Support Phase
+## Studio Support Rule
 
-Status: ongoing support.
+Status: ongoing.
 
 Goal:
 
@@ -234,11 +262,12 @@ Allowed Studio work:
 - Missing asset detection.
 - Sprite/move/ability/lore consistency checks.
 - Repair plans that directly unblock game content.
+- Game data export/import structure.
 
 Deferred Studio work:
 
-- Large new diagnostics dashboards.
-- Studio AI assistant implementation.
+- Large new diagnostics dashboards unrelated to product needs.
+- Studio AI assistant implementation before the shared game data pipeline works.
 - Deep automation not needed for Data Discovery right now.
 
 ## Future Automation Phase
@@ -257,6 +286,7 @@ Future capabilities:
 - Recommend content additions.
 - Suggest safe commits.
 - Explain project architecture.
+- Export validated game-ready data.
 
 ## Development Rules
 
@@ -265,5 +295,6 @@ Future capabilities:
 - Studio is the support platform, not the front door.
 - Creator Suite supports the asset pipeline.
 - DataByteDex and scanner should move toward one shared data source.
+- Health checker / Diagnostics must be updated when new bridge scripts, docs, or data sources are added.
 - Keep small, safe commits.
 - Update documentation when the strategy changes.
