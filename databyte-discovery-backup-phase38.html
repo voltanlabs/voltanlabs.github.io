@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>DataByteSprites: Data Discovery - VoltanLabs</title>
+  <meta name="description" content="Scan real-world codes, discover DataByteSprites, and capture them in DataByteCoins." />
+  <meta name="theme-color" content="#07111f" />
+  <style>
+    html,body{height:100%;margin:0;background:#07111f;color:white;overflow:hidden;overscroll-behavior:none;font-family:Roboto,system-ui,sans-serif}
+    body:before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 50% 40%,rgba(0,123,255,.22),transparent 35%),linear-gradient(rgba(0,123,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(0,123,255,.12) 1px,transparent 1px);background-size:100% 100%,22px 22px,22px 22px;pointer-events:none}
+    .dd-boot{position:fixed;inset:0;display:grid;place-items:center;text-align:center;background:#07111f;z-index:1}
+    .dd-boot-card{display:grid;gap:10px;padding:24px;border:1px solid rgba(125,211,252,.22);border-radius:28px;background:rgba(7,17,31,.72);box-shadow:0 0 80px rgba(0,123,255,.18)}
+    .dd-boot-kicker{color:#FFD700;font-size:11px;font-weight:900;letter-spacing:.24em;text-transform:uppercase}
+    .dd-boot-title{color:#007BFF;font-size:clamp(34px,10vw,64px);line-height:.9;font-weight:900}
+    .dd-boot-sub{color:#BAE6FD;font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="dd-boot" aria-hidden="true">
+    <div class="dd-boot-card">
+      <div class="dd-boot-kicker">Scanner OS Boot</div>
+      <div class="dd-boot-title">Data Discovery</div>
+      <div class="dd-boot-sub">Loading Phase 3.8 Party + Inventory runtimes...</div>
+    </div>
+  </div>
+  <script src="/assets/js/dd-canon-roster.js?v=product-roster-1"></script>
+  <script src="/assets/js/dd-studio-data-bridge.js?v=studio-bridge-3"></script>
+  <script src="/assets/js/dd-battle-engine-2-4.js?v=battle-engine-2"></script>
+  <script src="/assets/js/dd-gameplay-rules-2-4.js?v=gameplay-rules-1"></script>
+  <script src="/assets/js/dd-capture-runtime.js?v=capture-runtime-1"></script>
+  <script src="/assets/js/dd-encounter-runtime.js?v=encounter-runtime-1"></script>
+  <script src="/assets/js/dd-battle-balance-2-4.js?v=battle-balance-2"></script>
+  <script src="/assets/js/dd-battle-resolver.js?v=battle-resolver-1"></script>
+  <script src="/assets/js/dd-party-runtime.js?v=party-runtime-1"></script>
+  <script src="/assets/js/dd-inventory-runtime.js?v=inventory-runtime-1"></script>
+  <script>
+    (function () {
+      var launched = false;
+      var ready = { resolver: false, balance: false, encounter: false, capture: false, rules: false, bridge: false, party: false, inventory: false };
+      function maybeLaunch(delay) {
+        if (launched) return;
+        if (!(ready.resolver && ready.balance && ready.encounter && ready.capture && ready.rules && ready.bridge && ready.party && ready.inventory)) return;
+        setTimeout(launch, delay || 80);
+      }
+      function launch() {
+        if (launched) return;
+        launched = true;
+        var app = document.createElement('script');
+        app.src = '/assets/js/databyte-discovery-product-app-v3-5.js?v=phase3-8-runtime-split-1';
+        document.body.appendChild(app);
+      }
+      document.addEventListener('dd:battle-resolver-ready', function () { ready.resolver = true; maybeLaunch(100); }, { once: true });
+      document.addEventListener('dd:battle-balance-ready', function () { ready.balance = true; maybeLaunch(120); }, { once: true });
+      document.addEventListener('dd:encounter-runtime-ready', function () { ready.encounter = true; maybeLaunch(140); }, { once: true });
+      document.addEventListener('dd:capture-runtime-ready', function () { ready.capture = true; maybeLaunch(160); }, { once: true });
+      document.addEventListener('dd:gameplay-rules-ready', function () { ready.rules = true; maybeLaunch(180); }, { once: true });
+      document.addEventListener('dd:studio-data-ready', function () { ready.bridge = true; maybeLaunch(200); }, { once: true });
+      document.addEventListener('dd:party-runtime-ready', function () { ready.party = true; maybeLaunch(220); }, { once: true });
+      document.addEventListener('dd:inventory-runtime-ready', function () { ready.inventory = true; maybeLaunch(240); }, { once: true });
+      setTimeout(launch, 1800);
+    })();
+  </script>
+  <script src="/assets/js/dd-health-signal-bridge.js?v=health-signal-1"></script>
+  <script src="/assets/js/dd-scan-bg.js?v=0912-direct-os"></script>
+</body>
+</html>
