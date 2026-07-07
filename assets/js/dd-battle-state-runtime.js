@@ -1,5 +1,5 @@
 // assets/js/dd-battle-state-runtime.js
-// Phase 3.8.4: single owner for encounter battle terminal-state transitions.
+// Phase 3.8.5: single owner for encounter battle terminal-state transitions and rewards.
 (function () {
   const STATES = Object.freeze({ idle: 'idle', active: 'active', victory: 'victory', defeat: 'defeat', escaped: 'escaped', result: 'result' });
   let state = { value: STATES.idle, encounterId: null, terminalProcessed: false, reason: null, updatedAt: new Date().toISOString() };
@@ -38,7 +38,22 @@
   function victory(reason, handler) { return processTerminal(STATES.victory, reason || 'wild-defeated', handler); }
   function defeat(reason, handler) { return processTerminal(STATES.defeat, reason || 'party-defeated', handler); }
   function escaped(reason, handler) { return processTerminal(STATES.escaped, reason || 'signal-lost', handler); }
+  function applyWildDefeat(wild, tools) {
+    if (!wild) return { ok: false, message: 'No wild signal.' };
+    return victory('wild-defeated', function () {
+      wild.hp = 0;
+      if (tools && typeof tools.stabilizeSignal === 'function') tools.stabilizeSignal(wild, 1);
+      if (tools && typeof tools.setOdds === 'function' && typeof tools.odds === 'function') tools.setOdds(wild, tools.odds(wild) + Number((tools.bonus == null ? 3 : tools.bonus)));
+      return { wild, odds: tools && tools.odds ? tools.odds(wild) : null, message: wild.name + ' is defeated. Choose Capture or Return.' };
+    });
+  }
+  function shouldBlockAction(wild) {
+    if (!wild) return { block: true, reason: 'missing-wild' };
+    if (Number(wild.hp || 0) <= 0) return { block: true, reason: 'wild-defeated' };
+    if (!canAct()) return { block: true, reason: state.value };
+    return { block: false, reason: null };
+  }
 
-  window.DD_BATTLE_STATE_RUNTIME = { version: '0.1.0', phase: '3.8.4-battle-state-runtime', STATES, snapshot, set, start, reset, isActive, isTerminal, canAct, victory, defeat, escaped };
+  window.DD_BATTLE_STATE_RUNTIME = { version: '0.2.0', phase: '3.8.5-battle-state-runtime', STATES, snapshot, set, start, reset, isActive, isTerminal, canAct, victory, defeat, escaped, applyWildDefeat, shouldBlockAction };
   document.dispatchEvent(new CustomEvent('dd:battle-state-runtime-ready', { detail: window.DD_BATTLE_STATE_RUNTIME }));
 })();
