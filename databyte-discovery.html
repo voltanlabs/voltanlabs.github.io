@@ -21,7 +21,7 @@
     <div class="dd-boot-card">
       <div class="dd-boot-kicker">Scanner OS Boot</div>
       <div class="dd-boot-title">Data Discovery</div>
-      <div class="dd-boot-sub">Loading Phase 3.5 canonical battle UI...</div>
+      <div class="dd-boot-sub">Loading Phase 3.8 Party + Inventory runtimes...</div>
     </div>
   </div>
   <script src="/assets/js/dd-canon-roster.js?v=product-roster-1"></script>
@@ -32,23 +32,42 @@
   <script src="/assets/js/dd-encounter-runtime.js?v=encounter-runtime-1"></script>
   <script src="/assets/js/dd-battle-balance-2-4.js?v=battle-balance-2"></script>
   <script src="/assets/js/dd-battle-resolver.js?v=battle-resolver-1"></script>
+  <script src="/assets/js/dd-party-runtime.js?v=party-runtime-1"></script>
+  <script src="/assets/js/dd-inventory-runtime.js?v=inventory-runtime-1"></script>
   <script>
     (function () {
       var launched = false;
+      var ready = {
+        resolver: false,
+        balance: false,
+        encounter: false,
+        capture: false,
+        rules: false,
+        bridge: false,
+        party: false,
+        inventory: false
+      };
+      function maybeLaunch(delay) {
+        if (launched) return;
+        if (!(ready.resolver && ready.balance && ready.encounter && ready.capture && ready.rules && ready.bridge && ready.party && ready.inventory)) return;
+        setTimeout(launch, delay || 80);
+      }
       function launch() {
         if (launched) return;
         launched = true;
         var app = document.createElement('script');
-        app.src = '/assets/js/databyte-discovery-product-app-v3-5.js?v=phase3-5-canon-1';
+        app.src = '/assets/js/databyte-discovery-product-app-v3-5.js?v=phase3-8-runtime-split-1';
         document.body.appendChild(app);
       }
-      document.addEventListener('dd:battle-resolver-ready', function () { setTimeout(launch, 100); }, { once: true });
-      document.addEventListener('dd:battle-balance-ready', function () { setTimeout(launch, 160); }, { once: true });
-      document.addEventListener('dd:encounter-runtime-ready', function () { setTimeout(launch, 220); }, { once: true });
-      document.addEventListener('dd:capture-runtime-ready', function () { setTimeout(launch, 260); }, { once: true });
-      document.addEventListener('dd:gameplay-rules-ready', function () { setTimeout(launch, 320); }, { once: true });
-      document.addEventListener('dd:studio-data-ready', function () { setTimeout(launch, 400); }, { once: true });
-      setTimeout(launch, 1450);
+      document.addEventListener('dd:battle-resolver-ready', function () { ready.resolver = true; maybeLaunch(100); }, { once: true });
+      document.addEventListener('dd:battle-balance-ready', function () { ready.balance = true; maybeLaunch(120); }, { once: true });
+      document.addEventListener('dd:encounter-runtime-ready', function () { ready.encounter = true; maybeLaunch(140); }, { once: true });
+      document.addEventListener('dd:capture-runtime-ready', function () { ready.capture = true; maybeLaunch(160); }, { once: true });
+      document.addEventListener('dd:gameplay-rules-ready', function () { ready.rules = true; maybeLaunch(180); }, { once: true });
+      document.addEventListener('dd:studio-data-ready', function () { ready.bridge = true; maybeLaunch(200); }, { once: true });
+      document.addEventListener('dd:party-runtime-ready', function () { ready.party = true; maybeLaunch(220); }, { once: true });
+      document.addEventListener('dd:inventory-runtime-ready', function () { ready.inventory = true; maybeLaunch(240); }, { once: true });
+      setTimeout(launch, 1800);
     })();
   </script>
   <script src="/assets/js/dd-health-signal-bridge.js?v=health-signal-1"></script>
