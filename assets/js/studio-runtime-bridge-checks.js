@@ -1,5 +1,5 @@
 // assets/js/studio-runtime-bridge-checks.js
-// Phase 3.7 Diagnostics Alignment: runtime bridge health checks for Data Discovery Product App v3.5.
+// Phase 3.8.2 Diagnostics Alignment: runtime bridge health checks for Data Discovery modular runtime.
 
 (function () {
   if (!location.pathname.includes("databyte-discovery")) return;
@@ -16,7 +16,12 @@
     { id: "encounter-runtime", label: "Encounter Runtime", test: () => !!window.DD_ENCOUNTER_RUNTIME && typeof window.DD_ENCOUNTER_RUNTIME.create === "function" && typeof window.DD_ENCOUNTER_RUNTIME.randomCode === "function" },
     { id: "battle-balance", label: "Battle Balance", test: () => !!window.DD_BATTLE_BALANCE && !!window.DD_BATTLE_BALANCE.version },
     { id: "battle-resolver", label: "Battle Resolver", test: () => !!window.DD_BATTLE_RESOLVER && typeof window.DD_BATTLE_RESOLVER.resolve === "function" && typeof window.DD_BATTLE_RESOLVER.turnOrder === "function" && typeof window.DD_BATTLE_RESOLVER.chooseEnemyMove === "function" },
-    { id: "product-app-v3-5", label: "Product App v3.5", test: () => !!document.getElementById("ddApp") && !!document.getElementById("stage") && !!document.getElementById("controls") && document.body.textContent.includes("Phase 3.5") },
+    { id: "collection-runtime", label: "Collection Runtime", test: () => !!window.DD_COLLECTION_RUNTIME && typeof window.DD_COLLECTION_RUNTIME.all === "function" && typeof window.DD_COLLECTION_RUNTIME.add === "function" },
+    { id: "party-runtime", label: "Party Runtime", test: () => !!window.DD_PARTY_RUNTIME && typeof window.DD_PARTY_RUNTIME.lead === "function" && typeof window.DD_PARTY_RUNTIME.members === "function" },
+    { id: "inventory-runtime", label: "Inventory Runtime", test: () => !!window.DD_INVENTORY_RUNTIME && typeof window.DD_INVENTORY_RUNTIME.read === "function" && typeof window.DD_INVENTORY_RUNTIME.spend === "function" },
+    { id: "dex-runtime", label: "Dex Runtime", test: () => !!window.DD_DEX_RUNTIME && typeof window.DD_DEX_RUNTIME.stats === "function" && typeof window.DD_DEX_RUNTIME.records === "function" },
+    { id: "collection-dex-bridge", label: "Collection/Dex Bridge", test: () => !!window.DD_COLLECTION_DEX_BRIDGE && window.DD_COLLECTION_DEX_BRIDGE.collectionReady !== false },
+    { id: "product-app-v3-5", label: "Product App v3.5", test: () => !!document.getElementById("ddApp") && !!document.getElementById("stage") && !!document.getElementById("controls") && document.body.textContent.includes("Phase 3.8") },
     { id: "hp-ring-ui", label: "HP Ring UI", test: () => !!document.querySelector(".ring.hp") || !!document.querySelector(".ring") },
     { id: "signal-meter-ui", label: "Signal Meter UI", test: () => !!document.querySelector(".signalBox") || !!document.body.textContent.includes("Signal") },
     { id: "local-storage-keys", label: "Local Storage Keys", test: () => typeof localStorage !== "undefined" },
@@ -31,8 +36,8 @@
     });
 
     window.DD_RUNTIME_HEALTH = {
-      version: "0.5.0",
-      phase: "3.7-diagnostics-alignment",
+      version: "0.6.0",
+      phase: "3.8.2-runtime-split-validation",
       runtime: "databyte-discovery-product-app-v3-5",
       canonicalOwners: {
         app: "databyte-discovery-product-app-v3-5",
@@ -40,6 +45,10 @@
         capture: "dd-capture-runtime",
         encounter: "dd-encounter-runtime",
         rules: "dd-gameplay-rules-2-4",
+        collection: "dd-collection-runtime",
+        party: "dd-party-runtime",
+        inventory: "dd-inventory-runtime",
+        dex: "dd-dex-runtime",
         visuals: ["dd-health-signal-bridge", "dd-scan-bg"]
       },
       checkedAt: new Date().toISOString(),
@@ -66,15 +75,22 @@
     summary.innerHTML = results.map((result) => `<div>${result.ok ? "✅" : "⚠️"} ${result.label}</div>`).join("");
   }
 
-  document.addEventListener("dd:studio-data-ready", () => setTimeout(runChecks, 220));
-  document.addEventListener("dd:gameplay-rules-ready", () => setTimeout(runChecks, 220));
-  document.addEventListener("dd:capture-runtime-ready", () => setTimeout(runChecks, 220));
-  document.addEventListener("dd:encounter-runtime-ready", () => setTimeout(runChecks, 220));
-  document.addEventListener("dd:battle-balance-ready", () => setTimeout(runChecks, 220));
-  document.addEventListener("dd:battle-resolver-ready", () => setTimeout(runChecks, 220));
-  document.addEventListener("runtime:ready", () => setTimeout(runChecks, 80));
-  document.addEventListener("dd:screen", () => setTimeout(runChecks, 80));
+  [
+    "dd:studio-data-ready",
+    "dd:gameplay-rules-ready",
+    "dd:capture-runtime-ready",
+    "dd:encounter-runtime-ready",
+    "dd:battle-balance-ready",
+    "dd:battle-resolver-ready",
+    "dd:collection-runtime-ready",
+    "dd:party-runtime-ready",
+    "dd:inventory-runtime-ready",
+    "dd:dex-runtime-ready",
+    "dd:collection-dex-bridge-ready",
+    "runtime:ready",
+    "dd:screen"
+  ].forEach((eventName) => document.addEventListener(eventName, () => setTimeout(runChecks, 220)));
   window.DBS_RUN_HEALTH_CHECKS = runChecks;
   window.DD_RUN_HEALTH_CHECKS = runChecks;
-  setTimeout(runChecks, 1800);
+  setTimeout(runChecks, 2200);
 })();
