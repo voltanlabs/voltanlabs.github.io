@@ -27,10 +27,8 @@
     booted=true;
     bg();
 
-    // Legacy Phase 3 visual/layout patch pack was intentionally retired here.
-    // The active Phase 4.3 shell should be the single compatibility owner.
     load('ddMobileGameTray42Loader','/assets/js/dd-mobile-game-tray-4-2.js?v=mobile-game-tray-4-2-1');
-    load('ddUnifiedScannerShell43Loader','/assets/js/dd-unified-scanner-shell-4-3.js?v=unified-scanner-shell-4-3-1');
+    load('ddUnifiedScannerShell43Loader','/assets/js/dd-unified-scanner-shell-4-3-once.js?v=unified-scanner-shell-4-3-once-1');
     load('ddBattleCenterline43Loader','/assets/js/dd-battle-centerline-fix-4-3.js?v=battle-centerline-4-3-1');
   }
 
