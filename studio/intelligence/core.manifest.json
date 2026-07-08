@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "0.1.1",
+  "schemaVersion": "0.1.2",
   "generatedBy": "VoltanLabs Studio Intelligence Core",
   "status": "active-foundation",
   "phase": "Phase 4.3 Studio Intelligence Foundation",
-  "description": "Unified manifest for the Studio Intelligence layer. Diagnostics, Health History, Snapshot exports, UI Layout Audit, Module Ownership Audit, Predictive Diagnostics, Auto Repair, dependency mapping, coverage, Intelligence Manager, and Master Report exports share one report model.",
+  "description": "Unified manifest for the Studio Intelligence layer. Diagnostics, Health History, Snapshot exports, UI Layout Audit, Module Ownership Audit, Report Timeline, Documentation Audit, Predictive Diagnostics, Auto Repair, dependency mapping, coverage, Intelligence Manager, and Master Report exports share one report model.",
   "sourceOfTruth": {
     "diagnosticsReport": "window.VOLTAN_VALIDATION_REPORT",
     "studioIntelligence": "window.VOLTAN_STUDIO_INTELLIGENCE",
@@ -40,118 +40,30 @@
       "Snapshot payload",
       "UI layout audit",
       "Module ownership audit",
+      "Report timeline",
+      "Documentation audit",
       "Predictive next-best actions",
       "Master Studio Report"
     ]
   },
   "activeModules": [
-    {
-      "id": "studio-validation-engine",
-      "label": "Validation Engine",
-      "status": "active",
-      "script": "/assets/js/studio-validation-engine.js",
-      "role": "Builds the main diagnostics report and repository model."
-    },
-    {
-      "id": "studio-health-history",
-      "label": "Health History",
-      "status": "active",
-      "script": "/assets/js/studio-health-history.js",
-      "role": "Stores local browser history for health, coverage, errors, warnings, and info counts."
-    },
-    {
-      "id": "studio-diagnostics-snapshot-system",
-      "label": "Diagnostics Snapshot System",
-      "status": "active",
-      "script": "/assets/js/studio-diagnostics-snapshot-system.js",
-      "role": "Exports repo-ready diagnostics snapshots for latest-report.json."
-    },
-    {
-      "id": "studio-ui-layout-audit",
-      "label": "UI Layout Audit",
-      "status": "active",
-      "script": "/assets/js/studio-ui-layout-audit.js",
-      "role": "Observes overflow, viewport pressure, and duplicate layout ownership risk."
-    },
-    {
-      "id": "studio-module-ownership-audit",
-      "label": "Module Ownership Audit",
-      "status": "active",
-      "script": "/assets/js/studio-module-ownership-audit.js",
-      "role": "Maps canonical runtime owners from the shared diagnostics report."
-    },
-    {
-      "id": "studio-intelligence-manager",
-      "label": "Studio Intelligence Manager",
-      "status": "active",
-      "script": "/assets/js/studio-intelligence-manager.js",
-      "role": "Collects intelligence module outputs into one shared object."
-    },
-    {
-      "id": "studio-master-report-bridge",
-      "label": "Master Report Bridge",
-      "status": "active",
-      "script": "/assets/js/studio-master-report-bridge.js",
-      "role": "Builds enriched Master Studio Report exports."
-    },
-    {
-      "id": "studio-auto-repair-engine",
-      "label": "Auto Repair Engine",
-      "status": "active-planning",
-      "script": "/assets/js/studio-auto-repair-engine.js",
-      "role": "Converts findings into suggested repairs and future patch plans."
-    },
-    {
-      "id": "studio-dependency-graph-viewer",
-      "label": "Dependency Graph Viewer",
-      "status": "active",
-      "script": "/assets/js/studio-dependency-graph-viewer.js",
-      "role": "Visualizes source-aware dependencies and cross-index relationships."
-    },
-    {
-      "id": "studio-coverage-heat-map",
-      "label": "Coverage Heat Map",
-      "status": "active",
-      "script": "/assets/js/studio-coverage-heat-map.js",
-      "role": "Summarizes coverage pressure across indexed knowledge areas."
-    },
-    {
-      "id": "studio-repository-evolution-dashboard",
-      "label": "Repository Evolution Dashboard",
-      "status": "active",
-      "script": "/assets/js/studio-repository-evolution-dashboard.js",
-      "role": "Tracks repository maturity and diagnostic growth signals."
-    },
-    {
-      "id": "studio-predictive-diagnostics",
-      "label": "Predictive Diagnostics",
-      "status": "active-foundation",
-      "script": "/assets/js/studio-predictive-diagnostics.js",
-      "role": "Ranks next-best actions from findings, repair load, coverage pressure, and health history."
-    }
+    {"id":"studio-validation-engine","label":"Validation Engine","status":"active","script":"/assets/js/studio-validation-engine.js","role":"Builds the main diagnostics report and repository model."},
+    {"id":"studio-health-history","label":"Health History","status":"active","script":"/assets/js/studio-health-history.js","role":"Stores local browser history for health, coverage, errors, warnings, and info counts."},
+    {"id":"studio-diagnostics-snapshot-system","label":"Diagnostics Snapshot System","status":"active","script":"/assets/js/studio-diagnostics-snapshot-system.js","role":"Exports repo-ready diagnostics snapshots for latest-report.json."},
+    {"id":"studio-ui-layout-audit","label":"UI Layout Audit","status":"active","script":"/assets/js/studio-ui-layout-audit.js","role":"Observes overflow, viewport pressure, and duplicate layout ownership risk."},
+    {"id":"studio-module-ownership-audit","label":"Module Ownership Audit","status":"active","script":"/assets/js/studio-module-ownership-audit.js","role":"Maps canonical runtime owners from the shared diagnostics report."},
+    {"id":"studio-report-timeline","label":"Report Timeline","status":"active","script":"/assets/js/studio-report-timeline.js","role":"Stores recent diagnostics summaries in local browser history and exposes timeline data to the Master Report."},
+    {"id":"studio-documentation-audit","label":"Documentation Audit","status":"active","script":"/assets/js/studio-documentation-audit.js","role":"Checks core documentation registration against the diagnostics source registry."},
+    {"id":"studio-intelligence-manager","label":"Studio Intelligence Manager","status":"active","script":"/assets/js/studio-intelligence-manager.js","role":"Collects intelligence module outputs into one shared object."},
+    {"id":"studio-master-report-bridge","label":"Master Report Bridge","status":"active","script":"/assets/js/studio-master-report-bridge.js","role":"Builds enriched Master Studio Report exports."},
+    {"id":"studio-auto-repair-engine","label":"Auto Repair Engine","status":"active-planning","script":"/assets/js/studio-auto-repair-engine.js","role":"Converts findings into suggested repairs and future patch plans."},
+    {"id":"studio-dependency-graph-viewer","label":"Dependency Graph Viewer","status":"active","script":"/assets/js/studio-dependency-graph-viewer.js","role":"Visualizes source-aware dependencies and cross-index relationships."},
+    {"id":"studio-coverage-heat-map","label":"Coverage Heat Map","status":"active","script":"/assets/js/studio-coverage-heat-map.js","role":"Summarizes coverage pressure across indexed knowledge areas."},
+    {"id":"studio-repository-evolution-dashboard","label":"Repository Evolution Dashboard","status":"active","script":"/assets/js/studio-repository-evolution-dashboard.js","role":"Tracks repository maturity and diagnostic growth signals."},
+    {"id":"studio-predictive-diagnostics","label":"Predictive Diagnostics","status":"active-foundation","script":"/assets/js/studio-predictive-diagnostics.js","role":"Ranks next-best actions from findings, repair load, coverage pressure, and health history."}
   ],
   "plannedAudits": [
-    {
-      "id": "report-timeline",
-      "label": "Report Timeline",
-      "status": "planned",
-      "priority": 1,
-      "goal": "Compare recent diagnostics snapshots to show health, coverage, error, warning, and source-count trends."
-    },
-    {
-      "id": "documentation-audit",
-      "label": "Documentation Audit",
-      "status": "planned",
-      "priority": 2,
-      "goal": "Check README, PROJECT_STATE, ROADMAP, and Studio reference docs against live manifests."
-    },
-    {
-      "id": "runtime-audit",
-      "label": "Runtime Audit",
-      "status": "planned",
-      "priority": 3,
-      "goal": "Compare live page script loading against the runtime manifest and diagnostics source registry."
-    }
+    {"id":"runtime-audit","label":"Runtime Audit","status":"planned","priority":1,"goal":"Compare live page script loading against the runtime manifest and diagnostics source registry."}
   ],
   "developmentRules": [
     "All Studio Intelligence modules should read from the shared diagnostics report when possible.",
@@ -162,8 +74,8 @@
     "Document new intelligence modules in the registry before wiring them into the Diagnostics page."
   ],
   "nextSteps": [
-    "Expose module registry metadata inside the Master Report.",
-    "Add Report Timeline as the next intelligence module.",
-    "Add Documentation Audit after timeline support."
+    "Add Runtime Audit as the next intelligence module.",
+    "Compare live page script loading against runtime and diagnostics manifests.",
+    "Use Runtime Audit before making more Scanner OS or Product App layout changes."
   ]
 }
