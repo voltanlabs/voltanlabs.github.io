@@ -1,15 +1,30 @@
 // assets/js/studio-master-report-bridge.js
 (function(){
-  const VERSION='1.1.0';
+  const VERSION='1.2.0';
   function base(){return window.VOLTAN_VALIDATION_REPORT||null}
   function clone(x){try{return JSON.parse(JSON.stringify(x||null))}catch(e){return x||null}}
+  function snapshot(){return window.VoltanDiagnosticsSnapshotSystem&&window.VoltanDiagnosticsSnapshotSystem.buildSnapshotPayload?window.VoltanDiagnosticsSnapshotSystem.buildSnapshotPayload():null}
+  function manager(){return window.VoltanStudioIntelligenceManager&&window.VoltanStudioIntelligenceManager.collect?window.VoltanStudioIntelligenceManager.collect():window.VOLTAN_STUDIO_INTELLIGENCE||null}
   function collectIntelligence(){
-    if(window.VoltanStudioIntelligenceManager&&window.VoltanStudioIntelligenceManager.collect)return clone(window.VoltanStudioIntelligenceManager.collect());
+    const managed=manager();
+    const modules=managed&&managed.modules?managed.modules:{};
     return {
-      version:'legacy-fallback',generatedAt:new Date().toISOString(),modules:{
-        uiLayoutAudit:{ok:!!window.VOLTAN_UI_LAYOUT_AUDIT,data:clone(window.VOLTAN_UI_LAYOUT_AUDIT)},
-        moduleOwnershipAudit:{ok:!!window.VOLTAN_MODULE_OWNERSHIP_AUDIT,data:clone(window.VOLTAN_MODULE_OWNERSHIP_AUDIT)},
-        diagnosticsSnapshot:{ok:!!(window.VoltanDiagnosticsSnapshotSystem&&window.VoltanDiagnosticsSnapshotSystem.buildSnapshotPayload),data:window.VoltanDiagnosticsSnapshotSystem&&window.VoltanDiagnosticsSnapshotSystem.buildSnapshotPayload?clone(window.VoltanDiagnosticsSnapshotSystem.buildSnapshotPayload()):null}
+      version:VERSION,
+      generatedAt:new Date().toISOString(),
+      manager:clone(managed),
+      summary:managed&&managed.summary?clone(managed.summary):null,
+      modules:clone(modules),
+      timeline:clone(window.VOLTAN_REPORT_TIMELINE||modules.reportTimeline&&modules.reportTimeline.data||null),
+      documentationAudit:clone(window.VOLTAN_DOCUMENTATION_AUDIT||modules.documentationAudit&&modules.documentationAudit.data||null),
+      uiLayoutAudit:clone(window.VOLTAN_UI_LAYOUT_AUDIT||modules.uiLayoutAudit&&modules.uiLayoutAudit.data||null),
+      moduleOwnershipAudit:clone(window.VOLTAN_MODULE_OWNERSHIP_AUDIT||modules.moduleOwnershipAudit&&modules.moduleOwnershipAudit.data||null),
+      diagnosticsSnapshot:clone(snapshot()),
+      exportCheck:{
+        hasManager:!!managed,
+        hasTimeline:!!(window.VOLTAN_REPORT_TIMELINE||modules.reportTimeline&&modules.reportTimeline.data),
+        hasDocumentationAudit:!!(window.VOLTAN_DOCUMENTATION_AUDIT||modules.documentationAudit&&modules.documentationAudit.data),
+        moduleCount:managed&&managed.summary?managed.summary.registered:0,
+        completedCount:managed&&managed.summary?managed.summary.completed:0
       }
     };
   }
@@ -34,7 +49,7 @@
     if(copyBtn&&!copyBtn.dataset.masterReportBound){copyBtn.dataset.masterReportBound='true';copyBtn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();copy(copyBtn)},true)}
     if(saveBtn&&!saveBtn.dataset.masterReportBound){saveBtn.dataset.masterReportBound='true';saveBtn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();save(saveBtn)},true)}
   }
-  function boot(){bind();let n=0;const t=setInterval(()=>{bind();if(++n>80)clearInterval(t)},250);document.addEventListener('studio:diagnostics-ready',bind)}
+  function boot(){bind();let n=0;const t=setInterval(()=>{bind();if(++n>80)clearInterval(t)},250);document.addEventListener('studio:diagnostics-ready',bind);document.addEventListener('studio:intelligence-collected',()=>{window.VOLTAN_MASTER_REPORT_PREVIEW=build()})}
   window.VoltanMasterReportBridge={version:VERSION,build,copy,save,bind,collectIntelligence};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
