@@ -1,9 +1,12 @@
 // assets/js/studio-diagnostics-snapshot-system.js
 // Repo-safe Diagnostics Snapshot System for VoltanLabs Studio.
 // This creates portable snapshot payloads without exposing GitHub write credentials in GitHub Pages.
+// Phase 4.3 bootstrap manager: watches Diagnostics render cycles and keeps the snapshot panel mounted.
 (function () {
-  const VERSION = "1.0.0";
+  const VERSION = "1.0.1";
   const SNAPSHOT_TARGET = "/studio/diagnostics/latest-report.json";
+  let observerStarted = false;
+  let insertQueued = false;
 
   function report() {
     return window.VOLTAN_VALIDATION_REPORT || null;
@@ -111,9 +114,31 @@
     window.setTimeout(() => { button.textContent = original; }, 1800);
   }
 
+  function bindButtons() {
+    const copyButton = document.getElementById("copySnapshotForRepo");
+    const saveButton = document.getElementById("saveSnapshotFile");
+    const viewButton = document.getElementById("viewSnapshotTarget");
+    if (copyButton && !copyButton.dataset.snapshotBound) {
+      copyButton.dataset.snapshotBound = "true";
+      copyButton.addEventListener("click", () => copySnapshot(copyButton));
+    }
+    if (saveButton && !saveButton.dataset.snapshotBound) {
+      saveButton.dataset.snapshotBound = "true";
+      saveButton.addEventListener("click", () => saveSnapshot(saveButton));
+    }
+    if (viewButton && !viewButton.dataset.snapshotBound) {
+      viewButton.dataset.snapshotBound = "true";
+      viewButton.addEventListener("click", openTarget);
+    }
+  }
+
   function insertPanel() {
     const container = document.getElementById("diagnostics");
-    if (!container || document.getElementById("diagnosticsSnapshotSystem")) return;
+    if (!container || !report()) return;
+    if (document.getElementById("diagnosticsSnapshotSystem")) {
+      bindButtons();
+      return;
+    }
     container.insertAdjacentHTML("afterbegin", `<section id="diagnosticsSnapshotSystem" class="lg:col-span-2 rounded-2xl border border-[#FFD700]/40 bg-[#2C3E50]/60 p-5">
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -128,24 +153,37 @@
         </div>
       </div>
     </section>`);
+    bindButtons();
+  }
 
-    const copyButton = document.getElementById("copySnapshotForRepo");
-    const saveButton = document.getElementById("saveSnapshotFile");
-    const viewButton = document.getElementById("viewSnapshotTarget");
-    if (copyButton) copyButton.addEventListener("click", () => copySnapshot(copyButton));
-    if (saveButton) saveButton.addEventListener("click", () => saveSnapshot(saveButton));
-    if (viewButton) viewButton.addEventListener("click", openTarget);
+  function queueInsert() {
+    if (insertQueued) return;
+    insertQueued = true;
+    window.setTimeout(() => {
+      insertQueued = false;
+      insertPanel();
+    }, 75);
+  }
+
+  function startObserver() {
+    const container = document.getElementById("diagnostics");
+    if (!container || observerStarted) return;
+    observerStarted = true;
+    const observer = new MutationObserver(() => queueInsert());
+    observer.observe(container, { childList: true, subtree: false });
   }
 
   function boot() {
+    startObserver();
+    document.addEventListener("studio:diagnostics-ready", queueInsert);
+    document.addEventListener("voltan:diagnostics-ready", queueInsert);
+
     let attempts = 0;
     const timer = window.setInterval(() => {
       attempts += 1;
-      if (report() && document.getElementById("diagnostics")) {
-        insertPanel();
-        window.clearInterval(timer);
-      }
-      if (attempts > 100) window.clearInterval(timer);
+      startObserver();
+      if (report() && document.getElementById("diagnostics")) queueInsert();
+      if (attempts > 160 || document.getElementById("diagnosticsSnapshotSystem")) window.clearInterval(timer);
     }, 250);
   }
 
@@ -154,7 +192,9 @@
     targetPath: SNAPSHOT_TARGET,
     buildSnapshotPayload,
     copySnapshot,
-    saveSnapshot
+    saveSnapshot,
+    insertPanel,
+    queueInsert
   };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
