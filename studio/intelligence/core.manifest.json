@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "0.1.0",
+  "generatedBy": "VoltanLabs Studio Intelligence Core",
+  "status": "active-foundation",
+  "phase": "Phase 4.3 Studio Intelligence Foundation",
+  "description": "Unified manifest for the Studio Intelligence layer. This defines how Diagnostics, Health History, Snapshot exports, Predictive Diagnostics, Auto Repair, dependency mapping, coverage, and future audits should share one report model.",
+  "sourceOfTruth": {
+    "diagnosticsReport": "window.VOLTAN_VALIDATION_REPORT",
+    "snapshotTarget": "/studio/diagnostics/latest-report.json",
+    "sourceRegistry": "/studio/diagnostics/sources.json",
+    "validationRules": "/studio/validation/rules.json",
+    "runtimeManifest": "/studio/runtime/load-order.json"
+  },
+  "coreModel": {
+    "inputs": [
+      "Knowledge Engine registry",
+      "Diagnostics source registry",
+      "Validation rules",
+      "Runtime manifest",
+      "DataByteSprites indexes",
+      "Documentation sources",
+      "Source-file ownership records"
+    ],
+    "outputs": [
+      "Validation report",
+      "Health score",
+      "Coverage score",
+      "Repair suggestions",
+      "Dependency explorer",
+      "Snapshot payload",
+      "Predictive next-best actions",
+      "Future UI layout audit",
+      "Future module ownership audit",
+      "Future report timeline"
+    ]
+  },
+  "activeModules": [
+    {
+      "id": "studio-validation-engine",
+      "label": "Validation Engine",
+      "status": "active",
+      "script": "/assets/js/studio-validation-engine.js",
+      "role": "Builds the main diagnostics report and repository model."
+    },
+    {
+      "id": "studio-health-history",
+      "label": "Health History",
+      "status": "active",
+      "script": "/assets/js/studio-health-history.js",
+      "role": "Stores local browser history for health, coverage, errors, warnings, and info counts."
+    },
+    {
+      "id": "studio-diagnostics-snapshot-system",
+      "label": "Diagnostics Snapshot System",
+      "status": "active",
+      "script": "/assets/js/studio-diagnostics-snapshot-system.js",
+      "role": "Exports repo-ready diagnostics snapshots for latest-report.json."
+    },
+    {
+      "id": "studio-auto-repair-engine",
+      "label": "Auto Repair Engine",
+      "status": "active-planning",
+      "script": "/assets/js/studio-auto-repair-engine.js",
+      "role": "Converts findings into suggested repairs and future patch plans."
+    },
+    {
+      "id": "studio-dependency-graph-viewer",
+      "label": "Dependency Graph Viewer",
+      "status": "active",
+      "script": "/assets/js/studio-dependency-graph-viewer.js",
+      "role": "Visualizes source-aware dependencies and cross-index relationships."
+    },
+    {
+      "id": "studio-coverage-heat-map",
+      "label": "Coverage Heat Map",
+      "status": "active",
+      "script": "/assets/js/studio-coverage-heat-map.js",
+      "role": "Summarizes coverage pressure across indexed knowledge areas."
+    },
+    {
+      "id": "studio-repository-evolution-dashboard",
+      "label": "Repository Evolution Dashboard",
+      "status": "active",
+      "script": "/assets/js/studio-repository-evolution-dashboard.js",
+      "role": "Tracks repository maturity and diagnostic growth signals."
+    },
+    {
+      "id": "studio-predictive-diagnostics",
+      "label": "Predictive Diagnostics",
+      "status": "active-foundation",
+      "script": "/assets/js/studio-predictive-diagnostics.js",
+      "role": "Ranks next-best actions from findings, repair load, coverage pressure, and health history."
+    }
+  ],
+  "plannedAudits": [
+    {
+      "id": "ui-layout-audit",
+      "label": "UI Layout Audit",
+      "status": "planned",
+      "priority": 1,
+      "goal": "Detect overflowing elements, duplicate layout owners, wrapper conflicts, and mobile layout drift."
+    },
+    {
+      "id": "module-ownership-audit",
+      "label": "Module Ownership Audit",
+      "status": "planned",
+      "priority": 2,
+      "goal": "Map each feature to one active owner and flag duplicate ownership before new systems are added."
+    },
+    {
+      "id": "report-timeline",
+      "label": "Report Timeline",
+      "status": "planned",
+      "priority": 3,
+      "goal": "Compare recent diagnostics snapshots to show health, coverage, error, warning, and source-count trends."
+    },
+    {
+      "id": "documentation-audit",
+      "label": "Documentation Audit",
+      "status": "planned",
+      "priority": 4,
+      "goal": "Check README, PROJECT_STATE, ROADMAP, and Studio reference docs against live manifests."
+    },
+    {
+      "id": "runtime-audit",
+      "label": "Runtime Audit",
+      "status": "planned",
+      "priority": 5,
+      "goal": "Compare live page script loading against the runtime manifest and diagnostics source registry."
+    }
+  ],
+  "developmentRules": [
+    "All Studio Intelligence modules should read from the shared diagnostics report when possible.",
+    "Do not duplicate report-building logic in every dashboard panel.",
+    "Keep latest-report.json as a repo-tracked snapshot target, not a browser-write endpoint.",
+    "Keep GitHub write credentials out of static GitHub Pages code.",
+    "Favor small audit modules that explain ownership before modifying gameplay."
+  ],
+  "nextSteps": [
+    "Register this manifest in diagnostics sources.",
+    "Add UI Layout Audit as the first new intelligence audit.",
+    "Add Module Ownership Audit after layout audit proves useful.",
+    "Document the Studio Intelligence layer in PROJECT_STATE and studio-reference."
+  ]
+}
