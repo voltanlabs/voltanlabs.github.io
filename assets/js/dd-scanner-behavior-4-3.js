@@ -1,6 +1,7 @@
 // assets/js/dd-scanner-behavior-4-3.js
 // Phase 4.3 behavior guard for Data Discovery Scanner OS.
-// Keeps utility panels from accidentally clearing an active encounter/battle flow.
+// Keeps utility panels from accidentally clearing an active encounter/battle flow
+// and keeps confirm-screen return from restarting battle state.
 (function(){
   if(!location.pathname.includes('databyte-discovery'))return;
 
@@ -30,7 +31,31 @@
     note._timer=setTimeout(function(){if(note&&note.parentNode)note.parentNode.removeChild(note);},1800);
   }
 
+  function backToBattleFromConfirm(target){
+    if(!target||!target.closest)return false;
+    var btn=target.closest('#battleStart');
+    if(!btn)return false;
+    return !!document.querySelector('#ddApp .coin-card');
+  }
+
+  function safeBackToBattle(){
+    var capture=document.getElementById('capture');
+    var back=document.getElementById('back');
+    if(back)back.click();
+    if(capture){
+      setTimeout(function(){flash('Returned to scanner safely. Reopen the active battle from Scanner when available.');},40);
+    }
+  }
+
   document.addEventListener('click',function(e){
+    if(backToBattleFromConfirm(e.target)){
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      safeBackToBattle();
+      return;
+    }
+
     var panel=activePanelTarget(e.target);
     if(!panel)return;
     if(!activeFlow())return;
@@ -41,5 +66,5 @@
     flash('Finish or return from the active signal before opening '+panel+'.');
   },true);
 
-  document.dispatchEvent(new CustomEvent('dd:scanner-behavior-guard-ready',{detail:{id:'dd-scanner-behavior-4-3',phase:'4.3'}}));
+  document.dispatchEvent(new CustomEvent('dd:scanner-behavior-guard-ready',{detail:{id:'dd-scanner-behavior-4-3',phase:'4.3',confirmReturn:'guarded'}}));
 })();
