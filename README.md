@@ -6,17 +6,17 @@ The project has grown from a collection of browser tools into a modular Studio a
 
 ## Current Focus
 
-**Phase 3: DataByteSprites Runtime Integration and Repository Stabilization is active.**
+**Data Discovery Phase 4.3: Unified Scanner Shell Compatibility is active.**
 
-The current priority is stabilizing the Phase 3 Data Discovery runtime after the split-module cutover. Data Discovery now boots through dedicated runtime owners for encounters, capture, gameplay rules, battle helpers, and Product App v3 UI orchestration.
+The current priority is stabilizing DataByteSprites: Data Discovery as a mobile-first Scanner OS shell. The live game now boots through dedicated runtime owners for roster data, Studio data overlays, gameplay rules, encounter generation, capture/download logic, battle state, battle presentation, collection, party, inventory, Dex progress, and Product App v3.5 UI orchestration.
 
 Current stabilization goals:
 
-- Clear blocking validation errors.
-- Reduce orphan records.
-- Resolve dependency graph edges.
-- Align documentation with the Phase 3 runtime.
-- Keep Diagnostics, the Knowledge Engine, source ownership, runtime manifests, and gameplay maps synchronized.
+- Keep Scan, Encounter, Battle, Download, Dex, Party, Items, and Admin views inside one stable app shell.
+- Consolidate Phase 4 layout compatibility layers into one canonical Scanner OS runtime.
+- Replace repeated layout patches with direct runtime ownership.
+- Keep Diagnostics, the Knowledge Engine, source ownership, runtime manifests, mechanics graphs, README, ROADMAP, and PROJECT_STATE synchronized.
+- Continue splitting gameplay state out of Product App v3.5 into dedicated runtime modules.
 
 ## Live Studio Areas
 
@@ -38,11 +38,14 @@ Current stabilization goals:
 
 | Document | Path | Status |
 | --- | --- | --- |
-| Living Project State | `PROJECT_STATE.md` | Active |
+| Living Project State | `PROJECT_STATE.md` | Active source of truth |
 | Roadmap | `ROADMAP.md` | Active |
 | Site Strategy | `SITE_STRATEGY.md` | Active |
+| Runtime Load Order | `studio/runtime/load-order.json` | Active |
+| Diagnostics Sources | `studio/diagnostics/sources.json` | Active |
 | Runtime Ownership Audit | `docs/databyte-runtime-ownership-audit.md` | Active |
 | Gameplay Ownership Audit | `docs/databyte-gameplay-ownership-audit.md` | Active |
+| Phase 4 Bookkeeping | `docs/datadiscovery-phase-4-bookkeeping.md` | Active |
 | Studio Game Integration Roadmap | `studio/docs/STUDIO_GAME_INTEGRATION_ROADMAP.md` | Active |
 | Repository Audit | `docs/phase-2.1-repository-audit.md` | Reference |
 | Architecture Map | `ARCHITECTURE.md` | Reference |
@@ -102,13 +105,20 @@ VoltanLabs Studio
         ├── Type chart
         ├── Ability index
         ├── Encounter Runtime
-        ├── Capture Runtime
+        ├── Capture / Download Runtime
         ├── Gameplay Rules Runtime
         ├── Battle Engine Runtime
-        └── Product App v3
+        ├── Battle State Runtime
+        ├── Battle Presentation Runtime
+        ├── Collection Runtime
+        ├── Party Runtime
+        ├── Party Switch Runtime
+        ├── Inventory Runtime
+        ├── Dex Runtime
+        └── Product App v3.5
 ```
 
-For the current implementation state, see `PROJECT_STATE.md`, `ROADMAP.md`, `docs/databyte-runtime-ownership-audit.md`, and `docs/databyte-gameplay-ownership-audit.md`.
+For the current implementation state, see `PROJECT_STATE.md`, `ROADMAP.md`, `studio/runtime/load-order.json`, `docs/databyte-runtime-ownership-audit.md`, and `docs/databyte-gameplay-ownership-audit.md`.
 
 ## Completed Foundation
 
@@ -165,7 +175,7 @@ Implemented modules:
 
 ### DataByteSprites Runtime Foundation
 
-Status: active Phase 3 stabilization.
+Status: active Phase 4.3 stabilization.
 
 Live Data Discovery runtime chain:
 
@@ -178,16 +188,44 @@ databyte-discovery.html
 ├── dd-capture-runtime.js
 ├── dd-encounter-runtime.js
 ├── dd-battle-balance-2-4.js
-└── databyte-discovery-product-app-v3.js
+├── dd-battle-resolver.js
+├── dd-battle-state-runtime.js
+├── dd-battle-presentation-runtime.js
+├── dd-collection-runtime.js
+├── dd-party-runtime.js
+├── dd-party-switch-runtime.js
+├── dd-inventory-runtime.js
+├── dd-dex-runtime.js
+├── dd-collection-dex-runtime-bridge.js
+├── databyte-discovery-product-app-v3-5.js
+├── dd-party-switch-battle-bridge.js
+├── dd-party-switch-ui.js
+├── dd-party-switch-refresh.js
+├── dd-battle-experience-4-2.js
+├── dd-layout-viewport-lock-4-2.js
+├── dd-mobile-game-tray-4-2.js
+├── dd-unified-scanner-shell-4-3.js
+├── dd-battle-centerline-fix-4-3.js
+├── dd-health-signal-bridge.js
+└── dd-scan-bg.js
 ```
 
-Current Phase 3 runtime owners:
+Current Phase 4.3 runtime owners:
 
 - `assets/js/dd-encounter-runtime.js` — encounter generation, rarity pools, signal initialization.
-- `assets/js/dd-capture-runtime.js` — capture odds, capture caps, capture rolls, failed-capture bonuses, Signal Boost behavior.
-- `assets/js/dd-gameplay-rules-2-4.js` — gameplay rules for capture/stability/move tuning.
+- `assets/js/dd-capture-runtime.js` — download odds, caps, rolls, failed-download bonuses, and Signal Boost behavior.
+- `assets/js/dd-gameplay-rules-2-4.js` — gameplay rules for capture/download, stability, and move tuning.
 - `assets/js/dd-battle-engine-2-4.js` — type utilities, enemy move choice, battle events, audio/animation hooks.
-- `assets/js/databyte-discovery-product-app-v3.js` — UI orchestration for scanner, encounter, battle, capture, party, items, Dex, and Admin.
+- `assets/js/dd-battle-resolver.js` — turn order, hit checks, damage math, enemy move choice, and capture pressure output.
+- `assets/js/dd-battle-state-runtime.js` — battle state transitions.
+- `assets/js/dd-battle-presentation-runtime.js` — battle presentation hooks.
+- `assets/js/dd-collection-runtime.js` — downloaded sprite collection state.
+- `assets/js/dd-party-runtime.js` — party state and lead sprite resolution.
+- `assets/js/dd-party-switch-runtime.js` — party switching foundation.
+- `assets/js/dd-inventory-runtime.js` — ByteCoins, boosts, and repair item state.
+- `assets/js/dd-dex-runtime.js` — Dex progress state.
+- `assets/js/databyte-discovery-product-app-v3-5.js` — active UI orchestration for scanner, encounter, battle, download, party, items, Dex, and Admin.
+- `assets/js/dd-unified-scanner-shell-4-3.js` and `assets/js/dd-battle-centerline-fix-4-3.js` — Phase 4.3 compatibility layer for unified Scanner OS shell and centering.
 
 ### DataByteSprites Knowledge Base
 
@@ -219,8 +257,10 @@ Summary:
 - Phase 2.2: Predictive Diagnostics — active foundation.
 - Phase 2.3: Shared Game Data Pipeline — active foundation.
 - Phase 2.4: Battle Engine and Gameplay Consolidation — active foundation.
-- Phase 3: DataByteSprites Runtime Integration — active stabilization.
-- Phase 4: Asset Library and Technology Vault Expansion — planned expansion.
+- Phase 3: DataByteSprites Runtime Integration — complete foundation.
+- Phase 4.1: Party switching foundation — active foundation.
+- Phase 4.2: Battle experience and mobile layout stabilization — active compatibility.
+- Phase 4.3: Unified Scanner Shell Compatibility — active stabilization.
 - Phase 5: Studio AI Development Assistant — future milestone.
 
 ## Development Rules
@@ -236,4 +276,4 @@ Summary:
 
 ## Current Highest-Value Task
 
-Continue the **Repository Stabilization Pass** by reducing orphan records, resolving dependency graph edges, aligning the Knowledge Engine with Phase 3 runtime ownership, and rerunning Diagnostics until repository health reaches the healthy band.
+Continue the **Phase 4.3 Scanner OS stabilization pass** by consolidating duplicated layout compatibility layers, reducing Product App v3.5 rendering ownership, keeping runtime ownership records current, and rerunning Diagnostics after each safe pass.
