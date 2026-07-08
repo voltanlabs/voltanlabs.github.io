@@ -1,7 +1,7 @@
 # VoltanLabs Project State
 
 Status: active  
-Current phase: Data Discovery Phase 4.3 Unified Scanner Shell Compatibility
+Current phase: Data Discovery Phase 4.3 Canonical Scanner OS Runtime
 
 ## Purpose
 
@@ -37,9 +37,9 @@ The current development rule is:
 
 ## Current Architecture Decision
 
-Data Discovery has moved beyond the Phase 3 split-runtime foundation into a Phase 4 mobile game shell transition.
+Data Discovery has moved beyond the Phase 3 split-runtime foundation and the early Phase 4 compatibility-stack phase.
 
-The Product App still orchestrates much of the visible UI, but new behavior is being moved into dedicated runtime and compatibility owners.
+The active direction is now a canonical Scanner OS runtime model.
 
 ```text
 Studio Data
@@ -50,11 +50,12 @@ Gameplay Rules + Encounter Runtime + Capture Runtime + Battle Resolver
   ↓
 Product App v3.5
   ↓
-Phase 4 Runtime Stack
-  ├── Party Switch Runtime
-  ├── Battle Experience Layer
-  ├── Viewport Lock / Mobile Tray
-  └── Unified Scanner Shell Compatibility
+Canonical Scanner OS Runtime
+  ├── Viewport and shell layout
+  ├── Mobile spacing and action tray sizing
+  ├── Battle centerline layout
+  ├── Navigation sizing
+  └── Compatibility wrappers during validation
   ↓
 Player UI
 ```
@@ -75,13 +76,19 @@ Former legacy scanner container:
 #ddStandalone
 ```
 
-The active product app is now:
+The active product app is:
 
 ```text
 assets/js/databyte-discovery-product-app-v3-5.js
 ```
 
-The current Phase 4 compatibility loader chain is tracked by:
+The current canonical Scanner OS layout owner is:
+
+```text
+assets/js/dd-scanner-os-runtime.js
+```
+
+The current Phase 4 loader and diagnostics chain is tracked by:
 
 ```text
 studio/runtime/load-order.json
@@ -112,9 +119,10 @@ databyte-discovery.html
 ├── assets/js/databyte-discovery-product-app-v3-5.js
 ├── assets/js/dd-health-signal-bridge.js
 └── assets/js/dd-scan-bg.js
-    ├── Phase 4 mobile/game layout compatibility loaders
-    ├── Unified Scanner Shell compatibility loader
-    └── battle centerline correction loader
+    ├── assets/js/dd-scanner-os-runtime.js
+    ├── assets/js/dd-mobile-game-tray-4-2.js
+    ├── assets/js/dd-unified-scanner-shell-4-3-once.js
+    └── assets/js/dd-battle-centerline-fix-4-3.js
 ```
 
 ## Current DataByteDex Load Chain
@@ -149,14 +157,15 @@ databytedex.html
 | Inventory | `dd-inventory-runtime.js` | Active foundation |
 | Dex runtime | `dd-dex-runtime.js` | Active foundation |
 | Product UI orchestration | `databyte-discovery-product-app-v3-5.js` | Active UI owner |
-| Battle experience polish | `dd-battle-experience-4-2.js` | Phase 4.2 compatibility |
-| Viewport lock / mobile layout | `dd-layout-viewport-lock-4-2.js` | Phase 4.2 compatibility |
-| Mobile action tray | `dd-mobile-game-tray-4-2.js` | Phase 4.2 compatibility |
-| Unified Scanner Shell | `dd-unified-scanner-shell-4-3.js` | Phase 4.3 compatibility |
-| Battle centerline correction | `dd-battle-centerline-fix-4-3.js` | Phase 4.3 compatibility |
+| Scanner OS layout | `dd-scanner-os-runtime.js` | Active canonical owner |
+| Battle experience polish | `dd-battle-experience-4-2.js` | Compatibility |
+| Viewport lock / mobile layout | `dd-layout-viewport-lock-4-2.js` | Compatibility |
+| Mobile action tray | `dd-mobile-game-tray-4-2.js` | Compatibility wrapper |
+| Unified Scanner Shell | `dd-unified-scanner-shell-4-3-once.js` | Compatibility wrapper |
+| Battle centerline correction | `dd-battle-centerline-fix-4-3.js` | Compatibility wrapper |
 | DataByteDex renderer | `databytedex-shared-renderer.js` | Active |
 | Health/signal visual bridge | `dd-health-signal-bridge.js` | Compatibility |
-| Scanner loader/background visuals | `dd-scan-bg.js` | Compatibility loader |
+| Scanner loader/background visuals | `dd-scan-bg.js` | Active bootstrap and background owner |
 
 ## Current Game Flow
 
@@ -170,6 +179,8 @@ Signal Encounter
 Start Battle
   ↓
 Battle Resolver + Product App v3.5 battle UI
+  ↓
+Scanner OS Runtime owns fixed shell layout
   ↓
 Party Switch Runtime, Capture Runtime, and Battle Presentation hooks
   ↓
@@ -237,6 +248,19 @@ Purpose:
 - Exposes manifest data through `window.DD_GAME_DATA_MANIFEST`.
 - Dispatches `dd:studio-data-ready` before product renderers boot.
 
+### Canonical Scanner OS Runtime
+
+File:
+
+- `assets/js/dd-scanner-os-runtime.js`
+
+Purpose:
+
+- Owns fixed Scanner OS viewport behavior.
+- Owns shared shell layout, mobile spacing, action tray sizing, navigation sizing, and battle centerline geometry.
+- Emits `dd:scanner-os-runtime-ready` for runtime tracking.
+- Allows older Phase 4 layout modules to remain as temporary compatibility wrappers while the canonical runtime is validated.
+
 ## What Studio Can Do Now
 
 Studio currently provides:
@@ -261,7 +285,7 @@ Studio currently provides:
 - Phase 3 source ownership map.
 - Phase 3 mechanics graph.
 - Phase 4 runtime/load-order tracking.
-- Phase 4 diagnostics tracking for party switch, battle experience, mobile layout, unified scanner shell, and centerline compatibility modules.
+- Phase 4 diagnostics tracking for party switch, battle experience, canonical Scanner OS runtime, compatibility wrappers, and bridge modules.
 
 ## What Studio Cannot Do Yet
 
@@ -275,7 +299,6 @@ It cannot yet automatically:
 - Attach final art assets.
 - Run one-click build/export into the public game.
 - Run full battle/capture simulations from a Studio UI.
-- Consolidate runtime compatibility layers automatically.
 - Retire legacy visual modules without a developer audit.
 
 Those are future integration goals.
@@ -294,10 +317,7 @@ Those are future integration goals.
 | Gameplay rules | Active foundation | `dd-gameplay-rules-2-4.js` owns capture/stability/move tuning baselines. |
 | Battle sequence | Active foundation | Battle engine + resolver provide current battle behavior. |
 | Party switching | Phase 4.1 active | Dedicated runtime, UI, battle bridge, and refresh modules exist. |
-| Battle experience | Phase 4.2 active compatibility | Animation/pulse/HUD polish exists but should be consolidated. |
-| Mobile layout | Phase 4.2 active compatibility | Viewport lock and mobile tray exist. |
-| Unified Scanner Shell | Phase 4.3 compatibility | Scan, Encounter, and Battle are being stabilized into one app shell. |
-| Battle centerline | Phase 4.3 compatibility | Arena centering fix exists and is loaded from the compatibility loader. |
+| Scanner OS Runtime | Active canonical owner | `dd-scanner-os-runtime.js` now owns shared layout, mobile spacing, and battle centerline rules. |
 | Product App | Active | `databyte-discovery-product-app-v3-5.js` is the active UI orchestrator. |
 | Health and signal bars | Active foundation | Product App and compatibility layers display battle telemetry. |
 | Download confirmation/result | Migrated | Download terminology replaced capture in player-facing battle UI. |
@@ -309,25 +329,23 @@ Those are future integration goals.
 
 ## Known Issues
 
-- Phase 4 layout is working through several compatibility layers that target the same battle/card/control elements.
 - The Product App still owns too much rendering logic.
-- Scan, Encounter, and Battle still have separate internal render paths even though Phase 4.3 is stabilizing the shell.
+- Scan, Encounter, and Battle still have separate internal render paths even though the Scanner OS runtime now owns the fixed shell layout.
 - Long sprite names still need an auto-fit strategy instead of ellipsis-only truncation.
-- Some phase labels still show Phase 4.2 while Phase 4.3 compatibility work is underway.
 - Some legacy scripts still exist as behavior references and need a safe retirement audit.
 - Battle needs deeper move resolver, status system, healing balance, reward rules, enemy behavior, and animation ownership.
-- Studio diagnostics now track Phase 4 modules, but the Knowledge Engine and mechanics graph may still need Phase 4 ownership records.
+- Knowledge Engine and mechanics graph records may still need Phase 4.3 Scanner OS ownership records.
+- Compatibility wrappers should be retired only after mobile validation confirms the canonical runtime is stable.
 
 ## Immediate Priorities
 
-1. Verify Phase 4.3 centerline and shell fixes on mobile after cache refresh.
-2. Consolidate Phase 4 layout CSS into one canonical Scanner OS shell runtime.
-3. Replace compatibility patches with direct runtime integration.
-4. Update Knowledge Engine and mechanics graph records for Phase 4 modules.
-5. Keep README, PROJECT_STATE, ROADMAP, and Studio integration roadmap synchronized.
-6. Rerun diagnostics after each stabilization pass.
-7. Split remaining party and item behavior out of Product App v3.5.
-8. Add Studio balance simulator and export pipeline after runtime ownership is stable.
+1. Verify the canonical Scanner OS runtime on mobile after cache refresh.
+2. Retire compatibility wrappers only after validation.
+3. Update Knowledge Engine and mechanics graph records for Scanner OS runtime ownership.
+4. Keep README, PROJECT_STATE, ROADMAP, runtime manifest, diagnostics sources, and Studio integration roadmap synchronized.
+5. Rerun diagnostics after each stabilization pass.
+6. Split remaining party and item behavior out of Product App v3.5.
+7. Add Studio balance simulator and export pipeline after runtime ownership is stable.
 
 ## Long-Term Vision
 
