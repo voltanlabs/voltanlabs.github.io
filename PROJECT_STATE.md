@@ -1,7 +1,7 @@
 # VoltanLabs Project State
 
 Status: active  
-Current phase: Phase 3 Runtime Integration and Repository Stabilization
+Current phase: Data Discovery Phase 4.3 Unified Scanner Shell Compatibility
 
 ## Purpose
 
@@ -33,29 +33,33 @@ The current flagship product is:
 
 The current development rule is:
 
-> Studio work should directly support Data Discovery, DataByteDex, Creator Suite, diagnostics, or product publishing.
+> Studio work should directly support Data Discovery, DataByteDex, Creator Suite, diagnostics, runtime ownership, or product publishing.
 
 ## Current Architecture Decision
 
-Data Discovery is now in a Phase 3 split-runtime architecture.
+Data Discovery has moved beyond the Phase 3 split-runtime foundation into a Phase 4 mobile game shell transition.
 
-The Product App is no longer supposed to own every gameplay rule directly. It should orchestrate the UI and call dedicated runtime owners.
+The Product App still orchestrates much of the visible UI, but new behavior is being moved into dedicated runtime and compatibility owners.
 
 ```text
 Studio Data
   ↓
 Studio Data Bridge
   ↓
-Gameplay Rules
+Gameplay Rules + Encounter Runtime + Capture Runtime + Battle Resolver
   ↓
-Encounter Runtime + Capture Runtime + Battle Engine
+Product App v3.5
   ↓
-Product App v3
+Phase 4 Runtime Stack
+  ├── Party Switch Runtime
+  ├── Battle Experience Layer
+  ├── Viewport Lock / Mobile Tray
+  └── Unified Scanner Shell Compatibility
   ↓
 Player UI
 ```
 
-The legacy Scanner OS and Phase 2 Product App files are retained as references only. New gameplay work should target the Phase 3 runtime chain.
+The immediate direction is to turn Data Discovery into one stable mobile Scanner OS shell where Scan, Encounter, Battle, Download, Dex, Party, Items, and Admin views all operate inside the same app frame instead of rebuilding the whole screen differently.
 
 ## Active Product Architecture
 
@@ -71,10 +75,18 @@ Former legacy scanner container:
 #ddStandalone
 ```
 
-The live product app is now:
+The active product app is now:
 
 ```text
-assets/js/databyte-discovery-product-app-v3.js
+assets/js/databyte-discovery-product-app-v3-5.js
+```
+
+The current Phase 4 compatibility loader chain is tracked by:
+
+```text
+studio/runtime/load-order.json
+studio/diagnostics/sources.json
+docs/datadiscovery-phase-4-bookkeeping.md
 ```
 
 ## Current Data Discovery Load Chain
@@ -88,9 +100,21 @@ databyte-discovery.html
 ├── assets/js/dd-capture-runtime.js
 ├── assets/js/dd-encounter-runtime.js
 ├── assets/js/dd-battle-balance-2-4.js
-├── assets/js/databyte-discovery-product-app-v3.js
+├── assets/js/dd-battle-resolver.js
+├── assets/js/dd-battle-state-runtime.js
+├── assets/js/dd-battle-presentation-runtime.js
+├── assets/js/dd-collection-runtime.js
+├── assets/js/dd-party-runtime.js
+├── assets/js/dd-party-switch-runtime.js
+├── assets/js/dd-inventory-runtime.js
+├── assets/js/dd-dex-runtime.js
+├── assets/js/dd-collection-dex-runtime-bridge.js
+├── assets/js/databyte-discovery-product-app-v3-5.js
 ├── assets/js/dd-health-signal-bridge.js
 └── assets/js/dd-scan-bg.js
+    ├── Phase 4 mobile/game layout compatibility loaders
+    ├── Unified Scanner Shell compatibility loader
+    └── battle centerline correction loader
 ```
 
 ## Current DataByteDex Load Chain
@@ -110,14 +134,29 @@ databytedex.html
 | Public roster | `dd-canon-roster.js` | Active |
 | Studio data overlay | `dd-studio-data-bridge.js` | Active |
 | Gameplay rules | `dd-gameplay-rules-2-4.js` | Active foundation |
-| Encounter generation | `dd-encounter-runtime.js` | Active Phase 3 owner |
-| Capture rules | `dd-capture-runtime.js` | Active Phase 3 owner |
+| Encounter generation | `dd-encounter-runtime.js` | Active owner |
+| Capture rules | `dd-capture-runtime.js` | Active owner |
 | Battle helpers | `dd-battle-engine-2-4.js` | Active foundation |
-| Balance normalization | `dd-battle-balance-2-4.js` | Active foundation |
-| Product UI orchestration | `databyte-discovery-product-app-v3.js` | Active Phase 3 owner |
+| Battle resolver | `dd-battle-resolver.js` | Active owner |
+| Battle state | `dd-battle-state-runtime.js` | Active foundation |
+| Battle presentation | `dd-battle-presentation-runtime.js` | Active foundation |
+| Collection | `dd-collection-runtime.js` | Active foundation |
+| Party | `dd-party-runtime.js` | Active foundation |
+| Party switching | `dd-party-switch-runtime.js` | Active Phase 4.1 owner |
+| Party switch UI | `dd-party-switch-ui.js` | Compatibility UI |
+| Party switch battle bridge | `dd-party-switch-battle-bridge.js` | Compatibility bridge |
+| Party switch HUD refresh | `dd-party-switch-refresh.js` | Compatibility UI |
+| Inventory | `dd-inventory-runtime.js` | Active foundation |
+| Dex runtime | `dd-dex-runtime.js` | Active foundation |
+| Product UI orchestration | `databyte-discovery-product-app-v3-5.js` | Active UI owner |
+| Battle experience polish | `dd-battle-experience-4-2.js` | Phase 4.2 compatibility |
+| Viewport lock / mobile layout | `dd-layout-viewport-lock-4-2.js` | Phase 4.2 compatibility |
+| Mobile action tray | `dd-mobile-game-tray-4-2.js` | Phase 4.2 compatibility |
+| Unified Scanner Shell | `dd-unified-scanner-shell-4-3.js` | Phase 4.3 compatibility |
+| Battle centerline correction | `dd-battle-centerline-fix-4-3.js` | Phase 4.3 compatibility |
 | DataByteDex renderer | `databytedex-shared-renderer.js` | Active |
 | Health/signal visual bridge | `dd-health-signal-bridge.js` | Compatibility |
-| Scanner background visuals | `dd-scan-bg.js` | Compatibility |
+| Scanner loader/background visuals | `dd-scan-bg.js` | Compatibility loader |
 
 ## Current Game Flow
 
@@ -130,11 +169,11 @@ Signal Encounter
   ↓
 Start Battle
   ↓
-Battle Engine helpers + Product App v3 battle UI
+Battle Resolver + Product App v3.5 battle UI
   ↓
-Capture Runtime resolves capture attempt
+Party Switch Runtime, Capture Runtime, and Battle Presentation hooks
   ↓
-Battle / Capture Result
+Battle / Download Result
   ↓
 Collection, Party, DataByteDex progress
   ↓
@@ -147,6 +186,7 @@ Supporting panels:
 - Party panel
 - Inventory panel
 - Admin profile panel
+- Phase 4 Switch overlay
 
 ## Current Data Sources
 
@@ -159,7 +199,7 @@ File:
 Purpose:
 
 - Describes the shared game-data pipeline.
-- Registers runtime scripts, Studio sources, merge rules, item definitions, encounter pools, validation targets, and Phase 3 runtime ownership.
+- Registers runtime scripts, Studio sources, merge rules, item definitions, encounter pools, validation targets, and runtime ownership.
 - Provides the current bridge between Studio data and public game runtime data.
 
 ### Public Game Roster
@@ -220,6 +260,8 @@ Studio currently provides:
 - Gameplay ownership audit.
 - Phase 3 source ownership map.
 - Phase 3 mechanics graph.
+- Phase 4 runtime/load-order tracking.
+- Phase 4 diagnostics tracking for party switch, battle experience, mobile layout, unified scanner shell, and centerline compatibility modules.
 
 ## What Studio Cannot Do Yet
 
@@ -233,6 +275,8 @@ It cannot yet automatically:
 - Attach final art assets.
 - Run one-click build/export into the public game.
 - Run full battle/capture simulations from a Studio UI.
+- Consolidate runtime compatibility layers automatically.
+- Retire legacy visual modules without a developer audit.
 
 Those are future integration goals.
 
@@ -242,40 +286,48 @@ Those are future integration goals.
 | --- | --- | --- |
 | Scanner container | Migrated | New active container is `#ddApp`. |
 | 52-sprite roster | Migrated | Public bridge lives in `dd-canon-roster.js`. |
-| Shared game-data manifest | Active Phase 3 foundation | `game-data.v1.json` now has root IDs, runtime sources, items, encounter pools, validation targets, and next systems. |
+| Shared game-data manifest | Active foundation | `game-data.v1.json` has root IDs, runtime sources, items, encounter pools, validation targets, and next systems. |
 | Studio species overlay | Active foundation | Bridge loads manifest sources and overlays Studio species data onto the runtime roster. |
 | DataByteDex shared renderer | Migrated foundation | Dex consumes `DD_CANON_ROSTER` through the shared renderer. |
-| Signal encounter | Phase 3 runtime owner active | `dd-encounter-runtime.js` owns encounter generation and signal initialization. |
-| Capture flow | Phase 3 runtime owner active | `dd-capture-runtime.js` owns odds, caps, attempts, and failed-capture bonuses. |
+| Signal encounter | Runtime owner active | `dd-encounter-runtime.js` owns encounter generation and signal initialization. |
+| Capture flow | Runtime owner active | `dd-capture-runtime.js` owns odds, caps, attempts, and failed-capture bonuses. |
 | Gameplay rules | Active foundation | `dd-gameplay-rules-2-4.js` owns capture/stability/move tuning baselines. |
-| Battle sequence | Active foundation | `dd-battle-engine-2-4.js` provides type helpers, enemy move choice, and event hooks. |
-| Product App | Phase 3 active | `databyte-discovery-product-app-v3.js` is the active UI orchestrator. |
-| Health and signal bars | Active foundation | Product App v3 and compatibility bridge display battle telemetry. |
-| Capture confirmation | Migrated | Capture asks before spending a ByteCoin. |
-| Capture result | Migrated | Success/failure result screen exists. |
-| Party sync | Active foundation | Auto-fill exists; future clean Party Runtime should split this out of Product App v3. |
-| Inventory | Active foundation | Product App v3 currently owns item state; future Item Runtime should split this out. |
+| Battle sequence | Active foundation | Battle engine + resolver provide current battle behavior. |
+| Party switching | Phase 4.1 active | Dedicated runtime, UI, battle bridge, and refresh modules exist. |
+| Battle experience | Phase 4.2 active compatibility | Animation/pulse/HUD polish exists but should be consolidated. |
+| Mobile layout | Phase 4.2 active compatibility | Viewport lock and mobile tray exist. |
+| Unified Scanner Shell | Phase 4.3 compatibility | Scan, Encounter, and Battle are being stabilized into one app shell. |
+| Battle centerline | Phase 4.3 compatibility | Arena centering fix exists and is loaded from the compatibility loader. |
+| Product App | Active | `databyte-discovery-product-app-v3-5.js` is the active UI orchestrator. |
+| Health and signal bars | Active foundation | Product App and compatibility layers display battle telemetry. |
+| Download confirmation/result | Migrated | Download terminology replaced capture in player-facing battle UI. |
+| Party sync | Active foundation | Party Runtime exists; future cleanup should make it primary for all party state. |
+| Inventory | Active foundation | Inventory Runtime exists but needs deeper item behavior integration. |
 | Encounter pools | Active foundation | Manifest defines common, rare, epic, and deep signal pools. |
 | Legacy visual effects | Compatibility | Effects should stay visual-only or be ported natively. |
 | Studio automation | Planned | Studio does not yet auto-assemble full game content. |
 
 ## Known Issues
 
-- Repository health is improving but still reports orphan records and unresolved dependency graph edges.
-- Documentation drift should continue shrinking after README, PROJECT_STATE, ROADMAP, and Studio integration roadmap updates.
+- Phase 4 layout is working through several compatibility layers that target the same battle/card/control elements.
+- The Product App still owns too much rendering logic.
+- Scan, Encounter, and Battle still have separate internal render paths even though Phase 4.3 is stabilizing the shell.
+- Long sprite names still need an auto-fit strategy instead of ellipsis-only truncation.
+- Some phase labels still show Phase 4.2 while Phase 4.3 compatibility work is underway.
 - Some legacy scripts still exist as behavior references and need a safe retirement audit.
-- Party and inventory are still inside Product App v3 and should become clean runtime modules later.
-- Battle is functional but still foundation-level; it needs deeper move resolver, status system, healing balance, reward rules, and enemy behavior.
-- Studio diagnostics need continued alignment with Phase 3 runtime ownership.
+- Battle needs deeper move resolver, status system, healing balance, reward rules, enemy behavior, and animation ownership.
+- Studio diagnostics now track Phase 4 modules, but the Knowledge Engine and mechanics graph may still need Phase 4 ownership records.
 
 ## Immediate Priorities
 
-1. Reduce orphan records in Knowledge Engine and mechanics graph outputs.
-2. Resolve dependency graph edges now that Phase 3 runtime owners are registered.
-3. Keep README, PROJECT_STATE, ROADMAP, and Studio integration roadmap synchronized.
-4. Rerun diagnostics after each stabilization pass.
-5. Split Party Runtime and Item Runtime out of Product App v3 after repository health stabilizes.
-6. Add Studio balance simulator and export pipeline after runtime ownership is stable.
+1. Verify Phase 4.3 centerline and shell fixes on mobile after cache refresh.
+2. Consolidate Phase 4 layout CSS into one canonical Scanner OS shell runtime.
+3. Replace compatibility patches with direct runtime integration.
+4. Update Knowledge Engine and mechanics graph records for Phase 4 modules.
+5. Keep README, PROJECT_STATE, ROADMAP, and Studio integration roadmap synchronized.
+6. Rerun diagnostics after each stabilization pass.
+7. Split remaining party and item behavior out of Product App v3.5.
+8. Add Studio balance simulator and export pipeline after runtime ownership is stable.
 
 ## Long-Term Vision
 
