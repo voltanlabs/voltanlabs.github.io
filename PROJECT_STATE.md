@@ -86,16 +86,39 @@ window.VOLTAN_VALIDATION_REPORT
 Studio Intelligence Modules
   ├── Health History
   ├── Diagnostics Snapshot System
+  ├── UI Layout Audit
+  ├── Module Ownership Audit
+  ├── Report Timeline
+  ├── Documentation Audit
   ├── Auto Repair Planning
   ├── Dependency Graph Viewer
   ├── Coverage Heat Map
   ├── Repository Evolution Dashboard
-  └── Predictive Diagnostics
+  ├── Predictive Diagnostics
+  └── Master Report Export Verification
+  ↓
+Studio Intelligence Manager
+  ↓
+window.VOLTAN_STUDIO_INTELLIGENCE
+  ↓
+Master Report Bridge
+  ↓
+Copy / Save Master Studio Report
 ```
 
 The rule is that Studio Intelligence modules should read from the shared diagnostics report whenever possible instead of rebuilding separate report models.
 
-New snapshot target:
+Active Studio Intelligence browser objects:
+
+```text
+window.VOLTAN_VALIDATION_REPORT
+window.VOLTAN_STUDIO_INTELLIGENCE
+window.VOLTAN_REPORT_TIMELINE
+window.VOLTAN_DOCUMENTATION_AUDIT
+window.VOLTAN_MASTER_REPORT_EXPORT_VERIFICATION
+```
+
+Snapshot target:
 
 ```text
 studio/diagnostics/latest-report.json
@@ -112,6 +135,8 @@ studio/diagnostics/latest-report.json
 | `ROADMAP.md` | Short active roadmap. |
 | `docs/studio-reference.md` | Consolidated Studio technical reference. |
 | `docs/phase-4.3-architecture-snapshot.md` | Current Data Discovery architecture snapshot. |
+| `docs/documentation-audit-phase-1.md` | Documentation audit inventory and sync findings. |
+| `docs/intelligence-module-registry.md` | Human-readable Studio Intelligence module registry. |
 | `studio/intelligence/core.manifest.json` | Studio Intelligence manifest. |
 | `studio/runtime/load-order.json` | Machine-readable runtime manifest. |
 | `studio/diagnostics/sources.json` | Machine-readable diagnostics source registry. |
@@ -282,6 +307,14 @@ Studio currently provides:
 - Diagnostics Snapshot System.
 - `latest-report.json` repo snapshot target.
 - Studio Intelligence Core manifest.
+- Studio Intelligence Manager.
+- Master Report Bridge.
+- Report Timeline.
+- Documentation Audit.
+- Master Report Export Verification.
+- Collapsible Diagnostics Panels.
+- UI Layout Audit.
+- Module Ownership Audit.
 - Auto Repair planning.
 - Dependency Explorer.
 - Dependency Graph Viewer.
@@ -315,15 +348,15 @@ It cannot yet automatically:
 - Long sprite names still need an auto-fit strategy.
 - Some legacy scripts still exist as behavior references and need a safe retirement audit.
 - Battle needs deeper move resolver, status system, healing balance, reward rules, enemy behavior, and animation ownership.
-- Diagnostics still needs direct checks for duplicate active layout ownership.
-- Studio Intelligence manifest still needs a smaller safe registration pass in `studio/diagnostics/sources.json` after the first manifest commit.
+- Runtime Audit is the next Studio Intelligence module needed to compare live page script loading against runtime and diagnostics manifests.
+- Documentation needs the remaining Phase 2 sync commits: README, Studio Reference, and Intelligence Module Registry.
 
 ## Immediate Priorities
 
-1. Add the first Studio Intelligence audit: UI Layout Audit.
-2. Add Module Ownership Audit after layout audit proves useful.
-3. Add Report Timeline using saved diagnostics snapshots.
-4. Audit Product App v3.5 battle markup and base CSS ownership.
+1. Add Runtime Audit as the next Studio Intelligence module.
+2. Add Runtime Dependency Validation against loaded scripts and manifests.
+3. Audit Product App v3.5 battle markup and base CSS ownership.
+4. Continue Scanner OS duplicate ownership cleanup.
 5. Keep `dd-scanner-os-runtime.js` as the only Scanner/Battle layout owner.
 6. Keep README, PROJECT_STATE, ROADMAP, `docs/studio-reference.md`, Studio Intelligence manifest, runtime manifest, diagnostics sources, and Studio integration roadmap synchronized.
 7. Rerun diagnostics after each stabilization pass.
@@ -339,7 +372,7 @@ Studio creates or edits content
   ↓
 Studio validates IDs, references, balance, and assets
   ↓
-Studio Intelligence audits layout, ownership, runtime, docs, and health trends
+Studio Intelligence audits layout, ownership, runtime, docs, exports, and health trends
   ↓
 Studio exports game-ready data
   ↓
