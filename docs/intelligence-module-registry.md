@@ -2,35 +2,55 @@
 
 Status: active foundation
 
-The Intelligence Module Registry is the catalog for Studio Intelligence modules.
+The Intelligence Module Registry is the human-readable catalog for Studio Intelligence modules. The machine-readable source of truth is `studio/intelligence/core.manifest.json`.
 
-Current registered modules:
+## Active modules
 
+- Validation Engine
+- Health History
 - Diagnostics Snapshot System
 - UI Layout Audit
 - Module Ownership Audit
 - Studio Intelligence Manager
 - Master Report Bridge
-- Health History
+- Report Timeline
+- Documentation Audit
+- Master Report Export Verification
+- Diagnostics Panel Collapse
 - Auto Repair Engine
 - Dependency Graph Viewer
 - Coverage Heat Map
 - Repository Evolution Dashboard
 - Predictive Diagnostics
 
-Registry rule:
+## Registry rule
 
-New Studio Intelligence modules should be documented here before being wired into Diagnostics or the Master Report.
+New Studio Intelligence modules should be documented here and in `studio/intelligence/core.manifest.json` before being wired into Diagnostics or the Master Report.
 
-Current flow:
+## Current flow
 
 ```text
-Diagnostics Report
-  -> Studio Intelligence Manager
-  -> Master Report Bridge
-  -> Master Studio Report
+Validation Engine
+  ↓
+Studio Intelligence Modules
+  ↓
+Studio Intelligence Manager
+  ↓
+Master Report Bridge
+  ↓
+Master Studio Report
 ```
 
-Next step:
+## Planned module
 
-Move this registry into a machine-readable manifest after the connector accepts the standalone registry file.
+- Runtime Audit
+
+## Synchronization rule
+
+Keep this registry synchronized with:
+
+- `README.md`
+- `PROJECT_STATE.md`
+- `ROADMAP.md`
+- `docs/studio-reference.md`
+- `studio/intelligence/core.manifest.json`
