@@ -8,29 +8,37 @@ See PROJECT_STATE.md, README.md, docs/studio-reference.md, docs/phase-4.3-archit
 
 - Stabilize Scanner OS runtime.
 - Keep dd-scanner-os-runtime.js as the single Scanner/Battle layout owner.
-- Keep dd-scanner-behavior-4-3.js guarding active encounter, battle, and confirm flows.
 - Audit Product App v3.5 battle layout ownership.
-- Eliminate duplicate layout ownership before adding more battle features.
 - Continue runtime modularization.
 - Keep diagnostics health at 0 errors and 0 warnings.
-- Use the Diagnostics Snapshot System to export repo-ready health snapshots.
-- Keep latest-report.json as the tracked latest diagnostics snapshot target.
-- Build Studio Intelligence audits on top of the shared diagnostics report model.
-- Keep documentation synchronized.
+- Keep documentation synchronized with manifests.
 
-## Next Studio Intelligence commits
+## Completed Studio Intelligence foundation
 
-1. Register studio/intelligence/core.manifest.json in diagnostics sources with a smaller safe patch.
-2. Add UI Layout Audit.
-3. Add Module Ownership Audit.
-4. Add Report Timeline from diagnostics snapshots.
-5. Add Runtime Audit to compare page script loading against load-order.json.
-6. Add Documentation Audit for README, PROJECT_STATE, ROADMAP, and Studio reference drift.
+- Validation Engine
+- Health History
+- Diagnostics Snapshot System
+- UI Layout Audit
+- Module Ownership Audit
+- Studio Intelligence Manager
+- Master Report Bridge
+- Report Timeline
+- Documentation Audit
+- Master Report Export Verification
+- Diagnostics Panel Collapse
 
-## Next Data Discovery commits
+## Next Studio Intelligence milestones
+
+1. Runtime Audit.
+2. Runtime Dependency Validation.
+3. Documentation Synchronizer.
+4. Auto Repair Engine v2.
+5. Studio Intelligence Dashboard.
+
+## Next Data Discovery milestones
 
 1. Audit Product App v3.5 CSS and battle markup.
-2. Move battle layout assumptions into dd-scanner-os-runtime.js or remove duplicates.
+2. Continue Scanner OS ownership cleanup.
 3. Split remaining party behavior out of Product App v3.5.
 4. Split remaining item behavior out of Product App v3.5.
-5. Add deeper battle move/status/reward systems after layout ownership is stable.
+5. Expand battle move, status, reward, and AI systems after ownership stabilization.
