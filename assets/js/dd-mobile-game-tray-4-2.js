@@ -1,6 +1,10 @@
 // Phase 4.2 compact mobile game tray override
+// Phase 4.3 consolidation note:
+// This module now owns compact app spacing, controls, and tray sizing only.
+// Battle arena geometry is owned by dd-battle-centerline-fix-4-3.js.
 (function(){
   if(!location.pathname.includes('databyte-discovery'))return;
+
   function add(){
     if(document.getElementById('ddMobileGameTray42Style'))return;
     var s=document.createElement('style');
@@ -9,9 +13,8 @@
       '#ddApp{gap:6px!important;padding:7px!important}',
       '.top{min-height:46px!important;padding:8px 14px!important}',
       '.battle-card{gap:5px!important;padding:8px!important}',
-      '.battleGrid{display:grid!important;grid-template-columns:1fr 28px 1fr!important;column-gap:4px!important;align-items:center!important;justify-items:center!important;overflow:hidden!important}',
-      '.fighter{width:100%!important;min-width:0!important;overflow:hidden!important}',
-      '.fighter h2{font-size:clamp(20px,5.7vw,30px)!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;margin:4px 0!important}',
+      '.fighter{min-width:0!important;overflow:hidden!important}',
+      '.fighter h2{font-size:clamp(20px,5.7vw,30px)!important;margin:4px 0!important}',
       '.fighter .meta{font-size:10px!important;min-height:25px!important;line-height:1.15!important;overflow:hidden!important}',
       '.ring{width:min(23vw,126px)!important;height:min(23vw,126px)!important}',
       '.battle-card .signalBox,.battle-card .downloadGauge{padding:6px 9px!important;margin:0!important;border-radius:14px!important}',
@@ -24,5 +27,17 @@
     ].join('');
     document.head.appendChild(s);
   }
-  add();setInterval(add,1000);
+
+  function tag(){
+    var app=document.getElementById('ddApp');
+    if(app)app.dataset.mobileTray='spacing-only-4-3';
+  }
+
+  function boot(){
+    add();
+    tag();
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
 })();
