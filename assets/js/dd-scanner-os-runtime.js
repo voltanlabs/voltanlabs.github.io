@@ -21,8 +21,8 @@
       '#ddApp .battle-card{position:relative!important;display:grid!important;grid-template-rows:auto minmax(0,1fr) auto auto minmax(0,24px)!important;gap:5px!important;padding:8px!important}',
       '#ddApp .battleGrid{width:100%!important;max-width:100%!important;min-height:0!important;height:100%!important;justify-self:stretch!important;align-self:center!important;margin:0 auto!important;display:grid!important;grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)!important;justify-items:center!important;align-items:center!important}',
       '#ddApp .battleGrid .fighter{max-width:100%!important;width:100%!important;min-width:0!important;overflow:hidden!important;justify-self:center!important}',
-      '#ddApp .battleGrid .fighter:nth-child(1){grid-column:1!important}',
-      '#ddApp .battleGrid .fighter:nth-child(2){grid-column:3!important}',
+      '#ddApp .battleGrid .fighter:first-child{grid-column:1!important}',
+      '#ddApp .battleGrid .fighter:last-child{grid-column:3!important}',
       '#ddApp .battleGrid .vs,#ddApp .battleGrid strong{grid-column:2!important;justify-self:center!important}',
       '#ddApp .fighter h2{font-size:clamp(20px,5.7vw,30px)!important;margin:4px 0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}',
       '#ddApp .fighter .meta{font-size:10px!important;min-height:25px!important;line-height:1.15!important;overflow:hidden!important}',
@@ -42,13 +42,13 @@
 
   function tag(){
     var app=document.getElementById('ddApp');
-    if(app)app.dataset.scannerOsRuntime='canonical-4-3';
+    if(app)app.dataset.scannerOsRuntime='canonical-4-3-center-fixed';
   }
 
   function boot(){
     addStyle();
     tag();
-    document.dispatchEvent(new CustomEvent('dd:scanner-os-runtime-ready',{detail:{id:'dd-scanner-os-runtime',phase:'4.3'}}));
+    document.dispatchEvent(new CustomEvent('dd:scanner-os-runtime-ready',{detail:{id:'dd-scanner-os-runtime',phase:'4.3',centerline:'fixed'}}));
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
