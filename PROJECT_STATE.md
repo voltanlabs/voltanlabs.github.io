@@ -1,7 +1,7 @@
 # VoltanLabs Project State
 
 Status: active  
-Current phase: Data Discovery Phase 4.3 Canonical Scanner OS Runtime
+Current phase: Data Discovery Phase 4.3 Canonical Scanner OS Runtime + Studio Intelligence Foundation
 
 ## Purpose
 
@@ -25,7 +25,7 @@ Products and Tools
 VoltanLabs Studio
 ```
 
-The public website is the front door. Products are what visitors play and use. VoltanLabs Studio is the internal workshop that supports product creation, validation, documentation, runtime ownership, diagnostics, and future automation.
+The public website is the front door. Products are what visitors play and use. VoltanLabs Studio is the internal workshop that supports product creation, validation, documentation, runtime ownership, diagnostics, Studio Intelligence, and future automation.
 
 ## Product Priority
 
@@ -35,7 +35,7 @@ The current flagship product is:
 
 The current development rule is:
 
-> Studio work should directly support Data Discovery, DataByteDex, Creator Suite, diagnostics, runtime ownership, or product publishing.
+> Studio work should directly support Data Discovery, DataByteDex, Creator Suite, diagnostics, runtime ownership, Studio Intelligence, or product publishing.
 
 ## Current Architecture Decision
 
@@ -64,6 +64,45 @@ Player UI
 
 The immediate direction is to turn Data Discovery into one stable mobile Scanner OS shell where Scan, Encounter, Battle, Download, Dex, Party, Items, and Admin views all operate inside the same app frame.
 
+## Studio Intelligence Direction
+
+Studio Intelligence is now an active foundation layer.
+
+Primary manifest:
+
+```text
+studio/intelligence/core.manifest.json
+```
+
+Current model:
+
+```text
+Diagnostics Source Registry + Validation Rules + Runtime Manifest + Knowledge Indexes
+  ↓
+Validation Engine
+  ↓
+window.VOLTAN_VALIDATION_REPORT
+  ↓
+Studio Intelligence Modules
+  ├── Health History
+  ├── Diagnostics Snapshot System
+  ├── Auto Repair Planning
+  ├── Dependency Graph Viewer
+  ├── Coverage Heat Map
+  ├── Repository Evolution Dashboard
+  └── Predictive Diagnostics
+```
+
+The rule is that Studio Intelligence modules should read from the shared diagnostics report whenever possible instead of rebuilding separate report models.
+
+New snapshot target:
+
+```text
+studio/diagnostics/latest-report.json
+```
+
+`latest-report.json` is a repo-tracked snapshot target. The browser can create, copy, and save a repo-ready payload, but it cannot safely write to GitHub by itself without a trusted backend, GitHub App, or connector.
+
 ## Active Source-of-Truth Documents
 
 | Document | Role |
@@ -73,6 +112,7 @@ The immediate direction is to turn Data Discovery into one stable mobile Scanner
 | `ROADMAP.md` | Short active roadmap. |
 | `docs/studio-reference.md` | Consolidated Studio technical reference. |
 | `docs/phase-4.3-architecture-snapshot.md` | Current Data Discovery architecture snapshot. |
+| `studio/intelligence/core.manifest.json` | Studio Intelligence manifest. |
 | `studio/runtime/load-order.json` | Machine-readable runtime manifest. |
 | `studio/diagnostics/sources.json` | Machine-readable diagnostics source registry. |
 | `studio/knowledge/index.v2.json` | Knowledge Engine registry. |
@@ -105,6 +145,12 @@ The canonical Scanner OS layout owner is:
 assets/js/dd-scanner-os-runtime.js
 ```
 
+The Scanner OS behavior guard is:
+
+```text
+assets/js/dd-scanner-behavior-4-3.js
+```
+
 The scanner background and Scanner OS bootstrap file is:
 
 ```text
@@ -134,6 +180,7 @@ databyte-discovery.html
 ├── assets/js/dd-dex-runtime.js
 ├── assets/js/dd-collection-dex-runtime-bridge.js
 ├── assets/js/databyte-discovery-product-app-v3-5.js
+├── assets/js/dd-scanner-behavior-4-3.js
 ├── assets/js/dd-health-signal-bridge.js
 └── assets/js/dd-scan-bg.js
     └── assets/js/dd-scanner-os-runtime.js
@@ -182,6 +229,7 @@ databytedex.html
 | Inventory | `dd-inventory-runtime.js` | Active foundation |
 | Dex runtime | `dd-dex-runtime.js` | Active foundation |
 | Product UI orchestration | `databyte-discovery-product-app-v3-5.js` | Active UI owner |
+| Scanner OS behavior | `dd-scanner-behavior-4-3.js` | Active guard |
 | Scanner OS layout | `dd-scanner-os-runtime.js` | Active canonical owner |
 | Battle experience polish | `dd-battle-experience-4-2.js` | Compatibility |
 | Viewport lock / mobile layout | `dd-layout-viewport-lock-4-2.js` | Compatibility |
@@ -231,6 +279,9 @@ Studio currently provides:
 - Repository health dashboard.
 - Repository Intelligence.
 - Health History.
+- Diagnostics Snapshot System.
+- `latest-report.json` repo snapshot target.
+- Studio Intelligence Core manifest.
 - Auto Repair planning.
 - Dependency Explorer.
 - Dependency Graph Viewer.
@@ -264,19 +315,20 @@ It cannot yet automatically:
 - Long sprite names still need an auto-fit strategy.
 - Some legacy scripts still exist as behavior references and need a safe retirement audit.
 - Battle needs deeper move resolver, status system, healing balance, reward rules, enemy behavior, and animation ownership.
-- Knowledge Engine and mechanics graph records still need Phase 4.3 Scanner OS ownership records.
 - Diagnostics still needs direct checks for duplicate active layout ownership.
+- Studio Intelligence manifest still needs a smaller safe registration pass in `studio/diagnostics/sources.json` after the first manifest commit.
 
 ## Immediate Priorities
 
-1. Fix the current diagnostics error by aligning `studio/runtime/load-order.json` with the real page load chain.
-2. Add missing indexed records for unresolved DataByteSprites system IDs.
-3. Audit Product App v3.5 battle markup and base CSS ownership.
-4. Keep `dd-scanner-os-runtime.js` as the only Scanner/Battle layout owner.
-5. Keep README, PROJECT_STATE, ROADMAP, `docs/studio-reference.md`, runtime manifest, diagnostics sources, and Studio integration roadmap synchronized.
-6. Rerun diagnostics after each stabilization pass.
-7. Split remaining party and item behavior out of Product App v3.5.
-8. Add Studio balance simulator and export pipeline after runtime ownership is stable.
+1. Add the first Studio Intelligence audit: UI Layout Audit.
+2. Add Module Ownership Audit after layout audit proves useful.
+3. Add Report Timeline using saved diagnostics snapshots.
+4. Audit Product App v3.5 battle markup and base CSS ownership.
+5. Keep `dd-scanner-os-runtime.js` as the only Scanner/Battle layout owner.
+6. Keep README, PROJECT_STATE, ROADMAP, `docs/studio-reference.md`, Studio Intelligence manifest, runtime manifest, diagnostics sources, and Studio integration roadmap synchronized.
+7. Rerun diagnostics after each stabilization pass.
+8. Split remaining party and item behavior out of Product App v3.5.
+9. Add Studio balance simulator and export pipeline after runtime ownership is stable.
 
 ## Long-Term Vision
 
@@ -287,6 +339,8 @@ Studio creates or edits content
   ↓
 Studio validates IDs, references, balance, and assets
   ↓
+Studio Intelligence audits layout, ownership, runtime, docs, and health trends
+  ↓
 Studio exports game-ready data
   ↓
 Data Discovery consumes the exported data
@@ -294,4 +348,4 @@ Data Discovery consumes the exported data
 DataByteDex renders the same data
 ```
 
-The long-term goal is for new content to be created through Studio, validated automatically, balanced through Simulation Lab, and consumed directly by the public game.
+The long-term goal is for new content to be created through Studio, validated automatically, balanced through Simulation Lab, audited through Studio Intelligence, and consumed directly by the public game.
