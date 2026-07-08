@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "0.6.1",
+  "schemaVersion": "0.6.2",
   "generatedBy": "VoltanLabs Studio Runtime Loader",
-  "description": "Deterministic load-order manifest for the active Phase 4 Data Discovery runtime. Phase 4 adds party switching, battle experience, mobile layout stabilization, and canonical Scanner OS runtime ownership.",
+  "description": "Deterministic load-order manifest for the active Phase 4 Data Discovery runtime. Phase 4.3 now boots the canonical Scanner OS runtime directly and retires layout wrappers from the active load path.",
   "runtime": "databyte-discovery-product-app-v3-5",
-  "phase": "4.3-canonical-scanner-os-runtime",
+  "phase": "4.3-canonical-scanner-os-runtime-wrapper-cut",
   "phases": [
     {"id":"studio:boot","description":"Runtime loader starts and validates the manifest."},
     {"id":"product:roster-ready","description":"Shared 52-sprite canon roster bridge is loaded."},
@@ -18,7 +18,6 @@
     {"id":"product:app-ready","description":"Product App v3.5 owns UI orchestration and canonical HP-ring / Signal-meter rendering."},
     {"id":"product:battle-experience-ready","description":"Phase 4.2 battle experience compatibility layers are loaded."},
     {"id":"product:scanner-os-ready","description":"Canonical Scanner OS runtime owns viewport, shell, mobile spacing, navigation sizing, and battle centerline layout."},
-    {"id":"product:scanner-shell-wrapper-ready","description":"Phase 4 compatibility wrappers remain available while Scanner OS runtime is validated."},
     {"id":"product:effects-ready","description":"Compatibility background effects are loaded."},
     {"id":"runtime:health-ready","description":"Bridge health checks validate the Phase 4 runtime globals."}
   ],
@@ -38,10 +37,7 @@
     {"id":"databyte-discovery-product-app-v3-5","label":"Data Discovery Product App v3.5","script":"/assets/js/databyte-discovery-product-app-v3-5.js?v=phase4-2-mobile-tray-1","phase":"product:app-ready","requires":["dd-canon-roster","dd-studio-data-bridge","dd-battle-engine-2-4","dd-gameplay-rules-2-4","dd-capture-runtime","dd-encounter-runtime","dd-battle-balance-2-4","dd-battle-resolver"],"emits":["ddApp"],"required":true,"failureBehavior":"show-runtime-error","status":"active"},
     {"id":"dd-battle-experience-4-2","label":"Battle Experience 4.2","script":"/assets/js/dd-battle-experience-4-2.js?v=battle-experience-4-2-1","phase":"product:battle-experience-ready","requires":["databyte-discovery-product-app-v3-5"],"emits":["battle-experience-ui"],"required":false,"failureBehavior":"warn-only","status":"compatibility"},
     {"id":"dd-layout-viewport-lock-4-2","label":"Viewport Lock Layout 4.2","script":"/assets/js/dd-layout-viewport-lock-4-2.js?v=layout-lock-4-2-2","phase":"product:battle-experience-ready","requires":["databyte-discovery-product-app-v3-5"],"emits":["viewport-lock-layout"],"required":false,"failureBehavior":"warn-only","status":"compatibility"},
-    {"id":"dd-scanner-os-runtime","label":"Canonical Scanner OS Runtime","script":"/assets/js/dd-scanner-os-runtime.js?v=scanner-os-runtime-4-3-1","phase":"product:scanner-os-ready","requires":["databyte-discovery-product-app-v3-5"],"emits":["dd:scanner-os-runtime-ready"],"required":false,"failureBehavior":"warn-only","status":"active"},
-    {"id":"dd-mobile-game-tray-4-2","label":"Mobile Game Tray 4.2 Wrapper","script":"/assets/js/dd-mobile-game-tray-4-2.js?v=mobile-game-tray-4-3-wrapper-1","phase":"product:scanner-shell-wrapper-ready","requires":["dd-scanner-os-runtime"],"emits":["mobile-game-tray-layout"],"required":false,"failureBehavior":"warn-only","status":"compatibility-wrapper"},
-    {"id":"dd-unified-scanner-shell-4-3-once","label":"Unified Scanner Shell 4.3 Wrapper","script":"/assets/js/dd-unified-scanner-shell-4-3-once.js?v=unified-scanner-shell-4-3-wrapper-1","phase":"product:scanner-shell-wrapper-ready","requires":["dd-scanner-os-runtime"],"emits":["unified-scanner-shell"],"required":false,"failureBehavior":"warn-only","status":"compatibility-wrapper"},
-    {"id":"dd-battle-centerline-fix-4-3","label":"Battle Centerline Fix 4.3 Wrapper","script":"/assets/js/dd-battle-centerline-fix-4-3.js?v=battle-centerline-4-3-wrapper-1","phase":"product:scanner-shell-wrapper-ready","requires":["dd-scanner-os-runtime"],"emits":["battle-centerline-layout"],"required":false,"failureBehavior":"warn-only","status":"compatibility-wrapper"},
+    {"id":"dd-scanner-os-runtime","label":"Canonical Scanner OS Runtime","script":"/assets/js/dd-scanner-os-runtime.js?v=scanner-os-runtime-4-3-2","phase":"product:scanner-os-ready","requires":["databyte-discovery-product-app-v3-5"],"emits":["dd:scanner-os-runtime-ready"],"required":false,"failureBehavior":"warn-only","status":"active"},
     {"id":"dd-health-signal-bridge","label":"Health Signal Compatibility Bridge","script":"/assets/js/dd-health-signal-bridge.js?v=health-signal-1","phase":"product:effects-ready","requires":["databyte-discovery-product-app-v3-5"],"emits":["health-signal-ui"],"required":false,"failureBehavior":"warn-only","status":"compatibility"},
     {"id":"dd-scan-bg","label":"Scanner Background Effects and Scanner OS Bootstrap","script":"/assets/js/dd-scan-bg.js?v=0912-direct-os","phase":"product:effects-ready","requires":["databyte-discovery-product-app-v3-5"],"emits":["scanner:background-ready"],"required":false,"failureBehavior":"warn-only","status":"active"},
     {"id":"studio-runtime-bridge-checks","label":"Bridge Health Checks Script","script":"/assets/js/studio-runtime-bridge-checks.js?v=bridge-checks-3","phase":"runtime:health-ready","requires":["databyte-discovery-product-app-v3-5"],"emits":["runtime:health-check","DD_RUNTIME_HEALTH"],"required":false,"failureBehavior":"warn-only","status":"active"}
@@ -58,10 +54,13 @@
     {"id":"databyte-type-bridge","script":"/assets/js/databyte-type-bridge.js?v=types-1","status":"legacy-reference","replacement":"dd-studio-data-bridge"},
     {"id":"databyte-ability-bridge","script":"/assets/js/databyte-ability-bridge.js?v=abilities-1","status":"legacy-reference","replacement":"future-ability-runtime"},
     {"id":"databyte-standalone-app","script":"/assets/js/databyte-standalone-app.js?v=0912-direct-os","status":"legacy-reference","replacement":"databyte-discovery-product-app-v3-5"},
-    {"id":"dd-unified-scanner-shell-4-3","script":"/assets/js/dd-unified-scanner-shell-4-3.js?v=unified-scanner-shell-4-3-1","status":"legacy-reference","replacement":"dd-scanner-os-runtime"}
+    {"id":"dd-mobile-game-tray-4-2","script":"/assets/js/dd-mobile-game-tray-4-2.js?v=mobile-game-tray-4-3-wrapper-1","status":"retired-active-load","replacement":"dd-scanner-os-runtime"},
+    {"id":"dd-unified-scanner-shell-4-3","script":"/assets/js/dd-unified-scanner-shell-4-3.js?v=unified-scanner-shell-4-3-1","status":"legacy-reference","replacement":"dd-scanner-os-runtime"},
+    {"id":"dd-unified-scanner-shell-4-3-once","script":"/assets/js/dd-unified-scanner-shell-4-3-once.js?v=unified-scanner-shell-4-3-wrapper-1","status":"retired-active-load","replacement":"dd-scanner-os-runtime"},
+    {"id":"dd-battle-centerline-fix-4-3","script":"/assets/js/dd-battle-centerline-fix-4-3.js?v=battle-centerline-4-3-wrapper-1","status":"retired-active-load","replacement":"dd-scanner-os-runtime"}
   ],
   "events": {"loaderStarted":"studio:boot","manifestReady":"runtime:manifest-ready","moduleLoaded":"runtime:module-loaded","moduleFailed":"runtime:module-failed","allReady":"runtime:ready","healthCheck":"runtime:health-check"},
   "verificationTargets": ["DD_CANON_ROSTER","DD_STUDIO_DATA_BRIDGE","DD_GAME_DATA_MANIFEST","DD_MOVE_INDEX","DD_TYPE_CHART","DDBattle24","DD_GAMEPLAY_RULES","DD_CAPTURE_RUNTIME","DD_ENCOUNTER_RUNTIME","DD_BATTLE_BALANCE","DD_BATTLE_RESOLVER","DD_PARTY_SWITCH_RUNTIME","ddApp","dd:scanner-os-runtime-ready"],
-  "canonicalUiRules": {"hpDisplay":"Both lead and wild sprite HP are displayed as circular HP rings.","signalDisplay":"Signal is displayed separately as encounter stability and is not drawn as the wild sprite ring.","mobileLayout":"The Scanner OS should behave like a fixed mobile game shell. Only internal viewport areas may change.","layoutOwner":"dd-scanner-os-runtime","deprecated":["horizontal battle HP bars","Signal-as-enemy-health UI","whole-page battle scrolling","layout-expanding battle messages","interval-based layout patch loops"]},
-  "nextSystems": ["scannerOsWrapperRetirement", "runtimeOwnershipGraphAudit", "partyRuntimeSplit", "itemRuntimeSplit", "legacyRetirementAudit", "studioExportPipeline"]
+  "canonicalUiRules": {"hpDisplay":"Both lead and wild sprite HP are displayed as circular HP rings.","signalDisplay":"Signal is displayed separately as encounter stability and is not drawn as the wild sprite ring.","mobileLayout":"The Scanner OS should behave like a fixed mobile game shell. Only internal viewport areas may change.","layoutOwner":"dd-scanner-os-runtime","deprecated":["horizontal battle HP bars","Signal-as-enemy-health UI","whole-page battle scrolling","layout-expanding battle messages","interval-based layout patch loops","active layout wrapper loading"]},
+  "nextSystems": ["runtimeOwnershipGraphAudit", "partyRuntimeSplit", "itemRuntimeSplit", "legacyRetirementAudit", "studioExportPipeline"]
 }
