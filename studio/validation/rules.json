@@ -1,12 +1,12 @@
 {
-  "schemaVersion": "0.2.0",
+  "schemaVersion": "0.2.1",
   "generatedBy": "VoltanLabs Studio Validation Engine",
-  "description": "Reusable validation rules for Studio registries, DataByteSprites indexes, Phase 3.7 runtime manifests, source ownership maps, diagnostics alignment, documentation drift checks, and mechanics graphs.",
+  "description": "Reusable validation rules for Studio registries, DataByteSprites indexes, Phase 4.3 runtime manifests, source ownership maps, diagnostics alignment, documentation drift checks, and mechanics graphs.",
   "validationEngine": {
     "id": "studio-validation-engine",
     "status": "active",
-    "phase": "Phase 3.7",
-    "goal": "Validate the canonical Product App v3.5 runtime, split gameplay owners, cross-index consistency, runtime load order, duplicate gameplay ownership risk, documentation drift, source-aware repair paths, and diagnostics readiness before new gameplay systems are added."
+    "phase": "Phase 4.3",
+    "goal": "Validate the canonical Scanner OS runtime, Product App v3.5 orchestration, split runtime owners, cross-index consistency, runtime load order, documentation drift, source-aware repair paths, and diagnostics readiness before new gameplay systems are added."
   },
   "ruleSets": [
     {
@@ -23,7 +23,7 @@
       "severity": "error",
       "targetKinds": ["species", "lore", "sourceFile", "mechanicsGraph", "move", "typeChart", "ability", "runtime"],
       "checks": ["idPresent", "titlePresent", "statusPresentWhereExpected", "pathPresentWhereExpected"],
-      "description": "Records must expose stable IDs and readable titles so they can participate in Studio search, graph validation, diagnostics, and future AI tooling. Mechanics graph edges may use synthetic IDs generated from source, target, and edge type."
+      "description": "Records must expose stable IDs and readable titles so they can participate in Studio search, graph validation, diagnostics, and future tooling. Mechanics graph edges may use synthetic IDs generated from source, target, and edge type."
     },
     {
       "id": "cross-index-references",
@@ -31,7 +31,7 @@
       "severity": "warning",
       "targetKinds": ["species", "lore", "sourceFile", "mechanicsGraph", "move", "ability"],
       "checks": ["dependencyIdExists", "relatedSpeciesExists", "learnedBySpeciesExists", "assignedToSpeciesExists", "sourceTargetExists"],
-      "description": "Dependencies, relationships, learnedBy fields, assignedTo fields, dex refs, and graph edges should point to known Studio or DataByteSprites IDs. Canon story references may be registered as known global IDs until their full records are added."
+      "description": "Dependencies, relationships, learnedBy fields, assignedTo fields, dex refs, and graph edges should point to known Studio or DataByteSprites IDs. Canon story and system references may be registered as known global IDs until their full records are added."
     },
     {
       "id": "mechanics-graph-integrity",
@@ -55,7 +55,7 @@
       "severity": "error",
       "targetKinds": ["runtime", "sourceFile"],
       "checks": ["productAppV35Active", "battleResolverActive", "captureRuntimeActive", "encounterRuntimeActive", "gameplayRulesActive", "compatibilityLayersVisualOnly"],
-      "description": "Data Discovery diagnostics must recognize Product App v3.5 as the canonical UI orchestrator and the split runtimes as the gameplay owners. Compatibility layers may assist display but must not own HP, Signal, capture odds, or battle state."
+      "description": "Data Discovery diagnostics must recognize Product App v3.5 as the UI orchestrator, Scanner OS Runtime as the layout owner, Scanner Behavior Guard as the active-flow guard, and split runtimes as gameplay owners. Compatibility layers may assist display but must not own HP, Signal, download odds, or battle state."
     },
     {
       "id": "duplicate-gameplay-ownership",
@@ -63,7 +63,7 @@
       "severity": "warning",
       "targetKinds": ["sourceFile", "runtime"],
       "checks": ["singleActiveBattleOwner", "singleActiveCaptureOwner", "singleActiveEncounterOwner", "singleActiveSignalOwner", "legacyFilesNotActiveOwners"],
-      "description": "Gameplay systems should have one active owner. Legacy Product Apps, standalone apps, and old battle/capture files may remain indexed as references, but diagnostics should warn if they are marked as active gameplay owners."
+      "description": "Gameplay systems should have one active owner. Legacy files may remain indexed as references, but diagnostics should warn if they are marked as active gameplay owners."
     },
     {
       "id": "product-app-ui-regression",
@@ -87,12 +87,14 @@
       "severity": "warning",
       "targetKinds": ["documentation"],
       "checks": ["readmeMentionsCurrentRuntimePhase", "readmeMentionsDiagnostics", "readmeMentionsRuntimeOwnership", "readmeMentionsDataDiscovery"],
-      "description": "README and roadmap documentation should reflect the active Phase 3 runtime, Product App v3.5, runtime ownership, and diagnostics capabilities."
+      "description": "README and roadmap documentation should reflect the active Phase 4.3 Scanner OS runtime, Product App v3.5, runtime ownership, and diagnostics capabilities."
     }
   ],
   "canonicalRuntime": {
-    "phase": "Phase 3.7",
+    "phase": "Phase 4.3",
     "runtime": "databyte-discovery-product-app-v3-5",
+    "layoutOwner": "dd-scanner-os-runtime",
+    "behaviorGuard": "dd-scanner-behavior-4-3",
     "requiredRuntimeOwners": [
       "dd-canon-roster",
       "dd-studio-data-bridge",
@@ -102,25 +104,47 @@
       "dd-battle-engine-2-4",
       "dd-battle-balance-2-4",
       "dd-battle-resolver",
-      "databyte-discovery-product-app-v3-5"
+      "dd-battle-state-runtime",
+      "dd-battle-presentation-runtime",
+      "dd-collection-runtime",
+      "dd-party-runtime",
+      "dd-party-switch-runtime",
+      "dd-inventory-runtime",
+      "dd-dex-runtime",
+      "dd-collection-dex-runtime-bridge",
+      "databyte-discovery-product-app-v3-5",
+      "dd-scanner-behavior-4-3",
+      "dd-scanner-os-runtime"
     ],
     "visualOnlyCompatibilityLayers": [
       "dd-health-signal-bridge",
-      "dd-scan-bg"
+      "dd-scan-bg",
+      "dd-layout-viewport-lock-4-2",
+      "dd-battle-experience-4-2"
     ],
     "legacyReferenceStatuses": [
       "legacy-reference",
       "archive",
       "retire-candidate",
-      "remove-candidate"
+      "remove-candidate",
+      "retired-active-load"
     ],
     "gameplayOwnership": {
       "ui": "databyte-discovery-product-app-v3-5",
+      "layout": "dd-scanner-os-runtime",
+      "behaviorGuard": "dd-scanner-behavior-4-3",
       "battle": "dd-battle-resolver",
       "capture": "dd-capture-runtime",
       "encounter": "dd-encounter-runtime",
       "rules": "dd-gameplay-rules-2-4",
       "battleEvents": "dd-battle-engine-2-4",
+      "battleState": "dd-battle-state-runtime",
+      "battlePresentation": "dd-battle-presentation-runtime",
+      "collection": "dd-collection-runtime",
+      "party": "dd-party-runtime",
+      "partySwitching": "dd-party-switch-runtime",
+      "inventory": "dd-inventory-runtime",
+      "dex": "dd-dex-runtime",
       "balance": "dd-battle-balance-2-4",
       "roster": "dd-canon-roster",
       "studioData": "dd-studio-data-bridge"
@@ -128,7 +152,7 @@
     "uiCanon": {
       "hpDisplay": "HP rings for lead and wild sprites",
       "signalDisplay": "Separate Signal meter for encounter stability",
-      "deprecated": ["horizontal battle HP bars", "Signal-as-enemy-HP", "wild Signal ring"]
+      "deprecated": ["horizontal battle HP bars", "Signal-as-enemy-HP", "wild Signal ring", "active layout wrapper loading"]
     }
   },
   "knownGlobalIds": [
@@ -141,12 +165,16 @@
     "knowledge-engine",
     "asset-library",
     "simulation-lab",
+    "phase4-scanner-os-runtime",
     "phase3-runtime",
     "runtime-legacy-inventory",
     "runtime-reference-verification",
     "runtime-variable-ownership-search",
     "vic",
-    "first-capture-record"
+    "first-capture-record",
+    "dbs-lore-core",
+    "dbs-admin-console",
+    "dbs-rarity-effects"
   ],
   "canonGlobalIds": [
     {
@@ -162,11 +190,32 @@
       "label": "First Capture Record",
       "status": "canon-reference",
       "description": "Canon DataByteDex reference attached to Leovolt and the first capture event. A full DataByteDex record should replace this global ID later."
+    },
+    {
+      "id": "dbs-lore-core",
+      "type": "system",
+      "label": "DataByteSprites Lore Core",
+      "status": "active-foundation",
+      "description": "Foundational lore system referenced by species and story records until a dedicated lore-core index is created."
+    },
+    {
+      "id": "dbs-admin-console",
+      "type": "system",
+      "label": "Admin Console",
+      "status": "planned-foundation",
+      "description": "Future Admin-facing profile, scanner authority, unlock, and progression system referenced by Dennis and NullKing records."
+    },
+    {
+      "id": "dbs-rarity-effects",
+      "type": "system",
+      "label": "Rarity Effects",
+      "status": "planned-foundation",
+      "description": "Future visual and mechanical rarity effect layer referenced by screen and signal manifestation rules."
     }
   ],
   "documentationDrift": {
     "requiredReadmePhrases": [
-      "Phase 3",
+      "Phase 4.3",
       "Data Discovery",
       "Runtime",
       "Diagnostics",
@@ -179,6 +228,6 @@
     "Validate Product App v3.5 and split runtime owners against the runtime manifest and source-files index.",
     "Warn when legacy-reference files are marked as active gameplay owners.",
     "Validate HP ring and Signal meter UI expectations through runtime health checks.",
-    "Run diagnostics and compare health, coverage, errors, warnings, and cross-index consistency after Phase 3.7 alignment."
+    "Run diagnostics and compare health, coverage, errors, warnings, and cross-index consistency after Phase 4.3 alignment."
   ]
 }
