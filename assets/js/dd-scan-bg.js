@@ -1,6 +1,6 @@
 // assets/js/dd-scan-bg.js
 // Phase 4.3 loader cleanup: this file owns scanner background effects
-// and boots the canonical Scanner OS runtime once.
+// and boots only the canonical Scanner OS runtime.
 (function(){
   if(!location.pathname.includes('databyte-discovery'))return;
 
@@ -27,10 +27,7 @@
     booted=true;
     bg();
 
-    load('ddScannerOsRuntimeLoader','/assets/js/dd-scanner-os-runtime.js?v=scanner-os-runtime-4-3-1');
-    load('ddMobileGameTray42Loader','/assets/js/dd-mobile-game-tray-4-2.js?v=mobile-game-tray-4-3-wrapper-1');
-    load('ddUnifiedScannerShell43Loader','/assets/js/dd-unified-scanner-shell-4-3-once.js?v=unified-scanner-shell-4-3-wrapper-1');
-    load('ddBattleCenterline43Loader','/assets/js/dd-battle-centerline-fix-4-3.js?v=battle-centerline-4-3-wrapper-1');
+    load('ddScannerOsRuntimeLoader','/assets/js/dd-scanner-os-runtime.js?v=scanner-os-runtime-4-3-2');
   }
 
   function boot(){
