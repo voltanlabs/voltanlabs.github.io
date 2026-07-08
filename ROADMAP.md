@@ -1,7 +1,7 @@
 # VoltanLabs Roadmap
 
 Status: active  
-Current focus: Phase 3 Runtime Integration and Repository Stabilization
+Current focus: Data Discovery Phase 4.3 Unified Scanner Shell Compatibility
 
 ## Purpose
 
@@ -16,10 +16,13 @@ The key decision:
 For the most current project status, see:
 
 - `PROJECT_STATE.md`
-- `SITE_STRATEGY.md`
 - `README.md`
+- `studio/runtime/load-order.json`
+- `studio/diagnostics/sources.json`
+- `SITE_STRATEGY.md`
 - `docs/databyte-runtime-ownership-audit.md`
 - `docs/databyte-gameplay-ownership-audit.md`
+- `docs/datadiscovery-phase-4-bookkeeping.md`
 - `studio/docs/STUDIO_GAME_INTEGRATION_ROADMAP.md`
 
 ## Strategic Model
@@ -72,7 +75,7 @@ Data Discovery is the flagship playable product.
 
 ### Data Discovery Foundation
 
-Status: active Phase 3 runtime stabilization.
+Status: active Phase 4.3 Scanner OS stabilization.
 
 Completed:
 
@@ -80,18 +83,28 @@ Completed:
 - 52-sprite shared canon roster bridge.
 - Studio data bridge overlay foundation.
 - Shared game-data manifest.
-- Scanner, encounter, battle, capture confirmation, result, party, items, Dex, and Admin panels.
+- Scanner, encounter, battle, download confirmation, result, party, items, Dex, and Admin panels.
 - Lead vs Wild battle arena foundation.
 - Health and Signal telemetry foundation.
 - Phase 3 Encounter Runtime.
-- Phase 3 Capture Runtime.
+- Phase 3 Capture / Download Runtime.
 - Shared Gameplay Rules runtime.
 - Battle Engine helper runtime.
-- Product App v3 functional cutover.
+- Battle Resolver runtime.
+- Battle State Runtime foundation.
+- Battle Presentation Runtime foundation.
+- Collection Runtime foundation.
+- Party Runtime foundation.
+- Party Switch Runtime and compatibility UI.
+- Inventory Runtime foundation.
+- Dex Runtime foundation.
+- Product App v3.5 functional cutover.
+- Phase 4.2 battle experience and mobile layout compatibility.
+- Phase 4.3 unified scanner shell and battle centerline compatibility.
 
 Current issue:
 
-- The game is functional as a foundation, but repository metadata, runtime ownership, and diagnostics must be stabilized before major gameplay expansion.
+- The game is functional as a foundation, but the Scanner OS still depends on multiple layout and compatibility layers targeting the same UI elements. These layers need to be consolidated into one canonical shell runtime before major gameplay expansion.
 
 ### DataByteDex Foundation
 
@@ -128,21 +141,22 @@ Completed:
 - Living project state document.
 - Studio to Data Discovery Integration Roadmap.
 - Shared game-data manifest.
-- Diagnostics registry updated with game bridge scripts, Dex renderer, runtime ownership audits, and manifest files.
+- Runtime load-order manifest.
+- Diagnostics registry updated with game bridge scripts, Dex renderer, runtime ownership audits, Phase 4 modules, and manifest files.
 
 Current issue:
 
-- Studio can validate and inform the game, but it does not yet auto-assemble full game content or export a complete balanced build.
+- Studio can validate and inform the game, but it does not yet auto-assemble full game content, export a complete balanced build, or consolidate runtime compatibility layers automatically.
 
-## Active Phase — Phase 3 Runtime Integration and Repository Stabilization
+## Active Phase — Phase 4.3 Unified Scanner Shell Compatibility
 
 Status: active.
 
 Goal:
 
-Make Data Discovery functional through dedicated runtime owners while stabilizing the repository metadata that Diagnostics uses to understand the architecture.
+Turn Data Discovery into one stable mobile-first Scanner OS shell where Scan, Encounter, Battle, Download, Dex, Party, Items, and Admin views all operate inside the same app frame.
 
-Current Phase 3 runtime chain:
+Current Phase 4.3 runtime chain:
 
 ```text
 databyte-discovery.html
@@ -153,30 +167,53 @@ databyte-discovery.html
 ├── dd-capture-runtime.js
 ├── dd-encounter-runtime.js
 ├── dd-battle-balance-2-4.js
-└── databyte-discovery-product-app-v3.js
+├── dd-battle-resolver.js
+├── dd-battle-state-runtime.js
+├── dd-battle-presentation-runtime.js
+├── dd-collection-runtime.js
+├── dd-party-runtime.js
+├── dd-party-switch-runtime.js
+├── dd-inventory-runtime.js
+├── dd-dex-runtime.js
+├── dd-collection-dex-runtime-bridge.js
+├── databyte-discovery-product-app-v3-5.js
+├── dd-party-switch-battle-bridge.js
+├── dd-party-switch-ui.js
+├── dd-party-switch-refresh.js
+├── dd-battle-experience-4-2.js
+├── dd-layout-viewport-lock-4-2.js
+├── dd-mobile-game-tray-4-2.js
+├── dd-unified-scanner-shell-4-3.js
+├── dd-battle-centerline-fix-4-3.js
+├── dd-health-signal-bridge.js
+└── dd-scan-bg.js
 ```
 
-Completed in Phase 3 so far:
+Completed in Phase 4 so far:
 
-- Added `assets/js/dd-capture-runtime.js`.
-- Added `assets/js/dd-encounter-runtime.js`.
-- Added `assets/js/databyte-discovery-product-app-v3.js`.
-- Wired the live page to Product App v3.
-- Repaired `studio/databytesprites/game-data.v1.json` with root IDs and Phase 3 runtime references.
-- Rebuilt `studio/databytesprites/source-files.json` around Phase 3 runtime ownership.
-- Rebuilt `studio/databytesprites/mechanics-graph.json` around active runtime owners.
-- Updated README for Phase 3 stabilization.
-- Updated PROJECT_STATE and ROADMAP for Phase 3 stabilization.
+- Added Party Runtime and party switching foundation.
+- Added Party Switch UI, battle bridge, and HUD refresh helpers.
+- Added Battle State Runtime and Battle Presentation Runtime foundations.
+- Added Collection, Inventory, and Dex runtime foundations.
+- Added Collection-to-Dex bridge.
+- Added Product App v3.5 as the active UI orchestrator.
+- Added Battle Experience 4.2 compatibility polish.
+- Added Viewport Lock and Mobile Game Tray compatibility layers.
+- Added Unified Scanner Shell 4.3 compatibility layer.
+- Added Battle Centerline Fix 4.3 compatibility layer.
+- Updated runtime load-order and diagnostics source tracking for Phase 4 modules.
+- Updated PROJECT_STATE and README for Phase 4.3 stabilization.
 
 Next tasks:
 
-1. Rerun Diagnostics and compare health/coverage against the previous report.
-2. Reduce remaining orphan records in Knowledge Engine outputs.
-3. Resolve remaining dependency graph edges.
-4. Update Studio integration roadmap with export and simulator milestones.
-5. Split Party Runtime out of Product App v3.
-6. Split Item Runtime out of Product App v3.
-7. Add battle move resolver and reward/progression hooks.
+1. Stop compatibility loaders from repeatedly stacking layout scripts.
+2. Make `dd-scan-bg.js` visual/background-only or convert it into a single explicit compatibility bootstrap.
+3. Consolidate Phase 4 layout rules into one canonical Scanner OS shell runtime.
+4. Replace compatibility patches with direct runtime integration.
+5. Split remaining party and item behavior out of Product App v3.5.
+6. Update Knowledge Engine and mechanics graph records for Phase 4 modules.
+7. Rerun Diagnostics and compare health/coverage against the previous report.
+8. Add Studio balance simulator and export pipeline after runtime ownership is stable.
 
 ## Shared Data Phase — One Sprite Source of Truth
 
@@ -200,23 +237,31 @@ Status: active foundation.
 
 Goal:
 
-Move gameplay ownership out of Product App v3 and into dedicated runtime modules.
+Move gameplay ownership out of Product App v3.5 and into dedicated runtime modules.
 
 Completed:
 
 - Encounter Runtime.
-- Capture Runtime.
+- Capture / Download Runtime.
 - Gameplay Rules Runtime.
 - Battle Engine helper runtime.
+- Battle Resolver Runtime.
+- Battle State Runtime foundation.
+- Battle Presentation Runtime foundation.
+- Collection Runtime foundation.
+- Party Runtime foundation.
+- Party Switch Runtime foundation.
+- Inventory Runtime foundation.
+- Dex Runtime foundation.
 
 Next runtime modules:
 
-- Party Runtime.
-- Item Runtime.
 - Progression Runtime.
 - Mission Runtime.
 - Journal Runtime.
 - Ability Runtime.
+- Reward Runtime.
+- Canonical Scanner OS Shell Runtime.
 
 ## Battle Engine Phase
 
@@ -233,16 +278,19 @@ Completed:
 - Type/effectiveness helper hooks.
 - Enemy move choice helper.
 - Basic health and signal resolution.
-- Basic capture flow integration.
+- Basic capture/download flow integration.
+- Dedicated battle resolver foundation.
+- Battle state runtime foundation.
+- Battle presentation runtime foundation.
 
 Priority tasks:
 
-- Add dedicated battle move resolver.
 - Add deeper status effect handling.
 - Add victory, defeat, and reward rules.
 - Add healing/recovery balance.
 - Add boss and rare encounter behavior.
 - Add balance validation from Studio diagnostics.
+- Move more battle UI presentation out of Product App v3.5.
 
 ## Studio Export Pipeline Phase
 
