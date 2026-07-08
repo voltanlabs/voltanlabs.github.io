@@ -1,15 +1,24 @@
 {
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.1.1",
   "generatedBy": "VoltanLabs Studio Intelligence Core",
   "status": "active-foundation",
   "phase": "Phase 4.3 Studio Intelligence Foundation",
-  "description": "Unified manifest for the Studio Intelligence layer. This defines how Diagnostics, Health History, Snapshot exports, Predictive Diagnostics, Auto Repair, dependency mapping, coverage, and future audits should share one report model.",
+  "description": "Unified manifest for the Studio Intelligence layer. Diagnostics, Health History, Snapshot exports, UI Layout Audit, Module Ownership Audit, Predictive Diagnostics, Auto Repair, dependency mapping, coverage, Intelligence Manager, and Master Report exports share one report model.",
   "sourceOfTruth": {
     "diagnosticsReport": "window.VOLTAN_VALIDATION_REPORT",
+    "studioIntelligence": "window.VOLTAN_STUDIO_INTELLIGENCE",
+    "moduleRegistryDoc": "/docs/intelligence-module-registry.md",
     "snapshotTarget": "/studio/diagnostics/latest-report.json",
     "sourceRegistry": "/studio/diagnostics/sources.json",
     "validationRules": "/studio/validation/rules.json",
     "runtimeManifest": "/studio/runtime/load-order.json"
+  },
+  "moduleRegistry": {
+    "status": "active-foundation",
+    "documentation": "/docs/intelligence-module-registry.md",
+    "manager": "studio-intelligence-manager",
+    "exportBridge": "studio-master-report-bridge",
+    "rule": "New Studio Intelligence modules should be documented in the registry before being wired into Diagnostics or the Master Report."
   },
   "coreModel": {
     "inputs": [
@@ -19,7 +28,8 @@
       "Runtime manifest",
       "DataByteSprites indexes",
       "Documentation sources",
-      "Source-file ownership records"
+      "Source-file ownership records",
+      "Studio Intelligence module registry"
     ],
     "outputs": [
       "Validation report",
@@ -28,10 +38,10 @@
       "Repair suggestions",
       "Dependency explorer",
       "Snapshot payload",
+      "UI layout audit",
+      "Module ownership audit",
       "Predictive next-best actions",
-      "Future UI layout audit",
-      "Future module ownership audit",
-      "Future report timeline"
+      "Master Studio Report"
     ]
   },
   "activeModules": [
@@ -55,6 +65,34 @@
       "status": "active",
       "script": "/assets/js/studio-diagnostics-snapshot-system.js",
       "role": "Exports repo-ready diagnostics snapshots for latest-report.json."
+    },
+    {
+      "id": "studio-ui-layout-audit",
+      "label": "UI Layout Audit",
+      "status": "active",
+      "script": "/assets/js/studio-ui-layout-audit.js",
+      "role": "Observes overflow, viewport pressure, and duplicate layout ownership risk."
+    },
+    {
+      "id": "studio-module-ownership-audit",
+      "label": "Module Ownership Audit",
+      "status": "active",
+      "script": "/assets/js/studio-module-ownership-audit.js",
+      "role": "Maps canonical runtime owners from the shared diagnostics report."
+    },
+    {
+      "id": "studio-intelligence-manager",
+      "label": "Studio Intelligence Manager",
+      "status": "active",
+      "script": "/assets/js/studio-intelligence-manager.js",
+      "role": "Collects intelligence module outputs into one shared object."
+    },
+    {
+      "id": "studio-master-report-bridge",
+      "label": "Master Report Bridge",
+      "status": "active",
+      "script": "/assets/js/studio-master-report-bridge.js",
+      "role": "Builds enriched Master Studio Report exports."
     },
     {
       "id": "studio-auto-repair-engine",
@@ -94,38 +132,24 @@
   ],
   "plannedAudits": [
     {
-      "id": "ui-layout-audit",
-      "label": "UI Layout Audit",
-      "status": "planned",
-      "priority": 1,
-      "goal": "Detect overflowing elements, duplicate layout owners, wrapper conflicts, and mobile layout drift."
-    },
-    {
-      "id": "module-ownership-audit",
-      "label": "Module Ownership Audit",
-      "status": "planned",
-      "priority": 2,
-      "goal": "Map each feature to one active owner and flag duplicate ownership before new systems are added."
-    },
-    {
       "id": "report-timeline",
       "label": "Report Timeline",
       "status": "planned",
-      "priority": 3,
+      "priority": 1,
       "goal": "Compare recent diagnostics snapshots to show health, coverage, error, warning, and source-count trends."
     },
     {
       "id": "documentation-audit",
       "label": "Documentation Audit",
       "status": "planned",
-      "priority": 4,
+      "priority": 2,
       "goal": "Check README, PROJECT_STATE, ROADMAP, and Studio reference docs against live manifests."
     },
     {
       "id": "runtime-audit",
       "label": "Runtime Audit",
       "status": "planned",
-      "priority": 5,
+      "priority": 3,
       "goal": "Compare live page script loading against the runtime manifest and diagnostics source registry."
     }
   ],
@@ -134,12 +158,12 @@
     "Do not duplicate report-building logic in every dashboard panel.",
     "Keep latest-report.json as a repo-tracked snapshot target, not a browser-write endpoint.",
     "Keep GitHub write credentials out of static GitHub Pages code.",
-    "Favor small audit modules that explain ownership before modifying gameplay."
+    "Favor small audit modules that explain ownership before modifying gameplay.",
+    "Document new intelligence modules in the registry before wiring them into the Diagnostics page."
   ],
   "nextSteps": [
-    "Register this manifest in diagnostics sources.",
-    "Add UI Layout Audit as the first new intelligence audit.",
-    "Add Module Ownership Audit after layout audit proves useful.",
-    "Document the Studio Intelligence layer in PROJECT_STATE and studio-reference."
+    "Expose module registry metadata inside the Master Report.",
+    "Add Report Timeline as the next intelligence module.",
+    "Add Documentation Audit after timeline support."
   ]
 }
