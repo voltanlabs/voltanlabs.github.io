@@ -1,6 +1,7 @@
 // Phase 4.3 battle centerline fix
 (function(){
   if(!location.pathname.includes('databyte-discovery'))return;
+
   function add(){
     if(document.getElementById('ddBattleCenterline43Style'))return;
     var s=document.createElement('style');
@@ -18,6 +19,17 @@
     ].join('');
     document.head.appendChild(s);
   }
-  function tag(){var app=document.getElementById('ddApp');if(app)app.dataset.centerline='fixed-4-3'}
-  add();tag();setInterval(function(){add();tag()},1000);
+
+  function tag(){
+    var app=document.getElementById('ddApp');
+    if(app)app.dataset.centerline='fixed-4-3';
+  }
+
+  function boot(){
+    add();
+    tag();
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
 })();
