@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedBy": "VoltanLabs Studio Diagnostics Snapshot System",
+  "description": "Repo-tracked target for the latest diagnostics report snapshot. This file is intentionally replaced with the newest generated report payload when a report is reviewed through the GitHub connector.",
+  "status": "placeholder",
+  "updatedAt": null,
+  "report": null,
+  "workflow": {
+    "browser": "Run Studio Diagnostics and use Copy Snapshot for Repo or Save Snapshot File.",
+    "repo": "Replace this file with the generated payload through a trusted GitHub write path.",
+    "safety": "GitHub Pages cannot safely write this file automatically without a backend or GitHub App."
+  }
+}
