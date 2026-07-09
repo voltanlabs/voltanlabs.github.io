@@ -13,6 +13,7 @@ The Intelligence Module Registry is the human-readable catalog for Studio Intell
 - Module Ownership Audit
 - Runtime Audit
 - Runtime Dependency Validation
+- Documentation Synchronizer
 - Studio Intelligence Manager
 - Master Report Bridge
 - Report Timeline
@@ -47,7 +48,8 @@ Master Studio Report
 
 - Runtime Audit is active.
 - Runtime Dependency Validation is active.
-- Documentation Synchronizer is the next Studio Intelligence milestone.
+- Documentation Synchronizer is active.
+- Studio Intelligence Dashboard is the next Studio Intelligence milestone.
 
 ## Synchronization rule
 
