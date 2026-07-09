@@ -18,7 +18,8 @@
       '#ddApp .view-scan .card,#ddApp .view-encounter .card{display:grid!important;grid-template-rows:minmax(0,1fr) auto!important}',
       '#ddApp .view-scan .dd-stage,#ddApp .view-encounter .orb{min-height:0!important;max-height:100%!important}',
       '#ddApp .view-scan .card>form,#ddApp .view-scan .card>.form,#ddApp .view-scan .card>.controls{align-self:end!important}',
-      '#ddApp .battle-card{position:relative!important;display:grid!important;grid-template-rows:minmax(0,1fr) auto auto auto auto!important;gap:6px!important;padding:9px 12px!important}',
+      '#ddApp .battle-card{position:relative!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) auto auto auto auto!important;gap:6px!important;padding:9px 12px!important}',
+      '#ddApp .battle-card>*{grid-column:1/-1!important;min-width:0!important;max-width:100%!important}',
       '#ddApp .battleGrid{width:100%!important;max-width:100%!important;min-height:0!important;height:100%!important;justify-self:stretch!important;align-self:center!important;margin:0 auto!important;display:grid!important;grid-template-columns:minmax(0,1fr) 32px minmax(0,1fr)!important;justify-items:center!important;align-items:center!important;gap:6px!important}',
       '#ddApp .battleGrid .fighter{max-width:100%!important;width:100%!important;min-width:0!important;overflow:visible!important;justify-self:center!important}',
       '#ddApp .battleGrid .fighter:first-child{grid-column:1!important}',
@@ -29,8 +30,8 @@
       '#ddApp .ring{width:min(22vw,118px)!important;height:min(22vw,118px)!important}',
       '#ddApp .battle-card .signalBox,#ddApp .battle-card .downloadGauge{width:100%!important;max-width:none!important;justify-self:stretch!important;padding:7px 9px!important;margin:0!important;border-radius:14px!important}',
       '#ddApp .battle-card .bar{height:9px!important}',
-      '#ddApp .battle-card>.hint{width:100%!important;max-height:none!important;overflow:hidden!important;margin:0!important;padding:6px 8px!important;border:1px solid rgba(96,165,250,.18)!important;border-radius:13px!important;background:rgba(15,23,42,.35)!important;white-space:normal!important;text-overflow:clip!important;font-size:11px!important;line-height:1.25!important;color:#BAE6FD!important}',
-      '#ddApp .battle-card .battleLog{width:100%!important;max-height:86px!important;overflow:auto!important;margin:0!important;padding:8px 10px!important;border-radius:14px!important;white-space:normal!important;text-overflow:clip!important;font-size:11px!important;background:rgba(2,6,23,.72)!important}',
+      '#ddApp .battle-card>.hint{grid-row:4!important;width:100%!important;max-height:none!important;overflow:hidden!important;margin:0!important;padding:6px 8px!important;border:1px solid rgba(96,165,250,.18)!important;border-radius:13px!important;background:rgba(15,23,42,.35)!important;white-space:normal!important;text-overflow:clip!important;font-size:11px!important;line-height:1.25!important;color:#BAE6FD!important}',
+      '#ddApp .battle-card .battleLog{grid-row:5!important;width:100%!important;max-height:86px!important;overflow:auto!important;margin:0!important;padding:8px 10px!important;border-radius:14px!important;white-space:normal!important;text-overflow:clip!important;font-size:11px!important;background:rgba(2,6,23,.72)!important}',
       '#ddApp .battle-card .battleLog b{display:block!important;margin-bottom:3px!important;color:#FFD700!important}',
       '#ddApp .battle-card .battleLog ul{margin:0!important;padding:0!important;display:grid!important;gap:2px!important;list-style:none!important;font-size:11px!important;line-height:1.22!important}',
       '#ddApp .battle-card .battleLog li{white-space:normal!important;overflow-wrap:anywhere!important}',
@@ -47,13 +48,13 @@
 
   function tag(){
     var app=document.getElementById('ddApp');
-    if(app)app.dataset.scannerOsRuntime='canonical-4-3-battle-log-fixed';
+    if(app)app.dataset.scannerOsRuntime='canonical-4-3-battle-log-row-fixed';
   }
 
   function boot(){
     addStyle();
     tag();
-    document.dispatchEvent(new CustomEvent('dd:scanner-os-runtime-ready',{detail:{id:'dd-scanner-os-runtime',phase:'4.3',centerline:'fixed',battleLog:'full-width'}}));
+    document.dispatchEvent(new CustomEvent('dd:scanner-os-runtime-ready',{detail:{id:'dd-scanner-os-runtime',phase:'4.3',centerline:'fixed',battleLog:'forced-full-width-row'}}));
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
