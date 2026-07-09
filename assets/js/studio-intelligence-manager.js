@@ -1,6 +1,6 @@
 // assets/js/studio-intelligence-manager.js
 (function(){
-  const VERSION='1.2.0';
+  const VERSION='1.3.0';
   const modules=new Map();
   const state={version:VERSION,generatedAt:null,modules:{},summary:{registered:0,completed:0,failed:0}};
   function clone(x){try{return JSON.parse(JSON.stringify(x||null))}catch(e){return x||null}}
@@ -17,6 +17,7 @@
     register('uiLayoutAudit',()=>window.VOLTAN_UI_LAYOUT_AUDIT||null);
     register('moduleOwnershipAudit',()=>window.VOLTAN_MODULE_OWNERSHIP_AUDIT||null);
     register('runtimeAudit',()=>window.VOLTAN_RUNTIME_AUDIT||null);
+    register('runtimeDependencyValidation',()=>window.VOLTAN_RUNTIME_DEPENDENCY_VALIDATION||null);
     register('reportTimeline',()=>window.VOLTAN_REPORT_TIMELINE||null);
     register('documentationAudit',()=>window.VOLTAN_DOCUMENTATION_AUDIT||null);
     register('healthHistory',()=>window.VOLTAN_HEALTH_HISTORY||null);
@@ -32,7 +33,7 @@
     const s=collect();
     box.insertAdjacentHTML('afterbegin',`<section id="studioIntelligenceManager" class="lg:col-span-2 rounded-2xl border border-[#007BFF]/40 bg-[#07111f]/80 p-5"><div class="flex flex-wrap items-start justify-between gap-4"><div><p class="text-xs uppercase tracking-wide text-[#FFD700]">Studio Intelligence</p><h2 class="text-2xl font-bold text-[#FFD700] mt-1">Intelligence Manager</h2><p class="text-gray-300 mt-3">Collects registered intelligence module outputs into one shared object for the Master Studio Report.</p></div><div class="rounded-xl border border-white/10 bg-black/25 p-4 min-w-[170px]"><p class="text-gray-400 text-sm">Collected</p><strong class="text-2xl text-emerald-200">${s.summary.completed}/${s.summary.registered}</strong><p class="text-xs text-gray-400 mt-1">${s.summary.failed} failed</p></div></div></section>`);
   }
-  function boot(){defaultModules();let n=0;const t=setInterval(()=>{collect();if(++n>20)clearInterval(t)},500);setTimeout(render,1300);document.addEventListener('studio:diagnostics-ready',()=>setTimeout(()=>{collect();render()},160));document.addEventListener('studio:ui-layout-audit-ready',collect);document.addEventListener('studio:module-ownership-audit-ready',collect);document.addEventListener('studio:runtime-audit-ready',collect);document.addEventListener('studio:documentation-audit-ready',collect)}
+  function boot(){defaultModules();let n=0;const t=setInterval(()=>{collect();if(++n>20)clearInterval(t)},500);setTimeout(render,1300);document.addEventListener('studio:diagnostics-ready',()=>setTimeout(()=>{collect();render()},160));document.addEventListener('studio:ui-layout-audit-ready',collect);document.addEventListener('studio:module-ownership-audit-ready',collect);document.addEventListener('studio:runtime-audit-ready',collect);document.addEventListener('studio:runtime-dependency-validation-ready',collect);document.addEventListener('studio:documentation-audit-ready',collect)}
   window.VoltanStudioIntelligenceManager={version:VERSION,register,collect,state};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
