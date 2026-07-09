@@ -1,6 +1,6 @@
 // assets/js/studio-master-report-bridge.js
 (function(){
-  const VERSION='1.3.1';
+  const VERSION='1.4.0';
   function base(){return window.VOLTAN_VALIDATION_REPORT||null}
   function clone(x){try{return JSON.parse(JSON.stringify(x||null))}catch(e){return x||null}}
   function safe(fn,fallback){try{return fn()}catch(e){return fallback===undefined?null:fallback}}
@@ -15,6 +15,9 @@
       manager:clone(managed),
       summary:managed&&managed.summary?clone(managed.summary):null,
       modules:clone(modules),
+      runtimeAudit:clone(window.VOLTAN_RUNTIME_AUDIT||modules.runtimeAudit&&modules.runtimeAudit.data||null),
+      runtimeDependencyValidation:clone(window.VOLTAN_RUNTIME_DEPENDENCY_VALIDATION||modules.runtimeDependencyValidation&&modules.runtimeDependencyValidation.data||null),
+      documentationSynchronizer:clone(window.VOLTAN_DOCUMENTATION_SYNCHRONIZER||modules.documentationSynchronizer&&modules.documentationSynchronizer.data||null),
       timeline:clone(window.VOLTAN_REPORT_TIMELINE||modules.reportTimeline&&modules.reportTimeline.data||null),
       documentationAudit:clone(window.VOLTAN_DOCUMENTATION_AUDIT||modules.documentationAudit&&modules.documentationAudit.data||null),
       uiLayoutAudit:clone(window.VOLTAN_UI_LAYOUT_AUDIT||modules.uiLayoutAudit&&modules.uiLayoutAudit.data||null),
@@ -22,6 +25,9 @@
       diagnosticsSnapshot:clone(snapshot()),
       exportCheck:{
         hasManager:!!managed,
+        hasRuntimeAudit:!!(window.VOLTAN_RUNTIME_AUDIT||modules.runtimeAudit&&modules.runtimeAudit.data),
+        hasRuntimeDependencyValidation:!!(window.VOLTAN_RUNTIME_DEPENDENCY_VALIDATION||modules.runtimeDependencyValidation&&modules.runtimeDependencyValidation.data),
+        hasDocumentationSynchronizer:!!(window.VOLTAN_DOCUMENTATION_SYNCHRONIZER||modules.documentationSynchronizer&&modules.documentationSynchronizer.data),
         hasTimeline:!!(window.VOLTAN_REPORT_TIMELINE||modules.reportTimeline&&modules.reportTimeline.data),
         hasDocumentationAudit:!!(window.VOLTAN_DOCUMENTATION_AUDIT||modules.documentationAudit&&modules.documentationAudit.data),
         moduleCount:managed&&managed.summary?managed.summary.registered:0,
