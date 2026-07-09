@@ -11,6 +11,7 @@ The Intelligence Module Registry is the human-readable catalog for Studio Intell
 - Diagnostics Snapshot System
 - UI Layout Audit
 - Module Ownership Audit
+- Runtime Audit
 - Studio Intelligence Manager
 - Master Report Bridge
 - Report Timeline
@@ -41,9 +42,10 @@ Master Report Bridge
 Master Studio Report
 ```
 
-## Planned module
+## Current active audit focus
 
-- Runtime Audit
+- Runtime Audit is active.
+- Runtime Dependency Validation is the next Studio Intelligence milestone.
 
 ## Synchronization rule
 
