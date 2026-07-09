@@ -4,7 +4,7 @@
   if(!location.pathname.includes('databyte-discovery'))return;
 
   var STYLE_ID='ddScannerOsRuntimeStyle';
-  var lastToastText='';
+  var lastToastKey='';
   var toastTimer=null;
 
   function addStyle(){
@@ -17,6 +17,7 @@
       '#ddApp .stage{min-height:0!important;height:100%!important;overflow:hidden!important;display:grid!important;grid-template-rows:minmax(0,1fr)!important}',
       '#ddApp .stage>.card,#ddApp .stage>.battle-card{height:100%!important;max-height:100%!important;min-height:0!important;overflow:hidden!important}',
       '#ddApp .card,#ddApp .battle-card{border-radius:22px!important}',
+      '#ddApp.fx-hit .battle-card,#ddApp.fx-hit .card,#ddApp.fx-warn .battle-card,#ddApp.fx-warn .card,#ddApp.fx-fail .battle-card,#ddApp.fx-fail .card{animation:none!important;transform:none!important}',
       '#ddApp .view-scan .card,#ddApp .view-encounter .card{display:grid!important;grid-template-rows:minmax(0,1fr) auto!important}',
       '#ddApp .view-scan .dd-stage,#ddApp .view-encounter .orb{min-height:0!important;max-height:100%!important}',
       '#ddApp .view-scan .card>form,#ddApp .view-scan .card>.form,#ddApp .view-scan .card>.controls{align-self:end!important}',
@@ -34,7 +35,7 @@
       '#ddApp .battleGrid .vs,#ddApp .battleGrid strong{grid-column:2!important;justify-self:center!important}',
       '#ddApp .fighter h2{font-size:clamp(20px,5.2vw,28px)!important;line-height:1.02!important;margin:4px 0 3px!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important}',
       '#ddApp .fighter .meta{font-size:10px!important;min-height:24px!important;line-height:1.14!important;overflow:hidden!important}',
-      '#ddApp .ring{width:min(22vw,118px)!important;height:min(22vw,118px)!important}',
+      '#ddApp .ring{width:min(22vw,118px)!important;height:min(22vw,118px)!important;transform:none!important}',
       '#ddApp .battle-card .signalBox,#ddApp .battle-card .downloadGauge{width:100%!important;max-width:none!important;justify-self:stretch!important;padding:7px 9px!important;margin:0!important;border-radius:14px!important}',
       '#ddApp .battle-card .bar{height:9px!important}',
       '#ddApp .battle-card .battleLog{position:absolute!important;left:12px!important;right:12px!important;top:var(--dd-toast-top,8px)!important;z-index:8!important;width:auto!important;height:30px!important;max-height:30px!important;overflow:hidden!important;margin:0!important;padding:6px 10px!important;border:1px solid rgba(96,165,250,.28)!important;border-radius:14px!important;opacity:0!important;transform:translateY(8px)!important;pointer-events:none!important;white-space:nowrap!important;text-overflow:ellipsis!important;font-size:11px!important;background:rgba(2,6,23,.88)!important;box-shadow:0 12px 28px rgba(0,0,0,.28),0 0 18px rgba(0,123,255,.12)!important;transition:opacity .22s ease,transform .22s ease!important}',
@@ -69,10 +70,12 @@
     battleCard.style.setProperty('--dd-toast-top',top+'px');
   }
 
-  function showToast(log,text){
+  function showToast(log,text,key){
     if(!log||!text||isDefaultBattleLogText(text))return;
-    if(text!==lastToastText){
-      lastToastText=text;
+    if(key!==lastToastKey){
+      lastToastKey=key;
+      log.classList.remove('dd-toast-visible');
+      void log.offsetWidth;
       log.classList.add('dd-toast-visible');
       if(toastTimer)clearTimeout(toastTimer);
       toastTimer=setTimeout(function(){log.classList.remove('dd-toast-visible')},2800);
@@ -104,15 +107,16 @@
         positionToast(battleCard,log);
         var lis=Array.prototype.slice.call(log.querySelectorAll('li'));
         var last=lis.length?lis[lis.length-1].textContent:log.textContent;
+        var key=lis.length+':'+last;
         if(isDefaultBattleLogText(last))log.classList.remove('dd-toast-visible');
-        else showToast(log,last);
+        else showToast(log,last,key);
       }
     }
   }
 
   function tag(){
     var app=document.getElementById('ddApp');
-    if(app)app.dataset.scannerOsRuntime='canonical-4-3-battle-toast';
+    if(app)app.dataset.scannerOsRuntime='canonical-4-3-stable-battle-toast';
   }
 
   function boot(){
@@ -120,7 +124,7 @@
     tag();
     cleanupBattleUi();
     setInterval(cleanupBattleUi,250);
-    document.dispatchEvent(new CustomEvent('dd:scanner-os-runtime-ready',{detail:{id:'dd-scanner-os-runtime',phase:'4.3',battleUi:'toast-log'}}));
+    document.dispatchEvent(new CustomEvent('dd:scanner-os-runtime-ready',{detail:{id:'dd-scanner-os-runtime',phase:'4.3',battleUi:'stable-toast-log'}}));
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
