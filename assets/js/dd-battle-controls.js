@@ -1,7 +1,7 @@
 // assets/js/dd-battle-controls.js
 // Phase 4.3 Ownership Correction: battle controls renderer and controls layout owner.
 (function(){
-  const VERSION='0.2.0';
+  const VERSION='0.2.1';
   const STYLE_ID='ddBattleControlsStyle';
 
   function esc(value){
@@ -19,14 +19,14 @@
     const style=document.createElement('style');
     style.id=STYLE_ID;
     style.textContent=[
-      '#ddApp .battleControls[data-owner="dd-battle-controls"]{padding:9px;display:grid;gap:8px;border:1px solid rgba(125,211,252,.22);background:rgba(7,17,31,.88);border-radius:22px;overflow:hidden}',
-      '#ddApp .battleControls[data-owner="dd-battle-controls"] .battleMoves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}',
-      '#ddApp .battleControls[data-owner="dd-battle-controls"] .battleActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}',
-      '#ddApp .battleControls[data-owner="dd-battle-controls"] button{min-height:39px;border:0;border-radius:16px;padding:9px 10px;color:white;background:#0F172A;font-weight:900;font-size:14px;line-height:1.05}',
-      '#ddApp .battleControls[data-owner="dd-battle-controls"] button.gold{grid-column:1/-1;background:#FFD700!important;color:#111827!important}',
-      '#ddApp .battleControls[data-owner="dd-battle-controls"] .move{background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(15,23,42,.78));border:1px solid rgba(96,165,250,.18)}',
-      '#ddApp .battleControls[data-owner="dd-battle-controls"] .move small{display:block;margin-top:3px;color:#BAE6FD;font-size:10px;font-weight:800;line-height:1.05}',
-      '@media(max-height:760px){#ddApp .battleControls[data-owner="dd-battle-controls"]{padding:7px;gap:6px}#ddApp .battleControls[data-owner="dd-battle-controls"] .battleMoves,#ddApp .battleControls[data-owner="dd-battle-controls"] .battleActions{gap:6px}#ddApp .battleControls[data-owner="dd-battle-controls"] button{min-height:35px;padding:7px 8px;font-size:13px}}'
+      '#ddApp #controls.battleControlsHost{padding:9px!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important;border:1px solid rgba(125,211,252,.22)!important;background:rgba(7,17,31,.88)!important;border-radius:22px!important;overflow:hidden!important}',
+      '#ddApp #controls.battleControlsHost>.battleMoves{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;min-width:0!important;width:100%!important}',
+      '#ddApp #controls.battleControlsHost>.battleActions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;min-width:0!important;width:100%!important}',
+      '#ddApp #controls.battleControlsHost button{min-height:39px!important;border:0!important;border-radius:16px!important;padding:9px 10px!important;color:white!important;background:#0F172A!important;font-weight:900!important;font-size:14px!important;line-height:1.05!important;min-width:0!important;white-space:normal!important;overflow:hidden!important}',
+      '#ddApp #controls.battleControlsHost button.gold{grid-column:1/-1!important;background:#FFD700!important;color:#111827!important}',
+      '#ddApp #controls.battleControlsHost .move{background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(15,23,42,.78))!important;border:1px solid rgba(96,165,250,.18)!important}',
+      '#ddApp #controls.battleControlsHost .move small{display:block!important;margin-top:3px!important;color:#BAE6FD!important;font-size:10px!important;font-weight:800!important;line-height:1.05!important}',
+      '@media(max-height:760px){#ddApp #controls.battleControlsHost{padding:7px!important;gap:6px!important}#ddApp #controls.battleControlsHost>.battleMoves,#ddApp #controls.battleControlsHost>.battleActions{gap:6px!important}#ddApp #controls.battleControlsHost button{min-height:35px!important;padding:7px 8px!important;font-size:13px!important}}'
     ].join('');
     document.head.appendChild(style);
   }
@@ -66,7 +66,7 @@
 
   function renderBattleControls(context){
     installStyle();
-    return `<section class="controls battleControls" data-owner="dd-battle-controls">${renderMoveGrid(context)}${renderActionGrid(context)}</section>`;
+    return `${renderMoveGrid(context)}${renderActionGrid(context)}`;
   }
 
   installStyle();
