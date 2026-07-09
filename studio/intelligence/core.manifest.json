@@ -1,14 +1,15 @@
 {
-  "schemaVersion": "0.1.4",
+  "schemaVersion": "0.1.5",
   "generatedBy": "VoltanLabs Studio Intelligence Core",
   "status": "active-foundation",
   "phase": "Phase 4.3 Studio Intelligence Foundation",
-  "description": "Unified manifest for the Studio Intelligence layer. Diagnostics, Health History, Snapshot exports, UI Layout Audit, Module Ownership Audit, Runtime Audit, Runtime Dependency Validation, Report Timeline, Documentation Audit, Predictive Diagnostics, Auto Repair, dependency mapping, coverage, Intelligence Manager, and Master Report exports share one report model.",
+  "description": "Unified manifest for the Studio Intelligence layer. Diagnostics, Health History, Snapshot exports, UI Layout Audit, Module Ownership Audit, Runtime Audit, Runtime Dependency Validation, Documentation Synchronizer, Report Timeline, Documentation Audit, Predictive Diagnostics, Auto Repair, dependency mapping, coverage, Intelligence Manager, and Master Report exports share one report model.",
   "sourceOfTruth": {
     "diagnosticsReport": "window.VOLTAN_VALIDATION_REPORT",
     "studioIntelligence": "window.VOLTAN_STUDIO_INTELLIGENCE",
     "runtimeAudit": "window.VOLTAN_RUNTIME_AUDIT",
     "runtimeDependencyValidation": "window.VOLTAN_RUNTIME_DEPENDENCY_VALIDATION",
+    "documentationSynchronizer": "window.VOLTAN_DOCUMENTATION_SYNCHRONIZER",
     "moduleRegistryDoc": "/docs/intelligence-module-registry.md",
     "snapshotTarget": "/studio/diagnostics/latest-report.json",
     "sourceRegistry": "/studio/diagnostics/sources.json",
@@ -24,7 +25,7 @@
   },
   "coreModel": {
     "inputs": ["Knowledge Engine registry","Diagnostics source registry","Validation rules","Runtime manifest","DataByteSprites indexes","Documentation sources","Source-file ownership records","Studio Intelligence module registry"],
-    "outputs": ["Validation report","Health score","Coverage score","Repair suggestions","Dependency explorer","Snapshot payload","UI layout audit","Module ownership audit","Runtime audit","Runtime dependency validation","Report timeline","Documentation audit","Predictive next-best actions","Master Studio Report"]
+    "outputs": ["Validation report","Health score","Coverage score","Repair suggestions","Dependency explorer","Snapshot payload","UI layout audit","Module ownership audit","Runtime audit","Runtime dependency validation","Documentation synchronizer","Report timeline","Documentation audit","Predictive next-best actions","Master Studio Report"]
   },
   "activeModules": [
     {"id":"studio-validation-engine","label":"Validation Engine","status":"active","script":"/assets/js/studio-validation-engine.js","role":"Builds the main diagnostics report and repository model."},
@@ -34,6 +35,7 @@
     {"id":"studio-module-ownership-audit","label":"Module Ownership Audit","status":"active","script":"/assets/js/studio-module-ownership-audit.js","role":"Maps canonical runtime owners from the shared diagnostics report."},
     {"id":"studio-runtime-audit","label":"Runtime Audit","status":"active","script":"/assets/js/studio-runtime-audit.js","role":"Compares live page script loading against the Studio Intelligence manifest and diagnostics registry."},
     {"id":"studio-runtime-dependency-validator","label":"Runtime Dependency Validation","status":"active","script":"/assets/js/studio-runtime-dependency-validator.js","role":"Compares expected runtime and intelligence scripts against the scripts loaded on the diagnostics page."},
+    {"id":"studio-documentation-synchronizer","label":"Documentation Synchronizer","status":"active","script":"/assets/js/studio-documentation-synchronizer.js","role":"Checks core documentation registration and manifest/document alignment."},
     {"id":"studio-report-timeline","label":"Report Timeline","status":"active","script":"/assets/js/studio-report-timeline.js","role":"Stores recent diagnostics summaries in local browser history and exposes timeline data to the Master Report."},
     {"id":"studio-documentation-audit","label":"Documentation Audit","status":"active","script":"/assets/js/studio-documentation-audit.js","role":"Checks core documentation registration against the diagnostics source registry."},
     {"id":"studio-intelligence-manager","label":"Studio Intelligence Manager","status":"active","script":"/assets/js/studio-intelligence-manager.js","role":"Collects intelligence module outputs into one shared object."},
@@ -54,8 +56,8 @@
     "Document new intelligence modules in the registry before wiring them into Diagnostics."
   ],
   "nextSteps": [
-    "Expand Runtime Dependency Validation to support page-specific exceptions.",
-    "Use runtime validation before making more Scanner OS or Product App layout changes.",
-    "Begin Documentation Synchronizer as the next Studio Intelligence milestone."
+    "Expand Documentation Synchronizer to produce repo-ready documentation update tasks.",
+    "Use documentation synchronization before and after major Studio Intelligence milestones.",
+    "Begin Studio Intelligence Dashboard as the next milestone."
   ]
 }
