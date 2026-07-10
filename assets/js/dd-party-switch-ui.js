@@ -1,10 +1,12 @@
 // assets/js/dd-party-switch-ui.js
-// Phase 4.1: compatibility UI layer for battle party switching.
+// Phase 4.4: compatibility overlay for party switching.
+// The canonical Battle Controls module owns the Switch button.
 (function(){
   if(!location.pathname.includes('databyte-discovery'))return;
   const partyRt=()=>window.DD_PARTY_RUNTIME;
   const switchRt=()=>window.DD_PARTY_SWITCH_RUNTIME;
   const present=()=>window.DD_BATTLE_PRESENTATION_RUNTIME;
+  const controlsOwner=()=>window.DD_BATTLE_CONTROLS;
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   let open=false;
@@ -15,6 +17,7 @@
   function hpPct(member){const max=Number(member&&member.maxHp||member&&member.hp||1);return Math.max(0,Math.min(100,Math.round(Number(member&&member.hp||0)/max*100)))}
   function inBattle(){return !!($('ddApp')&&$('stage')&&$('controls')&&document.body.textContent.includes('Download Window'))}
   function controlsLocked(){return switchRt()&&switchRt().isSwitchRequired&&switchRt().isSwitchRequired()}
+  function canonicalControlsActive(){const controls=$('controls');return !!(controlsOwner()&&controls&&controls.classList.contains('battleControlsHost')&&controls.querySelector('[data-action="switch"]'))}
 
   function installStyle(){
     if($('ddPartySwitchStyle'))return;
@@ -25,7 +28,12 @@
 
   function ensureButton(){
     const controls=$('controls');
-    if(!controls||!inBattle()||$('switchParty'))return;
+    const legacy=$('switchParty');
+    if(canonicalControlsActive()){
+      if(legacy)legacy.remove();
+      return;
+    }
+    if(!controls||!inBattle()||legacy)return;
     const btn=document.createElement('button');btn.id='switchParty';btn.textContent='Switch';btn.onclick=()=>show(false);
     const back=$('back');
     controls.insertBefore(btn,back||null);
@@ -42,9 +50,9 @@
   }
   function hide(){open=false;const p=$('ddPartySwitchPanel');if(p)p.remove()}
   function choose(index){
-    const list=members();const rt=switchRt();
-    if(!rt||!rt.canSwitch||!rt.canSwitch(list,index))return;
-    rt.setActive(index);
+    const list=members();const runtime=switchRt();
+    if(!runtime||!runtime.canSwitch||!runtime.canSwitch(list,index))return;
+    runtime.setActive(index);
     const m=list[index];
     if(present()&&present().emit)present().emit('party-switch',{index,name:m&&m.name});
     if(present()&&present().boost)present().boost({text:'Go, '+(m&&m.name||'Sprite')+'!'});
@@ -54,6 +62,10 @@
     installStyle();ensureButton();
     if(controlsLocked()&&!open)show(true);
   }
+  document.addEventListener('click',event=>{
+    const button=event.target&&event.target.closest&&event.target.closest('[data-action="switch"]');
+    if(button&&inBattle()){event.preventDefault();event.stopImmediatePropagation();show(false)}
+  },true);
   document.addEventListener('dd:party-switch-required',()=>show(true));
   document.addEventListener('dd:party-switch',hide);
   setInterval(tick,700);
