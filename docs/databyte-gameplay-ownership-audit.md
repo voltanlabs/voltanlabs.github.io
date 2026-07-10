@@ -1,244 +1,286 @@
-# Data Discovery Gameplay Ownership Audit
+# Data Discovery Gameplay Ownership and Gap Audit
 
 Status: active canon  
-Phase: 4.3 Ownership Correction
+Phase: 4.4.3 Modular Vertical Slice  
+Last reviewed: 2026-07-10
 
 ## Purpose
 
-This document maps every major gameplay and UI responsibility in DataByteSprites: Data Discovery to a single active owner.
+This document records what the live Data Discovery build currently owns, what is only partially implemented, and what has not been added yet.
 
-The goal is to prevent duplicate gameplay logic, layout rules, animation effects, state transitions, and compatibility patches from stacking across legacy prototypes, Scanner OS rewrite files, compatibility layers, and the current Product App runtime.
+The rule remains:
 
-## Current Canonical Rule
+> One active owner per responsibility. Screen presentation belongs in screen modules, gameplay behavior belongs in runtimes, and the v4 App Shell coordinates routing, context, and actions.
 
-New logic belongs in a dedicated runtime or screen owner whenever possible. Product App v3.5 remains the temporary coordinator and bootstrapping shell, but it should no longer be treated as the long-term owner for every screen, panel, control group, visual effect, or state rule.
-
-```text
-Studio data
-  ↓
-dd-studio-data-bridge.js
-  ↓
-dd-gameplay-rules-2-4.js
-  ↓
-dd-encounter-runtime.js + dd-capture-runtime.js + dd-battle-resolver.js + dd-battle-state-runtime.js
-  ↓
-Screen modules / Product App transition shell
-  ↓
-Presentation runtime for non-layout effects only
-```
-
-## Ownership Vocabulary
-
-| Term | Meaning |
-| --- | --- |
-| Owner | The only module allowed to define or mutate that responsibility. |
-| Runtime | Owns rules, state, math, data mutation, or persistent system behavior. |
-| Screen Renderer | Owns HTML/layout for one screen or panel. |
-| Controls Renderer | Owns buttons and input wiring for one screen or mode. |
-| Presentation | Owns visual feedback only. It must not change layout, state, or rules. |
-| Compatibility | Temporary bridge. It must be visual-only or adapter-only. |
-| Legacy Reference | Retained for comparison only. It must not be loaded by the live app. |
-| Split Required | Active today, but too broad and scheduled for extraction. |
-
-## Phase 4.3 Canon
-
-### HP
-
-HP is creature health.
-
-- Player sprite HP determines whether the lead sprite can keep fighting.
-- Wild sprite HP determines whether the wild sprite has been defeated or weakened.
-- Both player and wild HP are displayed as circular HP rings around their sprite icons.
-- Horizontal HP bars are deprecated and should not be used in the main mobile battle layout.
-
-### Signal
-
-Signal is encounter stability, not creature health.
-
-- Signal belongs to the encounter, not to either creature.
-- Signal should not be used as the wild sprite's HP.
-- Failed download attempts reduce Signal.
-- Player sprite fainting reduces Signal.
-- Leaving or returning from an active encounter reduces Signal.
-- Signal reaching 0 means the wild encounter disappears from scanner range.
-- Defeating the wild sprite stabilizes or increases Signal because the encounter becomes easier to contain.
-
-### Download Pressure
-
-Download Pressure is the short-term download advantage created by battle actions.
-
-- Attacks raise download pressure / download window.
-- Defeating the wild sprite improves download odds and stabilizes Signal.
-- Download odds must respect caps from the Capture Runtime and Gameplay Rules.
-- Signal Boost is removed from the current battle UI and should not return until items are designed as a real system.
-
-### UI Canon
-
-The target mobile battle UI is:
+## Active Live Architecture
 
 ```text
-Lead HP ring        Wild HP ring
-      VS
-Transient battle toast, only when an event happens
-Signal meter
-Download window
-Move / Download / Items / Switch / Return controls
+databyte-discovery.html
+  ↓
+Core data and gameplay runtimes
+  ↓
+Dedicated screen/control owners
+  ↓
+DD_PRODUCT_APP_V4_SHELL v4.4.3
+  ↓
+Compatibility adapters and visual-only helpers
 ```
 
-Rules:
+### Active App Owner
 
-- HP rings replace horizontal HP bars.
-- Wild sprite ring must represent HP, not Signal.
-- Signal must be displayed separately as encounter stability.
-- Fighter text should be short and spaced enough to avoid overlapping on mobile.
-- Battle screen layout should eventually be owned by `dd-battle-screen.js`.
-- Battle controls should eventually be owned by `dd-battle-controls.js`.
-- Presentation modules may highlight or float messages, but must not shake, resize, or move `.battle-card`, `.stage`, `.battleGrid`, `.card`, or `#ddApp`.
+| Responsibility | Owner | Status |
+|---|---|---|
+| App lifecycle | `databyte-discovery-product-app-v4-shell.js` | Active |
+| Route state | `databyte-discovery-product-app-v4-shell.js` | Active |
+| Screen registry | `databyte-discovery-product-app-v4-shell.js` | Active |
+| Context building | `databyte-discovery-product-app-v4-shell.js` | Active |
+| Action dispatch | `databyte-discovery-product-app-v4-shell.js` | Active |
+| Header and bottom navigation | `databyte-discovery-product-app-v4-shell.js` | Active |
 
-## Gameplay Responsibility Map
+The shell must not become the long-term presentation owner for extracted screens.
 
-| Gameplay Area | Active Owner | Support Owner | Legacy / Duplicate Sources | Status |
-| --- | --- | --- | --- | --- |
-| Page boot | `databyte-discovery.html` | runtime ready events | old direct app boot paths | Active owner |
-| Screen routing | `databyte-discovery-product-app-v3-5.js` | future `dd-app-shell.js` | `databyte-standalone-app.js`, old overlay scripts | Split required |
-| Scanner input | `databyte-discovery-product-app-v3-5.js` | `dd-encounter-runtime.js` | `databyte-discovery.js`, `databyte-standalone-app.js` | Split required into `dd-scanner-screen.js` |
-| Scanner shell layout | `dd-scanner-os-runtime.js` | `dd-layout-viewport-lock-4-2.js` | Product App CSS patches | Active but narrow owner |
-| Scanner background visuals | `dd-scan-bg.js` | none | old scanner background scripts | Compatibility, visual-only |
-| Encounter generation | `dd-encounter-runtime.js` | `game-data.v1.json` encounter pools | `databyte-capture-pool.js`, `databyte-discovery.js`, `databyte-standalone-app.js` | Active owner |
-| Rarity pools | `studio/databytesprites/game-data.v1.json` | `dd-encounter-runtime.js` | legacy capture pool | Active owner |
-| Public roster | `dd-canon-roster.js` | `dd-studio-data-bridge.js` | hardcoded Dex lists, old species arrays | Active owner |
-| Studio species overlay | `dd-studio-data-bridge.js` | `species.json` | none active | Active owner |
-| Move assignment | `dd-studio-data-bridge.js` | `moves.json` | `databyte-move-bridge.js`, old battle files | Active owner |
-| Type effectiveness | `dd-battle-engine-2-4.js` | `type-chart.json`, `dd-studio-data-bridge.js` | `databyte-type-bridge.js` | Active owner |
-| Battle screen layout | `databyte-discovery-product-app-v3-5.js` | future `dd-battle-screen.js` | `dd-scanner-os-runtime.js` patches, `dd-battle-os-v2.js`, `databyte-battle.js` | Split required |
-| Battle controls | `databyte-discovery-product-app-v3-5.js` | future `dd-battle-controls.js` | old Boost/Repair controls, battle patches | Split required |
-| Battle toast/log | `dd-scanner-os-runtime.js` transition patch | future `dd-battle-screen.js` + presentation runtime | Product App battle log, presentation float text | Split required |
-| Turn order | `dd-battle-resolver.js` | none | `dd-battle-os-v2.js` | Active owner |
-| Enemy AI | `dd-battle-resolver.js` | `dd-battle-engine-2-4.js` utilities | `databyte-battle.js`, `dd-battle-os-v2.js` | Active owner |
-| Damage math | `dd-battle-resolver.js` | `dd-gameplay-rules-2-4.js` | `databyte-battle.js`, `dd-battle-os-v2.js`, legacy balance bridge | Active owner |
-| Battle terminal state | `dd-battle-state-runtime.js` | Product App applies returned state | Product App local battle flags | Active owner, Product App split pressure |
-| Capture odds | `dd-capture-runtime.js` | `dd-gameplay-rules-2-4.js` | old chance helpers | Active owner |
-| Download result | `dd-capture-runtime.js` owns attempt math; Product App owns result screen transition | future `dd-result-screen.js` | `dd-battle-phase3c-guard.js`, `dd-battle-os-v2.js` | Split required |
-| Signal stability | `dd-encounter-runtime.js` baseline + Product App live encounter state | `dd-gameplay-rules-2-4.js` | old signal-as-HP battle logic | Canon corrected; future state extraction needed |
-| HP rings | `databyte-discovery-product-app-v3-5.js` transition renderer | future `dd-battle-screen.js` | Product App CSS, Scanner OS overrides | Split required |
-| Battle effects | `dd-battle-presentation-runtime.js` | `dd-battle-experience-4-2.js` if visual-only | Product App `.fx-*` CSS, Scanner OS overrides | Conflict found; consolidate |
-| Battle experience polish | `dd-battle-experience-4-2.js` | presentation events | Product App effect CSS | Compatibility / merge candidate |
-| Health and Signal telemetry | `dd-health-signal-bridge.js` | Product App DOM | none | Compatibility, visual-only |
-| Party storage | `dd-party-runtime.js` | Product App fallback localStorage | `databyte-party.js`, Product App fallback | Active runtime, fallback should shrink |
-| Party switching | `dd-party-switch-runtime.js` | `dd-party-switch-ui.js`, `dd-party-switch-battle-bridge.js` | active sprite HUD chip from refresh layer | Active but tighten UI ownership |
-| Inventory storage | `dd-inventory-runtime.js` | Product App fallback localStorage | `databyte-inventory.js`, Product App fallback | Active runtime, fallback should shrink |
-| Dex seen/captured | `dd-dex-runtime.js` + `databytedex-shared-renderer.js` | `DD_CANON_ROSTER`, shared storage keys | `dd-dex-progress.js`, hardcoded Dex page | Active shared path |
-| Admin profile | `databyte-discovery-product-app-v3-5.js` | future `dd-admin-screen.js` | `databyte-admin-console.js` | Split required |
-| XP / rank | none active | future progression module | `databyte-discovery-progression.js` | Planned, not active |
-| Journal | none active | future journal module | `databyte-discovery-journal.js` | Planned, not active |
-| Missions | none active | future missions module | `databyte-missions.js` | Planned, not active |
+## Dedicated Presentation Owners
 
-## Current Duplicate Logic Risks
+| Screen / Controls | Owner | Status |
+|---|---|---|
+| Scanner | `dd-scanner-screen.js` | Active owner |
+| Encounter | `dd-encounter-screen.js` | Active owner |
+| Battle | `dd-battle-screen.js` | Active owner |
+| Battle controls | `dd-battle-controls.js` | Active owner |
+| Download confirmation | `dd-confirm-screen.js` | Active owner |
+| Download result | `dd-result-screen.js` | Active owner |
 
-### 1. Product App owns too much
+The shell may keep minimal missing-module diagnostics for these screens, but those fallbacks must not receive layout or gameplay work.
 
-Risk:
+## Active Runtime Owners
 
-- Product App v3.5 currently handles shell boot, screen routing, live state application, battle layout, battle controls, battle log, CSS, party panel, inventory panel, Dex panel, Admin panel, result screen, and some effect classes.
+| Gameplay Area | Owner | Status |
+|---|---|---|
+| Canon roster | `dd-canon-roster.js` | Active |
+| Studio game-data overlay | `dd-studio-data-bridge.js` | Active |
+| Gameplay rules | `dd-gameplay-rules-2-4.js` | Active foundation |
+| Encounter generation | `dd-encounter-runtime.js` | Active |
+| Download odds and attempts | `dd-capture-runtime.js` | Active |
+| Battle helper bus | `dd-battle-engine-2-4.js` | Active foundation |
+| Battle balance | `dd-battle-balance-2-4.js` | Active |
+| Damage, accuracy, turn order, enemy move choice | `dd-battle-resolver.js` | Active |
+| Battle terminal state | `dd-battle-state-runtime.js` | Active |
+| Non-layout battle effects | `dd-battle-presentation-runtime.js` | Active |
+| Collection storage | `dd-collection-runtime.js` | Active |
+| Party storage | `dd-party-runtime.js` | Active |
+| Active-party switching state | `dd-party-switch-runtime.js` | Active |
+| Inventory storage | `dd-inventory-runtime.js` | Active foundation |
+| Dex seen/downloaded state | `dd-dex-runtime.js` | Active |
 
-Decision:
+## Current Playable Loop
 
-Product App v3.5 is now classified as `active-shell / split-required`. It can remain the live coordinator while screen modules are extracted one at a time.
+```text
+Scanner
+  ↓
+Encounter
+  ↓
+Battle
+  ├── Moves
+  ├── Items panel
+  ├── Party switch overlay
+  └── Download attempt
+        ↓
+Download confirmation
+        ↓
+Result
+  ├── Success → collection / party → scanner
+  ├── Recoverable failure → continue battle
+  └── Signal loss → scanner
+```
 
-### 2. Battle layout ownership overlap
+### Verified Working
 
-Risk:
+- Discovery-code and random-code encounter generation.
+- Dedicated Scanner, Encounter, Battle, Confirm, and Result presentations.
+- Battle damage, accuracy, turn order, and enemy move selection.
+- Separate creature HP and encounter Signal.
+- Download odds, caps, ByteCoin use, success, failure, and Signal loss.
+- Collection persistence.
+- Party auto-fill.
+- Battle party-switch overlay.
+- Returning from battle Items to the active battle.
+- Returning to Scanner after terminal results.
+- Seen/downloaded Dex state tracking.
 
-- Product App renders battle layout.
-- Scanner OS runtime patches battle layout.
-- Presentation and experience modules have touched hit effects.
+## Partial Systems
 
-Decision:
+### Party
 
-The target owner is `dd-battle-screen.js`. Until that exists, Product App remains the renderer and Scanner OS runtime is allowed only temporary stabilization patches.
+Implemented:
+- Party storage.
+- Auto-fill from collection.
+- Active party index.
+- Battle switching.
+- Fainted-member blocking.
 
-### 3. Battle animation ownership overlap
+Still partial:
+- No dedicated `dd-party-screen.js` presentation owner.
+- No polished party reorder interface.
+- No clear lead selection outside battle.
+- No full sprite detail, status, equipment, or move-management view.
+- Party-switch UI is still a compatibility overlay rather than a final screen/overlay owner.
 
-Risk:
+### Inventory and Items
 
-- Product App `.fx-hit` rules have shaken `.battle-card`.
-- `dd-battle-presentation-runtime.js` previously shook `.battle-card`.
-- `dd-battle-experience-4-2.js` adds ring and float effects.
+Implemented:
+- Inventory persistence.
+- ByteCoin count and spending.
+- Items panel route can return to battle.
 
-Decision:
+Still partial:
+- No dedicated `dd-items-screen.js` presentation owner.
+- No usable battle-item catalog.
+- No healing, buff, debuff, status-curing, or Signal-manipulation items.
+- No item targeting or turn-consumption rules.
+- No shop, crafting, loot, or item reward source.
 
-Only `dd-battle-presentation-runtime.js` should own battle effects. Effects must target sprites, rings, popups, or overlays only. They must not animate layout containers.
+### Dex
 
-### 4. Capture odds
+Implemented:
+- Seen/downloaded tracking.
+- Shared roster data.
+- External DataByteDex shared rendering foundation.
 
-Risk:
+Still partial:
+- No dedicated in-game `dd-dex-screen.js` owner.
+- No detailed species entry from the in-game panel.
+- No filtering, rarity/type sorting, habitat, move, evolution, or capture-history views.
 
-- Older roster records still expose prototype `chance` values.
-- Product App updates live `currentChance` during battle.
-- Capture Runtime and Gameplay Rules own caps and baselines.
+### Admin / Player Profile
 
-Decision:
+Implemented:
+- Basic stored profile.
+- Basic Admin fallback panel.
 
-`dd-capture-runtime.js` owns capture odds, capture caps, attempts, failed-download bonuses, and future item-based download effects. Product App may display and request changes through this runtime.
+Still partial:
+- No dedicated `dd-admin-screen.js` owner.
+- No settings, save management, statistics, debug toggle, credits, or account/profile progression UI.
+- The development label `v4 App Shell` is still visible in the production header.
 
-### 5. Signal stability
+### Battle Completion
 
-Risk:
+Implemented:
+- Wild defeat state.
+- Recoverable download failure.
+- Signal collapse.
+- Active-sprite faint detection support.
+- Party-switch-required compatibility events.
 
-- Legacy builds treated Signal like enemy HP.
-- Some UI builds displayed Signal around the wild sprite ring.
+Still partial:
+- No final all-party-defeated screen and recovery flow.
+- No formal victory reward pipeline.
+- No encounter reward table.
+- No dedicated battle-summary result separate from download result.
+- Enemy AI selects moves but does not yet use strategy, type planning, items, switching, or difficulty profiles.
 
-Decision:
+## Not Added Yet
 
-Signal is encounter stability. It is displayed separately from HP. Wild sprite rings must display HP only.
+### Progression
 
-### 6. Damage and battle math
+- XP runtime.
+- Level calculation.
+- Stat growth.
+- Level-up presentation.
+- Player rank progression.
+- Move-learning progression.
+- Evolution or upgrade paths.
 
-Risk:
+### Expanded Battle Systems
 
-- Product App can accidentally reintroduce local damage formulas.
+- Status conditions.
+- Buffs and debuffs.
+- Ability/passive runtime.
+- Critical-hit rules.
+- Element/type feedback in the battle UI.
+- Multi-turn moves.
+- Move cooldowns, energy, PP, or another move-resource system.
+- Held items or equipment.
+- Trainer, boss, raid, or multi-enemy battles.
 
-Decision:
+### World and Content Progression
 
-`dd-battle-resolver.js` owns turn order, hit checks, damage math, enemy move choice, and download-pressure output. Product App applies the resolver output to live state and renders it.
+- Biomes or scanner regions.
+- Location-based encounter pools in the player UI.
+- Story chapters.
+- NPCs.
+- Missions and quests.
+- Journal.
+- Daily/weekly encounters.
+- Boss progression.
+- Shops and currency economy beyond ByteCoins.
+- Rewards and loot tables.
 
-### 7. Party, inventory, and Dex panels
+### Presentation and Audio
 
-Risk:
+- Final sprite artwork pipeline.
+- Dedicated attack animations.
+- Outcome-specific download animations.
+- Sound effects.
+- Music.
+- Haptics.
+- Accessibility settings.
+- Reduced-motion mode.
+- Final production header and branding pass.
 
-- Product App still renders these panels directly.
-- Dedicated runtimes now exist for storage/data behavior.
+### Save and Distribution
 
-Decision:
+- Versioned save migration.
+- Export/import save file.
+- Save reset confirmation.
+- Offline/PWA install validation.
+- Standalone production packaging profile.
+- Studio-free export verification.
+- Automated release checklist.
 
-Storage/data behavior belongs to `dd-party-runtime.js`, `dd-inventory-runtime.js`, and `dd-dex-runtime.js`. Panel layout should eventually move to screen modules.
+## Compatibility Layers Still Loaded
 
-## Immediate Architecture Targets
+| File | Current role | Desired destination |
+|---|---|---|
+| `dd-party-switch-ui.js` | Battle switch overlay | Promote to final overlay owner or merge into Party presentation |
+| `dd-party-switch-battle-bridge.js` | Faint/wipe event adapter | Merge stable behavior into canonical battle/party state owners |
+| `dd-party-switch-refresh.js` | Battle HUD refresh helper | Remove after canonical render events cover refresh |
+| `dd-battle-experience-4-2.js` | Visual polish | Merge useful effects into presentation runtime |
+| `dd-layout-viewport-lock-4-2.js` | Mobile viewport guard | Keep only if shell layout cannot fully replace it |
+| `dd-scanner-behavior-4-3.js` | Behavior guard | Retire after v4 shell behavior is fully canonical |
+| `dd-scanner-os-runtime.js` | Outer layout stabilizer | Narrow to viewport-only or retire after shell layout audit |
+| `dd-health-signal-bridge.js` | Visual telemetry helper | Remove after canonical screens expose stable hooks |
+| `dd-scan-bg.js` | Scanner background/bootstrap | Keep visual-only; remove any ownership behavior |
 
-1. Keep `databyte-discovery.html` booting the current runtime chain until each extracted screen is tested.
-2. Create `dd-battle-screen.js` as the first screen extraction target.
-3. Create `dd-battle-controls.js` after battle screen rendering is stable.
-4. Remove battle layout patches from `dd-scanner-os-runtime.js` after `dd-battle-screen.js` owns layout.
-5. Remove Product App `.fx-*` layout animations after presentation ownership is clean.
-6. Keep horizontal HP bars out of the main battle screen.
-7. Keep both lead and wild sprite rings mapped to HP.
-8. Keep Signal separate from HP in a dedicated meter.
-9. Update source indexes and runtime manifests when owner roles change.
-10. Teach Studio diagnostics to flag compatibility layers that mutate state or layout.
+## Documentation and Manifest Gaps Found
 
-## Future Clean Module Targets
+The code is currently ahead of several repository records.
 
-- `dd-app-shell.js`
-- `dd-scanner-screen.js`
-- `dd-battle-screen.js`
-- `dd-battle-controls.js`
-- `dd-party-screen.js`
-- `dd-inventory-screen.js`
-- `dd-dex-screen.js`
-- `dd-admin-screen.js`
-- `dd-result-screen.js`
-- `dd-progress-runtime.js`
-- `dd-status-runtime.js`
-- `dd-reward-runtime.js`
+- `PROJECT_STATE.md` still describes Product App v3.5 and the Phase 4.3 Scanner OS architecture.
+- `studio/runtime/load-order.json` still omits Scanner, Encounter, Confirm, and Result screen owners.
+- The runtime manifest still references older shell, Battle Screen, Battle Controls, Party Switch UI, and Battle Experience cache versions.
+- The runtime manifest description says only Battle Screen and Battle Controls load before the shell.
+- Some source indexes and diagnostics registries may not yet include the newly extracted screen files.
 
-Each module should have one clear purpose and should be loaded through the runtime manifest.
+These records should be synchronized before Studio diagnostics are treated as an accurate live ownership report.
+
+## Recommended Next Four Commits
+
+1. **Manifest and documentation sync**  
+   Register all active screen owners and current asset versions in the runtime, diagnostics, and source indexes; update `PROJECT_STATE.md`.
+
+2. **Battle terminal and reward flow**  
+   Add party-wipe handling, battle completion rewards, and a stable reward/result contract.
+
+3. **Party and Items presentation extraction**  
+   Create dedicated Party and Items screen owners while preserving battle return routing.
+
+4. **Progression foundation**  
+   Add one canonical progression runtime for XP, levels, stat growth, and move unlock hooks.
+
+## Ownership Rules
+
+- Do not add presentation patches to the v4 shell for an extracted screen.
+- Do not let visual-effect modules animate or resize app, stage, card, grid, or control containers.
+- Do not duplicate damage, capture, party, inventory, or Dex state inside screen modules.
+- Update this audit and the machine-readable manifests whenever ownership changes.
+- Studio tools support development, but the distributable game must run without Studio UI or Studio diagnostics.
