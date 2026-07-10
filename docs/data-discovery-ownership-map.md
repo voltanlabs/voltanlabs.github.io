@@ -14,6 +14,7 @@ This document is the canonical ownership registry for the Data Discovery applica
 | Encounter screen | DD_ENCOUNTER_SCREEN | Active |
 | Battle screen | DD_BATTLE_SCREEN | Active |
 | Battle controls | DD_BATTLE_CONTROLS | Active |
+| Download confirmation screen | DD_CONFIRM_SCREEN | Active |
 | Battle resolver | DD_BATTLE_RESOLVER | Active |
 | Battle state | DD_BATTLE_STATE_RUNTIME | Active |
 | Encounter generation | DD_ENCOUNTER_RUNTIME | Active |
@@ -27,12 +28,11 @@ This document is the canonical ownership registry for the Data Discovery applica
 - Party Screen (v4 shell fallback)
 - Items Screen (v4 shell fallback)
 - Result Screen (v4 shell fallback)
-- Confirm Screen (v4 shell fallback)
 - Admin Screen (v4 shell fallback)
 
 ## Diagnostic-Only Fallbacks
 
-The v4 shell may retain a minimal fallback renderer for Scanner, Encounter, and Battle only to report a missing module during boot or load failure. These fallbacks are not active presentation owners and must not receive new gameplay or layout work.
+The v4 shell may retain a minimal fallback renderer for Scanner, Encounter, Battle, and Download Confirmation only to report a missing module during boot or load failure. These fallbacks are not active presentation owners and must not receive new gameplay or layout work.
 
 ## Legacy Compatibility
 
