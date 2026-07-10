@@ -1,7 +1,7 @@
 // assets/js/dd-battle-screen.js
 // Phase 4.4: battle screen renderer and canonical layout owner.
 (function(){
-  const VERSION='0.2.1';
+  const VERSION='0.2.2';
   const STYLE_ID='ddBattleScreenStyle';
 
   function esc(value){
@@ -23,6 +23,11 @@
     s.maxStability=Number(s.maxStability||s.stability||8);
     s.stability=Number(s.stability ?? s.maxStability);
     return s;
+  }
+
+  function normalizeContext(context){
+    if(context&&context.battleContext)return context.battleContext;
+    return context||{};
   }
 
   function installStyle(){
@@ -74,35 +79,38 @@
   }
 
   function renderSignalMeter(context){
-    const signalValue=context&&context.signal!=null?context.signal:(context&&context.wild?context.wild.stability:0);
-    const maxSignalValue=context&&context.maxSignal!=null?context.maxSignal:(context&&context.wild?context.wild.maxStability:1);
+    const ctx=normalizeContext(context);
+    const signalValue=ctx.signal!=null?ctx.signal:(ctx.wild?ctx.wild.stability:0);
+    const maxSignalValue=ctx.maxSignal!=null?ctx.maxSignal:(ctx.wild?ctx.wild.maxStability:1);
     const signal=Number(signalValue||0);
     const maxSignal=Number(maxSignalValue||1);
     return `<div class="signalBox"><div><b>Signal</b><span>${esc(signal)}/${esc(maxSignal)}</span></div><em><i style="width:${pct(signal,maxSignal)}%"></i></em></div>`;
   }
 
   function renderDownloadGauge(context){
-    const wild=context&&context.wild||{};
-    const oddsValue=context&&context.odds!=null?context.odds:(wild.currentChance!=null?wild.currentChance:30);
+    const ctx=normalizeContext(context);
+    const wild=ctx.wild||{};
+    const oddsValue=ctx.odds!=null?ctx.odds:(wild.currentChance!=null?wild.currentChance:30);
     const odds=Number(oddsValue||0);
     const cap=Number(wild.captureCap||100);
     return `<div class="downloadGauge"><div><b>Download Window</b><span>${esc(odds)}% / Cap ${esc(wild.captureCap||'?')}</span></div><em><i style="width:${pct(odds,cap)}%"></i></em></div>`;
   }
 
   function renderBattleToast(context){
-    const msg=String(context&&context.latestMessage||'').trim();
+    const ctx=normalizeContext(context);
+    const msg=String(ctx.latestMessage||'').trim();
     return `<div class="battleLog" data-battle-toast="battle-screen"><b>Battle Log</b><ul>${msg?`<li>▸ ${esc(msg)}</li>`:'<li>▸ Awaiting command.</li>'}</ul></div>`;
   }
 
   function renderBattleScreen(context){
     installStyle();
-    const ctx=context||{};
+    const ctx=normalizeContext(context);
     const lead=normalizeSprite(ctx.lead||{});
     const wild=normalizeSprite(ctx.wild||{});
     return `<section class="card battle-card" data-owner="dd-battle-screen"><div class="battleGrid">${renderFighter(lead,'lead')}<strong class="vs">VS</strong>${renderFighter(wild,'wild')}</div>${renderBattleToast(ctx)}${renderSignalMeter(ctx)}${renderDownloadGauge(ctx)}</section>`;
   }
 
   installStyle();
-  window.DD_BATTLE_SCREEN={version:VERSION,owner:'dd-battle-screen',phase:'4.4-v4-shell',mode:'screen-renderer',ready:true,installStyle,renderBattleScreen,renderFighter,renderHpRing,renderSignalMeter,renderDownloadGauge,renderBattleToast};
+  window.DD_BATTLE_SCREEN={version:VERSION,owner:'dd-battle-screen',phase:'4.4-v4-shell',mode:'screen-renderer',ready:true,installStyle,normalizeContext,renderBattleScreen,renderFighter,renderHpRing,renderSignalMeter,renderDownloadGauge,renderBattleToast};
   document.dispatchEvent(new CustomEvent('dd:battle-screen-ready',{detail:window.DD_BATTLE_SCREEN}));
 })();
