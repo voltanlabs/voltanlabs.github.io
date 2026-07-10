@@ -1,7 +1,7 @@
 // assets/js/dd-battle-screen.js
-// Phase 4.3 Ownership Correction: battle screen renderer and layout owner.
+// Phase 4.4: battle screen renderer and canonical layout owner.
 (function(){
-  const VERSION='0.2.0';
+  const VERSION='0.2.1';
   const STYLE_ID='ddBattleScreenStyle';
 
   function esc(value){
@@ -74,14 +74,17 @@
   }
 
   function renderSignalMeter(context){
-    const signal=Number(context&&context.signal ?? context&&context.wild&&context.wild.stability ?? 0);
-    const maxSignal=Number(context&&context.maxSignal ?? context&&context.wild&&context.wild.maxStability ?? 1);
+    const signalValue=context&&context.signal!=null?context.signal:(context&&context.wild?context.wild.stability:0);
+    const maxSignalValue=context&&context.maxSignal!=null?context.maxSignal:(context&&context.wild?context.wild.maxStability:1);
+    const signal=Number(signalValue||0);
+    const maxSignal=Number(maxSignalValue||1);
     return `<div class="signalBox"><div><b>Signal</b><span>${esc(signal)}/${esc(maxSignal)}</span></div><em><i style="width:${pct(signal,maxSignal)}%"></i></em></div>`;
   }
 
   function renderDownloadGauge(context){
     const wild=context&&context.wild||{};
-    const odds=Number(context&&context.odds ?? wild.currentChance ?? 30);
+    const oddsValue=context&&context.odds!=null?context.odds:(wild.currentChance!=null?wild.currentChance:30);
+    const odds=Number(oddsValue||0);
     const cap=Number(wild.captureCap||100);
     return `<div class="downloadGauge"><div><b>Download Window</b><span>${esc(odds)}% / Cap ${esc(wild.captureCap||'?')}</span></div><em><i style="width:${pct(odds,cap)}%"></i></em></div>`;
   }
@@ -100,6 +103,6 @@
   }
 
   installStyle();
-  window.DD_BATTLE_SCREEN={version:VERSION,owner:'dd-battle-screen',phase:'4.3-ownership-correction',mode:'screen-renderer',installStyle,renderBattleScreen,renderFighter,renderHpRing,renderSignalMeter,renderDownloadGauge,renderBattleToast};
+  window.DD_BATTLE_SCREEN={version:VERSION,owner:'dd-battle-screen',phase:'4.4-v4-shell',mode:'screen-renderer',ready:true,installStyle,renderBattleScreen,renderFighter,renderHpRing,renderSignalMeter,renderDownloadGauge,renderBattleToast};
   document.dispatchEvent(new CustomEvent('dd:battle-screen-ready',{detail:window.DD_BATTLE_SCREEN}));
 })();
