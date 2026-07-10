@@ -1,13 +1,13 @@
 # VoltanLabs Project State
 
 Status: active  
-Current phase: Data Discovery Phase 4.3 Canonical Scanner OS Runtime + Studio Intelligence Foundation
+Current phase: Data Discovery Phase 4.4.3 Modular Vertical Slice + Studio Intelligence Foundation
 
 ## Purpose
 
-This document is the living state of VoltanLabs. It explains what is active now, what owns each major system, and what the next priorities are.
+This document is the living state of VoltanLabs. It records the active product architecture, current owners, working gameplay loop, known gaps, Studio support, and immediate priorities.
 
-Older Phase 2-era root reference docs have been consolidated into:
+Older Phase 2-era technical references are consolidated into:
 
 ```text
 docs/studio-reference.md
@@ -25,195 +25,328 @@ Products and Tools
 VoltanLabs Studio
 ```
 
-The public website is the front door. Products are what visitors play and use. VoltanLabs Studio is the internal workshop that supports product creation, validation, documentation, runtime ownership, diagnostics, Studio Intelligence, and future automation.
-
-## Product Priority
+The public website is the front door. Products are what visitors play and use. VoltanLabs Studio is the internal workshop for content, validation, documentation, diagnostics, runtime ownership, Studio Intelligence, and future publishing automation.
 
 The current flagship product is:
 
 **DataByteSprites: Data Discovery**
 
-The current development rule is:
+The development rule is:
 
 > Studio work should directly support Data Discovery, DataByteDex, Creator Suite, diagnostics, runtime ownership, Studio Intelligence, or product publishing.
 
 ## Current Architecture Decision
 
-Data Discovery has moved beyond the early Phase 4 compatibility-stack phase.
-
-The active direction is a canonical Scanner OS runtime model.
+Data Discovery now uses a modular v4 App Shell architecture.
 
 ```text
 Studio Data
   ↓
 Studio Data Bridge
   ↓
-Gameplay Rules + Encounter Runtime + Capture Runtime + Battle Resolver
+Gameplay Rules + Encounter + Capture + Battle Runtimes
   ↓
-Product App v3.5
+Dedicated Screen and Control Owners
   ↓
-Canonical Scanner OS Runtime
-  ├── Viewport and shell layout
-  ├── Mobile spacing and action tray sizing
-  ├── Battle centerline layout
-  ├── Navigation sizing
-  └── Scanner/Battle layout ownership
+DD_PRODUCT_APP_V4_SHELL v4.4.3
+  ↓
+Compatibility Adapters and Visual-Only Helpers
   ↓
 Player UI
 ```
 
-The immediate direction is to turn Data Discovery into one stable mobile Scanner OS shell where Scan, Encounter, Battle, Download, Dex, Party, Items, and Admin views all operate inside the same app frame.
+The v4 App Shell owns:
 
-## Studio Intelligence Direction
+- App lifecycle.
+- Route state.
+- Screen registry.
+- Context building.
+- Runtime coordination.
+- Action dispatch.
+- Header and bottom navigation.
 
-Studio Intelligence is now an active foundation layer.
-
-Primary manifest:
-
-```text
-studio/intelligence/core.manifest.json
-```
-
-Current model:
-
-```text
-Diagnostics Source Registry + Validation Rules + Runtime Manifest + Knowledge Indexes
-  ↓
-Validation Engine
-  ↓
-window.VOLTAN_VALIDATION_REPORT
-  ↓
-Studio Intelligence Modules
-  ├── Health History
-  ├── Diagnostics Snapshot System
-  ├── UI Layout Audit
-  ├── Module Ownership Audit
-  ├── Report Timeline
-  ├── Documentation Audit
-  ├── Auto Repair Planning
-  ├── Dependency Graph Viewer
-  ├── Coverage Heat Map
-  ├── Repository Evolution Dashboard
-  ├── Predictive Diagnostics
-  └── Master Report Export Verification
-  ↓
-Studio Intelligence Manager
-  ↓
-window.VOLTAN_STUDIO_INTELLIGENCE
-  ↓
-Master Report Bridge
-  ↓
-Copy / Save Master Studio Report
-```
-
-The rule is that Studio Intelligence modules should read from the shared diagnostics report whenever possible instead of rebuilding separate report models.
-
-Active Studio Intelligence browser objects:
-
-```text
-window.VOLTAN_VALIDATION_REPORT
-window.VOLTAN_STUDIO_INTELLIGENCE
-window.VOLTAN_REPORT_TIMELINE
-window.VOLTAN_DOCUMENTATION_AUDIT
-window.VOLTAN_MASTER_REPORT_EXPORT_VERIFICATION
-```
-
-Snapshot target:
-
-```text
-studio/diagnostics/latest-report.json
-```
-
-`latest-report.json` is a repo-tracked snapshot target. The browser can create, copy, and save a repo-ready payload, but it cannot safely write to GitHub by itself without a trusted backend, GitHub App, or connector.
+Dedicated screen modules own extracted presentation. The shell must not receive new layout or polish work for screens that already have canonical owners.
 
 ## Active Source-of-Truth Documents
 
 | Document | Role |
 | --- | --- |
-| `README.md` | Public overview and current handoff. |
+| `README.md` | Public overview and handoff. |
 | `PROJECT_STATE.md` | Living internal state. |
 | `ROADMAP.md` | Short active roadmap. |
-| `docs/studio-reference.md` | Consolidated Studio technical reference. |
-| `docs/phase-4.3-architecture-snapshot.md` | Current Data Discovery architecture snapshot. |
-| `docs/documentation-audit-phase-1.md` | Documentation audit inventory and sync findings. |
-| `docs/intelligence-module-registry.md` | Human-readable Studio Intelligence module registry. |
-| `studio/intelligence/core.manifest.json` | Studio Intelligence manifest. |
-| `studio/runtime/load-order.json` | Machine-readable runtime manifest. |
-| `studio/diagnostics/sources.json` | Machine-readable diagnostics source registry. |
+| `docs/data-discovery-ownership-map.md` | Canonical ownership registry. |
+| `docs/databyte-gameplay-ownership-audit.md` | Current implementation and gap audit. |
+| `docs/studio-reference.md` | Consolidated Studio reference. |
+| `studio/runtime/load-order.json` | Machine-readable runtime and ownership manifest. |
+| `studio/diagnostics/sources.json` | Diagnostics source registry. |
 | `studio/knowledge/index.v2.json` | Knowledge Engine registry. |
-
-Older root docs should not continue growing independently unless deliberately revived.
+| `studio/intelligence/core.manifest.json` | Studio Intelligence manifest. |
 
 ## Active Product Architecture
 
-Active live app container:
+Active app container:
 
 ```text
 #ddApp
 ```
 
-Former legacy scanner container:
+Active App Shell:
 
 ```text
-#ddStandalone
+assets/js/databyte-discovery-product-app-v4-shell.js
 ```
 
-The active product app is:
+Current shell version:
 
 ```text
-assets/js/databyte-discovery-product-app-v3-5.js
+4.4.3
 ```
 
-The canonical Scanner OS layout owner is:
+The former v3.5 Product App is now a legacy transition reference and is not the active shell.
+
+## Dedicated Presentation Owners
+
+| Screen / Controls | Active Owner |
+| --- | --- |
+| Scanner | `assets/js/dd-scanner-screen.js` |
+| Encounter | `assets/js/dd-encounter-screen.js` |
+| Battle | `assets/js/dd-battle-screen.js` |
+| Battle controls | `assets/js/dd-battle-controls.js` |
+| Download confirmation | `assets/js/dd-confirm-screen.js` |
+| Download result | `assets/js/dd-result-screen.js` |
+
+The shell may retain minimal missing-module diagnostics for these screens, but those fallbacks are not presentation owners.
+
+## Temporary Screen Owners
+
+These views still use v4 shell fallback presentation:
+
+- Party.
+- Items.
+- Dex.
+- Admin.
+
+Planned dedicated owners:
 
 ```text
-assets/js/dd-scanner-os-runtime.js
+DD_PARTY_SCREEN
+DD_ITEMS_SCREEN
+DD_DEX_SCREEN
+DD_ADMIN_SCREEN
 ```
-
-The Scanner OS behavior guard is:
-
-```text
-assets/js/dd-scanner-behavior-4-3.js
-```
-
-The scanner background and Scanner OS bootstrap file is:
-
-```text
-assets/js/dd-scan-bg.js
-```
-
-`dd-scan-bg.js` now loads only the canonical Scanner OS runtime for layout.
 
 ## Current Data Discovery Load Chain
 
 ```text
 databyte-discovery.html
-├── assets/js/dd-canon-roster.js
-├── assets/js/dd-studio-data-bridge.js
-├── assets/js/dd-battle-engine-2-4.js
-├── assets/js/dd-gameplay-rules-2-4.js
-├── assets/js/dd-capture-runtime.js
-├── assets/js/dd-encounter-runtime.js
-├── assets/js/dd-battle-balance-2-4.js
-├── assets/js/dd-battle-resolver.js
-├── assets/js/dd-battle-state-runtime.js
-├── assets/js/dd-battle-presentation-runtime.js
-├── assets/js/dd-collection-runtime.js
-├── assets/js/dd-party-runtime.js
-├── assets/js/dd-party-switch-runtime.js
-├── assets/js/dd-inventory-runtime.js
-├── assets/js/dd-dex-runtime.js
-├── assets/js/dd-collection-dex-runtime-bridge.js
-├── assets/js/databyte-discovery-product-app-v3-5.js
-├── assets/js/dd-scanner-behavior-4-3.js
-├── assets/js/dd-health-signal-bridge.js
-└── assets/js/dd-scan-bg.js
-    └── assets/js/dd-scanner-os-runtime.js
+├── dd-canon-roster.js
+├── dd-studio-data-bridge.js
+├── dd-battle-engine-2-4.js
+├── dd-gameplay-rules-2-4.js
+├── dd-capture-runtime.js
+├── dd-encounter-runtime.js
+├── dd-battle-balance-2-4.js
+├── dd-battle-resolver.js
+├── dd-battle-state-runtime.js
+├── dd-battle-presentation-runtime.js
+├── dd-collection-runtime.js
+├── dd-party-runtime.js
+├── dd-party-switch-runtime.js
+├── dd-inventory-runtime.js
+├── dd-dex-runtime.js
+├── dd-collection-dex-runtime-bridge.js
+├── dd-layout-viewport-lock-4-2.js
+├── dd-scanner-screen.js
+├── dd-encounter-screen.js
+├── dd-battle-screen.js
+├── dd-battle-controls.js
+├── dd-confirm-screen.js
+├── dd-result-screen.js
+├── databyte-discovery-product-app-v4-shell.js
+├── dd-scanner-behavior-4-3.js
+├── dd-party-switch-battle-bridge.js
+├── dd-party-switch-ui.js
+├── dd-party-switch-refresh.js
+├── dd-battle-experience-4-2.js
+├── dd-health-signal-bridge.js
+└── dd-scan-bg.js
+    └── dd-scanner-os-runtime.js
 ```
 
-## Retired From Active Scanner OS Layout Loading
+## Current Runtime Owners
 
-These files still exist for reference, but they are no longer loaded by `dd-scan-bg.js` as active layout owners:
+| Runtime Area | Active Owner | Status |
+| --- | --- | --- |
+| Page boot | `databyte-discovery.html` | Active |
+| Public roster | `dd-canon-roster.js` | Active |
+| Studio data overlay | `dd-studio-data-bridge.js` | Active |
+| Gameplay rules | `dd-gameplay-rules-2-4.js` | Active foundation |
+| Encounter generation | `dd-encounter-runtime.js` | Active owner |
+| Download rules and attempts | `dd-capture-runtime.js` | Active owner |
+| Battle helper bus | `dd-battle-engine-2-4.js` | Active foundation |
+| Battle balance | `dd-battle-balance-2-4.js` | Active |
+| Damage, accuracy, turn order, enemy move choice | `dd-battle-resolver.js` | Active owner |
+| Battle terminal state | `dd-battle-state-runtime.js` | Active owner |
+| Non-layout battle effects | `dd-battle-presentation-runtime.js` | Active owner |
+| Collection | `dd-collection-runtime.js` | Active owner |
+| Party | `dd-party-runtime.js` | Active owner |
+| Party switching | `dd-party-switch-runtime.js` | Active owner |
+| Inventory | `dd-inventory-runtime.js` | Active foundation |
+| Dex state | `dd-dex-runtime.js` | Active foundation |
+| App orchestration | `databyte-discovery-product-app-v4-shell.js` | Active shell |
+
+## Current Playable Loop
+
+```text
+Scanner
+  ↓
+Encounter
+  ↓
+Battle
+  ├── Moves
+  ├── Items panel
+  ├── Party switch overlay
+  └── Download attempt
+        ↓
+Download confirmation
+        ↓
+Result
+  ├── Success → Collection / Party → Scanner
+  ├── Recoverable failure → Continue Battle
+  └── Signal loss → Scanner
+```
+
+Verified working:
+
+- Discovery-code and random-code encounter generation.
+- Dedicated Scanner, Encounter, Battle, Confirm, and Result screens.
+- Battle damage, accuracy, turn order, and enemy move selection.
+- Separate creature HP and encounter Signal.
+- Download odds, caps, ByteCoin use, success, failure, and Signal loss.
+- Collection persistence.
+- Party auto-fill.
+- Battle party switching.
+- Returning from battle Items to the active battle.
+- Recoverable download failure through the Result screen.
+- Terminal result return to Scanner.
+- Seen/downloaded Dex state tracking.
+
+## Partial Systems
+
+### Party
+
+Implemented:
+
+- Party persistence.
+- Auto-fill.
+- Active-party index.
+- Battle switch overlay.
+- Fainted-member blocking.
+
+Still partial:
+
+- No dedicated Party Screen owner.
+- No polished reorder or lead-selection UI outside battle.
+- No sprite detail, status, equipment, or move management.
+- Party-switch UI remains a compatibility overlay.
+
+### Inventory and Items
+
+Implemented:
+
+- Inventory persistence.
+- ByteCoin count and spending.
+- Items panel route returns to battle when opened during battle.
+
+Still partial:
+
+- No dedicated Items Screen owner.
+- No usable battle-item catalog.
+- No item targeting or turn-consumption rules.
+- No healing, buffs, cures, crafting, shops, or loot source.
+
+### Dex
+
+Implemented:
+
+- Seen/downloaded tracking.
+- Shared roster and external DataByteDex renderer foundation.
+
+Still partial:
+
+- No dedicated in-game Dex Screen owner.
+- No entry details, filtering, habitat, moves, evolution, or capture history.
+
+### Admin and Profile
+
+Implemented:
+
+- Basic stored profile.
+- Basic fallback panel.
+
+Still partial:
+
+- No dedicated Admin Screen owner.
+- No settings, save management, statistics, credits, or debug controls.
+- The development label `v4 App Shell` is still visible in the live header.
+
+### Battle Completion
+
+Implemented:
+
+- Wild defeat.
+- Active-sprite faint support.
+- Recoverable download failure.
+- Signal collapse.
+- Party-switch-required events.
+
+Still partial:
+
+- No complete party-wipe recovery flow.
+- No formal victory reward pipeline.
+- No battle reward table.
+- No strategic enemy AI profiles.
+- No dedicated battle summary separate from download results.
+
+## Systems Not Added Yet
+
+- XP, levels, stat growth, and rank progression.
+- Move-learning progression.
+- Evolution or upgrade paths.
+- Rewards and loot.
+- Status effects.
+- Abilities and passives.
+- Critical-hit and advanced battle rules.
+- Biomes and scanner regions.
+- Missions, quests, and journal.
+- Daily or weekly encounters.
+- Bosses, raids, or multi-enemy battles.
+- Shops and a broader economy.
+- Sound, music, haptics, and accessibility settings.
+- Versioned save migration.
+- Save export/import.
+- Offline/PWA packaging validation.
+- Studio-free production export verification.
+
+## Compatibility Layers Still Loaded
+
+| File | Current Role |
+| --- | --- |
+| `dd-party-switch-ui.js` | Working battle switch overlay; not yet final owner. |
+| `dd-party-switch-battle-bridge.js` | Faint/wipe event adapter. |
+| `dd-party-switch-refresh.js` | Party HUD refresh helper. |
+| `dd-battle-experience-4-2.js` | Visual polish merge candidate. |
+| `dd-layout-viewport-lock-4-2.js` | Mobile viewport guard. |
+| `dd-scanner-behavior-4-3.js` | Compatibility behavior guard. |
+| `dd-scanner-os-runtime.js` | Outer shell stabilizer with narrow ownership. |
+| `dd-health-signal-bridge.js` | Visual telemetry helper. |
+| `dd-scan-bg.js` | Scanner background/bootstrap; visual-only target. |
+
+These files should be merged or retired only after equivalent canonical behavior is verified.
+
+## Retired From Active Layout Loading
+
+These files remain as references but are no longer active layout owners:
 
 ```text
 assets/js/dd-mobile-game-tray-4-2.js
@@ -231,154 +364,105 @@ databytedex.html
 └── assets/js/databytedex-shared-renderer.js
 ```
 
-## Current Runtime Owners
+## Studio Intelligence Direction
 
-| Runtime Area | Active Owner | Status |
-| --- | --- | --- |
-| Page boot | `databyte-discovery.html` | Active |
-| Public roster | `dd-canon-roster.js` | Active |
-| Studio data overlay | `dd-studio-data-bridge.js` | Active |
-| Gameplay rules | `dd-gameplay-rules-2-4.js` | Active foundation |
-| Encounter generation | `dd-encounter-runtime.js` | Active owner |
-| Download/capture rules | `dd-capture-runtime.js` | Active owner |
-| Battle helpers | `dd-battle-engine-2-4.js` | Active foundation |
-| Battle resolver | `dd-battle-resolver.js` | Active owner |
-| Battle state | `dd-battle-state-runtime.js` | Active foundation |
-| Battle presentation | `dd-battle-presentation-runtime.js` | Active foundation |
-| Collection | `dd-collection-runtime.js` | Active foundation |
-| Party | `dd-party-runtime.js` | Active foundation |
-| Party switching | `dd-party-switch-runtime.js` | Active foundation |
-| Party switch UI | `dd-party-switch-ui.js` | Compatibility UI |
-| Party switch battle bridge | `dd-party-switch-battle-bridge.js` | Compatibility bridge |
-| Party switch HUD refresh | `dd-party-switch-refresh.js` | Compatibility UI |
-| Inventory | `dd-inventory-runtime.js` | Active foundation |
-| Dex runtime | `dd-dex-runtime.js` | Active foundation |
-| Product UI orchestration | `databyte-discovery-product-app-v3-5.js` | Active UI owner |
-| Scanner OS behavior | `dd-scanner-behavior-4-3.js` | Active guard |
-| Scanner OS layout | `dd-scanner-os-runtime.js` | Active canonical owner |
-| Battle experience polish | `dd-battle-experience-4-2.js` | Compatibility |
-| Viewport lock / mobile layout | `dd-layout-viewport-lock-4-2.js` | Compatibility |
-| DataByteDex renderer | `databytedex-shared-renderer.js` | Active |
-| Health/signal visual bridge | `dd-health-signal-bridge.js` | Compatibility |
-| Scanner background/bootstrap | `dd-scan-bg.js` | Active visual/bootstrap owner |
+Studio Intelligence remains an active foundation layer.
 
-## Current Game Flow
+Primary manifest:
 
 ```text
-Scanner
-  ↓
-Encounter Runtime creates signal
-  ↓
-Signal Encounter
-  ↓
-Start Battle
-  ↓
-Battle Resolver + Product App v3.5 battle UI
-  ↓
-Scanner OS Runtime owns fixed shell layout
-  ↓
-Party Switch Runtime, Capture Runtime, and Battle Presentation hooks
-  ↓
-Battle / Download Result
-  ↓
-Collection, Party, DataByteDex progress
-  ↓
-Scanner
+studio/intelligence/core.manifest.json
 ```
 
-Supporting panels:
+Current model:
 
-- DataByteDex panel.
-- Party panel.
-- Inventory panel.
-- Admin profile panel.
-- Party switch overlay.
+```text
+Diagnostics Sources + Validation Rules + Runtime Manifest + Knowledge Indexes
+  ↓
+Validation Engine
+  ↓
+Shared Validation Report
+  ↓
+Studio Intelligence Modules
+  ↓
+Studio Intelligence Manager
+  ↓
+Master Report Bridge and Export
+```
 
-## What Studio Can Do Now
+Active capabilities include:
 
-Studio currently provides:
-
-- Knowledge Engine registry.
+- Validation Engine.
 - Diagnostics source registry.
-- Validation engine.
-- Repository health dashboard.
-- Repository Intelligence.
-- Health History.
-- Diagnostics Snapshot System.
-- `latest-report.json` repo snapshot target.
-- Studio Intelligence Core manifest.
-- Studio Intelligence Manager.
-- Master Report Bridge.
-- Report Timeline.
-- Documentation Audit.
-- Master Report Export Verification.
-- Collapsible Diagnostics Panels.
-- UI Layout Audit.
-- Module Ownership Audit.
-- Auto Repair planning.
-- Dependency Explorer.
-- Dependency Graph Viewer.
-- Coverage Heat Map.
-- Repository Evolution Dashboard.
-- Predictive Diagnostics foundation.
-- Studio-to-game data bridge foundation.
-- Shared game-data manifest foundation.
-- DataByteDex shared renderer foundation.
 - Runtime ownership tracking.
-- Consolidated Studio reference documentation.
+- Repository health dashboard.
+- Health history and snapshots.
+- UI layout audit.
+- Module ownership audit.
+- Documentation audit.
+- Dependency graph tools.
+- Coverage heat map.
+- Repository evolution dashboard.
+- Predictive diagnostics foundation.
+- Master report export verification.
+- Studio-to-game data bridge foundation.
+- Shared DataByteDex rendering foundation.
 
-## What Studio Cannot Do Yet
+Studio does not yet automatically:
 
-Studio does not yet automatically create complete playable game content.
-
-It cannot yet automatically:
-
-- Generate a complete new sprite line.
-- Generate moves and abilities for a sprite.
-- Export balanced encounter tables into final runtime logic.
+- Generate complete playable sprite lines.
+- Generate final moves and abilities.
+- Export balanced encounter tables directly into production runtime data.
 - Attach final art assets.
-- Run one-click build/export into the public game.
-- Run full battle/download simulations from a Studio UI.
-- Safely mutate repository files directly from the browser.
+- Run a one-click public-game build/export.
+- Run full battle/download simulations through a complete Studio UI.
+- Safely mutate repository files directly from the browser without a trusted connector or backend.
 
-## Known Issues
+## Known Repository Sync Gaps
 
-- Product App v3.5 still owns too much rendering and layout logic.
-- Scan, Encounter, and Battle still have separate internal render paths even though the Scanner OS runtime now owns the fixed shell layout.
-- Long sprite names still need an auto-fit strategy.
-- Some legacy scripts still exist as behavior references and need a safe retirement audit.
-- Battle needs deeper move resolver, status system, healing balance, reward rules, enemy behavior, and animation ownership.
-- Runtime Audit is the next Studio Intelligence module needed to compare live page script loading against runtime and diagnostics manifests.
-- Documentation needs the remaining Phase 2 sync commits: README, Studio Reference, and Intelligence Module Registry.
+The runtime manifest and this project-state document now reflect v4.4.3, but the following still need review:
+
+- `studio/diagnostics/sources.json` may not include all newly extracted screen owners.
+- DataByteSprites source indexes may not include all newly extracted screen files.
+- README and ROADMAP should be checked against the new 4.4.3 wording.
+- Diagnostics rules should verify all six required presentation globals.
+- The Studio runtime loader should be compared directly with `databyte-discovery.html` to prevent future version drift.
 
 ## Immediate Priorities
 
-1. Add Runtime Audit as the next Studio Intelligence module.
-2. Add Runtime Dependency Validation against loaded scripts and manifests.
-3. Audit Product App v3.5 battle markup and base CSS ownership.
-4. Continue Scanner OS duplicate ownership cleanup.
-5. Keep `dd-scanner-os-runtime.js` as the only Scanner/Battle layout owner.
-6. Keep README, PROJECT_STATE, ROADMAP, `docs/studio-reference.md`, Studio Intelligence manifest, runtime manifest, diagnostics sources, and Studio integration roadmap synchronized.
-7. Rerun diagnostics after each stabilization pass.
-8. Split remaining party and item behavior out of Product App v3.5.
-9. Add Studio balance simulator and export pipeline after runtime ownership is stable.
+1. Synchronize diagnostics sources and DataByteSprites source indexes with the v4.4.3 manifest.
+2. Add battle terminal handling, party-wipe recovery, and a reward contract.
+3. Extract dedicated Party and Items screen owners.
+4. Extract dedicated Dex and Admin screen owners.
+5. Add one canonical progression runtime for XP, levels, stat growth, and move-unlock hooks.
+6. Audit compatibility layers and retire only those with verified canonical replacements.
+7. Hide development labels and complete the production header pass.
+8. Validate standalone packaging without Studio UI or diagnostics as runtime dependencies.
+
+## Development Rules
+
+- One active owner per responsibility.
+- Screen presentation belongs in screen modules.
+- Gameplay behavior belongs in runtimes.
+- The v4 App Shell coordinates; it does not absorb extracted presentation.
+- Visual-effect modules may not move or resize app, stage, card, grid, or control containers.
+- Runtime manifests, diagnostics, ownership maps, and project state must be updated when ownership changes.
+- Data Discovery must remain distributable without the Studio UI.
 
 ## Long-Term Vision
-
-The target workflow is:
 
 ```text
 Studio creates or edits content
   ↓
-Studio validates IDs, references, balance, and assets
+Studio validates IDs, references, balance, assets, ownership, and runtime health
   ↓
-Studio Intelligence audits layout, ownership, runtime, docs, exports, and health trends
+Simulation and Studio Intelligence audit the content
   ↓
 Studio exports game-ready data
   ↓
-Data Discovery consumes the exported data
+Data Discovery and DataByteDex consume the same data
   ↓
-DataByteDex renders the same data
+The public product ships independently of Studio tooling
 ```
 
-The long-term goal is for new content to be created through Studio, validated automatically, balanced through Simulation Lab, audited through Studio Intelligence, and consumed directly by the public game.
+The long-term goal is for new content to be created through Studio, validated automatically, balanced through Simulation Lab, audited through Studio Intelligence, exported into production-ready data, and consumed directly by Data Discovery and DataByteDex.
