@@ -7,6 +7,7 @@
   const switchRt=()=>window.DD_PARTY_SWITCH_RUNTIME;
   const present=()=>window.DD_BATTLE_PRESENTATION_RUNTIME;
   const controlsOwner=()=>window.DD_BATTLE_CONTROLS;
+  const shell=()=>window.DD_PRODUCT_APP_V4_SHELL;
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   let open=false;
@@ -15,7 +16,7 @@
   function active(){try{return switchRt()&&switchRt().getActive?Number(switchRt().getActive()||0):0}catch{return 0}}
   function healthy(member){return Number(member&&member.hp||0)>0}
   function hpPct(member){const max=Number(member&&member.maxHp||member&&member.hp||1);return Math.max(0,Math.min(100,Math.round(Number(member&&member.hp||0)/max*100)))}
-  function inBattle(){return !!($('ddApp')&&$('stage')&&$('controls')&&document.body.textContent.includes('Download Window'))}
+  function inBattle(){const app=shell();return !!(app&&app.state&&app.state.screen==='battle')}
   function controlsLocked(){return switchRt()&&switchRt().isSwitchRequired&&switchRt().isSwitchRequired()}
   function canonicalControlsActive(){const controls=$('controls');return !!(controlsOwner()&&controls&&controls.classList.contains('battleControlsHost')&&controls.querySelector('[data-action="switch"]'))}
 
@@ -40,6 +41,7 @@
   }
 
   function show(required){
+    if(!inBattle()&&!required)return;
     open=true;installStyle();
     let panel=$('ddPartySwitchPanel');
     if(!panel){panel=document.createElement('section');panel.id='ddPartySwitchPanel';panel.className='dd-switch-panel';document.body.appendChild(panel)}
@@ -57,17 +59,18 @@
     if(present()&&present().emit)present().emit('party-switch',{index,name:m&&m.name});
     if(present()&&present().boost)present().boost({text:'Go, '+(m&&m.name||'Sprite')+'!'});
     hide();
+    if(shell()&&shell().render)shell().render();
   }
-  function tick(){
-    installStyle();ensureButton();
-    if(controlsLocked()&&!open)show(true);
-  }
+  function tick(){installStyle();ensureButton();if(controlsLocked()&&!open)show(true)}
+
   document.addEventListener('click',event=>{
     const button=event.target&&event.target.closest&&event.target.closest('[data-action="switch"]');
     if(button&&inBattle()){event.preventDefault();event.stopImmediatePropagation();show(false)}
   },true);
+  document.addEventListener('dd:open-party-switch',()=>show(false));
   document.addEventListener('dd:party-switch-required',()=>show(true));
   document.addEventListener('dd:party-switch',hide);
+  window.DD_PARTY_SWITCH_UI={show,hide,isOpen:()=>open};
   setInterval(tick,700);
   setTimeout(tick,1200);
 })();
