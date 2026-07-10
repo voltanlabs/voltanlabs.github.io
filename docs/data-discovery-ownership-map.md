@@ -10,6 +10,8 @@ This document is the canonical ownership registry for the Data Discovery applica
 | Header | DD_PRODUCT_APP_V4_SHELL | Active |
 | Navigation | DD_PRODUCT_APP_V4_SHELL | Active |
 | Screen routing | DD_PRODUCT_APP_V4_SHELL | Active |
+| Scanner screen | DD_SCANNER_SCREEN | Active |
+| Encounter screen | DD_ENCOUNTER_SCREEN | Active |
 | Battle screen | DD_BATTLE_SCREEN | Active |
 | Battle controls | DD_BATTLE_CONTROLS | Active |
 | Battle resolver | DD_BATTLE_RESOLVER | Active |
@@ -22,13 +24,15 @@ This document is the canonical ownership registry for the Data Discovery applica
 
 ## Temporary Owners
 
-- Scanner Screen (v4 shell fallback)
-- Encounter Screen (v4 shell fallback)
 - Party Screen (v4 shell fallback)
 - Items Screen (v4 shell fallback)
 - Result Screen (v4 shell fallback)
 - Confirm Screen (v4 shell fallback)
 - Admin Screen (v4 shell fallback)
+
+## Diagnostic-Only Fallbacks
+
+The v4 shell may retain a minimal fallback renderer for Scanner, Encounter, and Battle only to report a missing module during boot or load failure. These fallbacks are not active presentation owners and must not receive new gameplay or layout work.
 
 ## Legacy Compatibility
 
@@ -40,6 +44,10 @@ This document is the canonical ownership registry for the Data Discovery applica
 
 If two modules claim ownership of the same responsibility, the change must be rejected until ownership is resolved.
 
+## Editing Rule
+
+Presentation changes must be made in the canonical screen owner. Runtime behavior changes must be made in the canonical runtime owner. The v4 shell should only coordinate routing, context, and actions.
+
 ## Studio Goal
 
-This document is intended to become the data source for a future Studio Inspector panel that visualizes active owners, temporary owners, legacy adapters, and ownership conflicts in real time.
+Studio diagnostics should read this ownership model together with `studio/runtime/load-order.json` so active owners, temporary owners, legacy adapters, and ownership conflicts are visible without manually tracing source files.
