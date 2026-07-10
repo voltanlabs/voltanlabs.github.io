@@ -44,7 +44,13 @@
     if(!inBattle()&&!required)return;
     open=true;installStyle();
     let panel=$('ddPartySwitchPanel');
-    if(!panel){panel=document.createElement('section');panel.id='ddPartySwitchPanel';panel.className='dd-switch-panel';document.body.appendChild(panel)}
+    if(!panel){
+      panel=document.createElement('section');
+      panel.id='ddPartySwitchPanel';
+      panel.className='dd-switch-panel';
+      const host=$('ddApp')||document.body;
+      host.appendChild(panel);
+    }
     const list=members();const current=active();
     panel.innerHTML=`<div class="dd-switch-head"><b>${required?'Switch Required':'Switch Party'}</b><button class="dd-switch-close" ${required?'disabled':''}>Close</button></div><div class="dd-switch-list">${list.map((m,i)=>{const ok=healthy(m)&&i!==current;return `<article class="dd-switch-card ${i===current?'active':''} ${!healthy(m)?'disabled':''}"><div class="dd-switch-icon" style="--hp:${hpPct(m)}">${esc(m.icon||'◇')}</div><div class="dd-switch-meta"><strong>${esc(m.name||'Unknown')}</strong><span>HP ${Number(m.hp||0)}/${Number(m.maxHp||m.hp||0)} ${i===current?'• Active':healthy(m)?'• Ready':'• Fainted'}</span></div><button data-switch-index="${i}" ${ok?'':'disabled'}>${i===current?'Active':healthy(m)?'Switch':'Fainted'}</button></article>`}).join('')||'<p>No party members available.</p>'}</div><p class="dd-switch-note">Choose a ready party member. Fainted sprites cannot be sent out.</p>`;
     const close=panel.querySelector('.dd-switch-close');if(close)close.onclick=hide;
