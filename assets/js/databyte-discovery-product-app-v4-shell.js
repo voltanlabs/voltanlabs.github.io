@@ -7,13 +7,7 @@
 
   const VERSION='4.4.0';
   const STYLE_ID='ddV4ShellStyle';
-  const K={
-    profile:'vl_databyte_admin_profile_v1',
-    collection:'vl_databyte_discovery_collection_v2',
-    seen:'vl_databyte_seen_v1',
-    party:'vl_databyte_party_v1',
-    items:'vl_databyte_items_v1'
-  };
+  const K={profile:'vl_databyte_admin_profile_v1',collection:'vl_databyte_discovery_collection_v2',seen:'vl_databyte_seen_v1',party:'vl_databyte_party_v1',items:'vl_databyte_items_v1'};
 
   const $=id=>document.getElementById(id);
   const esc=value=>String(value??'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
@@ -31,15 +25,7 @@
   const battleScreen=()=>window.DD_BATTLE_SCREEN;
   const battleControls=()=>window.DD_BATTLE_CONTROLS;
 
-  const state={
-    screen:'scanner',
-    battleState:'idle',
-    signal:null,
-    result:null,
-    confirm:null,
-    fx:null,
-    log:'Scanner ready. Enter a code or randomize a signal.'
-  };
+  const state={screen:'scanner',battleState:'idle',signal:null,result:null,confirm:null,fx:null,log:'Scanner ready. Enter a code or randomize a signal.'};
 
   function installShellStyle(){
     if(document.getElementById(STYLE_ID))return;
@@ -134,17 +120,7 @@
   function battleContext(){
     const wild=normalize(state.signal);
     const activeLead=normalize(lead());
-    return {
-      lead:activeLead,
-      wild,
-      odds:wild?odds(wild):0,
-      signal:wild?Number(wild.stability||0):0,
-      maxSignal:wild?Number(wild.maxStability||1):1,
-      isWildDefeated:isWildDefeated(),
-      latestMessage:state.log,
-      battleState:{value:syncBattleState(),wildDefeated:isWildDefeated(),leadDefeated:activeLead?Number(activeLead.hp||0)<=0:false},
-      moves:activeLead&&activeLead.moves||[]
-    };
+    return {lead:activeLead,wild,odds:wild?odds(wild):0,signal:wild?Number(wild.stability||0):0,maxSignal:wild?Number(wild.maxStability||1):1,isWildDefeated:isWildDefeated(),latestMessage:state.log,battleState:{value:syncBattleState(),wildDefeated:isWildDefeated(),leadDefeated:activeLead?Number(activeLead.hp||0)<=0:false},moves:activeLead&&activeLead.moves||[]};
   }
 
   function discover(code){
@@ -244,6 +220,7 @@
   function back(){if(state.signal&&['encounter','battle','confirm'].includes(state.screen)&&!isWildDefeated()){const collapse=drainSignal(state.signal,1,'You returned and the wild signal');if(collapse)return fail('Signal Disappeared',collapse)}state.screen='scanner';state.battleState='idle';if(battleStateRt())battleStateRt().reset('return');state.signal=null;state.confirm=null;state.result=null;pushLog('Scanner ready.');fx('return');render()}
   function panel(name){state.screen=name;render()}
 
+  function renderScanner(){return `<section class="card scanner-card"><div class="scannerOrb">📡</div><h1>Signal Ready</h1><p>${esc(state.log)}</p></section>`}
   function renderEncounter(){const s=normalize(state.signal);if(!s)return renderScanner();return `<section class="card encounter-card"><h2>${esc(s.name||'Unknown Signal')}</h2><div class="stats"><b>Download ${odds(s)}%</b><b>HP ${s.hp}/${s.maxHp}</b><b>Signal ${s.stability}/${s.maxStability}</b></div><p>${esc(s.lore||'Unknown signal.')}</p><p class="log">${esc(state.log)}</p></section>`}
   function renderBattle(){const mod=battleScreen();if(mod&&mod.renderBattleScreen)return mod.renderBattleScreen(battleContext());return `<section class="card bad"><h2>Battle Screen Missing</h2><p>DD_BATTLE_SCREEN is not available.</p></section>`}
   function renderConfirm(){const s=normalize(state.signal);return `<section class="card coin-card"><h2>Download ${esc(s&&s.name||'signal')}?</h2><div class="coin">BC</div><p>Spend 1 ByteCoin. Download odds ${state.confirm&&state.confirm.odds||0}%.</p><p>On failure, Signal weakens by 1.</p><p>ByteCoins: ${state.confirm&&state.confirm.byteCoins||0}</p></section>`}
@@ -252,7 +229,6 @@
   function renderItems(){const it=items();return `<section class="card"><h2>Inventory</h2><p class="hint">Runtime: ${inventoryRt()?'DD_INVENTORY_RUNTIME':'fallback local storage'}</p><div class="grid"><div class="mini">ByteCoins<br><b>${esc(it.byteCoins||0)}</b></div><div class="mini">Items<br><b>Coming Soon</b></div></div></section>`}
   function renderDex(){const capd=new Set(collection().map(x=>x.name));const sn=new Set(seen().map(x=>typeof x==='string'?x:x.name));capd.forEach(x=>sn.add(x));return `<section class="card"><h2>DataByteDex</h2><p>${sn.size}/${roster().length} seen • ${capd.size} downloaded</p><div class="grid">${roster().map(x=>`<div class="mini">${esc(x.icon||'◇')} #${esc(x.dex)} ${esc(x.name)}<br>${capd.has(x.name)?'Downloaded':sn.has(x.name)?'Seen':'Unknown'}</div>`).join('')}</div></section>`}
   function renderAdmin(){return `<section class="card"><h2>${esc(profile().name)}</h2><p>App Shell: v${VERSION}</p><p>Battle Screen Renderer: ${!!battleScreen()}</p><p>Battle Controls Renderer: ${!!battleControls()}</p><p>Battle State Runtime: ${!!battleStateRt()}</p><p>Battle State: ${esc(state.battleState)}</p><p>Encounter Runtime: ${!!encounterRt()}</p><p>Download Runtime: ${!!captureRt()}</p><p>Battle Resolver: ${!!resolverRt()}</p><p>Party Runtime: ${!!partyRt()}</p><p>Inventory Runtime: ${!!inventoryRt()}</p></section>`}
-  function renderScanner(){return `<section class="card scanner-card"><div class="scannerOrb">📡</div><h1>Signal Ready</h1><p>${esc(state.log)}</p></section>`}
 
   const screens={scanner:renderScanner,encounter:renderEncounter,battle:renderBattle,confirm:renderConfirm,result:renderResult,party:renderParty,items:renderItems,dex:renderDex,admin:renderAdmin};
   function screenHtml(){return (screens[state.screen]||screens.scanner)()}
@@ -269,16 +245,9 @@
   function applyControlHost(){const host=$('controls');if(!host)return;host.className=state.screen==='battle'?'controls battleControlsHost':'controls'}
   function runAction(button){const action=button.dataset.action;if(action==='move')return fight(button.dataset.moveId||button.dataset.moveIndex);if(action==='download')return captureAsk();if(action==='items')return panel('items');if(action==='switch')return panel('party');if(action==='return')return back()}
   function bind(){if($('discover'))$('discover').onclick=()=>discover();if($('random'))$('random').onclick=randomCode;if($('battleStart'))$('battleStart').onclick=startBattle;if($('confirm'))$('confirm').onclick=captureResolve;if($('back'))$('back').onclick=back;document.querySelectorAll('[data-action]').forEach(btn=>btn.onclick=()=>runAction(btn));document.querySelectorAll('[data-panel]').forEach(btn=>btn.onclick=()=>panel(btn.dataset.panel))}
-
-  function ensureRoot(){
-    if($('ddApp'))return;
-    document.body.innerHTML='<div id="ddApp"><header class="top"><b>Data Discovery</b><span>v4 App Shell</span></header><main id="stage" class="stage"></main><section id="controls" class="controls"></section><nav class="nav"><button data-panel="scanner">Scan</button><button data-panel="dex">Dex</button><button data-panel="party">Party</button><button data-panel="items">Items</button><button data-panel="admin">Admin</button></nav></div>';
-  }
-
+  function ensureRoot(){if($('ddApp'))return;document.body.innerHTML='<div id="ddApp"><header class="top"><b>Data Discovery</b><span>v4 App Shell</span></header><main id="stage" class="stage"></main><section id="controls" class="controls"></section><nav class="nav"><button data-panel="scanner">Scan</button><button data-panel="dex">Dex</button><button data-panel="party">Party</button><button data-panel="items">Items</button><button data-panel="admin">Admin</button></nav></div>'}
   function render(){installShellStyle();ensureRoot();$('stage').innerHTML=screenHtml();$('controls').innerHTML=controlsHtml();applyControlHost();bind();paintFx()}
 
   window.DD_PRODUCT_APP_V4_SHELL={version:VERSION,state,render,discover,randomCode,startBattle,fight,captureAsk,captureResolve,back,panel,battleContext};
-  seed();
-  render();
-  document.dispatchEvent(new CustomEvent('dd:v4-shell-ready',{detail:window.DD_PRODUCT_APP_V4_SHELL}));
+  seed();render();document.dispatchEvent(new CustomEvent('dd:v4-shell-ready',{detail:window.DD_PRODUCT_APP_V4_SHELL}));
 })();
