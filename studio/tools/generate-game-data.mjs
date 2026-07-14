@@ -12,7 +12,4 @@
  */
 
 import { readFile, writeFile, rename, unlink } from "node:fs/promises";
-import { resolve } from "node:path";
-import vm from "node:vm";
-
-const ROOT
+import
