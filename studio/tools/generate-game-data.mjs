@@ -6,12 +6,13 @@
  * Usage:
  *   node studio/tools/generate-game-data.mjs
  *   node studio/tools/generate-game-data.mjs --check
+ *   node studio/tools/generate-game-data.mjs --strict
  *
- * This tool has no external dependencies. It reads the canonical DataByteSprites
- * indexes, validates their basic structure, derives record counts, and writes
- * studio/databytesprites/game-data.v1.json atomically.
+ * No external dependencies are required.
  */
 
 import { readFile, writeFile, rename, unlink } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
-import
+import { resolve } from "node:path";
+import vm from "node:vm";
+
+const ROOT
