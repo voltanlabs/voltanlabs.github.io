@@ -1,22 +1,81 @@
 {
-  "schemaVersion": "0.1.0",
-  "generatedBy": "VoltanLabs Studio Type Chart Indexer",
-  "description": "Offline-first type-effectiveness foundation for DataByteSprites moves, species elements, damage tuning, and capture modifiers.",
-  "rules": [
-    {"attackingElement":"Electric","strongAgainst":["Water","Screen","Signal"],"weakAgainst":["Shell","Code"],"noEffectAgainst":[],"captureBonusAgainst":["Water","Screen"],"notes":"Electric pressure destabilizes water and display-based signals."},
-    {"attackingElement":"Voltricity","strongAgainst":["Signal","Glitch","Null"],"weakAgainst":["Shell"],"noEffectAgainst":[],"captureBonusAgainst":["Signal","Glitch"],"notes":"Voltricity is Leovolt's signature signal-electric force."},
-    {"attackingElement":"Screen","strongAgainst":["Glitch","Mirror"],"weakAgainst":["Electric","Null"],"noEffectAgainst":[],"captureBonusAgainst":["Glitch"],"notes":"Screen defenses can contain glitches but are vulnerable to overloads."},
-    {"attackingElement":"Mirror","strongAgainst":["Screen","Signal"],"weakAgainst":["Glitch","Null"],"noEffectAgainst":[],"captureBonusAgainst":["Screen"],"notes":"Mirror attacks reflect signal reads and disrupt screen-born sprites."},
-    {"attackingElement":"Trick","strongAgainst":["Guard","Admin"],"weakAgainst":["Signal"],"noEffectAgainst":[],"captureBonusAgainst":["Guard"],"notes":"Trick moves bypass rigid defensive patterns."},
-    {"attackingElement":"Shell","strongAgainst":["Electric","Bug","Poison"],"weakAgainst":["Water","Code"],"noEffectAgainst":[],"captureBonusAgainst":["Bug","Poison"],"notes":"Shell moves resist physical signal spikes and contain small threats."},
-    {"attackingElement":"Code","strongAgainst":["Shell","Admin","Signal"],"weakAgainst":["Glitch","Null"],"noEffectAgainst":[],"captureBonusAgainst":["Shell","Signal"],"notes":"Code moves rewrite stable patterns but can be corrupted."},
-    {"attackingElement":"Bug","strongAgainst":["Code","Signal"],"weakAgainst":["Screen","Shell"],"noEffectAgainst":[],"captureBonusAgainst":["Code"],"notes":"Bug moves exploit code paths and active signal routes."},
-    {"attackingElement":"Poison","strongAgainst":["Guard","Shell"],"weakAgainst":["Code","Admin"],"noEffectAgainst":[],"captureBonusAgainst":["Shell"],"notes":"Poison corrupts defensive layers over time."},
-    {"attackingElement":"Glitch","strongAgainst":["Code","Screen","Mirror"],"weakAgainst":["Voltricity","Signal"],"noEffectAgainst":[],"captureBonusAgainst":["Code","Screen"],"notes":"Glitch attacks break normal rules but become unstable under strong signal control."},
-    {"attackingElement":"Signal","strongAgainst":["Glitch","Trick"],"weakAgainst":["Mirror","Null"],"noEffectAgainst":[],"captureBonusAgainst":["Glitch","Trick"],"notes":"Signal is the neutral baseline with small advantages against unstable patterns."},
-    {"attackingElement":"Null","strongAgainst":["Signal","Screen","Code"],"weakAgainst":["Voltricity"],"noEffectAgainst":[],"captureBonusAgainst":[],"notes":"Null is intentionally dangerous and should stay limited to locked or boss encounters."}
+  "schemaVersion": "0.2.0",
+  "generatedBy": "VoltanLabs Studio Configuration Chart Indexer",
+  "name": "DataByteSprites Configuration Chart",
+  "description": "Canonical configuration registry and matchup foundation. Every sprite has exactly one alignment and one or two configurations. Alignment and configuration are separate systems. Matchups remain pending until canon balance rules are authored.",
+  "alignmentModel": {
+    "required": true,
+    "maximumPerSpecies": 1,
+    "alignments": [
+      {"id":"pristine","name":"Pristine","role":"alignment","description":"Stable, intact, or naturally compiled sprite data."},
+      {"id":"stained","name":"Stained","role":"alignment","description":"Corrupted, altered, or unstable sprite data."},
+      {"id":"null","name":"Null","role":"alignment","description":"Null-rewritten data outside normal Pristine and Stained behavior."}
+    ],
+    "matchupStatus": "pending",
+    "notes": "Alignment forms may be separate species within the same family rather than palette variants. The Leo family establishes this pattern."
+  },
+  "configurationModel": {
+    "minimumPerSpecies": 1,
+    "maximumPerSpecies": 2,
+    "secondaryUnlock": "A secondary configuration may appear through a Version Upgrade or alternate species design.",
+    "electricNamingRule": "Voltricity is the canonical electrical configuration. Electric is deprecated and must not be used as a separate configuration."
+  },
+  "configurations": [
+    {"id":"mystic","name":"Mystic","status":"canon","theme":"Magic, arcane code, anomalous ritual data."},
+    {"id":"voltricity","name":"Voltricity","status":"canon","theme":"Electricity, lightning, charge, and electrical energy."},
+    {"id":"acoustic","name":"Acoustic","status":"canon","theme":"Sound, vibration, voice, frequency, and audio data."},
+    {"id":"torrent","name":"Torrent","status":"canon","theme":"Water, fluid motion, currents, streams, and high-volume data flow."},
+    {"id":"thermal","name":"Thermal","status":"canon","theme":"Heat, combustion, radiation, and temperature pressure."},
+    {"id":"organic","name":"Organic","status":"canon","theme":"Life, growth, biological systems, plants, fungi, and natural regeneration."},
+    {"id":"malware","name":"Malware","status":"canon","theme":"Malicious software, infection, exploitation, and hostile code."},
+    {"id":"analog","name":"Analog","status":"canon","theme":"Mechanical media, continuous signals, legacy devices, and pre-digital technology."},
+    {"id":"quantum","name":"Quantum","status":"canon","theme":"Probability, superposition, entanglement, and subatomic computation."},
+    {"id":"financial","name":"Financial","status":"canon","theme":"Currency, markets, debt, value, banking, and economic systems."},
+    {"id":"temporal","name":"Temporal","status":"canon","theme":"Time, timing, delay, acceleration, memory order, and chronology."},
+    {"id":"spam","name":"Spam","status":"canon","theme":"Repetition, unwanted messages, flooding, clutter, and communication overload."},
+    {"id":"cryo","name":"Cryo","status":"canon","theme":"Cold, freezing, suspended processes, and preservation."},
+    {"id":"alloy","name":"Alloy","status":"canon","theme":"Metal, machines, armor, construction, and engineered materials."},
+    {"id":"spectral","name":"Spectral","status":"canon","theme":"Digital echoes, deleted traces, ghosts, absence, and residual data."},
+    {"id":"cipher","name":"Cipher","status":"canon","theme":"Encryption, decoding, secrecy, authentication, and protected information."},
+    {"id":"neural","name":"Neural","status":"canon","theme":"Artificial intelligence, learning, thought, prediction, and adaptive networks."},
+    {"id":"celestial","name":"Celestial","status":"canon","theme":"Stars, space, satellites, cosmic systems, and constellations."},
+    {"id":"aether","name":"Aether","status":"canon","theme":"Ambient energy, invisible fields, atmosphere, and higher-order signal forces."},
+    {"id":"seismic","name":"Seismic","status":"canon","theme":"Earth, stone, soil, crystal, tectonic force, and vibration through solid matter."}
   ],
-  "multipliers": { "strong": 1.25, "neutral": 1, "weak": 0.8, "none": 0, "captureBonus": 3 },
-  "searchFields": ["attackingElement", "strongAgainst", "weakAgainst", "noEffectAgainst", "captureBonusAgainst", "notes"],
-  "commonIndexModel": { "recordType": "typeChart", "idField": "attackingElement", "titleField": "attackingElement", "keywordFields": ["strongAgainst", "weakAgainst", "noEffectAgainst", "captureBonusAgainst", "notes"], "versionField": "schemaVersion" }
+  "rules": [
+    {
+      "attackingConfiguration": "Voltricity",
+      "strongAgainst": [],
+      "weakAgainst": [],
+      "noEffectAgainst": [],
+      "downloadBonusAgainst": [],
+      "status": "pending-canon-balance",
+      "notes": "Migrated from the obsolete Electric/Voltricity split. Voltricity is the only electrical configuration; final matchup values are intentionally not inferred."
+    }
+  ],
+  "multipliers": {
+    "strong": 1.25,
+    "neutral": 1,
+    "weak": 0.8,
+    "none": 0,
+    "downloadBonus": 3,
+    "status": "provisional"
+  },
+  "deprecatedTerms": ["Electric","Water","Screen","Signal","Mirror","Trick","Shell","Code","Bug","Poison","Glitch","Guard","Admin"],
+  "migrationNotes": [
+    "Aquatic and Water concepts migrate to Torrent where appropriate.",
+    "Electric migrates to Voltricity.",
+    "Earth and ground concepts migrate to Seismic rather than Organic.",
+    "Metal and robotic construction concepts migrate to Alloy.",
+    "Legacy terms may remain as move tags, visual themes, mechanics, or descriptive metadata, but not as canonical configurations unless promoted later."
+  ],
+  "searchFields": ["id","name","status","theme","attackingConfiguration","strongAgainst","weakAgainst","noEffectAgainst","downloadBonusAgainst","notes"],
+  "commonIndexModel": {
+    "recordType": "configurationChart",
+    "idField": "id",
+    "titleField": "name",
+    "keywordFields": ["theme","status","strongAgainst","weakAgainst","noEffectAgainst","downloadBonusAgainst","notes"],
+    "versionField": "schemaVersion"
+  },
+  "nextSystems": ["configurationMatchupAuthoring","alignmentInteractionRules","battleResolverConfigurationMigration","dexConfigurationFiltering"]
 }
