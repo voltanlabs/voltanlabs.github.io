@@ -1,62 +1,7 @@
 {
   "id": "dbs-game-data",
   "name": "DataByteSprites Game Data Manifest",
-  "schemaVersion": "1.2.0",
+  "schemaVersion": "2.0.0",
   "generatedBy": "VoltanLabs Studio Game Data Pipeline",
-  "phase": "3.0",
-  "description": "Shared game-data manifest for DataByteSprites: Data Discovery. This manifest connects public roster data, Studio species metadata, moves, abilities, type rules, item definitions, encounter pools, and Phase 3 runtime owners into one discoverable source for the game and diagnostics.",
-  "status": "active-foundation",
-  "runtime": {
-    "publicRosterScript": "/assets/js/dd-canon-roster.js",
-    "studioDataBridgeScript": "/assets/js/dd-studio-data-bridge.js",
-    "captureRuntimeScript": "/assets/js/dd-capture-runtime.js",
-    "encounterRuntimeScript": "/assets/js/dd-encounter-runtime.js",
-    "productAppScript": "/assets/js/databyte-discovery-product-app-v3.js",
-    "dexRendererScript": "/assets/js/databytedex-shared-renderer.js",
-    "dataReadyEvent": "dd:studio-data-ready",
-    "runtimeRosterGlobal": "DD_CANON_ROSTER",
-    "manifestGlobal": "DD_GAME_DATA_MANIFEST",
-    "bridgeStatusGlobal": "DD_STUDIO_DATA_BRIDGE"
-  },
-  "sources": {
-    "publicRoster": {"id": "dd-canon-roster", "name": "Data Discovery Canon Roster", "path": "/assets/js/dd-canon-roster.js", "kind": "public-playable-roster", "recordCountTarget": 52, "status": "active"},
-    "studioSpecies": {"id": "dbs-species", "name": "DataByteSprites Species", "path": "/studio/databytesprites/species.json", "kind": "studio-species-index", "status": "active-foundation"},
-    "moves": {"id": "dbs-moves", "name": "DataByteSprites Moves", "path": "/studio/databytesprites/moves.json", "kind": "move-index", "status": "active-foundation"},
-    "abilities": {"id": "dbs-abilities", "name": "DataByteSprites Abilities", "path": "/studio/databytesprites/abilities.json", "kind": "ability-index", "status": "active-foundation"},
-    "typeChart": {"id": "dbs-type-chart", "name": "DataByteSprites Type Chart", "path": "/studio/databytesprites/type-chart.json", "kind": "type-chart-index", "status": "active-foundation"}
-  },
-  "items": [
-    {"id": "bytecoin", "name": "ByteCoin", "type": "capture", "startingQuantity": 8, "description": "Spent to attempt capturing a wild signal."},
-    {"id": "signal-boost", "name": "Signal Boost", "type": "battle-support", "startingQuantity": 3, "description": "Improves the capture window during battle."},
-    {"id": "repair-pulse", "name": "Repair Pulse", "type": "healing", "startingQuantity": 1, "description": "Restores lead sprite health during battle testing."}
-  ],
-  "encounterPools": [
-    {"id": "common-signal", "name": "Common Signal", "label": "Common Signal", "weight": 55, "rarities": ["Common", "Uncommon"], "description": "Default scanner results for low-noise codes."},
-    {"id": "rare-signal", "name": "Rare Signal", "label": "Rare Signal", "weight": 27, "rarities": ["Rare", "Uncommon"], "description": "Higher-quality scanner result for stronger codes."},
-    {"id": "epic-signal", "name": "Epic Signal", "label": "Epic Signal", "weight": 14, "rarities": ["Epic", "Rare"], "description": "Unstable but powerful scanner result."},
-    {"id": "deep-signal", "name": "Deep Signal", "label": "Deep Signal", "weight": 4, "rarities": ["Legendary", "Mythic", "Epic"], "description": "Rare deep-signal hit reserved for special codes and future story hooks."}
-  ],
-  "mergeRules": {
-    "identityMatch": ["name", "id"],
-    "publicRosterKeeps": ["dex", "icon", "color"],
-    "studioOverrides": ["type", "stage", "rarity", "lore", "discovery", "capture", "battleStats", "assetRefs", "dexRefs", "dependencies", "status"],
-    "lockedRecords": "Do not include locked Studio records in normal capture pools unless a future unlock rule explicitly allows them."
-  },
-  "validationTargets": [
-    {"id": "validate-playable-roster", "name": "Playable roster fields", "description": "Every playable roster entry should have dex, name, type, stage, rarity, icon, lore, capture chance, and stability."},
-    {"id": "validate-studio-matches", "name": "Studio match exposure", "description": "Every Studio-backed playable match should expose studioId and studioSource."},
-    {"id": "validate-move-refs", "name": "Move references", "description": "Moves should reference known species IDs before they are enabled in battle."},
-    {"id": "validate-ability-refs", "name": "Ability references", "description": "Abilities should reference known species IDs before they are enabled in battle."},
-    {"id": "validate-type-chart", "name": "Type chart references", "description": "Type chart rules should reference known type names before type effectiveness is enabled."},
-    {"id": "validate-items", "name": "Item fields", "description": "Items should have id, name, type, and startingQuantity."},
-    {"id": "validate-encounter-pools", "name": "Encounter pool fields", "description": "Encounter pools should have id, label, weight, and rarity filters."},
-    {"id": "validate-shared-roster", "name": "Shared roster consumption", "description": "DataByteDex and Data Discovery should consume the same runtime roster global."}
-  ],
-  "nextSystems": [
-    {"id": "battle-move-resolver", "name": "Battle Move Resolver", "status": "planned"},
-    {"id": "encounter-table-runtime-resolver", "name": "Encounter Table Runtime Resolver", "status": "active-foundation"},
-    {"id": "item-runtime-resolver", "name": "Item Runtime Resolver", "status": "planned"},
-    {"id": "asset-binding-manifest", "name": "Asset Binding Manifest", "status": "planned"},
-    {"id": "studio-export-pipeline", "name": "Studio Export Pipeline", "status": "planned"}
-  ]
-}
+  "phase": "4.4.3-canon-schema",
+  "description": "Shared game-data contract for DataByteSprites: Data Discovery. This manifest connects the 71-species shared roster, Studio species metadata, lore, moves, abilities, Configuration Chart, items, encounter pools, and the v4.4.3 modular runtime.
