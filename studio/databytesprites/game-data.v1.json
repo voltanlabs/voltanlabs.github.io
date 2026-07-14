@@ -4,4 +4,4 @@
   "schemaVersion": "2.0.0",
   "generatedBy": "VoltanLabs Studio Game Data Pipeline",
   "phase": "4.4.3-canon-schema",
-  "description": "Shared game-data contract for DataByteSprites: Data Discovery. This manifest connects the 71-species shared roster, Studio species metadata, lore, moves, abilities, Configuration Chart, items, encounter pools, and the v4.4.3 modular runtime.
+  "description": "Shared game-data contract for DataByteSprites: Data Discovery. This manifest connects the 71-species shared roster, Studio species metadata
