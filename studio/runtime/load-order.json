@@ -1,4 +1,10 @@
 {
-  "schemaVersion": "0.9.0",
+  "schemaVersion": "0.8.0",
   "generatedBy": "VoltanLabs Studio Runtime Loader",
-  "description": "Deterministic load-order and ownership manifest for Data Discovery Phase 4.4.3 after repository recovery and governance synchronization. The v4 App Shell owns boot, routing, context, and action dispatch; dedicated screen and control modules own extracted presentation
+  "description": "Deterministic load-order and ownership manifest for Data Discovery Phase 4.4.3. The v4 App Shell owns boot, routing, context, and action dispatch; dedicated screen and control modules own extracted presentation.",
+  "runtime": "databyte-discovery-product-app-v4-shell",
+  "phase": "4.4.3-modular-vertical-slice",
+  "phases": [
+    {"id":"studio:boot","description":"Runtime loader starts and validates the manifest."},
+    {"id":"product:roster-ready","description":"Shared 52-sprite canon roster bridge is loaded."},
+    {"id":"product:studio-bridge-ready","description":"Studio data bridge overlays manifest, species,
