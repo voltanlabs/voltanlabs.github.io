@@ -232,7 +232,8 @@ function collectMoveSpeciesIds(
         normalizeId(speciesId)
       );
     }
-
+  }
+  
   for (const moveSet of moveSets) {
     if (!moveSet?.speciesId) {
       continue;
@@ -248,7 +249,7 @@ function collectMoveSpeciesIds(
   return ids;
 }
   
-    function validateRequiredString(
+  function validateRequiredString(
   record,
   field,
   recordLabel
