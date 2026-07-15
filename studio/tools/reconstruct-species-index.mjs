@@ -1122,4 +1122,35 @@ main().catch(error => {
       errors:
         diagnosticsByLevel("error"),
       warnings:
-      
+        diagnosticsByLevel("warning"),
+      info:
+        diagnosticsByLevel("info")
+    }
+  };
+
+  if (OPTIONS.json) {
+    console.error(
+      JSON.stringify(
+        failure,
+        null,
+        2
+      )
+    );
+  } else {
+    console.error(
+      "DataByteSprites species index reconstruction failed."
+    );
+
+    console.error(
+      failure.error.message
+    );
+
+    if (failure.error.stack) {
+      console.error(
+        failure.error.stack
+      );
+    }
+  }
+
+  process.exitCode = 1;
+});
