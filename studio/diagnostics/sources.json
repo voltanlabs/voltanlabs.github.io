@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.3.0",
+  "schemaVersion": "0.4.0",
   "generatedBy": "VoltanLabs Studio Diagnostics",
   "description": "Registry of live Studio, DataByteSprites, recovery infrastructure, game bridge, documentation, Studio Intelligence, ownership audits, and runtime sources that Diagnostics should validate for the Data Discovery 4.4.3 recovery and governance state.",
   "sources": [
@@ -219,12 +219,21 @@
       "status": "active-owner"
     },
     {
+      "id": "dd-status-runtime-js",
+      "label": "Data Discovery Status Runtime",
+      "path": "/assets/js/dd-status-runtime.js",
+      "kind": "script",
+      "collection": "file",
+      "status": "active-owner",
+      "global": "DD_STATUS_RUNTIME"
+    },
+    {
       "id": "dd-battle-engine-2-4-js",
-      "label": "Data Discovery Battle Helper Hooks",
+      "label": "Data Discovery Battle Helper Runtime",
       "path": "/assets/js/dd-battle-engine-2-4.js",
       "kind": "script",
       "collection": "file",
-      "status": "recovery-blocked"
+      "status": "active-owner"
     },
     {
       "id": "dd-gameplay-rules-2-4-js",
@@ -636,6 +645,7 @@
     ]
   },
   "requiredProductGlobals": [
+    "DD_STATUS_RUNTIME",
     "DD_SCANNER_SCREEN",
     "DD_ENCOUNTER_SCREEN",
     "DD_BATTLE_SCREEN",
@@ -644,28 +654,13 @@
     "DD_RESULT_SCREEN",
     "DD_PRODUCT_APP_V4_SHELL"
   ],
-  "plannedProductGlobals": [
-    "DD_STATUS_RUNTIME"
-  ],
+  "plannedProductGlobals": [],
   "temporaryPresentationOwners": [
     "DD_PARTY_SCREEN",
     "DD_ITEMS_SCREEN",
     "DD_DEX_SCREEN",
     "DD_ADMIN_SCREEN"
   ],
-  "knownGovernanceIssues": [
-    {
-      "id": "battle-helper-reconstruction",
-      "severity": "error",
-      "target": "/assets/js/dd-battle-engine-2-4.js",
-      "status": "recovery-blocked"
-    },
-    {
-      "id": "status-runtime-owner",
-      "severity": "warning",
-      "target": "DD_STATUS_RUNTIME",
-      "status": "planned-not-implemented"
-    }
-  ],
-  "nextStep": "Migrate the Knowledge Engine registry to the Data Discovery 4.4.3 recovery and governance model, then synchronize the Studio Intelligence core manifest."
+  "knownGovernanceIssues": [],
+  "nextStep": "Synchronize DataByteSprites source-files and mechanics-graph indexes with the recovered battle helper and canonical status runtime."
 }
