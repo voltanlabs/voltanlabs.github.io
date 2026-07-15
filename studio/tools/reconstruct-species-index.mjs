@@ -232,22 +232,6 @@ function collectMoveSpeciesIds(
         normalizeId(speciesId)
       );
     }
-  }
-
-  for (const moveSet of moveSets) {
-    if (!moveSet?.speciesId) {
-      continue;
-    }
-
-    ids.add(
-      normalizeId(
-        moveSet.speciesId
-      )
-    );
-  }
-
-  return ids;
-}
 function validateRequiredString(
   record,
   field,
@@ -262,4 +246,527 @@ function validateRequiredString(
     addDiagnostic(
       "error",
       "MISSING_REQUIRED_STRING",
-     
+      `${recordLabel} is missing a valid "${field}" value.`
+    );
+
+    return false;
+  }
+
+  return true;
+}
+
+function projectSpeciesRecord(
+  rosterEntry,
+  index,
+  validConfigurations
+) {
+  if (!isPlainObject(rosterEntry)) {
+    addDiagnostic(
+      "error",
+      "INVALID_ROSTER_ENTRY",
+      `Roster entry at index ${index} must be an object.`
+    );
+
+    return null;
+  }
+
+  const name =
+    String(rosterEntry.name ?? "").trim();
+
+  const id =
+    normalizeId(name);
+
+  const dex =
+    normalizeDex(rosterEntry.dex);
+
+  const alignment =
+    String(
+      rosterEntry.alignment ||
+      "Unassigned"
+    ).trim();
+
+  const configurations =
+    Array.isArray(
+      rosterEntry.configurations
+    )
+      ? rosterEntry.configurations
+          .map(value =>
+            String(value).trim()
+          )
+          .filter(Boolean)
+      : [];
+
+  const version =
+    String(
+      rosterEntry.version ||
+      rosterEntry.stage ||
+      ""
+    ).trim();
+
+  const recordLabel =
+    name || `roster-${index}`;
+
+  if (!id) {
+    addDiagnostic(
+      "error",
+      "MISSING_SPECIES_ID",
+      `${recordLabel} could not be converted into a species id.`
+    );
+  }
+
+  if (!/^\d{3}$/.test(dex)) {
+    addDiagnostic(
+      "error",
+      "INVALID_DEX_NUMBER",
+      `${recordLabel} has invalid Dex number "${dex}".`
+    );
+  }
+
+  if (!VALID_ALIGNMENTS.has(alignment)) {
+    addDiagnostic(
+      "error",
+      "INVALID_ALIGNMENT",
+      `${recordLabel} uses unknown alignment "${alignment}".`
+    );
+  }
+
+  if (!VALID_VERSIONS.has(version)) {
+    addDiagnostic(
+      "error",
+      "INVALID_VERSION",
+      `${recordLabel} uses unknown version "${version}".`
+    );
+  }
+
+  for (
+    const configuration of
+    configurations
+  ) {
+    if (
+      !validConfigurations.has(
+        configuration
+      )
+    ) {
+      addDiagnostic(
+        "error",
+        "INVALID_CONFIGURATION",
+        `${recordLabel} uses unknown configuration "${configuration}".`
+      );
+    }
+  }
+
+  const primaryConfiguration =
+    configurations[0] || null;
+
+  const secondaryConfiguration =
+    configurations[1] || null;
+
+  const configurationStatus =
+    configurations.length > 0
+      ? "assigned"
+      : "pending";
+
+  const lore =
+    String(
+      rosterEntry.lore || ""
+    ).trim();
+
+  const rarity =
+    String(
+      rosterEntry.rarity ||
+      "Common"
+    ).trim();
+
+  const familyId =
+    String(
+      rosterEntry.familyId ||
+      ""
+    ).trim() || null;
+
+  const zodiac =
+    String(
+      rosterEntry.zodiac ||
+      ""
+    ).trim() || null;
+
+  const record = {
+    id,
+    dex,
+    name,
+    status:
+      "canon-roster",
+
+    alignment,
+
+    configurations,
+
+    primaryConfiguration,
+
+    secondaryConfiguration,
+
+    configurationStatus,
+
+    version,
+
+    familyId,
+
+    zodiac,
+
+    rarity,
+
+    lore,
+
+    description:
+      lore || null,
+
+    runtime: {
+      icon:
+        rosterEntry.icon || null,
+
+      color:
+        rosterEntry.color || null,
+
+      captureChance:
+        Number.isFinite(
+          Number(rosterEntry.chance)
+        )
+          ? Number(
+              rosterEntry.chance
+            )
+          : null,
+
+      stability:
+        Number.isFinite(
+          Number(
+            rosterEntry.stability
+          )
+        )
+          ? Number(
+              rosterEntry.stability
+            )
+          : null
+    },
+
+    metadataStatus: {
+      alignment:
+        alignment === "Unassigned"
+          ? "pending"
+          : "assigned",
+
+      configurations:
+        configurationStatus,
+
+      battleStats:
+        "pending",
+
+      discovery:
+        "pending",
+
+      download:
+        "pending",
+
+      assetRefs:
+        "pending",
+
+      dexRefs:
+        "pending"
+    },
+
+    battleStats: null,
+
+    discovery: null,
+
+    capture: null,
+
+    assetRefs: [],
+
+    dexRefs: [],
+
+    dependencies: [
+      "/assets/js/dd-canon-roster.js"
+    ],
+
+    source: {
+      path:
+        "/assets/js/dd-canon-roster.js",
+
+      authority:
+        "playable-roster"
+    },
+
+    schemaVersion:
+      "0.3.0"
+  };
+
+  validateRequiredString(
+    record,
+    "id",
+    recordLabel
+  );
+
+  validateRequiredString(
+    record,
+    "dex",
+    recordLabel
+  );
+
+  validateRequiredString(
+    record,
+    "name",
+    recordLabel
+  );
+
+  validateRequiredString(
+    record,
+    "version",
+    recordLabel
+  );
+
+  return record;
+}
+
+function validateUniqueSpecies(
+  species
+) {
+  const ids = new Set();
+  const dexNumbers = new Set();
+
+  for (const record of species) {
+    if (!record) {
+      continue;
+    }
+
+    if (ids.has(record.id)) {
+      addDiagnostic(
+        "error",
+        "DUPLICATE_SPECIES_ID",
+        `Duplicate species id "${record.id}".`
+      );
+    }
+
+    ids.add(record.id);
+
+    if (
+      dexNumbers.has(record.dex)
+    ) {
+      addDiagnostic(
+        "error",
+        "DUPLICATE_DEX_NUMBER",
+        `Duplicate Dex number "${record.dex}".`
+      );
+    }
+
+    dexNumbers.add(record.dex);
+  }
+
+  return {
+    ids,
+    dexNumbers
+  };
+}
+
+function validateMoveReferences(
+  speciesIds,
+  moveSpeciesIds
+) {
+  for (
+    const speciesId of
+    moveSpeciesIds
+  ) {
+    if (
+      speciesIds.has(speciesId)
+    ) {
+      continue;
+    }
+
+    addDiagnostic(
+      "error",
+      "UNKNOWN_MOVE_SPECIES_REFERENCE",
+      `moves.json references unknown species "${speciesId}".`
+    );
+  }
+}
+
+function buildSpeciesRecords({
+  roster,
+  configurations,
+  moveSpeciesIds
+}) {
+  const validConfigurations =
+    new Set(configurations);
+
+  const species = roster
+    .map((entry, index) =>
+      projectSpeciesRecord(
+        entry,
+        index,
+        validConfigurations
+      )
+    )
+    .filter(Boolean);
+
+  const validation =
+    validateUniqueSpecies(
+      species
+    );
+
+  validateMoveReferences(
+    validation.ids,
+    moveSpeciesIds
+  );
+
+  if (species.length !== 71) {
+    addDiagnostic(
+      "error",
+      "UNEXPECTED_SPECIES_COUNT",
+      `Expected 71 species but reconstructed ${species.length}.`
+    );
+  }
+
+  return species;
+}
+
+function buildSpeciesDocument({
+  species,
+  alignments,
+  configurations
+}) {
+  return {
+    schemaVersion:
+      "0.3.0",
+
+    generatedBy:
+      "VoltanLabs Studio DataByteSprites Species Reconstructor",
+
+    description:
+      "Canonical DataByteSprites species metadata reconstructed from the active 71-species roster. Unknown Studio metadata remains explicitly pending rather than inferred.",
+
+    sourceOfTruth: {
+      playableRoster:
+        "/assets/js/dd-canon-roster.js",
+
+      moveReferences:
+        "/studio/databytesprites/moves.json"
+    },
+
+    model: {
+      idField:
+        "id",
+
+      dexField:
+        "dex",
+
+      alignmentField:
+        "alignment",
+
+      configurationField:
+        "configurations",
+
+      versionField:
+        "version",
+
+      familyField:
+        "familyId",
+
+      pendingValue:
+        "pending"
+    },
+
+    allowedValues: {
+      alignments: [
+        ...alignments,
+        "Unassigned"
+      ],
+
+      configurations,
+
+      versions: [
+        "Kilobyte",
+        "Megabyte",
+        "Gigabyte",
+        "Terabyte"
+      ]
+    },
+
+    counts: {
+      species:
+        species.length,
+
+      alignments:
+        alignments.length,
+
+      configurations:
+        configurations.length,
+
+      assignedAlignments:
+        species.filter(
+          record =>
+            record.alignment !==
+            "Unassigned"
+        ).length,
+
+      pendingAlignments:
+        species.filter(
+          record =>
+            record.alignment ===
+            "Unassigned"
+        ).length,
+
+      assignedConfigurations:
+        species.filter(
+          record =>
+            record.configurations
+              .length > 0
+        ).length,
+
+      pendingConfigurations:
+        species.filter(
+          record =>
+            record.configurations
+              .length === 0
+        ).length
+    },
+
+    species,
+
+    searchFields: [
+      "id",
+      "dex",
+      "name",
+      "alignment",
+      "configurations",
+      "version",
+      "familyId",
+      "zodiac",
+      "rarity",
+      "lore"
+    ],
+
+    commonIndexModel: {
+      recordType:
+        "species",
+
+      idField:
+        "id",
+
+      titleField:
+        "name",
+
+      typeField:
+        "alignment",
+
+      keywordFields: [
+        "dex",
+        "configurations",
+        "version",
+        "familyId",
+        "zodiac",
+        "rarity",
+        "lore"
+      ],
+
+      versionField:
+        "schemaVersion"
+    }
+  };
+      }
