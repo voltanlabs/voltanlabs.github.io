@@ -791,3 +791,477 @@ function compactObject(value) {
     )
   );
 }
+function buildManifest(sources, validation) {
+  const generatedAt = new Date().toISOString();
+
+  const speciesCount = countCollection(
+    sources.required.species,
+    ["species"]
+  );
+
+  const moveCount = countCollection(
+    sources.required.moves,
+    ["moves"]
+  );
+
+  const moveSetCount = countCollection(
+    sources.required.moves,
+    ["speciesMoveSets"]
+  );
+
+  const configurationCount =
+    validation.configurationIds.size;
+
+  const abilityCount = countCollection(
+    sources.optional.abilities,
+    ["abilities"]
+  );
+
+  const itemCount = countCollection(
+    sources.optional.items,
+    ["items"]
+  );
+
+  const encounterCount = countCollection(
+    sources.optional.encounters,
+    ["encounters", "pools"]
+  );
+
+  const loreCount = countCollection(
+    sources.optional.lore,
+    ["entries", "lore"]
+  );
+
+  const sourceDescriptors = compactObject({
+    studioSpecies: createSourceDescriptor(
+      sources.required.species,
+      "/studio/databytesprites/species.json"
+    ),
+
+    moves: createSourceDescriptor(
+      sources.required.moves,
+      "/studio/databytesprites/moves.json"
+    ),
+
+    typeChart: createSourceDescriptor(
+      sources.required.typeChart,
+      "/studio/databytesprites/type-chart.json"
+    ),
+
+    lore: createSourceDescriptor(
+      sources.optional.lore,
+      "/studio/databytesprites/lore.json"
+    ),
+
+    abilities: createSourceDescriptor(
+      sources.optional.abilities,
+      "/studio/databytesprites/abilities.json"
+    ),
+
+    items: createSourceDescriptor(
+      sources.optional.items,
+      "/studio/databytesprites/items.json"
+    ),
+
+    encounters: createSourceDescriptor(
+      sources.optional.encounters,
+      "/studio/databytesprites/encounters.json"
+    )
+  });
+
+  const manifest = {
+    id: "dbs-game-data",
+
+    name:
+      "DataByteSprites Game Data Manifest",
+
+    schemaVersion: "2.1.0",
+
+    generatedBy:
+      "VoltanLabs Studio Game Data Pipeline",
+
+    generatedAt,
+
+    phase:
+      "generator-reconstruction",
+
+    description:
+      "Shared DataByteSprites runtime manifest generated from canonical Studio source files.",
+
+    status:
+      hasErrors()
+        ? "invalid-source-data"
+        : "active-foundation",
+
+    canonModel: {
+      alignmentField: "alignment",
+      configurationField: "configuration",
+      versionField: "version",
+      speciesIdField: "id",
+      moveIdField: "id",
+
+      separationRules: [
+        "Alignment and configuration are separate canon systems.",
+        "Species, moves, abilities, items, encounters, and lore remain independently indexed.",
+        "Generated manifests describe source ownership and must not replace canonical source records."
+      ]
+    },
+
+    sources: sourceDescriptors,
+
+    counts: {
+      species: speciesCount,
+      moves: moveCount,
+      speciesMoveSets: moveSetCount,
+      configurations: configurationCount,
+      abilities: abilityCount,
+      items: itemCount,
+      encounters: encounterCount,
+      loreEntries: loreCount,
+      requiredSources:
+        REQUIRED_SOURCES.length,
+      optionalSources:
+        OPTIONAL_SOURCES.length,
+      loadedRequiredSources:
+        Object.values(
+          sources.required
+        ).filter(Boolean).length,
+      loadedOptionalSources:
+        Object.values(
+          sources.optional
+        ).filter(Boolean).length
+    },
+
+    validation: {
+      ok: !hasErrors(),
+
+      strict:
+        OPTIONS.strict,
+
+      errorCount:
+        diagnostics.filter(
+          diagnostic =>
+            diagnostic.level === "error"
+        ).length,
+
+      warningCount:
+        diagnostics.filter(
+          diagnostic =>
+            diagnostic.level === "warning"
+        ).length,
+
+      infoCount:
+        diagnostics.filter(
+          diagnostic =>
+            diagnostic.level === "info"
+        ).length,
+
+      diagnostics
+    },
+
+    runtimeContract: {
+      manifestPath:
+        "/studio/databytesprites/game-data.v1.json",
+
+      requiredRuntimeSources: [
+        "studioSpecies",
+        "moves",
+        "typeChart"
+      ],
+
+      optionalRuntimeSources: [
+        "lore",
+        "abilities",
+        "items",
+        "encounters"
+      ],
+
+      consumers: [
+        "/assets/js/dd-studio-data-bridge.js",
+        "/assets/js/dd-encounter-runtime.js",
+        "/assets/js/dd-capture-runtime.js",
+        "/assets/js/dd-gameplay-rules-2-4.js",
+        "/assets/js/dd-battle-engine-2-4.js"
+      ],
+
+      fallbackBehavior: {
+        species:
+          "/studio/databytesprites/species.json",
+
+        moves:
+          "/studio/databytesprites/moves.json",
+
+        typeChart:
+          "/studio/databytesprites/type-chart.json"
+      }
+    },
+
+    integrity: {
+      algorithm: "sha256",
+
+      required: Object.fromEntries(
+        Object.entries(
+          sources.required
+        )
+          .filter(([, source]) =>
+            Boolean(source)
+          )
+          .map(([id, source]) => [
+            id,
+            source.hash
+          ])
+      ),
+
+      optional: Object.fromEntries(
+        Object.entries(
+          sources.optional
+        )
+          .filter(([, source]) =>
+            Boolean(source)
+          )
+          .map(([id, source]) => [
+            id,
+            source.hash
+          ])
+      )
+    }
+  };
+
+  return manifest;
+}
+
+function stableSortObject(value) {
+  if (Array.isArray(value)) {
+    return value.map(stableSortObject);
+  }
+
+  if (!isPlainObject(value)) {
+    return value;
+  }
+
+  return Object.fromEntries(
+    Object.keys(value)
+      .sort((left, right) =>
+        left.localeCompare(right)
+      )
+      .map(key => [
+        key,
+        stableSortObject(value[key])
+      ])
+  );
+}
+
+function serializeManifest(manifest) {
+  const stableManifest =
+    stableSortObject(manifest);
+
+  return (
+    JSON.stringify(
+      stableManifest,
+      null,
+      2
+    ) + "\n"
+  );
+}
+
+function normalizeGeneratedContent(text) {
+  return String(text)
+    .replace(/\r\n/g, "\n")
+    .trimEnd() + "\n";
+}
+
+async function readExistingManifest() {
+  if (!(await fileExists(OUTPUT_FILE))) {
+    return null;
+  }
+
+  try {
+    return await readText(OUTPUT_FILE);
+  } catch (error) {
+    addDiagnostic(
+      "error",
+      "OUTPUT_READ_ERROR",
+      `Unable to read existing manifest: ${error.message}`,
+      basename(OUTPUT_FILE)
+    );
+
+    return null;
+  }
+}
+
+function compareManifestContent(
+  existing,
+  generated
+) {
+  if (existing === null) {
+    return {
+      exists: false,
+      matches: false
+    };
+  }
+
+  return {
+    exists: true,
+
+    matches:
+      normalizeGeneratedContent(existing) ===
+      normalizeGeneratedContent(generated)
+  };
+}
+
+function buildExecutionReport({
+  manifest,
+  comparison,
+  wroteFile
+}) {
+  return {
+    ok: !hasErrors(),
+
+    mode: OPTIONS.check
+      ? "check"
+      : "write",
+
+    strict: OPTIONS.strict,
+
+    output:
+      OUTPUT_FILE.replace(
+        REPO_ROOT,
+        ""
+      ) || OUTPUT_FILE,
+
+    outputExists:
+      comparison.exists,
+
+    outputMatches:
+      comparison.matches,
+
+    wroteFile,
+
+    manifest: {
+      id: manifest.id,
+      schemaVersion:
+        manifest.schemaVersion,
+      status: manifest.status,
+      generatedAt:
+        manifest.generatedAt,
+      counts: manifest.counts
+    },
+
+    diagnostics
+  };
+}
+
+function formatDiagnostic(diagnostic) {
+  const location =
+    diagnostic.file
+      ? ` [${diagnostic.file}]`
+      : "";
+
+  return (
+    `${diagnostic.level.toUpperCase()} ` +
+    `${diagnostic.code}${location}: ` +
+    diagnostic.message
+  );
+}
+
+function printHumanReport(report) {
+  const lines = [];
+
+  lines.push(
+    "DataByteSprites Game Data Generator"
+  );
+
+  lines.push(
+    `Mode: ${report.mode}`
+  );
+
+  lines.push(
+    `Strict: ${report.strict ? "yes" : "no"}`
+  );
+
+  lines.push(
+    `Output exists: ${
+      report.outputExists ? "yes" : "no"
+    }`
+  );
+
+  lines.push(
+    `Output matches: ${
+      report.outputMatches ? "yes" : "no"
+    }`
+  );
+
+  lines.push(
+    `File written: ${
+      report.wroteFile ? "yes" : "no"
+    }`
+  );
+
+  lines.push(
+    `Species: ${
+      report.manifest.counts.species
+    }`
+  );
+
+  lines.push(
+    `Moves: ${
+      report.manifest.counts.moves
+    }`
+  );
+
+  lines.push(
+    `Configurations: ${
+      report.manifest.counts
+        .configurations
+    }`
+  );
+
+  lines.push(
+    `Errors: ${
+      diagnostics.filter(
+        diagnostic =>
+          diagnostic.level === "error"
+      ).length
+    }`
+  );
+
+  lines.push(
+    `Warnings: ${
+      diagnostics.filter(
+        diagnostic =>
+          diagnostic.level === "warning"
+      ).length
+    }`
+  );
+
+  if (diagnostics.length > 0) {
+    lines.push("");
+    lines.push("Diagnostics:");
+
+    for (const diagnostic of diagnostics) {
+      lines.push(
+        `- ${formatDiagnostic(
+          diagnostic
+        )}`
+      );
+    }
+  }
+
+  console.log(lines.join("\n"));
+}
+
+function printReport(report) {
+  if (OPTIONS.json) {
+    console.log(
+      JSON.stringify(
+        report,
+        null,
+        2
+      )
+    );
+
+    return;
+  }
+
+  printHumanReport(report);
+}
