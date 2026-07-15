@@ -1265,3 +1265,239 @@ function printReport(report) {
 
   printHumanReport(report);
 }
+async function writeManifestAtomically(content) {
+  const temporaryPath =
+    `${OUTPUT_FILE}.tmp-${process.pid}-${Date.now()}`;
+
+  try {
+    await writeFile(
+      temporaryPath,
+      content,
+      "utf8"
+    );
+
+    await rename(
+      temporaryPath,
+      OUTPUT_FILE
+    );
+  } catch (error) {
+    try {
+      await unlink(temporaryPath);
+    } catch {
+      // Ignore cleanup failures.
+    }
+
+    throw error;
+  }
+}
+
+function shouldBlockWrite() {
+  if (hasErrors()) {
+    return true;
+  }
+
+  if (
+    OPTIONS.strict &&
+    diagnostics.some(
+      diagnostic =>
+        diagnostic.level === "warning"
+    )
+  ) {
+    addDiagnostic(
+      "error",
+      "STRICT_MODE_WARNING_FAILURE",
+      "Strict mode treats warnings as blocking validation failures."
+    );
+
+    return true;
+  }
+
+  return false;
+}
+
+function determineExitCode(report) {
+  if (!report.ok) {
+    return 1;
+  }
+
+  if (
+    OPTIONS.strict &&
+    diagnostics.some(
+      diagnostic =>
+        diagnostic.level === "warning"
+    )
+  ) {
+    return 1;
+  }
+
+  if (
+    OPTIONS.check &&
+    !report.outputMatches
+  ) {
+    return 2;
+  }
+
+  return 0;
+}
+
+async function main() {
+  addDiagnostic(
+    "info",
+    "GENERATOR_START",
+    "Beginning DataByteSprites manifest generation."
+  );
+
+  const sources =
+    await loadAllSources();
+
+  const validation =
+    validateSources(sources);
+
+  const manifest =
+    buildManifest(
+      sources,
+      validation
+    );
+
+  const generatedContent =
+    serializeManifest(manifest);
+
+  const existingContent =
+    await readExistingManifest();
+
+  const comparison =
+    compareManifestContent(
+      existingContent,
+      generatedContent
+    );
+
+  let wroteFile = false;
+
+  if (OPTIONS.check) {
+    if (!comparison.exists) {
+      addDiagnostic(
+        "error",
+        "OUTPUT_NOT_FOUND",
+        "Generated manifest does not exist.",
+        basename(OUTPUT_FILE)
+      );
+    } else if (!comparison.matches) {
+      addDiagnostic(
+        "error",
+        "OUTPUT_OUT_OF_DATE",
+        "Generated manifest differs from the canonical source data.",
+        basename(OUTPUT_FILE)
+      );
+    } else {
+      addDiagnostic(
+        "info",
+        "OUTPUT_CURRENT",
+        "Generated manifest matches the canonical source data.",
+        basename(OUTPUT_FILE)
+      );
+    }
+  } else if (shouldBlockWrite()) {
+    addDiagnostic(
+      "error",
+      "WRITE_BLOCKED",
+      "Manifest write was blocked because required source validation failed.",
+      basename(OUTPUT_FILE)
+    );
+  } else if (comparison.matches) {
+    addDiagnostic(
+      "info",
+      "OUTPUT_UNCHANGED",
+      "Generated manifest is already current.",
+      basename(OUTPUT_FILE)
+    );
+  } else {
+    try {
+      await writeManifestAtomically(
+        generatedContent
+      );
+
+      wroteFile = true;
+
+      addDiagnostic(
+        "info",
+        "OUTPUT_WRITTEN",
+        "Generated manifest was written successfully.",
+        basename(OUTPUT_FILE)
+      );
+    } catch (error) {
+      addDiagnostic(
+        "error",
+        "OUTPUT_WRITE_ERROR",
+        `Unable to write generated manifest: ${error.message}`,
+        basename(OUTPUT_FILE)
+      );
+    }
+  }
+
+  const report =
+    buildExecutionReport({
+      manifest,
+      comparison:
+        wroteFile
+          ? {
+              exists: true,
+              matches: true
+            }
+          : comparison,
+      wroteFile
+    });
+
+  printReport(report);
+
+  process.exitCode =
+    determineExitCode(report);
+}
+
+main().catch(error => {
+  const failure = {
+    ok: false,
+    mode: OPTIONS.check
+      ? "check"
+      : "write",
+    strict: OPTIONS.strict,
+    output: OUTPUT_FILE,
+    error: {
+      name:
+        error?.name ||
+        "Error",
+      message:
+        error?.message ||
+        String(error),
+      stack:
+        error?.stack ||
+        null
+    },
+    diagnostics
+  };
+
+  if (OPTIONS.json) {
+    console.error(
+      JSON.stringify(
+        failure,
+        null,
+        2
+      )
+    );
+  } else {
+    console.error(
+      "DataByteSprites generator failed."
+    );
+
+    console.error(
+      failure.error.message
+    );
+
+    if (failure.error.stack) {
+      console.error(
+        failure.error.stack
+      );
+    }
+  }
+
+  process.exitCode = 1;
+});
