@@ -640,3 +640,236 @@
         "databyte-discovery-product-app-v4-shell",
         "dd-scanner-screen",
         "dd-encounter-screen",
+        "dd-battle-screen",
+        "dd-battle-controls",
+        "dd-confirm-screen",
+        "dd-result-screen"
+      ],
+      "emits": [
+        "runtime:health-check",
+        "DD_RUNTIME_HEALTH"
+      ],
+      "required": false,
+      "failureBehavior": "warn-only",
+      "status": "active-diagnostics"
+    }
+  ],
+  "legacyModules": [
+    {
+      "id": "databyte-discovery-product-app-v3-5",
+      "script": "/assets/js/databyte-discovery-product-app-v3-5.js?v=phase4-2-layout-lock-1",
+      "status": "legacy-transition-reference",
+      "replacement": "databyte-discovery-product-app-v4-shell"
+    },
+    {
+      "id": "databyte-discovery-product-app-v3-4",
+      "script": "/assets/js/databyte-discovery-product-app-v3-4.js?v=phase3-4-hp-signal-1",
+      "status": "legacy-reference",
+      "replacement": "databyte-discovery-product-app-v4-shell"
+    },
+    {
+      "id": "databyte-discovery-product-app-v3-3",
+      "script": "/assets/js/databyte-discovery-product-app-v3-3.js?v=phase3-3-signal-rule-1",
+      "status": "legacy-reference",
+      "replacement": "databyte-discovery-product-app-v4-shell"
+    },
+    {
+      "id": "databyte-discovery-product-app-v3-2",
+      "script": "/assets/js/databyte-discovery-product-app-v3-2.js?v=phase3-2-runtime-1",
+      "status": "legacy-reference",
+      "replacement": "databyte-discovery-product-app-v4-shell"
+    },
+    {
+      "id": "databyte-discovery-product-app-v3",
+      "script": "/assets/js/databyte-discovery-product-app-v3.js?v=phase3-runtime-1",
+      "status": "legacy-reference",
+      "replacement": "databyte-discovery-product-app-v4-shell"
+    },
+    {
+      "id": "databyte-discovery-product-app",
+      "script": "/assets/js/databyte-discovery-product-app.js?v=product-build-8",
+      "status": "legacy-reference",
+      "replacement": "databyte-discovery-product-app-v4-shell"
+    },
+    {
+      "id": "databyte-capture-pool",
+      "script": "/assets/js/databyte-capture-pool.js?v=knowledge-pool-1",
+      "status": "legacy-reference",
+      "replacement": "dd-encounter-runtime"
+    },
+    {
+      "id": "databyte-balance-bridge",
+      "script": "/assets/js/databyte-balance-bridge.js?v=balance-1",
+      "status": "legacy-reference",
+      "replacement": "dd-gameplay-rules-2-4"
+    },
+    {
+      "id": "databyte-move-bridge",
+      "script": "/assets/js/databyte-move-bridge.js?v=moves-1",
+      "status": "legacy-reference",
+      "replacement": "dd-studio-data-bridge"
+    },
+    {
+      "id": "databyte-type-bridge",
+      "script": "/assets/js/databyte-type-bridge.js?v=types-1",
+      "status": "legacy-reference",
+      "replacement": "dd-studio-data-bridge"
+    },
+    {
+      "id": "databyte-ability-bridge",
+      "script": "/assets/js/databyte-ability-bridge.js?v=abilities-1",
+      "status": "legacy-reference",
+      "replacement": "future-ability-runtime"
+    },
+    {
+      "id": "databyte-standalone-app",
+      "script": "/assets/js/databyte-standalone-app.js?v=0912-direct-os",
+      "status": "legacy-reference",
+      "replacement": "databyte-discovery-product-app-v4-shell"
+    },
+    {
+      "id": "dd-mobile-game-tray-4-2",
+      "script": "/assets/js/dd-mobile-game-tray-4-2.js?v=mobile-game-tray-4-3-wrapper-1",
+      "status": "retired-active-load",
+      "replacement": "databyte-discovery-product-app-v4-shell"
+    },
+    {
+      "id": "dd-unified-scanner-shell-4-3",
+      "script": "/assets/js/dd-unified-scanner-shell-4-3.js?v=unified-scanner-shell-4-3-1",
+      "status": "legacy-reference",
+      "replacement": "databyte-discovery-product-app-v4-shell"
+    },
+    {
+      "id": "dd-unified-scanner-shell-4-3-once",
+      "script": "/assets/js/dd-unified-scanner-shell-4-3-once.js?v=unified-scanner-shell-4-3-wrapper-1",
+      "status": "retired-active-load",
+      "replacement": "databyte-discovery-product-app-v4-shell"
+    },
+    {
+      "id": "dd-battle-centerline-fix-4-3",
+      "script": "/assets/js/dd-battle-centerline-fix-4-3.js?v=battle-centerline-4-3-wrapper-1",
+      "status": "retired-active-load",
+      "replacement": "dd-battle-screen"
+    }
+  ],
+  "events": {
+    "loaderStarted": "studio:boot",
+    "manifestReady": "runtime:manifest-ready",
+    "moduleLoaded": "runtime:module-loaded",
+    "moduleFailed": "runtime:module-failed",
+    "allReady": "runtime:ready",
+    "healthCheck": "runtime:health-check"
+  },
+  "verificationTargets": [
+    "DD_CANON_ROSTER",
+    "DD_STUDIO_DATA_BRIDGE",
+    "DD_GAME_DATA_MANIFEST",
+    "DD_MOVE_INDEX",
+    "DD_TYPE_CHART",
+    "DD_STATUS_RUNTIME",
+    "DDBattle24",
+    "DD_GAMEPLAY_RULES",
+    "DD_CAPTURE_RUNTIME",
+    "DD_ENCOUNTER_RUNTIME",
+    "DD_BATTLE_BALANCE",
+    "DD_BATTLE_RESOLVER",
+    "DD_BATTLE_STATE_RUNTIME",
+    "DD_BATTLE_PRESENTATION_RUNTIME",
+    "DD_COLLECTION_RUNTIME",
+    "DD_PARTY_RUNTIME",
+    "DD_PARTY_SWITCH_RUNTIME",
+    "DD_INVENTORY_RUNTIME",
+    "DD_DEX_RUNTIME",
+    "DD_SCANNER_SCREEN",
+    "DD_ENCOUNTER_SCREEN",
+    "DD_BATTLE_SCREEN",
+    "DD_BATTLE_CONTROLS",
+    "DD_CONFIRM_SCREEN",
+    "DD_RESULT_SCREEN",
+    "DD_PRODUCT_APP_V4_SHELL",
+    "ddApp",
+    "dd:v4-shell-ready"
+  ],
+  "canonicalUiRules": {
+    "appShellOwner": "databyte-discovery-product-app-v4-shell",
+    "screenRegistryOwner": "databyte-discovery-product-app-v4-shell",
+    "scannerScreenOwner": "dd-scanner-screen",
+    "encounterScreenOwner": "dd-encounter-screen",
+    "battleScreenOwner": "dd-battle-screen",
+    "battleControlsOwner": "dd-battle-controls",
+    "confirmScreenOwner": "dd-confirm-screen",
+    "resultScreenOwner": "dd-result-screen",
+    "battleMathOwner": "dd-battle-resolver",
+    "battleStateOwner": "dd-battle-state-runtime",
+    "battleEffectsOwner": "dd-battle-presentation-runtime",
+    "statusRuntimeOwner": "dd-status-runtime",
+    "configurationSource": "DD_TYPE_CHART",
+    "alignmentModel": "Alignment is independent from Configuration.",
+    "hpDisplay": "Both lead and wild sprite HP are displayed as circular HP rings.",
+    "signalDisplay": "Signal is displayed separately as encounter stability and is not drawn as the wild sprite ring.",
+    "mobileLayout": "The v4 shell owns the app frame. Dedicated screen modules own internal screen layout.",
+    "temporaryScreens": [
+      "party",
+      "items",
+      "dex",
+      "admin"
+    ],
+    "deprecated": [
+      "v3.5 active shell loading",
+      "embedded extracted-screen HTML in active shell",
+      "horizontal battle HP bars",
+      "Signal-as-enemy-health UI",
+      "whole-page battle scrolling",
+      "layout-expanding battle messages",
+      "interval-based layout patch loops",
+      "active layout wrapper loading"
+    ]
+  },
+  "knownValidationIssues": [
+    {
+      "id": "temporary-screen-owners",
+      "severity": "warning",
+      "target": "DD_PARTY_SCREEN, DD_ITEMS_SCREEN, DD_DEX_SCREEN, DD_ADMIN_SCREEN",
+      "observed": "Party, Items, Dex, and Admin still use v4 shell fallback presentation.",
+      "nextAction": "Extract dedicated presentation owners without duplicating runtime state."
+    },
+    {
+      "id": "compatibility-layer-retirement",
+      "severity": "warning",
+      "target": "behavior and visual compatibility modules",
+      "observed": "Several compatibility adapters remain in the live load chain.",
+      "nextAction": "Audit each adapter and merge or retire only after equivalent canonical behavior is verified."
+    }
+  ],
+  "recoveryInfrastructure": [
+    {
+      "id": "species-reconstructor",
+      "path": "/studio/tools/reconstruct-species-index.mjs",
+      "status": "active-tool"
+    },
+    {
+      "id": "species-reconstruction-workflow",
+      "path": "/.github/workflows/reconstruct-species-index.yml",
+      "status": "active-workflow"
+    },
+    {
+      "id": "species-index",
+      "path": "/studio/databytesprites/species.json",
+      "status": "reconstructed-71-species"
+    },
+    {
+      "id": "configuration-chart",
+      "path": "/studio/databytesprites/type-chart.json",
+      "status": "authored-20-configurations"
+    }
+  ],
+  "nextSystems": [
+    "sourceIndexV4Sync",
+    "mechanicsGraphV4Sync",
+    "statusBattleIntegration",
+    "battleTerminalRewardFlow",
+    "partyItemsScreenExtraction",
+    "compatibilityRetirementAudit",
+    "studioExportPipeline"
+  ]
+}
