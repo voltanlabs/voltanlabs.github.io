@@ -249,7 +249,7 @@ function collectMoveSpeciesIds(
   return ids;
 }
   
-  function validateRequiredString(
+function validateRequiredString(
   record,
   field,
   recordLabel
