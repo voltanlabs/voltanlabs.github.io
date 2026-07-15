@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.4.0",
+  "schemaVersion": "2.5.0",
   "generatedBy": "VoltanLabs Studio Knowledge Engine v2",
   "description": "Live modular Knowledge Engine registry for VoltanLabs Studio, Data Discovery Phase 4.4.3 recovery and governance synchronization, and DataByteSprites project intelligence.",
   "registryType": "knowledge-engine-v2",
@@ -405,10 +405,16 @@
       "status": "active-owner"
     },
     {
+      "id": "dd-status-runtime",
+      "name": "Status Runtime",
+      "path": "/assets/js/dd-status-runtime.js",
+      "status": "active-owner"
+    },
+    {
       "id": "dd-battle-engine-2-4",
-      "name": "Battle Helper Hooks",
+      "name": "Battle Helper Runtime",
       "path": "/assets/js/dd-battle-engine-2-4.js",
-      "status": "recovery-blocked"
+      "status": "active-owner"
     },
     {
       "id": "dd-battle-balance-2-4",
@@ -509,11 +515,6 @@
   ],
   "plannedOwners": [
     {
-      "id": "DD_STATUS_RUNTIME",
-      "name": "Status Runtime",
-      "status": "planned-not-implemented"
-    },
-    {
       "id": "DD_PARTY_SCREEN",
       "name": "Party Screen",
       "status": "planned"
@@ -591,13 +592,11 @@
     "safeToDeleteLegacy": false
   },
   "nextSystems": [
-    "studioIntelligenceManifestSync",
-    "battleHelperReconstruction",
-    "statusRuntimeOwnership",
     "sourceIndexV4Sync",
     "mechanicsGraphV4Sync",
+    "statusBattleIntegration",
     "partyItemsScreenExtraction",
     "compatibilityRetirementAudit",
     "studioExportPipeline"
   ]
-}
+    }
