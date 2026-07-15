@@ -1827,3 +1827,298 @@ function printReport(report) {
 
   printHumanReport(report);
 }
+
+async function writeManifestAtomically(content) {
+  const temporaryPath =
+    `${OUTPUT_FILE}.tmp-${process.pid}-${Date.now()}`;
+
+  try {
+    await writeFile(
+      temporaryPath,
+      content,
+      "utf8"
+    );
+
+    await rename(
+      temporaryPath,
+      OUTPUT_FILE
+    );
+  } catch (error) {
+    try {
+      await unlink(
+        temporaryPath
+      );
+    } catch {
+      /*
+       * Ignore temporary-file cleanup errors.
+       * The original write failure remains
+       * the actionable error.
+       */
+    }
+
+    throw error;
+  }
+}
+
+function shouldBlockWrite() {
+  if (hasErrors()) {
+    return true;
+  }
+
+  if (
+    OPTIONS.strict &&
+    hasWarnings()
+  ) {
+    addDiagnostic(
+      "error",
+      "STRICT_VALIDATION_FAILED",
+      "Strict mode treats validation warnings as blocking failures."
+    );
+
+    return true;
+  }
+
+  return false;
+}
+
+function determineExitCode(report) {
+  /*
+   * Source, validation, argument, or write
+   * failures always use exit code 1.
+   */
+  if (hasErrors()) {
+    return 1;
+  }
+
+  /*
+   * In strict mode, warnings represent a
+   * failed validation result.
+   */
+  if (
+    OPTIONS.strict &&
+    hasWarnings()
+  ) {
+    return 1;
+  }
+
+  /*
+   * Check mode uses exit code 2 when the
+   * generated output is missing or stale.
+   */
+  if (
+    OPTIONS.check &&
+    !report.outputMatches
+  ) {
+    return 2;
+  }
+
+  return 0;
+}
+
+async function main() {
+  validateArguments();
+
+  addDiagnostic(
+    "info",
+    "GENERATOR_START",
+    "Beginning DataByteSprites game-data manifest generation."
+  );
+
+  const sources =
+    await loadSources();
+
+  const validation =
+    validateSources(
+      sources
+    );
+
+  const manifest =
+    buildManifest(
+      sources,
+      validation
+    );
+
+  const generatedContent =
+    serializeManifest(
+      manifest
+    );
+
+  const existingManifest =
+    await readExistingManifest();
+
+  let comparison =
+    compareManifestContent(
+      existingManifest,
+      generatedContent
+    );
+
+  let wroteFile = false;
+  let writeBlocked = false;
+
+  if (OPTIONS.check) {
+    if (!comparison.exists) {
+      addDiagnostic(
+        "warning",
+        "OUTPUT_NOT_FOUND",
+        "game-data.v1.json does not exist.",
+        basename(OUTPUT_FILE)
+      );
+    } else if (!comparison.validJson) {
+      addDiagnostic(
+        "warning",
+        "OUTPUT_INVALID",
+        "game-data.v1.json exists but is not valid JSON.",
+        basename(OUTPUT_FILE)
+      );
+    } else if (!comparison.matches) {
+      addDiagnostic(
+        "warning",
+        "OUTPUT_OUT_OF_DATE",
+        "game-data.v1.json differs from the canonical generated manifest.",
+        basename(OUTPUT_FILE)
+      );
+    } else {
+      addDiagnostic(
+        "info",
+        "OUTPUT_CURRENT",
+        "game-data.v1.json matches the canonical generated manifest.",
+        basename(OUTPUT_FILE)
+      );
+    }
+  } else if (shouldBlockWrite()) {
+    writeBlocked = true;
+
+    addDiagnostic(
+      "error",
+      "WRITE_BLOCKED",
+      "Manifest generation was blocked because source validation failed.",
+      basename(OUTPUT_FILE)
+    );
+  } else if (comparison.matches) {
+    addDiagnostic(
+      "info",
+      "OUTPUT_UNCHANGED",
+      "game-data.v1.json is already current.",
+      basename(OUTPUT_FILE)
+    );
+  } else {
+    try {
+      await writeManifestAtomically(
+        generatedContent
+      );
+
+      wroteFile = true;
+
+      comparison = {
+        exists: true,
+        validJson: true,
+        matches: true
+      };
+
+      addDiagnostic(
+        "info",
+        "OUTPUT_WRITTEN",
+        "game-data.v1.json was written successfully.",
+        basename(OUTPUT_FILE)
+      );
+    } catch (error) {
+      addDiagnostic(
+        "error",
+        "OUTPUT_WRITE_ERROR",
+        `Unable to write game-data.v1.json: ${error.message}`,
+        basename(OUTPUT_FILE)
+      );
+    }
+  }
+
+  const report =
+    buildExecutionReport({
+      manifest,
+      comparison,
+      wroteFile,
+      writeBlocked
+    });
+
+  printReport(
+    report
+  );
+
+  process.exitCode =
+    determineExitCode(
+      report
+    );
+}
+
+main().catch(error => {
+  const failure = {
+    ok: false,
+
+    mode:
+      OPTIONS.check
+        ? "check"
+        : "write",
+
+    strict:
+      OPTIONS.strict,
+
+    output:
+      getRelativeOutputPath(),
+
+    error: {
+      name:
+        error?.name ||
+        "Error",
+
+      message:
+        error?.message ||
+        String(error),
+
+      stack:
+        error?.stack ||
+        null
+    },
+
+    diagnostics: {
+      errors:
+        getDiagnosticsByLevel(
+          "error"
+        ),
+
+      warnings:
+        getDiagnosticsByLevel(
+          "warning"
+        ),
+
+      info:
+        getDiagnosticsByLevel(
+          "info"
+        )
+    }
+  };
+
+  if (OPTIONS.json) {
+    console.error(
+      JSON.stringify(
+        failure,
+        null,
+        2
+      )
+    );
+  } else {
+    console.error(
+      "DataByteSprites game-data generator failed."
+    );
+
+    console.error(
+      failure.error.message
+    );
+
+    if (failure.error.stack) {
+      console.error(
+        failure.error.stack
+      );
+    }
+  }
+
+  process.exitCode = 1;
+});
