@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "0.10.0",
+  "schemaVersion": "0.11.0",
   "generatedBy": "VoltanLabs Studio Runtime Loader",
-  "description": "Deterministic load-order and ownership manifest for Data Discovery Phase 4.4.3 after battle-helper recovery and canonical status-runtime integration. The v4 App Shell owns boot, routing, context, and action dispatch; dedicated screen and control modules own extracted presentation.",
+  "description": "Deterministic load-order and ownership manifest for Data Discovery Phase 4.4.3 after battle-helper recovery and canonical status-runtime and live status-turn-flow integration. The v4 App Shell owns boot, routing, context, and action dispatch; dedicated screen and control modules own extracted presentation.",
   "runtime": "databyte-discovery-product-app-v4-shell",
   "phase": "4.4.3-recovery-governance-sync",
   "phases": [
@@ -211,7 +211,7 @@
     {
       "id": "dd-battle-resolver",
       "label": "Battle Resolver",
-      "script": "/assets/js/dd-battle-resolver.js?v=battle-resolver-1",
+      "script": "/assets/js/dd-battle-resolver.js?v=battle-resolver-3-3-0",
       "phase": "product:battle-resolver-ready",
       "requires": [
         "dd-battle-engine-2-4",
@@ -228,7 +228,7 @@
     {
       "id": "dd-battle-state-runtime",
       "label": "Battle State Runtime",
-      "script": "/assets/js/dd-battle-state-runtime.js?v=battle-state-runtime-1",
+      "script": "/assets/js/dd-battle-state-runtime.js?v=battle-state-runtime-0-3-0",
       "phase": "product:state-ready",
       "requires": [
         "dd-battle-resolver",
@@ -243,9 +243,28 @@
       "status": "active-owner"
     },
     {
+      "id": "dd-status-battle-flow",
+      "label": "Status Battle Flow",
+      "script": "/assets/js/dd-status-battle-flow.js?v=status-battle-flow-1-0-0",
+      "phase": "product:state-ready",
+      "requires": [
+        "dd-status-runtime",
+        "dd-battle-resolver",
+        "dd-battle-state-runtime"
+      ],
+      "emits": [
+        "dd:status-battle-flow-ready",
+        "dd:status-battle-turn-complete",
+        "DD_STATUS_BATTLE_FLOW"
+      ],
+      "required": true,
+      "failureBehavior": "show-runtime-error",
+      "status": "active-owner"
+    },
+    {
       "id": "dd-battle-presentation-runtime",
       "label": "Battle Presentation Runtime",
-      "script": "/assets/js/dd-battle-presentation-runtime.js?v=battle-presentation-runtime-2",
+      "script": "/assets/js/dd-battle-presentation-runtime.js?v=battle-presentation-runtime-3",
       "phase": "product:state-ready",
       "requires": [
         "dd-battle-state-runtime"
@@ -484,6 +503,7 @@
         "dd-battle-balance-2-4",
         "dd-battle-resolver",
         "dd-battle-state-runtime",
+        "dd-status-battle-flow",
         "dd-battle-presentation-runtime",
         "dd-collection-runtime",
         "dd-party-runtime",
@@ -768,6 +788,7 @@
     "DD_TYPE_CHART",
     "DD_STATUS_RUNTIME",
     "DDBattle24",
+    "DD_STATUS_BATTLE_FLOW",
     "DD_GAMEPLAY_RULES",
     "DD_CAPTURE_RUNTIME",
     "DD_ENCOUNTER_RUNTIME",
@@ -864,9 +885,8 @@
     }
   ],
   "nextSystems": [
-    "sourceIndexV4Sync",
-    "mechanicsGraphV4Sync",
-    "statusBattleIntegration",
+    "verifyLiveStatusTurnFlow",
+    "statusBehaviorRules",
     "battleTerminalRewardFlow",
     "partyItemsScreenExtraction",
     "compatibilityRetirementAudit",
