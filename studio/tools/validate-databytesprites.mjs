@@ -10,4 +10,4 @@ const DATA_DIR = resolve(ROOT, "studio/databytesprites");
 const STRICT = process.argv.includes("--strict");
 const JSON_OUTPUT = process.argv.includes("--json");
 
-const ALIGNMENTS = new Set(["Pristine", "St
+const VALID_ALIGNMENTS = new Set(["Pristine", "Stained", "Null", "
