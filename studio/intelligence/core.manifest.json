@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.1.6",
+  "schemaVersion": "0.1.7",
   "generatedBy": "VoltanLabs Studio Intelligence Core",
   "status": "active-foundation",
   "phase": "Phase 4.4.3 Recovery and Governance Synchronization",
@@ -201,20 +201,12 @@
       "Species reconstruction GitHub Actions workflow verified.",
       "Canonical 20-configuration chart authored.",
       "README, PROJECT_STATE, ROADMAP, and ownership map synchronized.",
-      "Runtime manifest synchronized to v4.4.3 recovery governance."
+      "Runtime manifest synchronized to v4.4.3 recovery governance.",
+      "Battle helper reconstructed as version 3.3.0.",
+      "Studio data bridge restored with configuration-schema support.",
+      "Canonical DD_STATUS_RUNTIME implemented as version 1.0.0."
     ],
-    "currentBlockers": [
-      {
-        "id": "battle-helper-reconstruction",
-        "severity": "error",
-        "target": "/assets/js/dd-battle-engine-2-4.js"
-      },
-      {
-        "id": "status-runtime-owner",
-        "severity": "warning",
-        "target": "DD_STATUS_RUNTIME"
-      }
-    ],
+    "currentBlockers": [],
     "rule": "Recovery and governance findings must distinguish implemented owners, planned owners, compatibility layers, and broken or incomplete files."
   },
   "developmentRules": [
@@ -229,11 +221,11 @@
     "Keep the public game independently distributable from Studio tooling."
   ],
   "nextSteps": [
-    "Validate the synchronized machine-governance files through Diagnostics.",
+    "Validate the recovered battle helper and status runtime through Diagnostics.",
     "Synchronize DataByteSprites source-files and mechanics-graph indexes with v4.4.3 ownership.",
-    "Reconstruct dd-battle-engine-2-4.js before expanding battle feedback or status effects.",
-    "Define and implement DD_STATUS_RUNTIME as the canonical status owner.",
-    "Add recovery workflow auditing and expand deterministic repository generators.",
-    "Begin the Studio Intelligence Dashboard after governance findings are represented accurately."
+    "Integrate status application and ticking into battle turn resolution.",
+    "Add status presentation feedback without moving status ownership into UI modules.",
+    "Continue Party, Items, Dex, and Admin presentation-owner extraction.",
+    "Expand deterministic repository generators and Studio export automation."
   ]
 }
