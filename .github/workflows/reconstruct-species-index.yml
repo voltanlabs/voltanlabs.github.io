@@ -1,0 +1,27 @@
+name: Reconstruct DataByteSprites Species Index
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/reconstruct-species-index.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reconstruct-databytesprites-species-index
+  cancel-in-progress: false
+
+jobs:
+  reconstruct-species-index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v
