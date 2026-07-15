@@ -1,75 +1,418 @@
 {
-  "schemaVersion": "0.5.2",
+  "schemaVersion": "0.6.0",
   "generatedBy": "VoltanLabs Studio DataByteSprites Source Indexer",
-  "description": "Offline-first DataByteSprites source-file index aligned to Phase 4.3 ownership correction, active runtime owners, passive battle screen/control extraction, compatibility layers, legacy references, and split-required modules.",
-  "phase": "4.3-battle-controls-passive-extraction",
+  "description": "Canonical Data Discovery v4.4.4 source ownership index after runtime recovery and live status-flow integration.",
+  "phase": "4.4.4-status-flow-integration",
   "sourceFiles": [
-    {"id":"dbs-game-data","name":"DataByteSprites Game Data Manifest","fileType":"data-index","project":"DataByteSprites","status":"active-owner","ownerRole":"data-source-of-truth","tags":["game data","manifest","source of truth","phase 4.3"],"description":"Shared game-data manifest consumed by Studio Data Bridge, Encounter Runtime, Capture Runtime, Gameplay Rules, and active Product App shell.","path":"/studio/databytesprites/game-data.v1.json","preview":"/studio/databytesprites/game-data.v1.json","dependencies":[],"version":"1.2.0"},
-    {"id":"dbs-species","name":"DataByteSprites Species Index","fileType":"data-index","project":"DataByteSprites","status":"active-owner","ownerRole":"species-data","tags":["species","stats","lore","studio data"],"description":"Studio species index used by the Studio data bridge.","path":"/studio/databytesprites/species.json","preview":"/studio/databytesprites/species.json","dependencies":["dbs-game-data"],"version":"0.1.0"},
-    {"id":"dbs-moves","name":"DataByteSprites Move Index","fileType":"data-index","project":"DataByteSprites","status":"active-owner","ownerRole":"move-data","tags":["moves","battle","studio data"],"description":"Studio move index used by battle runtime systems.","path":"/studio/databytesprites/moves.json","preview":"/studio/databytesprites/moves.json","dependencies":["dbs-game-data","dbs-species"],"version":"0.1.0"},
-    {"id":"dbs-type-chart","name":"DataByteSprites Type Chart","fileType":"data-index","project":"DataByteSprites","status":"active-owner","ownerRole":"type-data","tags":["types","effectiveness","battle"],"description":"Studio type chart used by the active battle engine and battle resolver.","path":"/studio/databytesprites/type-chart.json","preview":"/studio/databytesprites/type-chart.json","dependencies":["dbs-game-data"],"version":"0.1.0"},
-    {"id":"dbs-abilities","name":"DataByteSprites Ability Index","fileType":"data-index","project":"DataByteSprites","status":"active-foundation","ownerRole":"future-ability-data","tags":["abilities","passives","future runtime"],"description":"Studio ability index reserved for a future ability runtime.","path":"/studio/databytesprites/abilities.json","preview":"/studio/databytesprites/abilities.json","dependencies":["dbs-game-data","dbs-species"],"version":"0.1.0"},
-    {"id":"src-databyte-discovery-html","name":"databyte-discovery.html","fileType":"active-runtime-entry","project":"DataByteSprites","status":"active-owner","ownerRole":"page-boot","tags":["page boot","phase 4.3","runtime chain"],"description":"Active page boot file. Loads the canonical Phase 4.3 runtime chain, Product App transition shell, compatibility layers, Scanner OS runtime loader, and passive screen extraction targets as they become active.","path":"/databyte-discovery.html","preview":"/databyte-discovery.html","dependencies":["src-dd-canon-roster","src-dd-studio-data-bridge","src-dd-battle-engine-2-4","src-dd-gameplay-rules-2-4","src-dd-capture-runtime","src-dd-encounter-runtime","src-dd-battle-balance-2-4","src-dd-battle-resolver","src-dd-battle-state-runtime","src-dd-battle-presentation-runtime","src-databyte-discovery-product-app-v3-5","src-dd-scanner-os-runtime"],"version":"4.3.0"},
-    {"id":"src-databyte-discovery-product-app-v3-5","name":"databyte-discovery-product-app-v3-5.js","fileType":"active-runtime-shell","project":"DataByteSprites","status":"active-shell-split-required","ownerRole":"temporary-app-shell-and-renderer","tags":["phase 4.3","product app","transition shell","split required","ui orchestrator"],"description":"Current live Product App shell. Still coordinates screen routing, live state application, battle layout, controls, HP rings, Signal meter, party/items/Dex/Admin panels, and result display. Long-term plan is to extract screen and controls renderers into dedicated modules.","path":"/assets/js/databyte-discovery-product-app-v3-5.js","preview":"/assets/js/databyte-discovery-product-app-v3-5.js","dependencies":["src-dd-canon-roster","src-dd-studio-data-bridge","src-dd-capture-runtime","src-dd-encounter-runtime","src-dd-battle-engine-2-4","src-dd-battle-balance-2-4","src-dd-battle-resolver","src-dd-battle-state-runtime"],"futureReplacement":["src-dd-app-shell","src-dd-scanner-screen","src-dd-battle-screen","src-dd-battle-controls","src-dd-party-screen","src-dd-inventory-screen","src-dd-dex-screen","src-dd-admin-screen","src-dd-result-screen"],"version":"3.5.0"},
-    {"id":"src-dd-scanner-os-runtime","name":"dd-scanner-os-runtime.js","fileType":"active-layout-runtime","project":"DataByteSprites","status":"active-narrow-owner","ownerRole":"scanner-shell-layout-stabilizer","tags":["scanner os","viewport","layout stabilization","temporary battle patches"],"description":"Canonical Scanner OS runtime for viewport shell behavior and temporary layout stabilization. It should not remain the long-term owner of battle screen markup, battle controls, HP rings, or battle effects.","path":"/assets/js/dd-scanner-os-runtime.js","preview":"/assets/js/dd-scanner-os-runtime.js","dependencies":["src-databyte-discovery-product-app-v3-5"],"futureReplacement":["src-dd-battle-screen","src-dd-battle-controls"],"version":"4.3.0"},
-    {"id":"src-dd-battle-screen","name":"dd-battle-screen.js","fileType":"passive-screen-renderer","project":"DataByteSprites","status":"passive-extraction-ready","ownerRole":"battle-screen-renderer","tags":["battle","screen renderer","passive","phase 4.3","extraction target"],"description":"Passive Battle Screen renderer module. Exposes window.DD_BATTLE_SCREEN and render helpers for battle card, fighters, HP rings, Signal meter, Download gauge, and battle toast. Not wired live yet.","path":"/assets/js/dd-battle-screen.js","preview":"/assets/js/dd-battle-screen.js","dependencies":["src-databyte-discovery-product-app-v3-5","src-dd-battle-resolver","src-dd-battle-state-runtime","src-dd-capture-runtime","src-dd-encounter-runtime"],"futureReplacement":"battle layout branch inside src-databyte-discovery-product-app-v3-5","version":"0.1.0"},
-    {"id":"src-dd-battle-controls","name":"dd-battle-controls.js","fileType":"passive-controls-renderer","project":"DataByteSprites","status":"passive-extraction-ready","ownerRole":"battle-controls-renderer","tags":["battle","controls renderer","passive","phase 4.3","extraction target"],"description":"Passive Battle Controls renderer module. Exposes window.DD_BATTLE_CONTROLS and render helpers for move buttons, Download, Items, Switch, Return, and battle-state control variants. Not wired live yet.","path":"/assets/js/dd-battle-controls.js","preview":"/assets/js/dd-battle-controls.js","dependencies":["src-databyte-discovery-product-app-v3-5","src-dd-battle-screen","src-dd-battle-state-runtime"],"futureReplacement":"battle controls branch inside src-databyte-discovery-product-app-v3-5","version":"0.1.0"},
-    {"id":"src-dd-battle-resolver","name":"dd-battle-resolver.js","fileType":"active-runtime","project":"DataByteSprites","status":"active-owner","ownerRole":"battle-math-runtime","tags":["battle","resolver","damage math","turn order","enemy ai","download pressure"],"description":"Active battle resolver. Owns turn order, hit checks, damage math, enemy move choice, and download-pressure output.","path":"/assets/js/dd-battle-resolver.js","preview":"/assets/js/dd-battle-resolver.js","dependencies":["src-dd-battle-engine-2-4","src-dd-gameplay-rules-2-4"],"version":"3.2.0"},
-    {"id":"src-dd-battle-state-runtime","name":"dd-battle-state-runtime.js","fileType":"active-runtime","project":"DataByteSprites","status":"active-owner","ownerRole":"battle-state-runtime","tags":["battle","state","terminal transitions","victory","defeat"],"description":"Single owner for battle terminal-state transitions and action blocking. Product App may read/apply this state but should not duplicate terminal-state ownership.","path":"/assets/js/dd-battle-state-runtime.js","preview":"/assets/js/dd-battle-state-runtime.js","dependencies":[],"version":"0.2.0"},
-    {"id":"src-dd-battle-presentation-runtime","name":"dd-battle-presentation-runtime.js","fileType":"active-presentation-runtime","project":"DataByteSprites","status":"active-owner","ownerRole":"battle-effects-presentation","tags":["battle","presentation","effects","non-layout only"],"description":"Owner for battle presentation events and visual feedback. Effects must not animate layout containers such as #ddApp, .stage, .card, .battle-card, or .battleGrid.","path":"/assets/js/dd-battle-presentation-runtime.js","preview":"/assets/js/dd-battle-presentation-runtime.js","dependencies":["src-dd-battle-engine-2-4"],"version":"0.2.1"},
-    {"id":"src-dd-capture-runtime","name":"dd-capture-runtime.js","fileType":"active-runtime","project":"DataByteSprites","status":"active-owner","ownerRole":"download-capture-runtime","tags":["capture","download odds","bytecoins","phase 4.3"],"description":"Owner for download odds, caps, attempts, failed-download bonuses, and future item-based download effects.","path":"/assets/js/dd-capture-runtime.js","preview":"/assets/js/dd-capture-runtime.js","dependencies":["src-dd-gameplay-rules-2-4","dbs-game-data"],"version":"3.0.0"},
-    {"id":"src-dd-encounter-runtime","name":"dd-encounter-runtime.js","fileType":"active-runtime","project":"DataByteSprites","status":"active-owner","ownerRole":"encounter-runtime","tags":["encounter","scanner","rarity pools","signal stability"],"description":"Owner for encounter generation, rarity pools, signal initialization, and encounter tuning.","path":"/assets/js/dd-encounter-runtime.js","preview":"/assets/js/dd-encounter-runtime.js","dependencies":["src-dd-canon-roster","src-dd-studio-data-bridge","src-dd-capture-runtime","src-dd-gameplay-rules-2-4","dbs-game-data"],"version":"3.0.0"},
-    {"id":"src-dd-gameplay-rules-2-4","name":"dd-gameplay-rules-2-4.js","fileType":"active-runtime","project":"DataByteSprites","status":"active-owner","ownerRole":"shared-gameplay-rules","tags":["rules","capture caps","stability","move tuning"],"description":"Shared gameplay rules layer for download caps, download odds, signal stability baselines, and move tuning.","path":"/assets/js/dd-gameplay-rules-2-4.js","preview":"/assets/js/dd-gameplay-rules-2-4.js","dependencies":["dbs-game-data"],"version":"2.4.3"},
-    {"id":"src-dd-canon-roster","name":"dd-canon-roster.js","fileType":"active-data-bridge","project":"DataByteSprites","status":"active-owner","ownerRole":"public-roster-bridge","tags":["roster","52 sprites","canon","shared data"],"description":"Current public 52-sprite roster bridge consumed by Data Discovery and DataByteDex.","path":"/assets/js/dd-canon-roster.js","preview":"/assets/js/dd-canon-roster.js","dependencies":["dbs-species"],"version":"2.3.0"},
-    {"id":"src-dd-studio-data-bridge","name":"dd-studio-data-bridge.js","fileType":"active-data-bridge","project":"DataByteSprites","status":"active-owner","ownerRole":"studio-data-bridge","tags":["studio bridge","game data manifest","species","moves","type chart"],"description":"Loads the shared game-data manifest, overlays Studio species metadata onto the public roster, and exposes move/type data to the runtime.","path":"/assets/js/dd-studio-data-bridge.js","preview":"/assets/js/dd-studio-data-bridge.js","dependencies":["dbs-game-data","dbs-species","dbs-moves","dbs-type-chart","src-dd-canon-roster"],"version":"2.4.0"},
-    {"id":"src-dd-battle-engine-2-4","name":"dd-battle-engine-2-4.js","fileType":"active-runtime","project":"DataByteSprites","status":"active-owner","ownerRole":"battle-utility-runtime","tags":["battle","type effectiveness","events","utilities"],"description":"Battle helper owner for type-effectiveness utilities, battle events, sound hooks, and recovery helpers. Core damage math belongs to dd-battle-resolver.js.","path":"/assets/js/dd-battle-engine-2-4.js","preview":"/assets/js/dd-battle-engine-2-4.js","dependencies":["src-dd-studio-data-bridge","dbs-type-chart","dbs-moves"],"version":"2.4.0"},
-    {"id":"src-dd-battle-balance-2-4","name":"dd-battle-balance-2-4.js","fileType":"active-runtime","project":"DataByteSprites","status":"active-owner","ownerRole":"balance-normalization-runtime","tags":["battle balance","download odds","signal stability","move tuning"],"description":"Balance layer that defers to Gameplay Rules when available and normalizes the roster before Product App boot.","path":"/assets/js/dd-battle-balance-2-4.js","preview":"/assets/js/dd-battle-balance-2-4.js","dependencies":["src-dd-studio-data-bridge","src-dd-battle-engine-2-4","src-dd-gameplay-rules-2-4"],"version":"2.4.2"},
-    {"id":"src-dd-party-runtime","name":"dd-party-runtime.js","fileType":"active-runtime","project":"DataByteSprites","status":"active-owner","ownerRole":"party-storage-runtime","tags":["party","storage","active runtime"],"description":"Owner for party storage and active party membership. Product App fallback party storage should shrink as screen extraction continues.","path":"/assets/js/dd-party-runtime.js","preview":"/assets/js/dd-party-runtime.js","dependencies":["src-dd-canon-roster"],"version":"1.0.0"},
-    {"id":"src-dd-party-switch-runtime","name":"dd-party-switch-runtime.js","fileType":"active-runtime","project":"DataByteSprites","status":"active-owner","ownerRole":"party-switch-state-runtime","tags":["party","switching","battle lead"],"description":"Owner for party switching state and active lead selection.","path":"/assets/js/dd-party-switch-runtime.js","preview":"/assets/js/dd-party-switch-runtime.js","dependencies":["src-dd-party-runtime"],"version":"1.0.0"},
-    {"id":"src-dd-party-switch-ui","name":"dd-party-switch-ui.js","fileType":"active-ui-layer","project":"DataByteSprites","status":"active-split-candidate","ownerRole":"party-switch-ui","tags":["party","switching","ui","future screen extraction"],"description":"UI layer for party switching. Should not own battle layout or HP state.","path":"/assets/js/dd-party-switch-ui.js","preview":"/assets/js/dd-party-switch-ui.js","dependencies":["src-dd-party-switch-runtime"],"version":"1.0.0"},
-    {"id":"src-dd-party-switch-battle-bridge","name":"dd-party-switch-battle-bridge.js","fileType":"compatibility-layer","project":"DataByteSprites","status":"compatibility-adapter","ownerRole":"party-switch-battle-adapter","tags":["party","battle bridge","adapter"],"description":"Adapter between party switching and battle. Must not own battle screen layout, battle effects, or battle math.","path":"/assets/js/dd-party-switch-battle-bridge.js","preview":"/assets/js/dd-party-switch-battle-bridge.js","dependencies":["src-dd-party-switch-runtime","src-databyte-discovery-product-app-v3-5"],"version":"1.0.0"},
-    {"id":"src-dd-party-switch-refresh","name":"dd-party-switch-refresh.js","fileType":"compatibility-layer","project":"DataByteSprites","status":"compatibility-visual-only","ownerRole":"party-switch-visual-refresh","tags":["party","refresh","visual only","active sprite chip disabled"],"description":"Small visual refresh layer for party switching. Active Sprite HUD chip is disabled; this file must not inject battle HUD ownership again.","path":"/assets/js/dd-party-switch-refresh.js","preview":"/assets/js/dd-party-switch-refresh.js","dependencies":["src-dd-party-switch-runtime"],"version":"1.0.1"},
-    {"id":"src-dd-inventory-runtime","name":"dd-inventory-runtime.js","fileType":"active-runtime","project":"DataByteSprites","status":"active-owner","ownerRole":"inventory-storage-runtime","tags":["inventory","items","storage","active runtime"],"description":"Owner for inventory storage and item counts. Product App fallback inventory storage should shrink as screen extraction continues.","path":"/assets/js/dd-inventory-runtime.js","preview":"/assets/js/dd-inventory-runtime.js","dependencies":["dbs-game-data"],"version":"1.0.0"},
-    {"id":"src-dd-dex-runtime","name":"dd-dex-runtime.js","fileType":"active-runtime","project":"DataByteSprites","status":"active-owner","ownerRole":"dex-progress-runtime","tags":["dex","seen","captured","progress"],"description":"Owner for DataByteDex progress data and shared seen/downloaded state.","path":"/assets/js/dd-dex-runtime.js","preview":"/assets/js/dd-dex-runtime.js","dependencies":["src-dd-canon-roster"],"version":"1.0.0"},
-    {"id":"src-databytedex-shared-renderer","name":"databytedex-shared-renderer.js","fileType":"active-screen-renderer","project":"DataByteSprites","status":"active-owner","ownerRole":"public-dex-renderer","tags":["databytedex","shared roster","seen captured","renderer"],"description":"Current DataByteDex renderer that consumes DD_CANON_ROSTER and progress from shared Data Discovery storage.","path":"/assets/js/databytedex-shared-renderer.js","preview":"/assets/js/databytedex-shared-renderer.js","dependencies":["src-dd-canon-roster","src-dd-studio-data-bridge","src-dd-dex-runtime"],"version":"2.3.0"},
-    {"id":"src-dd-health-signal-bridge","name":"dd-health-signal-bridge.js","fileType":"compatibility-layer","project":"DataByteSprites","status":"compatibility-visual-only","ownerRole":"health-signal-telemetry-visual","tags":["health","signal","telemetry","visual only"],"description":"Compatibility display bridge for health and signal telemetry. Must remain visual-only and must not own HP, Signal, download odds, or battle state.","path":"/assets/js/dd-health-signal-bridge.js","preview":"/assets/js/dd-health-signal-bridge.js","dependencies":["src-databyte-discovery-product-app-v3-5"],"version":"1.0.0"},
-    {"id":"src-dd-scan-bg","name":"dd-scan-bg.js","fileType":"compatibility-layer","project":"DataByteSprites","status":"compatibility-visual-only","ownerRole":"scanner-background-visuals","tags":["background","effects","scanner visual","visual only"],"description":"Scanner background and visual effect loader. It may load the Scanner OS runtime but must not own gameplay state, battle state, or battle layout.","path":"/assets/js/dd-scan-bg.js","preview":"/assets/js/dd-scan-bg.js","dependencies":["src-dd-scanner-os-runtime"],"version":"0.9.12"},
-    {"id":"src-dd-battle-experience-4-2","name":"dd-battle-experience-4-2.js","fileType":"compatibility-layer","project":"DataByteSprites","status":"compatibility-merge-candidate","ownerRole":"battle-polish-visual-only","tags":["battle","experience","visual only","merge candidate"],"description":"Battle polish and animation feedback layer. Should be merged into or governed by Battle Presentation Runtime. Must not animate layout containers or own state.","path":"/assets/js/dd-battle-experience-4-2.js","preview":"/assets/js/dd-battle-experience-4-2.js","dependencies":["src-dd-battle-presentation-runtime"],"version":"4.2.0"},
-    {"id":"src-studio-runtime-bridge-checks","name":"studio-runtime-bridge-checks.js","fileType":"diagnostics-runtime","project":"DataByteSprites","status":"active","ownerRole":"diagnostics-runtime-health","tags":["diagnostics","runtime health","product app checks"],"description":"Runtime health checker aligned to the active Product App chain and DD_* globals.","path":"/assets/js/studio-runtime-bridge-checks.js","preview":"/assets/js/studio-runtime-bridge-checks.js","dependencies":["src-databyte-discovery-product-app-v3-5","src-dd-studio-data-bridge","src-dd-battle-engine-2-4","src-dd-battle-balance-2-4","src-dd-battle-resolver","src-dd-capture-runtime","src-dd-encounter-runtime"],"version":"0.4.0"},
-    {"id":"doc-databyte-gameplay-ownership-audit","name":"Data Discovery Gameplay Ownership Audit","fileType":"documentation","project":"DataByteSprites","status":"active-canon","ownerRole":"human-readable-ownership-map","tags":["ownership","architecture","phase 4.3","canon"],"description":"Human-readable Phase 4.3 ownership correction map for Data Discovery gameplay, UI, presentation, compatibility, and legacy boundaries.","path":"/docs/databyte-gameplay-ownership-audit.md","preview":"/docs/databyte-gameplay-ownership-audit.md","dependencies":[],"version":"4.3.0"},
-    {"id":"doc-databyte-battle-ownership-extraction-plan","name":"Data Discovery Battle Ownership Extraction Plan","fileType":"documentation","project":"DataByteSprites","status":"active-plan","ownerRole":"battle-extraction-blueprint","tags":["battle","ownership","extraction","phase 4.3","screen modules"],"description":"Focused blueprint for extracting battle layout into dd-battle-screen.js and battle controls into dd-battle-controls.js without destabilizing the live Product App shell.","path":"/docs/databyte-battle-ownership-extraction-plan.md","preview":"/docs/databyte-battle-ownership-extraction-plan.md","dependencies":["doc-databyte-gameplay-ownership-audit","src-databyte-discovery-product-app-v3-5"],"version":"4.3.0"},
-    {"id":"doc-runtime-legacy-inventory","name":"Phase 3.6 Runtime Legacy Inventory","fileType":"documentation","project":"DataByteSprites","status":"reference","ownerRole":"legacy-inventory-doc","tags":["legacy","inventory","runtime audit"],"description":"Legacy inventory reference retained for comparison while ownership correction proceeds.","path":"/docs/databyte-runtime-legacy-inventory.md","preview":"/docs/databyte-runtime-legacy-inventory.md","dependencies":[],"version":"3.6.0"},
-    {"id":"src-databyte-discovery-product-app-v3-4","name":"databyte-discovery-product-app-v3-4.js","fileType":"legacy-reference","project":"DataByteSprites","status":"legacy-reference","ownerRole":"legacy-product-app-reference","tags":["product app","phase 3.4","hp signal migration","reference only"],"description":"Former Phase 3.4 Product App. Replaced by v3.5 because horizontal HP bars and ring/signaling layout were corrected in the canonical UI.","path":"/assets/js/databyte-discovery-product-app-v3-4.js","preview":"/assets/js/databyte-discovery-product-app-v3-4.js","dependencies":["src-dd-canon-roster","src-dd-studio-data-bridge","src-dd-capture-runtime","src-dd-encounter-runtime","src-dd-battle-resolver"],"replacement":"src-databyte-discovery-product-app-v3-5","version":"3.4.0"},
-    {"id":"src-databyte-discovery-product-app-v3-3","name":"databyte-discovery-product-app-v3-3.js","fileType":"legacy-reference","project":"DataByteSprites","status":"legacy-reference","ownerRole":"legacy-product-app-reference","tags":["product app","phase 3.3","signal rule","reference only"],"description":"Former Phase 3.3 Product App. Retained for signal-rule comparison only.","path":"/assets/js/databyte-discovery-product-app-v3-3.js","preview":"/assets/js/databyte-discovery-product-app-v3-3.js","dependencies":["src-dd-canon-roster","src-dd-studio-data-bridge","src-dd-capture-runtime","src-dd-encounter-runtime","src-dd-battle-resolver"],"replacement":"src-databyte-discovery-product-app-v3-5","version":"3.3.0"},
-    {"id":"src-databyte-discovery-product-app-v3-2","name":"databyte-discovery-product-app-v3-2.js","fileType":"legacy-reference","project":"DataByteSprites","status":"legacy-reference","ownerRole":"legacy-product-app-reference","tags":["product app","phase 3.2","battle resolver wiring","reference only"],"description":"Former Phase 3.2 Product App. Retained for Battle Resolver wiring comparison only.","path":"/assets/js/databyte-discovery-product-app-v3-2.js","preview":"/assets/js/databyte-discovery-product-app-v3-2.js","dependencies":["src-dd-canon-roster","src-dd-studio-data-bridge","src-dd-capture-runtime","src-dd-encounter-runtime","src-dd-battle-resolver"],"replacement":"src-databyte-discovery-product-app-v3-5","version":"3.2.0"},
-    {"id":"src-databyte-discovery-product-app-v3","name":"databyte-discovery-product-app-v3.js","fileType":"legacy-reference","project":"DataByteSprites","status":"legacy-reference","ownerRole":"legacy-product-app-reference","tags":["product app","phase 3","reference only"],"description":"Former Phase 3 Product App. Replaced as live page owner by Product App v3.5.","path":"/assets/js/databyte-discovery-product-app-v3.js","preview":"/assets/js/databyte-discovery-product-app-v3.js","dependencies":["src-dd-canon-roster","src-dd-studio-data-bridge","src-dd-capture-runtime","src-dd-encounter-runtime"],"replacement":"src-databyte-discovery-product-app-v3-5","version":"3.0.0"},
-    {"id":"src-databyte-discovery-product-app","name":"databyte-discovery-product-app.js","fileType":"legacy-reference","project":"DataByteSprites","status":"legacy-reference","ownerRole":"legacy-product-app-reference","tags":["product app","phase 2","reference only"],"description":"Former Phase 2 Product App. Replaced by Product App v3.5.","path":"/assets/js/databyte-discovery-product-app.js","preview":"/assets/js/databyte-discovery-product-app.js","dependencies":["src-dd-canon-roster","src-dd-studio-data-bridge"],"replacement":"src-databyte-discovery-product-app-v3-5","version":"2.4.0"},
-    {"id":"src-databyte-standalone-app","name":"databyte-standalone-app.js","fileType":"legacy-reference","project":"DataByteSprites","status":"legacy-reference","ownerRole":"legacy-scanner-os-reference","tags":["scanner os","legacy active owner","reference only"],"description":"Former Scanner OS runtime owner. Retained for behavior recovery and comparison only.","path":"/assets/js/databyte-standalone-app.js","preview":"/assets/js/databyte-standalone-app.js","dependencies":[],"replacement":"src-databyte-discovery-product-app-v3-5","version":"0.1.0"},
-    {"id":"src-dd-battle-os-v2","name":"dd-battle-os-v2.js","fileType":"legacy-reference","project":"DataByteSprites","status":"legacy-reference","ownerRole":"legacy-battle-screen-reference","tags":["battle","scanner os","legacy active owner","reference only"],"description":"Former rebuilt Scanner OS battle owner. Retained for behavior recovery only.","path":"/assets/js/dd-battle-os-v2.js","preview":"/assets/js/dd-battle-os-v2.js","dependencies":[],"replacement":"src-dd-battle-screen","version":"0.1.0"},
-    {"id":"src-dd-battle-phase3c-guard","name":"dd-battle-phase3c-guard.js","fileType":"remove-candidate","project":"DataByteSprites","status":"remove-candidate","ownerRole":"legacy-guard-candidate","tags":["guard","legacy","verify references"],"description":"Legacy guard layer. Verify no active references before deletion or archive.","path":"/assets/js/dd-battle-phase3c-guard.js","preview":"/assets/js/dd-battle-phase3c-guard.js","dependencies":[],"replacement":"src-databyte-discovery-product-app-v3-5","version":"0.1.0"}
+    {
+      "id": "dbs-game-data",
+      "name": "DataByteSprites Game Data Manifest",
+      "fileType": "data-index",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "game-data-source",
+      "path": "/studio/databytesprites/game-data.v1.json",
+      "dependencies": [],
+      "version": "1.2.0"
+    },
+    {
+      "id": "dbs-species",
+      "name": "DataByteSprites Species Index",
+      "fileType": "data-index",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "species-data",
+      "path": "/studio/databytesprites/species.json",
+      "dependencies": [
+        "dbs-game-data"
+      ],
+      "version": "reconstructed-71"
+    },
+    {
+      "id": "dbs-moves",
+      "name": "DataByteSprites Move Index",
+      "fileType": "data-index",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "move-and-status-data",
+      "path": "/studio/databytesprites/moves.json",
+      "dependencies": [
+        "dbs-species"
+      ],
+      "version": "0.2.0"
+    },
+    {
+      "id": "dbs-type-chart",
+      "name": "DataByteSprites Configuration Chart",
+      "fileType": "data-index",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "configuration-data",
+      "path": "/studio/databytesprites/type-chart.json",
+      "dependencies": [],
+      "version": "20-configurations"
+    },
+    {
+      "id": "src-databyte-discovery-html",
+      "name": "databyte-discovery.html",
+      "fileType": "active-runtime-entry",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "page-boot",
+      "path": "/databyte-discovery.html",
+      "dependencies": [
+        "runtime-manifest"
+      ],
+      "version": "4.4.4"
+    },
+    {
+      "id": "src-dd-canon-roster",
+      "name": "dd-canon-roster.js",
+      "fileType": "active-data-bridge",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "public-roster-bridge",
+      "path": "/assets/js/dd-canon-roster.js",
+      "dependencies": [
+        "dbs-species"
+      ],
+      "version": "2.3.0"
+    },
+    {
+      "id": "src-dd-studio-data-bridge",
+      "name": "dd-studio-data-bridge.js",
+      "fileType": "active-data-bridge",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "studio-data-bridge",
+      "path": "/assets/js/dd-studio-data-bridge.js",
+      "dependencies": [
+        "src-dd-canon-roster",
+        "dbs-species",
+        "dbs-moves",
+        "dbs-type-chart"
+      ],
+      "version": "2.4.1"
+    },
+    {
+      "id": "src-dd-status-runtime",
+      "name": "dd-status-runtime.js",
+      "fileType": "active-runtime",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "status-state-runtime",
+      "path": "/assets/js/dd-status-runtime.js",
+      "dependencies": [],
+      "version": "1.0.0"
+    },
+    {
+      "id": "src-dd-battle-engine-2-4",
+      "name": "dd-battle-engine-2-4.js",
+      "fileType": "active-runtime",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "configuration-and-battle-helper",
+      "path": "/assets/js/dd-battle-engine-2-4.js",
+      "dependencies": [
+        "src-dd-studio-data-bridge",
+        "src-dd-status-runtime",
+        "dbs-type-chart"
+      ],
+      "version": "3.3.0"
+    },
+    {
+      "id": "src-dd-battle-resolver",
+      "name": "dd-battle-resolver.js",
+      "fileType": "active-runtime",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "battle-resolution-runtime",
+      "path": "/assets/js/dd-battle-resolver.js",
+      "dependencies": [
+        "src-dd-battle-engine-2-4",
+        "dbs-moves"
+      ],
+      "version": "3.3.0"
+    },
+    {
+      "id": "src-dd-battle-state-runtime",
+      "name": "dd-battle-state-runtime.js",
+      "fileType": "active-runtime",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "battle-and-status-transition-runtime",
+      "path": "/assets/js/dd-battle-state-runtime.js",
+      "dependencies": [
+        "src-dd-status-runtime",
+        "src-dd-battle-resolver"
+      ],
+      "version": "0.3.0"
+    },
+    {
+      "id": "src-dd-status-battle-flow",
+      "name": "dd-status-battle-flow.js",
+      "fileType": "active-runtime-bridge",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "live-status-turn-coordinator",
+      "path": "/assets/js/dd-status-battle-flow.js",
+      "dependencies": [
+        "src-dd-battle-resolver",
+        "src-dd-battle-state-runtime",
+        "src-dd-status-runtime"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "src-dd-battle-presentation-runtime",
+      "name": "dd-battle-presentation-runtime.js",
+      "fileType": "active-presentation-runtime",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "battle-and-status-presentation",
+      "path": "/assets/js/dd-battle-presentation-runtime.js",
+      "dependencies": [
+        "src-dd-battle-state-runtime",
+        "src-dd-status-runtime"
+      ],
+      "version": "0.3.0"
+    },
+    {
+      "id": "src-dd-capture-runtime",
+      "name": "dd-capture-runtime.js",
+      "fileType": "active-runtime",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "download-runtime",
+      "path": "/assets/js/dd-capture-runtime.js",
+      "dependencies": [
+        "dbs-game-data"
+      ],
+      "version": "3.0.0"
+    },
+    {
+      "id": "src-dd-encounter-runtime",
+      "name": "dd-encounter-runtime.js",
+      "fileType": "active-runtime",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "encounter-runtime",
+      "path": "/assets/js/dd-encounter-runtime.js",
+      "dependencies": [
+        "src-dd-capture-runtime",
+        "src-dd-canon-roster"
+      ],
+      "version": "3.0.0"
+    },
+    {
+      "id": "src-dd-party-runtime",
+      "name": "dd-party-runtime.js",
+      "fileType": "active-runtime",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "party-state-runtime",
+      "path": "/assets/js/dd-party-runtime.js",
+      "dependencies": [],
+      "version": "1.0.0"
+    },
+    {
+      "id": "src-dd-inventory-runtime",
+      "name": "dd-inventory-runtime.js",
+      "fileType": "active-runtime",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "inventory-state-runtime",
+      "path": "/assets/js/dd-inventory-runtime.js",
+      "dependencies": [
+        "dbs-game-data"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "src-dd-dex-runtime",
+      "name": "dd-dex-runtime.js",
+      "fileType": "active-runtime",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "dex-progress-runtime",
+      "path": "/assets/js/dd-dex-runtime.js",
+      "dependencies": [],
+      "version": "1.0.0"
+    },
+    {
+      "id": "src-dd-scanner-screen",
+      "name": "dd-scanner-screen.js",
+      "fileType": "active-screen-owner",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "scanner-screen",
+      "path": "/assets/js/dd-scanner-screen.js",
+      "dependencies": [
+        "src-dd-encounter-runtime"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "src-dd-encounter-screen",
+      "name": "dd-encounter-screen.js",
+      "fileType": "active-screen-owner",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "encounter-screen",
+      "path": "/assets/js/dd-encounter-screen.js",
+      "dependencies": [
+        "src-dd-encounter-runtime"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "src-dd-battle-screen",
+      "name": "dd-battle-screen.js",
+      "fileType": "active-screen-owner",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "battle-screen",
+      "path": "/assets/js/dd-battle-screen.js",
+      "dependencies": [
+        "src-dd-battle-state-runtime"
+      ],
+      "version": "active"
+    },
+    {
+      "id": "src-dd-battle-controls",
+      "name": "dd-battle-controls.js",
+      "fileType": "active-controls-owner",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "battle-controls",
+      "path": "/assets/js/dd-battle-controls.js",
+      "dependencies": [
+        "src-dd-battle-state-runtime"
+      ],
+      "version": "active"
+    },
+    {
+      "id": "src-dd-confirm-screen",
+      "name": "dd-confirm-screen.js",
+      "fileType": "active-screen-owner",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "download-confirm-screen",
+      "path": "/assets/js/dd-confirm-screen.js",
+      "dependencies": [
+        "src-dd-capture-runtime"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "src-dd-result-screen",
+      "name": "dd-result-screen.js",
+      "fileType": "active-screen-owner",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "download-result-screen",
+      "path": "/assets/js/dd-result-screen.js",
+      "dependencies": [
+        "src-dd-party-runtime"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "src-dd-product-app-v4-shell",
+      "name": "databyte-discovery-product-app-v4-shell.js",
+      "fileType": "active-app-shell",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "boot-routing-context-actions",
+      "path": "/assets/js/databyte-discovery-product-app-v4-shell.js",
+      "dependencies": [
+        "src-dd-status-battle-flow",
+        "src-dd-battle-screen",
+        "src-dd-battle-controls"
+      ],
+      "version": "4.4.3"
+    }
+  ],
+  "compatibilityLayers": [
+    {
+      "id": "src-dd-scanner-os-runtime",
+      "path": "/assets/js/dd-scanner-os-runtime.js",
+      "status": "active-layout-stabilizer"
+    },
+    {
+      "id": "src-dd-party-switch-battle-bridge",
+      "path": "/assets/js/dd-party-switch-battle-bridge.js",
+      "status": "compatibility-adapter"
+    },
+    {
+      "id": "src-dd-battle-experience-4-2",
+      "path": "/assets/js/dd-battle-experience-4-2.js",
+      "status": "compatibility-merge-candidate"
+    },
+    {
+      "id": "src-dd-health-signal-bridge",
+      "path": "/assets/js/dd-health-signal-bridge.js",
+      "status": "compatibility-visual-only"
+    }
+  ],
+  "legacyReferences": [
+    {
+      "id": "src-product-app-v3-5",
+      "path": "/assets/js/databyte-discovery-product-app-v3-5.js",
+      "replacement": "src-dd-product-app-v4-shell"
+    },
+    {
+      "id": "src-product-app-v3",
+      "path": "/assets/js/databyte-discovery-product-app-v3.js",
+      "replacement": "src-dd-product-app-v4-shell"
+    },
+    {
+      "id": "src-databyte-standalone-app",
+      "path": "/assets/js/databyte-standalone-app.js",
+      "replacement": "src-dd-product-app-v4-shell"
+    },
+    {
+      "id": "src-dd-battle-os-v2",
+      "path": "/assets/js/dd-battle-os-v2.js",
+      "replacement": "src-dd-battle-screen"
+    }
   ],
   "plannedOwners": [
-    {"id":"src-dd-app-shell","name":"dd-app-shell.js","ownerRole":"app-shell","plannedPath":"/assets/js/dd-app-shell.js","status":"planned-extraction"},
-    {"id":"src-dd-scanner-screen","name":"dd-scanner-screen.js","ownerRole":"scanner-screen-renderer","plannedPath":"/assets/js/dd-scanner-screen.js","status":"planned-extraction"},
-    {"id":"src-dd-party-screen","name":"dd-party-screen.js","ownerRole":"party-screen-renderer","plannedPath":"/assets/js/dd-party-screen.js","status":"planned-extraction"},
-    {"id":"src-dd-inventory-screen","name":"dd-inventory-screen.js","ownerRole":"inventory-screen-renderer","plannedPath":"/assets/js/dd-inventory-screen.js","status":"planned-extraction"},
-    {"id":"src-dd-dex-screen","name":"dd-dex-screen.js","ownerRole":"dex-screen-renderer","plannedPath":"/assets/js/dd-dex-screen.js","status":"planned-extraction"},
-    {"id":"src-dd-admin-screen","name":"dd-admin-screen.js","ownerRole":"admin-screen-renderer","plannedPath":"/assets/js/dd-admin-screen.js","status":"planned-extraction"},
-    {"id":"src-dd-result-screen","name":"dd-result-screen.js","ownerRole":"result-screen-renderer","plannedPath":"/assets/js/dd-result-screen.js","status":"planned-extraction"}
+    {
+      "id": "src-dd-party-screen",
+      "status": "planned",
+      "ownerRole": "party-screen"
+    },
+    {
+      "id": "src-dd-items-screen",
+      "status": "planned",
+      "ownerRole": "items-screen"
+    },
+    {
+      "id": "src-dd-dex-screen",
+      "status": "planned",
+      "ownerRole": "dex-screen"
+    },
+    {
+      "id": "src-dd-admin-screen",
+      "status": "planned",
+      "ownerRole": "admin-screen"
+    }
   ],
-  "searchFields": ["id","name","fileType","project","status","ownerRole","tags","description","path","preview","dependencies","replacement","futureReplacement","version"],
-  "commonIndexModel": {"recordType":"sourceFile","idField":"id","titleField":"name","typeField":"fileType","projectField":"project","statusField":"status","roleField":"ownerRole","keywordFields":["tags","description","dependencies","replacement","futureReplacement"],"locationFields":["path","preview"],"versionField":"version"},
   "ownershipRules": [
-    "Product App v3.5 is an active transition shell and split-required renderer, not the permanent owner of all UI.",
-    "New gameplay math belongs in active runtime owners, not compatibility layers, screen modules, or legacy Product App versions.",
-    "Screen modules own layout. Controls modules own screen-specific action markup. Runtime modules own rules and state. Presentation modules own non-layout effects only.",
-    "Compatibility layers must not own gameplay state, battle state, HP, Signal, download odds, render order, or control generation.",
-    "Presentation modules must not animate #ddApp, .stage, .card, .battle-card, or .battleGrid.",
-    "Passive screen/control extraction modules may expose render helpers before being loaded live.",
-    "Legacy references are retained for behavior recovery only and should not be loaded by databyte-discovery.html.",
-    "HP rings are canonical for lead and wild sprite health in battle.",
-    "Signal is encounter stability and must be rendered separately from HP.",
-    "Retire-candidate files require no-reference verification before deletion."
+    "The v4 App Shell owns boot, routing, context, and action dispatch only.",
+    "Battle Resolver owns calculations and returns status outcomes.",
+    "Battle State Runtime applies status outcomes and owns turn-boundary ticking.",
+    "Status Runtime owns status storage, duration, serialization, and lifecycle events.",
+    "Status Battle Flow coordinates live resolver results without owning damage, state, or presentation.",
+    "Presentation Runtime observes status events but never mutates status state.",
+    "Compatibility layers may not become canonical gameplay owners."
   ],
-  "nextSystems": ["wirePassiveBattleScreen", "wirePassiveBattleControls", "ownershipConflictDiagnostics", "compatibilityMutationAudit", "removeCandidateVerification", "screenModuleRuntimeManifest"]
+  "nextSystems": [
+    "verifyLiveStatusTurnFlow",
+    "statusBehaviorRules",
+    "battleTerminalRewards",
+    "partyItemsScreenExtraction",
+    "compatibilityRetirementAudit"
+  ]
 }
