@@ -1,55 +1,603 @@
 {
-  "schemaVersion": "2.3.0",
+  "schemaVersion": "2.4.0",
   "generatedBy": "VoltanLabs Studio Knowledge Engine v2",
-  "description": "Live modular Knowledge Engine registry for VoltanLabs Studio, Phase 3.6 Data Discovery runtime ownership, and DataByteSprites project intelligence.",
+  "description": "Live modular Knowledge Engine registry for VoltanLabs Studio, Data Discovery Phase 4.4.3 recovery and governance synchronization, and DataByteSprites project intelligence.",
   "registryType": "knowledge-engine-v2",
-  "phase": "3.6-runtime-legacy-audit",
+  "phase": "4.4.3-recovery-governance-sync",
   "modules": [
-    {"id":"dashboard","name":"Dashboard","category":"Core","status":"active","entry":"/studio/","manifest":"/studio/modules/dashboard/module.json","keywords":["studio","dashboard","hub","navigation"]},
-    {"id":"studio-diagnostics","name":"System Diagnostics","category":"Studio Operations","status":"active","entry":"/studio/diagnostics/","manifest":"/studio/modules/studio-diagnostics/module.json","keywords":["diagnostics","health","indexes","runtime","report","repository integrity engine","dependency explorer","knowledge coverage metrics","actionable repair suggestions"]},
-    {"id":"runtime-visualizer","name":"Runtime Visualizer","category":"Studio Operations","status":"active","entry":"/studio/runtime/","manifest":"/studio/runtime/load-order.json","keywords":["runtime","loader","manifest","boot phases","phase 3.6","product app v3.5"]},
-    {"id":"databytesprites","name":"DataByteSprites","category":"Flagship Project","status":"active","entry":"/databyte-discovery.html","manifest":"/studio/modules/databytesprites/module.json","keywords":["databytesprites","scanner","sprites","battle","capture","codex","data discovery","product app v3.5","hp rings","signal meter"]},
-    {"id":"creator-suite","name":"Creator Suite","category":"Production Tools","status":"active","entry":"/tools.html","manifest":"/studio/modules/creator-suite/module.json","keywords":["tools","draw","gif","sprites","promptcraft"]},
-    {"id":"technology-vault","name":"Technology Vault","category":"Knowledge Base","status":"active","entry":"/technology-vault/","manifest":"/studio/modules/technology-vault/module.json","keywords":["technology","licenses","offline first","local ai"]},
-    {"id":"knowledge-engine","name":"Knowledge Engine","category":"Studio Intelligence","status":"active-foundation","entry":"/studio/knowledge/index.v2.json","manifest":"/studio/knowledge/index.v2.json","keywords":["knowledge","search","index","registry"]},
-    {"id":"asset-library","name":"Asset Library","category":"Production Assets","status":"active-foundation","entry":"#asset-library","manifest":"/studio/assets/index.json","keywords":["assets","sprites","images","library"]},
-    {"id":"simulation-lab","name":"Simulation Lab","category":"Experimentation","status":"planned","entry":"#simulation-lab","manifest":"/studio/modules/simulation-lab/module.json","keywords":["simulation","sandbox","testing","battle simulator","capture simulator"]},
-    {"id":"phase3-runtime","name":"Data Discovery Phase 3.6 Runtime","category":"Runtime Integration","status":"active","entry":"/databyte-discovery.html","manifest":"/studio/runtime/load-order.json","keywords":["phase 3.6","runtime legacy audit","encounter runtime","capture runtime","battle resolver","product app v3.5"]}
+    {
+      "id": "dashboard",
+      "name": "Dashboard",
+      "category": "Core",
+      "status": "active",
+      "entry": "/studio/",
+      "manifest": "/studio/modules/dashboard/module.json",
+      "keywords": [
+        "studio",
+        "dashboard",
+        "hub",
+        "navigation"
+      ]
+    },
+    {
+      "id": "studio-diagnostics",
+      "name": "System Diagnostics",
+      "category": "Studio Operations",
+      "status": "active",
+      "entry": "/studio/diagnostics/",
+      "manifest": "/studio/modules/studio-diagnostics/module.json",
+      "keywords": [
+        "diagnostics",
+        "health",
+        "indexes",
+        "runtime",
+        "report",
+        "repository integrity engine",
+        "dependency explorer",
+        "knowledge coverage metrics",
+        "actionable repair suggestions",
+        "recovery governance"
+      ]
+    },
+    {
+      "id": "runtime-visualizer",
+      "name": "Runtime Visualizer",
+      "category": "Studio Operations",
+      "status": "active",
+      "entry": "/studio/runtime/",
+      "manifest": "/studio/runtime/load-order.json",
+      "keywords": [
+        "runtime",
+        "loader",
+        "manifest",
+        "boot phases",
+        "phase 4.4.3",
+        "v4 app shell",
+        "dedicated screen owners",
+        "recovery blocked modules"
+      ]
+    },
+    {
+      "id": "databytesprites",
+      "name": "DataByteSprites",
+      "category": "Flagship Project",
+      "status": "active",
+      "entry": "/databyte-discovery.html",
+      "manifest": "/studio/modules/databytesprites/module.json",
+      "keywords": [
+        "databytesprites",
+        "scanner",
+        "sprites",
+        "battle",
+        "download",
+        "dex",
+        "data discovery",
+        "v4 app shell",
+        "hp rings",
+        "signal meter",
+        "71 species",
+        "20 configurations",
+        "alignment"
+      ]
+    },
+    {
+      "id": "creator-suite",
+      "name": "Creator Suite",
+      "category": "Production Tools",
+      "status": "active",
+      "entry": "/tools.html",
+      "manifest": "/studio/modules/creator-suite/module.json",
+      "keywords": [
+        "tools",
+        "draw",
+        "gif",
+        "sprites",
+        "promptcraft"
+      ]
+    },
+    {
+      "id": "technology-vault",
+      "name": "Technology Vault",
+      "category": "Knowledge Base",
+      "status": "active",
+      "entry": "/technology-vault/",
+      "manifest": "/studio/modules/technology-vault/module.json",
+      "keywords": [
+        "technology",
+        "licenses",
+        "offline first",
+        "local ai"
+      ]
+    },
+    {
+      "id": "knowledge-engine",
+      "name": "Knowledge Engine",
+      "category": "Studio Intelligence",
+      "status": "active-foundation",
+      "entry": "/studio/knowledge/index.v2.json",
+      "manifest": "/studio/knowledge/index.v2.json",
+      "keywords": [
+        "knowledge",
+        "search",
+        "index",
+        "registry",
+        "governance",
+        "recovery infrastructure"
+      ]
+    },
+    {
+      "id": "asset-library",
+      "name": "Asset Library",
+      "category": "Production Assets",
+      "status": "active-foundation",
+      "entry": "#asset-library",
+      "manifest": "/studio/assets/index.json",
+      "keywords": [
+        "assets",
+        "sprites",
+        "images",
+        "library"
+      ]
+    },
+    {
+      "id": "simulation-lab",
+      "name": "Simulation Lab",
+      "category": "Experimentation",
+      "status": "planned",
+      "entry": "#simulation-lab",
+      "manifest": "/studio/modules/simulation-lab/module.json",
+      "keywords": [
+        "simulation",
+        "sandbox",
+        "testing",
+        "battle simulator",
+        "download simulator"
+      ]
+    },
+    {
+      "id": "data-discovery-runtime",
+      "name": "Data Discovery Phase 4.4.3 Runtime",
+      "category": "Runtime Integration",
+      "status": "active-recovery",
+      "entry": "/databyte-discovery.html",
+      "manifest": "/studio/runtime/load-order.json",
+      "keywords": [
+        "phase 4.4.3",
+        "recovery governance",
+        "encounter runtime",
+        "capture runtime",
+        "battle resolver",
+        "v4 app shell",
+        "screen owners",
+        "compatibility retirement"
+      ]
+    }
   ],
   "indexes": [
-    {"id":"studio-modules","recordType":"module","name":"Studio Module Index","path":"/studio/knowledge/index.v2.json","collection":"modules","status":"active","description":"Primary live Studio module registry."},
-    {"id":"studio-operations","recordType":"module","name":"Studio Operations Index","path":"/studio/knowledge/studio-operations.json","collection":"modules","status":"active","description":"Operations modules such as diagnostics and runtime visualizer."},
-    {"id":"databytesprites-game-data","recordType":"gameData","name":"DataByteSprites Game Data Manifest","path":"/studio/databytesprites/game-data.v1.json","collection":"items,encounterPools,validationTargets,nextSystems","status":"active","description":"Shared game-data manifest for Phase 3 runtime ownership, items, encounter pools, and validation targets."},
-    {"id":"databytesprites-species-index","recordType":"spriteSpecies","name":"DataByteSprites Species Index","path":"/studio/databytesprites/species.json","collection":"species","status":"active","description":"Live sprite species metadata, rarity, evolution lines, capture hooks, lore, and stat seeds."},
-    {"id":"databytesprites-lore-index","recordType":"lore","name":"DataByteSprites Lore Index","path":"/studio/databytesprites/lore.json","collection":"lore","status":"active","description":"Live lore records for origin, characters, artifacts, events, rules, and threat seeds."},
-    {"id":"databytesprites-source-files","recordType":"sourceFile","name":"DataByteSprites Source Files Index","path":"/studio/databytesprites/source-files.json","collection":"sourceFiles","status":"active","description":"Live source ownership, active runtime owners, legacy references, compatibility layers, and future module targets."},
-    {"id":"databytesprites-mechanics-graph","recordType":"mechanicsGraph","name":"DataByteSprites Mechanics Graph","path":"/studio/databytesprites/mechanics-graph.json","collection":"nodes,edges","status":"active","description":"Live gameplay relationship graph for Phase 3 systems, species, lore, source files, and runtime integrations."},
-    {"id":"databytesprites-move-index","recordType":"move","name":"DataByteSprites Move Index","path":"/studio/databytesprites/moves.json","collection":"moves","status":"active","description":"Live move list records for battle actions."},
-    {"id":"databytesprites-type-chart","recordType":"typeChart","name":"DataByteSprites Type Chart","path":"/studio/databytesprites/type-chart.json","collection":"rules","status":"active","description":"Live element effectiveness and capture bonus rules."},
-    {"id":"databytesprites-ability-index","recordType":"ability","name":"DataByteSprites Ability Index","path":"/studio/databytesprites/abilities.json","collection":"abilities","status":"active-foundation","description":"Passive abilities and species ability mappings reserved for a future ability runtime."},
-    {"id":"runtime-manifest","recordType":"runtime","name":"Phase 3.6 Runtime Manifest","path":"/studio/runtime/load-order.json","collection":"modules,phases,legacyModules,verificationTargets","status":"active","description":"Active load-order manifest for Data Discovery Phase 3.6 runtime legacy audit and Product App v3.5."},
-    {"id":"runtime-ownership-audit","recordType":"documentation","name":"Data Discovery Runtime Ownership Audit","path":"/docs/databyte-runtime-ownership-audit.md","collection":"file","status":"active","description":"Ownership audit for active runtime, compatibility layers, and legacy references."},
-    {"id":"gameplay-ownership-audit","recordType":"documentation","name":"Data Discovery Gameplay Ownership Audit","path":"/docs/databyte-gameplay-ownership-audit.md","collection":"file","status":"active","description":"Phase 3.5 gameplay canon and responsibility map for HP, Signal, Capture Pressure, UI, and runtime ownership."},
-    {"id":"runtime-legacy-inventory","recordType":"documentation","name":"Phase 3.6 Runtime Legacy Inventory","path":"/docs/runtime-legacy-inventory.md","collection":"file","status":"active","description":"Legacy inventory classifying active, supported, legacy, archive, and retire-candidate runtime files."},
-    {"id":"runtime-reference-verification","recordType":"documentation","name":"Phase 3.6 Reference Verification","path":"/docs/runtime-reference-verification-phase-3-6.md","collection":"file","status":"active","description":"Reference search confirming Product App v3.5 is active and earlier versions are legacy references."},
-    {"id":"runtime-variable-ownership-search","recordType":"documentation","name":"Phase 3.6 Runtime Variable Ownership Search","path":"/docs/runtime-variable-ownership-search-phase-3-6.md","collection":"file","status":"active","description":"Search note for signalDamage, currentChance, captureChance, and stability ownership across active and historical files."},
-    {"id":"project-state","recordType":"documentation","name":"Living Project State","path":"/PROJECT_STATE.md","collection":"file","status":"active","description":"Current project status and Phase 3 stabilization state."},
-    {"id":"roadmap","recordType":"documentation","name":"VoltanLabs Roadmap","path":"/ROADMAP.md","collection":"file","status":"active","description":"Current product, Studio, and Phase 3 runtime roadmap."},
-    {"id":"studio-game-integration-roadmap","recordType":"documentation","name":"Studio Game Integration Roadmap","path":"/studio/docs/STUDIO_GAME_INTEGRATION_ROADMAP.md","collection":"file","status":"active","description":"Plan for making Studio the authoritative source for Data Discovery content and exports."}
+    {
+      "id": "studio-modules",
+      "recordType": "module",
+      "name": "Studio Module Index",
+      "path": "/studio/knowledge/index.v2.json",
+      "collection": "modules",
+      "status": "active",
+      "description": "Primary live Studio module registry."
+    },
+    {
+      "id": "studio-operations",
+      "recordType": "module",
+      "name": "Studio Operations Index",
+      "path": "/studio/knowledge/studio-operations.json",
+      "collection": "modules",
+      "status": "active",
+      "description": "Operations modules such as diagnostics and runtime visualizer."
+    },
+    {
+      "id": "databytesprites-game-data",
+      "recordType": "gameData",
+      "name": "DataByteSprites Game Data Manifest",
+      "path": "/studio/databytesprites/game-data.v1.json",
+      "collection": "items,encounterPools,validationTargets,nextSystems",
+      "status": "active",
+      "description": "Shared game-data manifest for current runtime ownership, items, encounter pools, and validation targets."
+    },
+    {
+      "id": "databytesprites-species-index",
+      "recordType": "spriteSpecies",
+      "name": "DataByteSprites Species Index",
+      "path": "/studio/databytesprites/species.json",
+      "collection": "species",
+      "status": "reconstructed-active",
+      "description": "Reconstructed and validated 71-species index with metadata, rarity, evolution lines, Download hooks, lore, and stat seeds."
+    },
+    {
+      "id": "databytesprites-lore-index",
+      "recordType": "lore",
+      "name": "DataByteSprites Lore Index",
+      "path": "/studio/databytesprites/lore.json",
+      "collection": "lore",
+      "status": "active",
+      "description": "Live lore records for origin, characters, artifacts, events, rules, and threat seeds."
+    },
+    {
+      "id": "databytesprites-source-files",
+      "recordType": "sourceFile",
+      "name": "DataByteSprites Source Files Index",
+      "path": "/studio/databytesprites/source-files.json",
+      "collection": "sourceFiles",
+      "status": "active",
+      "description": "Source ownership, active runtime owners, legacy references, compatibility layers, and future module targets."
+    },
+    {
+      "id": "databytesprites-mechanics-graph",
+      "recordType": "mechanicsGraph",
+      "name": "DataByteSprites Mechanics Graph",
+      "path": "/studio/databytesprites/mechanics-graph.json",
+      "collection": "nodes,edges",
+      "status": "active",
+      "description": "Gameplay relationship graph for species, lore, source files, and runtime integrations; pending v4.4.3 ownership review."
+    },
+    {
+      "id": "databytesprites-move-index",
+      "recordType": "move",
+      "name": "DataByteSprites Move Index",
+      "path": "/studio/databytesprites/moves.json",
+      "collection": "moves",
+      "status": "active",
+      "description": "Live move records using the DataByteSprites configuration vocabulary."
+    },
+    {
+      "id": "databytesprites-type-chart",
+      "recordType": "typeChart",
+      "name": "DataByteSprites Configuration Chart",
+      "path": "/studio/databytesprites/type-chart.json",
+      "collection": "configurations,alignments,multipliers",
+      "status": "authored-active",
+      "description": "Authored 20-configuration matchup chart. Alignment remains an independent gameplay axis."
+    },
+    {
+      "id": "databytesprites-ability-index",
+      "recordType": "ability",
+      "name": "DataByteSprites Ability Index",
+      "path": "/studio/databytesprites/abilities.json",
+      "collection": "abilities",
+      "status": "active-foundation",
+      "description": "Passive abilities and species ability mappings reserved for a future canonical ability runtime."
+    },
+    {
+      "id": "runtime-manifest",
+      "recordType": "runtime",
+      "name": "Data Discovery v4.4.3 Runtime Manifest",
+      "path": "/studio/runtime/load-order.json",
+      "collection": "modules,phases,legacyModules,verificationTargets,knownValidationIssues,recoveryInfrastructure",
+      "status": "active-governance",
+      "description": "Canonical load-order and ownership manifest for the v4 App Shell, dedicated presentation owners, compatibility layers, and recovery blockers."
+    },
+    {
+      "id": "species-reconstructor",
+      "recordType": "recoveryTool",
+      "name": "Species Index Reconstructor",
+      "path": "/studio/tools/reconstruct-species-index.mjs",
+      "collection": "file",
+      "status": "active",
+      "description": "Repository tool that deterministically rebuilds and validates the 71-species index."
+    },
+    {
+      "id": "species-reconstruction-workflow",
+      "recordType": "workflow",
+      "name": "Species Reconstruction GitHub Action",
+      "path": "/.github/workflows/reconstruct-species-index.yml",
+      "collection": "file",
+      "status": "active",
+      "description": "Manual GitHub Actions workflow that runs the species reconstructor, validates output, and commits species.json."
+    },
+    {
+      "id": "runtime-ownership-audit",
+      "recordType": "documentation",
+      "name": "Data Discovery Runtime Ownership Audit",
+      "path": "/docs/databyte-runtime-ownership-audit.md",
+      "collection": "file",
+      "status": "active",
+      "description": "Ownership audit for active runtime, compatibility layers, and legacy references."
+    },
+    {
+      "id": "gameplay-ownership-audit",
+      "recordType": "documentation",
+      "name": "Data Discovery Gameplay Ownership Audit",
+      "path": "/docs/databyte-gameplay-ownership-audit.md",
+      "collection": "file",
+      "status": "active",
+      "description": "Gameplay canon and responsibility map for HP, Signal, Download pressure, UI, and runtime ownership."
+    },
+    {
+      "id": "ownership-map",
+      "recordType": "documentation",
+      "name": "Data Discovery Ownership Map",
+      "path": "/docs/data-discovery-ownership-map.md",
+      "collection": "file",
+      "status": "current",
+      "description": "Canonical ownership registry for the Data Discovery v4.4.3 modular architecture."
+    },
+    {
+      "id": "runtime-legacy-inventory",
+      "recordType": "documentation",
+      "name": "Phase 3.6 Runtime Legacy Inventory",
+      "path": "/docs/runtime-legacy-inventory.md",
+      "collection": "file",
+      "status": "historical-reference",
+      "description": "Historical legacy inventory that predates the v4.4.3 App Shell."
+    },
+    {
+      "id": "runtime-reference-verification",
+      "recordType": "documentation",
+      "name": "Phase 3.6 Reference Verification",
+      "path": "/docs/runtime-reference-verification-phase-3-6.md",
+      "collection": "file",
+      "status": "historical-reference",
+      "description": "Historical reference search from the former Product App v3.5 architecture."
+    },
+    {
+      "id": "runtime-variable-ownership-search",
+      "recordType": "documentation",
+      "name": "Phase 3.6 Runtime Variable Ownership Search",
+      "path": "/docs/runtime-variable-ownership-search-phase-3-6.md",
+      "collection": "file",
+      "status": "historical-reference",
+      "description": "Historical variable-ownership search retained for migration context."
+    },
+    {
+      "id": "project-state",
+      "recordType": "documentation",
+      "name": "Living Project State",
+      "path": "/PROJECT_STATE.md",
+      "collection": "file",
+      "status": "current",
+      "description": "Current project status for Phase 4.4.3 recovery, governance synchronization, and modular runtime ownership."
+    },
+    {
+      "id": "roadmap",
+      "recordType": "documentation",
+      "name": "VoltanLabs Roadmap",
+      "path": "/ROADMAP.md",
+      "collection": "file",
+      "status": "current",
+      "description": "Current product, Studio, runtime recovery, and machine-governance roadmap."
+    },
+    {
+      "id": "studio-game-integration-roadmap",
+      "recordType": "documentation",
+      "name": "Studio Game Integration Roadmap",
+      "path": "/studio/docs/STUDIO_GAME_INTEGRATION_ROADMAP.md",
+      "collection": "file",
+      "status": "active",
+      "description": "Plan for making Studio the authoritative source for Data Discovery content and exports."
+    }
   ],
   "runtimeOwners": [
-    {"id":"dd-canon-roster","name":"Canon Roster","path":"/assets/js/dd-canon-roster.js","status":"active-owner"},
-    {"id":"dd-studio-data-bridge","name":"Studio Data Bridge","path":"/assets/js/dd-studio-data-bridge.js","status":"active-owner"},
-    {"id":"dd-gameplay-rules-2-4","name":"Gameplay Rules Runtime","path":"/assets/js/dd-gameplay-rules-2-4.js","status":"active-owner"},
-    {"id":"dd-capture-runtime","name":"Capture Runtime","path":"/assets/js/dd-capture-runtime.js","status":"active-owner"},
-    {"id":"dd-encounter-runtime","name":"Encounter Runtime","path":"/assets/js/dd-encounter-runtime.js","status":"active-owner"},
-    {"id":"dd-battle-engine-2-4","name":"Battle Engine Runtime","path":"/assets/js/dd-battle-engine-2-4.js","status":"active-owner"},
-    {"id":"dd-battle-balance-2-4","name":"Battle Balance Runtime","path":"/assets/js/dd-battle-balance-2-4.js","status":"active-owner"},
-    {"id":"dd-battle-resolver","name":"Battle Resolver Runtime","path":"/assets/js/dd-battle-resolver.js","status":"active-owner"},
-    {"id":"databyte-discovery-product-app-v3-5","name":"Product App v3.5","path":"/assets/js/databyte-discovery-product-app-v3-5.js","status":"active-owner"}
+    {
+      "id": "dd-canon-roster",
+      "name": "Canon Roster",
+      "path": "/assets/js/dd-canon-roster.js",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-studio-data-bridge",
+      "name": "Studio Data Bridge",
+      "path": "/assets/js/dd-studio-data-bridge.js",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-gameplay-rules-2-4",
+      "name": "Gameplay Rules Runtime",
+      "path": "/assets/js/dd-gameplay-rules-2-4.js",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-capture-runtime",
+      "name": "Capture Runtime",
+      "path": "/assets/js/dd-capture-runtime.js",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-encounter-runtime",
+      "name": "Encounter Runtime",
+      "path": "/assets/js/dd-encounter-runtime.js",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-battle-engine-2-4",
+      "name": "Battle Helper Hooks",
+      "path": "/assets/js/dd-battle-engine-2-4.js",
+      "status": "recovery-blocked"
+    },
+    {
+      "id": "dd-battle-balance-2-4",
+      "name": "Battle Balance Runtime",
+      "path": "/assets/js/dd-battle-balance-2-4.js",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-battle-resolver",
+      "name": "Battle Resolver Runtime",
+      "path": "/assets/js/dd-battle-resolver.js",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-battle-state-runtime",
+      "name": "Battle State Runtime",
+      "path": "/assets/js/dd-battle-state-runtime.js",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-battle-presentation-runtime",
+      "name": "Battle Presentation Runtime",
+      "path": "/assets/js/dd-battle-presentation-runtime.js",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-collection-runtime",
+      "name": "Collection Runtime",
+      "path": "/assets/js/dd-collection-runtime.js",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-party-runtime",
+      "name": "Party Runtime",
+      "path": "/assets/js/dd-party-runtime.js",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-party-switch-runtime",
+      "name": "Party Switch Runtime",
+      "path": "/assets/js/dd-party-switch-runtime.js",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-inventory-runtime",
+      "name": "Inventory Runtime",
+      "path": "/assets/js/dd-inventory-runtime.js",
+      "status": "active-foundation"
+    },
+    {
+      "id": "dd-dex-runtime",
+      "name": "Dex Runtime",
+      "path": "/assets/js/dd-dex-runtime.js",
+      "status": "active-foundation"
+    },
+    {
+      "id": "dd-scanner-screen",
+      "name": "Scanner Screen Owner",
+      "path": "/assets/js/dd-scanner-screen.js",
+      "status": "active-screen-owner"
+    },
+    {
+      "id": "dd-encounter-screen",
+      "name": "Encounter Screen Owner",
+      "path": "/assets/js/dd-encounter-screen.js",
+      "status": "active-screen-owner"
+    },
+    {
+      "id": "dd-battle-screen",
+      "name": "Battle Screen Owner",
+      "path": "/assets/js/dd-battle-screen.js",
+      "status": "active-screen-owner"
+    },
+    {
+      "id": "dd-battle-controls",
+      "name": "Battle Controls Owner",
+      "path": "/assets/js/dd-battle-controls.js",
+      "status": "active-controls-owner"
+    },
+    {
+      "id": "dd-confirm-screen",
+      "name": "Download Confirmation Screen Owner",
+      "path": "/assets/js/dd-confirm-screen.js",
+      "status": "active-screen-owner"
+    },
+    {
+      "id": "dd-result-screen",
+      "name": "Download Result Screen Owner",
+      "path": "/assets/js/dd-result-screen.js",
+      "status": "active-screen-owner"
+    },
+    {
+      "id": "databyte-discovery-product-app-v4-shell",
+      "name": "Product App v4 Shell",
+      "path": "/assets/js/databyte-discovery-product-app-v4-shell.js",
+      "status": "active-app-shell"
+    }
   ],
-  "recordTypes": ["module", "gameData", "spriteSpecies", "lore", "sourceFile", "mechanicsGraph", "move", "typeChart", "ability", "runtime", "documentation"],
-  "searchFields": ["id", "name", "category", "status", "entry", "manifest", "path", "keywords", "dependencies", "description"],
-  "migration": {"from":"/studio/knowledge/index.json","strategy":"live-v2-registry","safeToDeleteLegacy":false},
-  "nextSystems": ["fullDiagnosticsValidation", "runtimeHealthAlignment", "partyRuntimeSplit", "itemRuntimeSplit", "studioExportPipeline"]
+  "plannedOwners": [
+    {
+      "id": "DD_STATUS_RUNTIME",
+      "name": "Status Runtime",
+      "status": "planned-not-implemented"
+    },
+    {
+      "id": "DD_PARTY_SCREEN",
+      "name": "Party Screen",
+      "status": "planned"
+    },
+    {
+      "id": "DD_ITEMS_SCREEN",
+      "name": "Items Screen",
+      "status": "planned"
+    },
+    {
+      "id": "DD_DEX_SCREEN",
+      "name": "Dex Screen",
+      "status": "planned"
+    },
+    {
+      "id": "DD_ADMIN_SCREEN",
+      "name": "Admin Screen",
+      "status": "planned"
+    }
+  ],
+  "recoveryInfrastructure": [
+    {
+      "id": "species-reconstructor",
+      "path": "/studio/tools/reconstruct-species-index.mjs",
+      "status": "active-tool"
+    },
+    {
+      "id": "species-reconstruction-workflow",
+      "path": "/.github/workflows/reconstruct-species-index.yml",
+      "status": "active-workflow"
+    },
+    {
+      "id": "species-index",
+      "path": "/studio/databytesprites/species.json",
+      "status": "reconstructed-71-species"
+    },
+    {
+      "id": "configuration-chart",
+      "path": "/studio/databytesprites/type-chart.json",
+      "status": "authored-20-configurations"
+    }
+  ],
+  "recordTypes": [
+    "module",
+    "gameData",
+    "spriteSpecies",
+    "lore",
+    "sourceFile",
+    "mechanicsGraph",
+    "move",
+    "typeChart",
+    "ability",
+    "runtime",
+    "recoveryTool",
+    "workflow",
+    "documentation"
+  ],
+  "searchFields": [
+    "id",
+    "name",
+    "category",
+    "status",
+    "entry",
+    "manifest",
+    "path",
+    "keywords",
+    "dependencies",
+    "description",
+    "global",
+    "replacement"
+  ],
+  "migration": {
+    "from": "/studio/knowledge/index.json",
+    "strategy": "live-v2-registry",
+    "safeToDeleteLegacy": false
+  },
+  "nextSystems": [
+    "studioIntelligenceManifestSync",
+    "battleHelperReconstruction",
+    "statusRuntimeOwnership",
+    "sourceIndexV4Sync",
+    "mechanicsGraphV4Sync",
+    "partyItemsScreenExtraction",
+    "compatibilityRetirementAudit",
+    "studioExportPipeline"
+  ]
 }
