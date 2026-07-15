@@ -232,7 +232,23 @@ function collectMoveSpeciesIds(
         normalizeId(speciesId)
       );
     }
-function validateRequiredString(
+
+  for (const moveSet of moveSets) {
+    if (!moveSet?.speciesId) {
+      continue;
+    }
+
+    ids.add(
+      normalizeId(
+        moveSet.speciesId
+      )
+    );
+  }
+
+  return ids;
+}
+  
+    function validateRequiredString(
   record,
   field,
   recordLabel
@@ -769,4 +785,4 @@ function buildSpeciesDocument({
         "schemaVersion"
     }
   };
-      }
+ }
