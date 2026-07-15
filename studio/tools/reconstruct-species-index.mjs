@@ -786,4 +786,340 @@ function buildSpeciesDocument({
         "schemaVersion"
     }
   };
- }
+}
+
+function serializeSpeciesDocument(document) {
+  return `${JSON.stringify(document, null, 2)}\n`;
+}
+
+function normalizeGeneratedContent(value) {
+  return `${String(value ?? "")
+    .replace(/\r\n/g, "\n")
+    .trimEnd()}\n`;
+}
+
+async function readExistingOutput() {
+  if (!(await fileExists(OUTPUT_FILE))) {
+    return {
+      exists: false,
+      validJson: false,
+      text: null
+    };
+  }
+
+  let text;
+
+  try {
+    text = await readText(OUTPUT_FILE);
+  } catch (error) {
+    addDiagnostic(
+      "error",
+      "OUTPUT_READ_ERROR",
+      `Unable to read ${basename(OUTPUT_FILE)}: ${error.message}`
+    );
+
+    return {
+      exists: true,
+      validJson: false,
+      text: null
+    };
+  }
+
+  let validJson = true;
+
+  try {
+    JSON.parse(text);
+  } catch (error) {
+    validJson = false;
+
+    addDiagnostic(
+      "warning",
+      "OUTPUT_INVALID_JSON",
+      `${basename(OUTPUT_FILE)} is invalid JSON: ${error.message}`
+    );
+  }
+
+  return {
+    exists: true,
+    validJson,
+    text
+  };
+}
+
+function compareOutput(existingOutput, generatedContent) {
+  return {
+    exists: existingOutput.exists,
+    validJson: existingOutput.validJson,
+    matches:
+      existingOutput.text !== null &&
+      normalizeGeneratedContent(existingOutput.text) ===
+        normalizeGeneratedContent(generatedContent)
+  };
+}
+
+async function writeAtomically(content) {
+  const temporaryPath =
+    `${OUTPUT_FILE}.tmp-${process.pid}-${Date.now()}`;
+
+  try {
+    await writeFile(
+      temporaryPath,
+      content,
+      "utf8"
+    );
+
+    await rename(
+      temporaryPath,
+      OUTPUT_FILE
+    );
+  } catch (error) {
+    try {
+      await unlink(temporaryPath);
+    } catch {
+      // Ignore cleanup errors and preserve the original failure.
+    }
+
+    throw error;
+  }
+}
+
+function createReport({
+  speciesDocument,
+  comparison,
+  wroteFile,
+  writeBlocked
+}) {
+  return {
+    ok: !hasErrors(),
+    mode: OPTIONS.check ? "check" : "write",
+    output: "/studio/databytesprites/species.json",
+    outputExists: comparison.exists,
+    outputValidJson: comparison.validJson,
+    outputMatches: comparison.matches,
+    wroteFile,
+    writeBlocked,
+    speciesCount:
+      speciesDocument?.counts?.species ?? 0,
+    diagnostics: {
+      errors:
+        diagnosticsByLevel("error"),
+      warnings:
+        diagnosticsByLevel("warning"),
+      info:
+        diagnosticsByLevel("info")
+    }
+  };
+}
+
+function formatDiagnostic(diagnostic) {
+  const details = diagnostic.details
+    ? ` ${JSON.stringify(diagnostic.details)}`
+    : "";
+
+  return (
+    `${diagnostic.level.toUpperCase()} ` +
+    `${diagnostic.code}: ${diagnostic.message}${details}`
+  );
+}
+
+function printReport(report) {
+  if (OPTIONS.json) {
+    console.log(
+      JSON.stringify(report, null, 2)
+    );
+    return;
+  }
+
+  const lines = [
+    "DataByteSprites Species Index Reconstructor",
+    `Mode: ${report.mode}`,
+    `Output: ${report.output}`,
+    `Species: ${report.speciesCount}`,
+    `Output exists: ${report.outputExists ? "yes" : "no"}`,
+    `Output valid JSON: ${report.outputValidJson ? "yes" : "no"}`,
+    `Output matches: ${report.outputMatches ? "yes" : "no"}`,
+    `File written: ${report.wroteFile ? "yes" : "no"}`,
+    `Write blocked: ${report.writeBlocked ? "yes" : "no"}`,
+    `Errors: ${report.diagnostics.errors.length}`,
+    `Warnings: ${report.diagnostics.warnings.length}`,
+    `Info: ${report.diagnostics.info.length}`
+  ];
+
+  const allDiagnostics = [
+    ...report.diagnostics.errors,
+    ...report.diagnostics.warnings,
+    ...report.diagnostics.info
+  ];
+
+  if (allDiagnostics.length > 0) {
+    lines.push("", "Diagnostics:");
+
+    for (const diagnostic of allDiagnostics) {
+      lines.push(`- ${formatDiagnostic(diagnostic)}`);
+    }
+  }
+
+  console.log(lines.join("\n"));
+}
+
+function determineExitCode(report) {
+  if (hasErrors()) {
+    return 1;
+  }
+
+  if (
+    OPTIONS.check &&
+    !report.outputMatches
+  ) {
+    return 2;
+  }
+
+  return 0;
+}
+
+async function main() {
+  validateArguments();
+
+  addDiagnostic(
+    "info",
+    "RECONSTRUCTION_START",
+    "Beginning DataByteSprites species index reconstruction."
+  );
+
+  const [rosterSource, movesData] =
+    await Promise.all([
+      readText(ROSTER_FILE),
+      readJson(MOVES_FILE)
+    ]);
+
+  const {
+    roster,
+    alignments,
+    configurations
+  } = loadRosterFromSource(rosterSource);
+
+  const moveSpeciesIds =
+    collectMoveSpeciesIds(movesData);
+
+  const species = buildSpeciesRecords({
+    roster,
+    configurations,
+    moveSpeciesIds
+  });
+
+  const speciesDocument =
+    buildSpeciesDocument({
+      species,
+      alignments,
+      configurations
+    });
+
+  const generatedContent =
+    serializeSpeciesDocument(
+      speciesDocument
+    );
+
+  const existingOutput =
+    await readExistingOutput();
+
+  let comparison = compareOutput(
+    existingOutput,
+    generatedContent
+  );
+
+  let wroteFile = false;
+  let writeBlocked = false;
+
+  if (OPTIONS.check) {
+    if (!comparison.exists) {
+      addDiagnostic(
+        "warning",
+        "OUTPUT_NOT_FOUND",
+        `${basename(OUTPUT_FILE)} does not exist.`
+      );
+    } else if (!comparison.validJson) {
+      addDiagnostic(
+        "warning",
+        "OUTPUT_INVALID",
+        `${basename(OUTPUT_FILE)} exists but is invalid JSON.`
+      );
+    } else if (!comparison.matches) {
+      addDiagnostic(
+        "warning",
+        "OUTPUT_OUT_OF_DATE",
+        `${basename(OUTPUT_FILE)} differs from the reconstructed species index.`
+      );
+    } else {
+      addDiagnostic(
+        "info",
+        "OUTPUT_CURRENT",
+        `${basename(OUTPUT_FILE)} matches the reconstructed species index.`
+      );
+    }
+  } else if (hasErrors()) {
+    writeBlocked = true;
+
+    addDiagnostic(
+      "error",
+      "WRITE_BLOCKED",
+      "Species index writing was blocked because validation failed."
+    );
+  } else if (comparison.matches) {
+    addDiagnostic(
+      "info",
+      "OUTPUT_UNCHANGED",
+      `${basename(OUTPUT_FILE)} is already current.`
+    );
+  } else {
+    try {
+      await writeAtomically(
+        generatedContent
+      );
+
+      wroteFile = true;
+      comparison = {
+        exists: true,
+        validJson: true,
+        matches: true
+      };
+
+      addDiagnostic(
+        "info",
+        "OUTPUT_WRITTEN",
+        `${basename(OUTPUT_FILE)} was reconstructed successfully.`
+      );
+    } catch (error) {
+      addDiagnostic(
+        "error",
+        "OUTPUT_WRITE_ERROR",
+        `Unable to write ${basename(OUTPUT_FILE)}: ${error.message}`
+      );
+    }
+  }
+
+  const report = createReport({
+    speciesDocument,
+    comparison,
+    wroteFile,
+    writeBlocked
+  });
+
+  printReport(report);
+  process.exitCode = determineExitCode(report);
+}
+
+main().catch(error => {
+  const failure = {
+    ok: false,
+    mode: OPTIONS.check ? "check" : "write",
+    output: "/studio/databytesprites/species.json",
+    error: {
+      name: error?.name || "Error",
+      message: error?.message || String(error),
+      stack: error?.stack || null
+    },
+    diagnostics: {
+      errors:
+        diagnosticsByLevel("error"),
+      warnings:
+      
