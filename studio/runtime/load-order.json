@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "0.9.0",
+  "schemaVersion": "0.10.0",
   "generatedBy": "VoltanLabs Studio Runtime Loader",
-  "description": "Deterministic load-order and ownership manifest for Data Discovery Phase 4.4.3 after repository recovery and governance synchronization. The v4 App Shell owns boot, routing, context, and action dispatch; dedicated screen and control modules own extracted presentation.",
+  "description": "Deterministic load-order and ownership manifest for Data Discovery Phase 4.4.3 after battle-helper recovery and canonical status-runtime integration. The v4 App Shell owns boot, routing, context, and action dispatch; dedicated screen and control modules own extracted presentation.",
   "runtime": "databyte-discovery-product-app-v4-shell",
   "phase": "4.4.3-recovery-governance-sync",
   "phases": [
@@ -19,7 +19,7 @@
     },
     {
       "id": "product:battle-engine-ready",
-      "description": "Battle helper hooks load as a recovery-blocked compatibility foundation pending complete reconstruction."
+      "description": "Recovered battle helper owns configuration lookup, feedback, enemy move scoring, and status-runtime delegation."
     },
     {
       "id": "product:gameplay-rules-ready",
@@ -43,7 +43,7 @@
     },
     {
       "id": "product:state-ready",
-      "description": "Battle state, presentation, collection, party, inventory, and Dex runtime modules are loaded."
+      "description": "Status, battle state, presentation, collection, party, inventory, and Dex runtime modules are loaded."
     },
     {
       "id": "product:screen-owners-ready",
@@ -104,20 +104,40 @@
       "status": "active-owner"
     },
     {
+      "id": "dd-status-runtime",
+      "label": "Status Runtime",
+      "script": "/assets/js/dd-status-runtime.js?v=status-runtime-1-0-0",
+      "phase": "product:state-ready",
+      "requires": [],
+      "emits": [
+        "dd:status-runtime-ready",
+        "dd:status-applied",
+        "dd:status-removed",
+        "dd:status-ticked",
+        "dd:status-expired",
+        "DD_STATUS_RUNTIME"
+      ],
+      "required": true,
+      "failureBehavior": "show-runtime-error",
+      "status": "active-owner"
+    },
+    {
       "id": "dd-battle-engine-2-4",
       "label": "Battle Engine Hooks",
-      "script": "/assets/js/dd-battle-engine-2-4.js?v=battle-engine-2",
+      "script": "/assets/js/dd-battle-engine-2-4.js?v=battle-engine-3-3-0",
       "phase": "product:battle-engine-ready",
       "requires": [
-        "dd-studio-data-bridge"
+        "dd-studio-data-bridge",
+        "dd-status-runtime"
       ],
       "emits": [
         "DDBattle24",
+        "dd:battle-engine-ready",
         "dd:battle:*"
       ],
-      "required": false,
-      "failureBehavior": "warn-only",
-      "status": "recovery-blocked"
+      "required": true,
+      "failureBehavior": "show-runtime-error",
+      "status": "active-owner"
     },
     {
       "id": "dd-gameplay-rules-2-4",
@@ -211,7 +231,8 @@
       "script": "/assets/js/dd-battle-state-runtime.js?v=battle-state-runtime-1",
       "phase": "product:state-ready",
       "requires": [
-        "dd-battle-resolver"
+        "dd-battle-resolver",
+        "dd-status-runtime"
       ],
       "emits": [
         "dd:battle-state-runtime-ready",
@@ -455,6 +476,7 @@
       "requires": [
         "dd-canon-roster",
         "dd-studio-data-bridge",
+        "dd-status-runtime",
         "dd-battle-engine-2-4",
         "dd-gameplay-rules-2-4",
         "dd-capture-runtime",
@@ -618,27 +640,3 @@
         "databyte-discovery-product-app-v4-shell",
         "dd-scanner-screen",
         "dd-encounter-screen",
-        "dd-battle-screen",
-        "dd-battle-controls",
-        "dd-confirm-screen",
-        "dd-result-screen"
-      ],
-      "emits": [
-        "runtime:health-check",
-        "DD_RUNTIME_HEALTH"
-      ],
-      "required": false,
-      "failureBehavior": "warn-only",
-      "status": "active-diagnostics"
-    }
-  ],
-  "legacyModules": [
-    {
-      "id": "databyte-discovery-product-app-v3-5",
-      "script": "/assets/js/databyte-discovery-product-app-v3-5.js?v=phase4-2-layout-lock-1",
-      "status": "legacy-transition-reference",
-      "replacement": "databyte-discovery-product-app-v4-shell"
-    },
-    {
-      "id": "databyte-discovery-product-app-v3-4",
-      "scr
