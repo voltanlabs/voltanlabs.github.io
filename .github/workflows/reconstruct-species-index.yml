@@ -2,9 +2,6 @@ name: Reconstruct DataByteSprites Species Index
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - ".github/workflows/reconstruct-species-index.yml"
 
 permissions:
   contents: write
@@ -24,4 +21,86 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check reconstructor syntax
+        run: node --check studio/tools/reconstruct-species-index.mjs
+
+      - name: Reconstruct species index
+        run: node studio/tools/reconstruct-species-index.mjs
+
+      - name: Validate generated species index
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+
+          const path = "studio/databytesprites/species.json";
+          const document = JSON.parse(fs.readFileSync(path, "utf8"));
+          const species = Array.isArray(document.species)
+            ? document.species
+            : [];
+
+          if (species.length !== 71) {
+            throw new Error(
+              `Expected 71 species, found ${species.length}.`
+            );
+          }
+
+          const ids = new Set();
+          const dexNumbers = new Set();
+
+          for (const record of species) {
+            if (!record || typeof record !== "object") {
+              throw new Error("Species index contains a non-object record.");
+            }
+
+            if (
+              typeof record.id !== "string" ||
+              record.id.trim() === ""
+            ) {
+              throw new Error("Species record is missing a valid id.");
+            }
+
+            if (
+              typeof record.dex !== "string" ||
+              !/^\d{3}$/.test(record.dex)
+            ) {
+              throw new Error(
+                `Species "${record.id}" has invalid Dex number "${record.dex}".`
+              );
+            }
+
+            if (ids.has(record.id)) {
+              throw new Error(
+                `Duplicate species id "${record.id}".`
+              );
+            }
+
+            if (dexNumbers.has(record.dex)) {
+              throw new Error(
+                `Duplicate Dex number "${record.dex}".`
+              );
+            }
+
+            ids.add(record.id);
+            dexNumbers.add(record.dex);
+          }
+
+          console.log(`Validated ${species.length} species.`);
+          NODE
+
+      - name: Commit reconstructed species index
+        run: |
+          if git diff --quiet -- studio/databytesprites/species.json; then
+            echo "species.json is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add studio/databytesprites/species.json
+          git commit -m "fix: reconstruct DataByteSprites species index"
+          git push origin HEAD:main
