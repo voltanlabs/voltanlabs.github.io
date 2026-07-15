@@ -1,7 +1,35 @@
 {
-  "schemaVersion": "0.4.0",
+  "schemaVersion": "0.5.0",
   "generatedBy": "VoltanLabs Studio Configuration Chart Reconstructor",
   "name": "DataByteSprites Configuration Chart",
-  "description": "Canonical alignment and configuration registry for DataByteSprites battle and Download systems. Alignment and configuration remain separate canon systems. Matchups are neutral-safe until explicitly promoted into canon.",
-  "status": "active-foundation",
-  "model":
+  "description": "Canonical DataByteSprites configuration registry and first-pass authored matchup model for battle and Download systems. Alignment remains a separate canon system.",
+  "status": "active-authored",
+  "model": {
+    "alignmentSystem": "separate",
+    "configurationField": "configuration",
+    "attackingField": "attackingElement",
+    "defendingFields": [
+      "strongAgainst",
+      "weakAgainst",
+      "noEffectAgainst",
+      "captureBonusAgainst"
+    ],
+    "dualConfigurationRule": "A target may expose one or two configurations. The battle engine applies the first matching no-effect, strong, weak, or capture-bonus relationship.",
+    "neutralRule": "Any matchup not explicitly listed resolves to neutral."
+  },
+  "alignments": [
+    {
+      "id": "Pristine",
+      "description": "Stable, uncorrupted sprite alignment."
+    },
+    {
+      "id": "Stained",
+      "description": "Altered or corrupted sprite alignment."
+    },
+    {
+      "id": "Null",
+      "description": "Missing, erased, or void-linked sprite alignment."
+    }
+  ],
+  "multipliers": {
+    "strong": 1
