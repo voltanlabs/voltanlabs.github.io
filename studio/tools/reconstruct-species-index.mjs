@@ -9,7 +9,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(HERE, "../..");
 const ROSTER_FILE = resolve(REPO_ROOT, "assets/js/dd-canon-roster.js");
 const MOVES_FILE = resolve(REPO_ROOT, "studio/databytesprites/moves.json");
-const const OUTPUT_FILE = resolve(
+const OUTPUT_FILE = resolve(
   REPO_ROOT,
   "studio/databytesprites/species.json"
 );
@@ -248,3 +248,18 @@ function collectMoveSpeciesIds(
 
   return ids;
 }
+function validateRequiredString(
+  record,
+  field,
+  recordLabel
+) {
+  const value = record[field];
+
+  if (
+    typeof value !== "string" ||
+    value.trim() === ""
+  ) {
+    addDiagnostic(
+      "error",
+      "MISSING_REQUIRED_STRING",
+     
