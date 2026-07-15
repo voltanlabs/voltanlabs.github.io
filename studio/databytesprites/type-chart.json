@@ -2,7 +2,45 @@
   "schemaVersion": "0.6.0",
   "generatedBy": "VoltanLabs Studio Configuration Chart Authoring Pass 3A",
   "name": "DataByteSprites Configuration Chart",
-  "description": "Canonical DataByteSprites configuration registry and authored Phase 3A matchup model for battle and Download systems. Alignment remains a separate canon system.",
+  "description": "Canonical DataByteSprites configuration registry for battle and Download systems.",
   "status": "active-authored",
   "model": {
-    "alignment
+    "alignmentSystem": "separate",
+    "configurationField": "configuration",
+    "dualConfigurationRule": "Evaluate both defending configurations. Apply: no-effect > strong > weak > capture-bonus > neutral."
+  },
+  "alignments": [
+    {"id":"Pristine","description":"Stable, optimized code."},
+    {"id":"Stained","description":"Corrupted but recoverable code."},
+    {"id":"Null","description":"Unknown or void-linked code."}
+  ],
+  "multipliers":{
+    "strong":1.25,
+    "neutral":1.0,
+    "weak":0.80,
+    "none":0.0,
+    "captureBonus":3
+  },
+  "configurations":[
+    {"id":"Mystic","strongAgainst":["Malware","Spectral"],"weakAgainst":["Cipher","Neural"],"noEffectAgainst":[],"captureBonusAgainst":["Spam"]},
+    {"id":"Voltricity","strongAgainst":["Torrent","Alloy","Neural"],"weakAgainst":["Seismic","Organic"],"noEffectAgainst":[],"captureBonusAgainst":["Analog"]},
+    {"id":"Acoustic","strongAgainst":["Spectral","Spam"],"weakAgainst":["Alloy","Torrent"],"noEffectAgainst":[],"captureBonusAgainst":["Mystic"]},
+    {"id":"Torrent","strongAgainst":["Thermal","Seismic"],"weakAgainst":["Voltricity","Organic"],"noEffectAgainst":[],"captureBonusAgainst":["Thermal"]},
+    {"id":"Thermal","strongAgainst":["Cryo","Organic","Alloy"],"weakAgainst":["Torrent","Seismic"],"noEffectAgainst":[],"captureBonusAgainst":["Organic"]},
+    {"id":"Organic","strongAgainst":["Seismic","Torrent"],"weakAgainst":["Thermal","Cryo"],"noEffectAgainst":[],"captureBonusAgainst":["Malware"]},
+    {"id":"Malware","strongAgainst":["Neural","Financial","Organic"],"weakAgainst":["Cipher","Mystic"],"noEffectAgainst":[],"captureBonusAgainst":["Spam"]},
+    {"id":"Analog","strongAgainst":["Cipher","Financial"],"weakAgainst":["Voltricity","Quantum"],"noEffectAgainst":[],"captureBonusAgainst":["Alloy"]},
+    {"id":"Quantum","strongAgainst":["Cipher","Temporal"],"weakAgainst":["Mystic","Neural"],"noEffectAgainst":[],"captureBonusAgainst":["Aether"]},
+    {"id":"Financial","strongAgainst":["Analog","Spam"],"weakAgainst":["Malware","Cipher"],"noEffectAgainst":[],"captureBonusAgainst":["Temporal"]},
+    {"id":"Temporal","strongAgainst":["Quantum","Mystic"],"weakAgainst":["Aether","Financial"],"noEffectAgainst":[],"captureBonusAgainst":["Seismic"]},
+    {"id":"Spam","strongAgainst":["Neural"],"weakAgainst":["Cipher","Acoustic"],"noEffectAgainst":[],"captureBonusAgainst":["Financial"]},
+    {"id":"Cryo","strongAgainst":["Organic","Torrent"],"weakAgainst":["Thermal"],"noEffectAgainst":[],"captureBonusAgainst":["Voltricity"]},
+    {"id":"Alloy","strongAgainst":["Cryo","Analog"],"weakAgainst":["Thermal","Voltricity"],"noEffectAgainst":[],"captureBonusAgainst":["Spectral"]},
+    {"id":"Spectral","strongAgainst":["Mystic"],"weakAgainst":["Acoustic","Celestial"],"noEffectAgainst":[],"captureBonusAgainst":["Null"]},
+    {"id":"Cipher","strongAgainst":["Malware","Spam","Financial"],"weakAgainst":["Quantum","Neural"],"noEffectAgainst":[],"captureBonusAgainst":["Mystic"]},
+    {"id":"Neural","strongAgainst":["Quantum","Cipher"],"weakAgainst":["Malware","Voltricity"],"noEffectAgainst":[],"captureBonusAgainst":["Analog"]},
+    {"id":"Celestial","strongAgainst":["Spectral","Malware"],"weakAgainst":["Aether"],"noEffectAgainst":[],"captureBonusAgainst":["Null"]},
+    {"id":"Aether","strongAgainst":["Temporal","Celestial"],"weakAgainst":["Quantum"],"noEffectAgainst":[],"captureBonusAgainst":["Mystic"]},
+    {"id":"Seismic","strongAgainst":["Voltricity","Thermal"],"weakAgainst":["Organic","Torrent"],"noEffectAgainst":[],"captureBonusAgainst":["Alloy"]}
+  ]
+}
