@@ -1,6 +1,7 @@
 {
-  "schemaVersion": "0.3.0",
-  "generatedBy": "VoltanLabs Studio Configuration Chart Indexer",
+  "schemaVersion": "0.4.0",
+  "generatedBy": "VoltanLabs Studio Configuration Chart Reconstructor",
   "name": "DataByteSprites Configuration Chart",
-  "description": "Canonical alignment and configuration registry with a provisional first-pass matchup model for battle and Download tuning. Alignment and configuration are separate systems.",
-  "alignment
+  "description": "Canonical alignment and configuration registry for DataByteSprites battle and Download systems. Alignment and configuration remain separate canon systems. Matchups are neutral-safe until explicitly promoted into canon.",
+  "status": "active-foundation",
+  "model":
