@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "0.11.0",
+  "schemaVersion": "0.12.0",
   "generatedBy": "VoltanLabs Studio Runtime Loader",
-  "description": "Deterministic load-order and ownership manifest for Data Discovery Phase 4.4.3 after battle-helper recovery and canonical status-runtime and live status-turn-flow integration. The v4 App Shell owns boot, routing, context, and action dispatch; dedicated screen and control modules own extracted presentation.",
+  "description": "Deterministic load-order and ownership manifest for Data Discovery Phase 4.5 after status behavior integration, explicit status-turn sequencing, and canonical battle reward ownership. The v4 App Shell owns boot, routing, context, and action dispatch; dedicated runtime and screen modules own gameplay.",
   "runtime": "databyte-discovery-product-app-v4-shell",
-  "phase": "4.4.3-recovery-governance-sync",
+  "phase": "4.5-battle-reward-runtime",
   "phases": [
     {
       "id": "studio:boot",
@@ -43,7 +43,7 @@
     },
     {
       "id": "product:state-ready",
-      "description": "Status, battle state, presentation, collection, party, inventory, and Dex runtime modules are loaded."
+      "description": "Status, battle state, status flow, rewards, presentation, collection, party, inventory, and Dex runtime modules are loaded."
     },
     {
       "id": "product:screen-owners-ready",
@@ -106,7 +106,7 @@
     {
       "id": "dd-status-runtime",
       "label": "Status Runtime",
-      "script": "/assets/js/dd-status-runtime.js?v=status-runtime-1-0-0",
+      "script": "/assets/js/dd-status-runtime.js?v=status-runtime-1-1-0",
       "phase": "product:state-ready",
       "requires": [],
       "emits": [
@@ -115,6 +115,8 @@
         "dd:status-removed",
         "dd:status-ticked",
         "dd:status-expired",
+        "dd:status-damage",
+        "dd:status-action-blocked",
         "DD_STATUS_RUNTIME"
       ],
       "required": true,
@@ -211,11 +213,12 @@
     {
       "id": "dd-battle-resolver",
       "label": "Battle Resolver",
-      "script": "/assets/js/dd-battle-resolver.js?v=battle-resolver-3-3-0",
+      "script": "/assets/js/dd-battle-resolver.js?v=battle-resolver-3-4-0",
       "phase": "product:battle-resolver-ready",
       "requires": [
         "dd-battle-engine-2-4",
-        "dd-gameplay-rules-2-4"
+        "dd-gameplay-rules-2-4",
+        "dd-status-runtime"
       ],
       "emits": [
         "dd:battle-resolver-ready",
@@ -228,7 +231,7 @@
     {
       "id": "dd-battle-state-runtime",
       "label": "Battle State Runtime",
-      "script": "/assets/js/dd-battle-state-runtime.js?v=battle-state-runtime-0-3-0",
+      "script": "/assets/js/dd-battle-state-runtime.js?v=battle-state-runtime-0-4-0",
       "phase": "product:state-ready",
       "requires": [
         "dd-battle-resolver",
@@ -245,7 +248,7 @@
     {
       "id": "dd-status-battle-flow",
       "label": "Status Battle Flow",
-      "script": "/assets/js/dd-status-battle-flow.js?v=status-battle-flow-1-0-0",
+      "script": "/assets/js/dd-status-battle-flow.js?v=status-battle-flow-1-1-0",
       "phase": "product:state-ready",
       "requires": [
         "dd-status-runtime",
@@ -254,6 +257,7 @@
       ],
       "emits": [
         "dd:status-battle-flow-ready",
+        "dd:status-battle-turn-started",
         "dd:status-battle-turn-complete",
         "DD_STATUS_BATTLE_FLOW"
       ],
@@ -333,6 +337,26 @@
       "emits": [
         "dd:inventory-runtime-ready",
         "DD_INVENTORY_RUNTIME"
+      ],
+      "required": true,
+      "failureBehavior": "show-runtime-error",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-battle-reward-runtime",
+      "label": "Battle Reward Runtime",
+      "script": "/assets/js/dd-battle-reward-runtime.js?v=battle-reward-runtime-1-0-0",
+      "phase": "product:state-ready",
+      "requires": [
+        "dd-battle-state-runtime",
+        "dd-inventory-runtime"
+      ],
+      "emits": [
+        "dd:battle-reward-runtime-ready",
+        "dd:battle-reward-awarded",
+        "dd:battle-reward-duplicate",
+        "dd:progression-xp-awarded",
+        "DD_BATTLE_REWARD_RUNTIME"
       ],
       "required": true,
       "failureBehavior": "show-runtime-error",
@@ -509,6 +533,7 @@
         "dd-party-runtime",
         "dd-party-switch-runtime",
         "dd-inventory-runtime",
+        "dd-battle-reward-runtime",
         "dd-dex-runtime",
         "dd-collection-dex-runtime-bridge",
         "dd-scanner-screen",
@@ -809,7 +834,8 @@
     "DD_RESULT_SCREEN",
     "DD_PRODUCT_APP_V4_SHELL",
     "ddApp",
-    "dd:v4-shell-ready"
+    "dd:v4-shell-ready",
+    "DD_BATTLE_REWARD_RUNTIME"
   ],
   "canonicalUiRules": {
     "appShellOwner": "databyte-discovery-product-app-v4-shell",
@@ -885,9 +911,10 @@
     }
   ],
   "nextSystems": [
-    "verifyLiveStatusTurnFlow",
-    "statusBehaviorRules",
-    "battleTerminalRewardFlow",
+    "verifyBattleRewardFlow",
+    "rewardPresentation",
+    "progressionLevelRules",
+    "deterministicBattleRng",
     "partyItemsScreenExtraction",
     "compatibilityRetirementAudit",
     "studioExportPipeline"
