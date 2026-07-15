@@ -1,4 +1,3362 @@
 {
-  "schemaVersion": "0.2.0",
-  "generatedBy": "VoltanLabs Studio DataByteSprites Species Indexer",
-  "description": "Canonical DataByteSprites species metadata using separate alignment, configuration, version, family, zodiac, discovery, Download, lore, battle-stat, and DataByteDex fields. The complete playable roster is owned by dd-canon-roster.js; this index
+  "schemaVersion": "0.3.0",
+  "generatedBy": "VoltanLabs Studio DataByteSprites Species Reconstructor",
+  "description": "Canonical DataByteSprites species metadata reconstructed from the active 71-species roster. Unknown Studio metadata remains explicitly pending rather than inferred.",
+  "sourceOfTruth": {
+    "playableRoster": "/assets/js/dd-canon-roster.js",
+    "moveReferences": "/studio/databytesprites/moves.json"
+  },
+  "model": {
+    "idField": "id",
+    "dexField": "dex",
+    "alignmentField": "alignment",
+    "configurationField": "configurations",
+    "versionField": "version",
+    "familyField": "familyId",
+    "pendingValue": "pending"
+  },
+  "allowedValues": {
+    "alignments": [
+      "Pristine",
+      "Stained",
+      "Null",
+      "Unassigned"
+    ],
+    "configurations": [
+      "Mystic",
+      "Voltricity",
+      "Acoustic",
+      "Torrent",
+      "Thermal",
+      "Organic",
+      "Malware",
+      "Analog",
+      "Quantum",
+      "Financial",
+      "Temporal",
+      "Spam",
+      "Cryo",
+      "Alloy",
+      "Spectral",
+      "Cipher",
+      "Neural",
+      "Celestial",
+      "Aether",
+      "Seismic"
+    ],
+    "versions": [
+      "Kilobyte",
+      "Megabyte",
+      "Gigabyte",
+      "Terabyte"
+    ]
+  },
+  "counts": {
+    "species": 71,
+    "alignments": 3,
+    "configurations": 20,
+    "assignedAlignments": 15,
+    "pendingAlignments": 56,
+    "assignedConfigurations": 33,
+    "pendingConfigurations": 38
+  },
+  "species": [
+    {
+      "id": "leovolt",
+      "dex": "001",
+      "name": "Leovolt",
+      "status": "canon-roster",
+      "alignment": "Pristine",
+      "configurations": [
+        "Voltricity"
+      ],
+      "primaryConfiguration": "Voltricity",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Kilobyte",
+      "familyId": "leo-family",
+      "zodiac": "Leo",
+      "rarity": "Legendary",
+      "lore": "Lion cub with blue electric fur, circuit lines, and a lightning bolt tail.",
+      "description": "Lion cub with blue electric fur, circuit lines, and a lightning bolt tail.",
+      "runtime": {
+        "icon": "🦁",
+        "color": "#FFD700",
+        "captureChance": 55,
+        "stability": 6
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "leothor",
+      "dex": "002",
+      "name": "Leothor",
+      "status": "canon-roster",
+      "alignment": "Pristine",
+      "configurations": [
+        "Voltricity"
+      ],
+      "primaryConfiguration": "Voltricity",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Megabyte",
+      "familyId": "leo-family",
+      "zodiac": "Leo",
+      "rarity": "Rare",
+      "lore": "Adolescent lion with blue electric fur, circuit lines, and a lightning bolt tail.",
+      "description": "Adolescent lion with blue electric fur, circuit lines, and a lightning bolt tail.",
+      "runtime": {
+        "icon": "🦁",
+        "color": "#FFD700",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "leozues",
+      "dex": "003",
+      "name": "Leozues",
+      "status": "canon-roster",
+      "alignment": "Pristine",
+      "configurations": [
+        "Voltricity"
+      ],
+      "primaryConfiguration": "Voltricity",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Gigabyte",
+      "familyId": "leo-family",
+      "zodiac": "Leo",
+      "rarity": "Epic",
+      "lore": "Full-grown lion with blue electric fur, an energy-charged mane, and a larger lightning-bolt tail.",
+      "description": "Full-grown lion with blue electric fur, an energy-charged mane, and a larger lightning-bolt tail.",
+      "runtime": {
+        "icon": "🦁",
+        "color": "#FFD700",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "crabician",
+      "dex": "004",
+      "name": "Crabician",
+      "status": "canon-roster",
+      "alignment": "Null",
+      "configurations": [
+        "Mystic"
+      ],
+      "primaryConfiguration": "Mystic",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Kilobyte",
+      "familyId": "crabician-family",
+      "zodiac": "Cancer",
+      "rarity": "Rare",
+      "lore": "Apprentice mage crab.",
+      "description": "Apprentice mage crab.",
+      "runtime": {
+        "icon": "🦀",
+        "color": "#A78BFA",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "crabizard",
+      "dex": "005",
+      "name": "Crabizard",
+      "status": "canon-roster",
+      "alignment": "Null",
+      "configurations": [
+        "Mystic"
+      ],
+      "primaryConfiguration": "Mystic",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Megabyte",
+      "familyId": "crabician-family",
+      "zodiac": "Cancer",
+      "rarity": "Rare",
+      "lore": "Full-fledged wizard crab.",
+      "description": "Full-fledged wizard crab.",
+      "runtime": {
+        "icon": "🦀",
+        "color": "#A78BFA",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "crabzaster",
+      "dex": "006",
+      "name": "Crabzaster",
+      "status": "canon-roster",
+      "alignment": "Null",
+      "configurations": [
+        "Mystic"
+      ],
+      "primaryConfiguration": "Mystic",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Gigabyte",
+      "familyId": "crabician-family",
+      "zodiac": "Cancer",
+      "rarity": "Epic",
+      "lore": "Sorcerer Supreme master crab.",
+      "description": "Sorcerer Supreme master crab.",
+      "runtime": {
+        "icon": "🦀",
+        "color": "#A78BFA",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "scorpyone",
+      "dex": "007",
+      "name": "Scorpyone",
+      "status": "canon-roster",
+      "alignment": "Stained",
+      "configurations": [
+        "Alloy"
+      ],
+      "primaryConfiguration": "Alloy",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Kilobyte",
+      "familyId": "scorpy-family",
+      "zodiac": "Scorpio",
+      "rarity": "Uncommon",
+      "lore": "One-eyed orange robotic Stained scorpion.",
+      "description": "One-eyed orange robotic Stained scorpion.",
+      "runtime": {
+        "icon": "🦂",
+        "color": "#CBD5E1",
+        "captureChance": 80,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "scorpytwo",
+      "dex": "008",
+      "name": "Scorpytwo",
+      "status": "canon-roster",
+      "alignment": "Stained",
+      "configurations": [
+        "Alloy"
+      ],
+      "primaryConfiguration": "Alloy",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Megabyte",
+      "familyId": "scorpy-family",
+      "zodiac": "Scorpio",
+      "rarity": "Rare",
+      "lore": "Robotic scorpion-and-spider duo representing Stained and Pristine data.",
+      "description": "Robotic scorpion-and-spider duo representing Stained and Pristine data.",
+      "runtime": {
+        "icon": "🦂",
+        "color": "#CBD5E1",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "scorpyus",
+      "dex": "009",
+      "name": "Scorpyus",
+      "status": "canon-roster",
+      "alignment": "Stained",
+      "configurations": [
+        "Alloy"
+      ],
+      "primaryConfiguration": "Alloy",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Gigabyte",
+      "familyId": "scorpy-family",
+      "zodiac": "Scorpio",
+      "rarity": "Epic",
+      "lore": "Combined robotic form of the Stained and Pristine scorpion-and-spider duo.",
+      "description": "Combined robotic form of the Stained and Pristine scorpion-and-spider duo.",
+      "runtime": {
+        "icon": "🦂",
+        "color": "#CBD5E1",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "kindlekid",
+      "dex": "010",
+      "name": "KindleKid",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Thermal"
+      ],
+      "primaryConfiguration": "Thermal",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Kilobyte",
+      "familyId": "aries-family",
+      "zodiac": "Aries",
+      "rarity": "Common",
+      "lore": "Thermal zodiac-family base form.",
+      "description": "Thermal zodiac-family base form.",
+      "runtime": {
+        "icon": "🔥",
+        "color": "#F97316",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "gaseousgoat",
+      "dex": "011",
+      "name": "GaseousGoat",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Thermal",
+        "Seismic"
+      ],
+      "primaryConfiguration": "Thermal",
+      "secondaryConfiguration": "Seismic",
+      "configurationStatus": "assigned",
+      "version": "Megabyte",
+      "familyId": "aries-family",
+      "zodiac": "Aries",
+      "rarity": "Rare",
+      "lore": "Thermal and Seismic goat Version Upgrade.",
+      "description": "Thermal and Seismic goat Version Upgrade.",
+      "runtime": {
+        "icon": "🐐",
+        "color": "#F97316",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "reactorram",
+      "dex": "012",
+      "name": "ReactorRam",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Thermal",
+        "Seismic"
+      ],
+      "primaryConfiguration": "Thermal",
+      "secondaryConfiguration": "Seismic",
+      "configurationStatus": "assigned",
+      "version": "Gigabyte",
+      "familyId": "aries-family",
+      "zodiac": "Aries",
+      "rarity": "Epic",
+      "lore": "Reactor-powered ram and final known Aries-family upgrade.",
+      "description": "Reactor-powered ram and final known Aries-family upgrade.",
+      "runtime": {
+        "icon": "🐐",
+        "color": "#F97316",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "swimpig",
+      "dex": "013",
+      "name": "SwimPig",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Torrent"
+      ],
+      "primaryConfiguration": "Torrent",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Kilobyte",
+      "familyId": "swimpig-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Torrent pig line base form.",
+      "description": "Torrent pig line base form.",
+      "runtime": {
+        "icon": "🐷",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "diveswine",
+      "dex": "014",
+      "name": "DiveSwine",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Torrent"
+      ],
+      "primaryConfiguration": "Torrent",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Megabyte",
+      "familyId": "swimpig-family",
+      "zodiac": null,
+      "rarity": "Rare",
+      "lore": "Torrent swine Version Upgrade.",
+      "description": "Torrent swine Version Upgrade.",
+      "runtime": {
+        "icon": "🐷",
+        "color": "#38BDF8",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "porkfloat",
+      "dex": "015",
+      "name": "PorkFloat",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Torrent"
+      ],
+      "primaryConfiguration": "Torrent",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Gigabyte",
+      "familyId": "swimpig-family",
+      "zodiac": null,
+      "rarity": "Epic",
+      "lore": "Floating Torrent pig final form.",
+      "description": "Floating Torrent pig final form.",
+      "runtime": {
+        "icon": "🐷",
+        "color": "#38BDF8",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "coincalf",
+      "dex": "016",
+      "name": "CoinCalf",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Financial"
+      ],
+      "primaryConfiguration": "Financial",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Kilobyte",
+      "familyId": "taurus-family",
+      "zodiac": "Taurus",
+      "rarity": "Common",
+      "lore": "Financial calf and Taurus-family base form.",
+      "description": "Financial calf and Taurus-family base form.",
+      "runtime": {
+        "icon": "🐂",
+        "color": "#34D399",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "cash-cow",
+      "dex": "017",
+      "name": "Cash Cow",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Financial",
+        "Seismic"
+      ],
+      "primaryConfiguration": "Financial",
+      "secondaryConfiguration": "Seismic",
+      "configurationStatus": "assigned",
+      "version": "Megabyte",
+      "familyId": "taurus-family",
+      "zodiac": "Taurus",
+      "rarity": "Rare",
+      "lore": "Financial and Seismic cow Version Upgrade.",
+      "description": "Financial and Seismic cow Version Upgrade.",
+      "runtime": {
+        "icon": "🐂",
+        "color": "#34D399",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "bankerbull",
+      "dex": "018",
+      "name": "BankerBull",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Financial",
+        "Seismic"
+      ],
+      "primaryConfiguration": "Financial",
+      "secondaryConfiguration": "Seismic",
+      "configurationStatus": "assigned",
+      "version": "Gigabyte",
+      "familyId": "taurus-family",
+      "zodiac": "Taurus",
+      "rarity": "Epic",
+      "lore": "Financial and Seismic bull final form.",
+      "description": "Financial and Seismic bull final form.",
+      "runtime": {
+        "icon": "🐂",
+        "color": "#34D399",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "crowupt",
+      "dex": "019",
+      "name": "Crowupt",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "crowupt-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Crow corruption line base form; alignment and configurations pending.",
+      "description": "Crow corruption line base form; alignment and configurations pending.",
+      "runtime": {
+        "icon": "🐦‍⬛",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "crowuption",
+      "dex": "020",
+      "name": "Crowuption",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Megabyte",
+      "familyId": "crowupt-family",
+      "zodiac": null,
+      "rarity": "Rare",
+      "lore": "Crow corruption line Version Upgrade; alignment and configurations pending.",
+      "description": "Crow corruption line Version Upgrade; alignment and configurations pending.",
+      "runtime": {
+        "icon": "🐦‍⬛",
+        "color": "#38BDF8",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "crowtastrophe",
+      "dex": "021",
+      "name": "Crowtastrophe",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Gigabyte",
+      "familyId": "crowupt-family",
+      "zodiac": null,
+      "rarity": "Epic",
+      "lore": "Crow corruption catastrophe form; alignment and configurations pending.",
+      "description": "Crow corruption catastrophe form; alignment and configurations pending.",
+      "runtime": {
+        "icon": "🐦‍⬛",
+        "color": "#38BDF8",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "doughdawg",
+      "dex": "022",
+      "name": "DoughDawg",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Financial"
+      ],
+      "primaryConfiguration": "Financial",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Kilobyte",
+      "familyId": "money-hound-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Financial hound line base form.",
+      "description": "Financial hound line base form.",
+      "runtime": {
+        "icon": "🐶",
+        "color": "#34D399",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "moneymutt",
+      "dex": "023",
+      "name": "MoneyMutt",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Financial"
+      ],
+      "primaryConfiguration": "Financial",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Megabyte",
+      "familyId": "money-hound-family",
+      "zodiac": null,
+      "rarity": "Rare",
+      "lore": "Financial hound Version Upgrade.",
+      "description": "Financial hound Version Upgrade.",
+      "runtime": {
+        "icon": "🐶",
+        "color": "#34D399",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "hundredhound",
+      "dex": "024",
+      "name": "HundredHound",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Financial"
+      ],
+      "primaryConfiguration": "Financial",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Gigabyte",
+      "familyId": "money-hound-family",
+      "zodiac": null,
+      "rarity": "Epic",
+      "lore": "High-value Financial hound final form.",
+      "description": "High-value Financial hound final form.",
+      "runtime": {
+        "icon": "🐶",
+        "color": "#34D399",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "primateicore",
+      "dex": "025",
+      "name": "Primateicore",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "primate-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Primate line base form; configurations pending.",
+      "description": "Primate line base form; configurations pending.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "primateican",
+      "dex": "026",
+      "name": "Primateican",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Megabyte",
+      "familyId": "primate-family",
+      "zodiac": null,
+      "rarity": "Rare",
+      "lore": "Primate line Version Upgrade; configurations pending.",
+      "description": "Primate line Version Upgrade; configurations pending.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "primateicon",
+      "dex": "027",
+      "name": "Primateicon",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Gigabyte",
+      "familyId": "primate-family",
+      "zodiac": null,
+      "rarity": "Epic",
+      "lore": "Primate line final form; configurations pending.",
+      "description": "Primate line final form; configurations pending.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "clockadile",
+      "dex": "028",
+      "name": "Clockadile",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "capricorn-family",
+      "zodiac": "Capricorn",
+      "rarity": "Common",
+      "lore": "Clock crocodile and Capricorn-family base form.",
+      "description": "Clock crocodile and Capricorn-family base form.",
+      "runtime": {
+        "icon": "🐊",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "aligatorithm",
+      "dex": "029",
+      "name": "Aligatorithm",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Megabyte",
+      "familyId": "capricorn-family",
+      "zodiac": "Capricorn",
+      "rarity": "Rare",
+      "lore": "Algorithm alligator Version Upgrade.",
+      "description": "Algorithm alligator Version Upgrade.",
+      "runtime": {
+        "icon": "🐊",
+        "color": "#38BDF8",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "technogatorus",
+      "dex": "030",
+      "name": "Technogatorus",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Gigabyte",
+      "familyId": "capricorn-family",
+      "zodiac": "Capricorn",
+      "rarity": "Epic",
+      "lore": "Advanced gator final form.",
+      "description": "Advanced gator final form.",
+      "runtime": {
+        "icon": "🐊",
+        "color": "#38BDF8",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "fiscalfish",
+      "dex": "031",
+      "name": "FiscalFish",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Torrent"
+      ],
+      "primaryConfiguration": "Torrent",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Kilobyte",
+      "familyId": "pisces-family",
+      "zodiac": "Pisces",
+      "rarity": "Common",
+      "lore": "Torrent and financial fish-family base form.",
+      "description": "Torrent and financial fish-family base form.",
+      "runtime": {
+        "icon": "🐟",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "loanshark",
+      "dex": "032",
+      "name": "LoanShark",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Torrent",
+        "Financial"
+      ],
+      "primaryConfiguration": "Torrent",
+      "secondaryConfiguration": "Financial",
+      "configurationStatus": "assigned",
+      "version": "Megabyte",
+      "familyId": "pisces-family",
+      "zodiac": "Pisces",
+      "rarity": "Rare",
+      "lore": "Torrent and Financial shark Version Upgrade.",
+      "description": "Torrent and Financial shark Version Upgrade.",
+      "runtime": {
+        "icon": "🐟",
+        "color": "#38BDF8",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "afkwhale",
+      "dex": "033",
+      "name": "AFKWHALE",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Torrent",
+        "Financial"
+      ],
+      "primaryConfiguration": "Torrent",
+      "secondaryConfiguration": "Financial",
+      "configurationStatus": "assigned",
+      "version": "Gigabyte",
+      "familyId": "pisces-family",
+      "zodiac": "Pisces",
+      "rarity": "Epic",
+      "lore": "Massive Torrent and Financial whale final form.",
+      "description": "Massive Torrent and Financial whale final form.",
+      "runtime": {
+        "icon": "🐟",
+        "color": "#38BDF8",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "prankcaller",
+      "dex": "034",
+      "name": "PrankCaller",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "prankcaller-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Prank communication sprite; configurations pending.",
+      "description": "Prank communication sprite; configurations pending.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "keyboardwarrior",
+      "dex": "035",
+      "name": "KeyboardWarrior",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "keyboardwarrior-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Internet argument sprite; configurations pending.",
+      "description": "Internet argument sprite; configurations pending.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "troll",
+      "dex": "036",
+      "name": "Troll",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "troll-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Hostile internet sprite; configurations pending.",
+      "description": "Hostile internet sprite; configurations pending.",
+      "runtime": {
+        "icon": "👹",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "landline",
+      "dex": "037",
+      "name": "Landline",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "cable-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Cable communication line base form.",
+      "description": "Cable communication line base form.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "octocable",
+      "dex": "038",
+      "name": "Octocable",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Megabyte",
+      "familyId": "cable-family",
+      "zodiac": null,
+      "rarity": "Rare",
+      "lore": "Cable cephalopod Version Upgrade.",
+      "description": "Cable cephalopod Version Upgrade.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "fiberoptopus",
+      "dex": "039",
+      "name": "Fiberoptopus",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Gigabyte",
+      "familyId": "cable-family",
+      "zodiac": null,
+      "rarity": "Epic",
+      "lore": "Fiber-optic octopus final form.",
+      "description": "Fiber-optic octopus final form.",
+      "runtime": {
+        "icon": "🐙",
+        "color": "#38BDF8",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "cassettekid",
+      "dex": "040",
+      "name": "CassetteKid",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "retro-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Analog cassette sprite; exact configurations pending.",
+      "description": "Analog cassette sprite; exact configurations pending.",
+      "runtime": {
+        "icon": "📼",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "diskdaddy",
+      "dex": "041",
+      "name": "DiskDaddy",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Megabyte",
+      "familyId": "retro-family",
+      "zodiac": null,
+      "rarity": "Rare",
+      "lore": "Disk-based Version Upgrade; exact configurations pending.",
+      "description": "Disk-based Version Upgrade; exact configurations pending.",
+      "runtime": {
+        "icon": "💾",
+        "color": "#38BDF8",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "technoblin",
+      "dex": "042",
+      "name": "Technoblin",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "technoblin-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Technology goblin line base form; configurations pending.",
+      "description": "Technology goblin line base form; configurations pending.",
+      "runtime": {
+        "icon": "👹",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "technomoly",
+      "dex": "043",
+      "name": "Technomoly",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Megabyte",
+      "familyId": "technoblin-family",
+      "zodiac": null,
+      "rarity": "Rare",
+      "lore": "Technology goblin Version Upgrade; configurations pending.",
+      "description": "Technology goblin Version Upgrade; configurations pending.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "technareality",
+      "dex": "044",
+      "name": "Technareality",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Gigabyte",
+      "familyId": "technoblin-family",
+      "zodiac": null,
+      "rarity": "Epic",
+      "lore": "Reality-bending technology final form; configurations pending.",
+      "description": "Reality-bending technology final form; configurations pending.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "glitchwyrm",
+      "dex": "045",
+      "name": "Glitchwyrm",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "glitchwyrm-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Glitch wyrm sprite; canonical configuration pending.",
+      "description": "Glitch wyrm sprite; canonical configuration pending.",
+      "runtime": {
+        "icon": "🐉",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "screensavior",
+      "dex": "046",
+      "name": "Screensavior",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "display-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Screen guardian sprite; canonical configurations pending.",
+      "description": "Screen guardian sprite; canonical configurations pending.",
+      "runtime": {
+        "icon": "🖥️",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "monitorman",
+      "dex": "047",
+      "name": "Monitorman",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Megabyte",
+      "familyId": "display-family",
+      "zodiac": null,
+      "rarity": "Rare",
+      "lore": "Monitor humanoid Version Upgrade; canonical configurations pending.",
+      "description": "Monitor humanoid Version Upgrade; canonical configurations pending.",
+      "runtime": {
+        "icon": "🖥️",
+        "color": "#38BDF8",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "displaydevil",
+      "dex": "048",
+      "name": "Displaydevil",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Gigabyte",
+      "familyId": "display-family",
+      "zodiac": null,
+      "rarity": "Epic",
+      "lore": "Display demon sprite; family relationship and configurations pending.",
+      "description": "Display demon sprite; family relationship and configurations pending.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "mirrormaster",
+      "dex": "049",
+      "name": "Mirrormaster",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Terabyte",
+      "familyId": "display-family",
+      "zodiac": null,
+      "rarity": "Mythic",
+      "lore": "Mirror master sprite; Terabyte role and configurations pending.",
+      "description": "Mirror master sprite; Terabyte role and configurations pending.",
+      "runtime": {
+        "icon": "🪞",
+        "color": "#38BDF8",
+        "captureChance": 42,
+        "stability": 7
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "compressaur",
+      "dex": "050",
+      "name": "Compressaur",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "compressaur-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Compression dinosaur sprite; configurations pending.",
+      "description": "Compression dinosaur sprite; configurations pending.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "pixelpigeon",
+      "dex": "051",
+      "name": "Pixelpigeon",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "pixelpigeon-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Pixel bird sprite; configurations pending.",
+      "description": "Pixel bird sprite; configurations pending.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "binarybear",
+      "dex": "052",
+      "name": "Binarybear",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "binarybear-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Binary bear sprite; configurations pending.",
+      "description": "Binary bear sprite; configurations pending.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "proxentity",
+      "dex": "053",
+      "name": "Proxentity",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Megabyte",
+      "familyId": "proxy-family",
+      "zodiac": null,
+      "rarity": "Rare",
+      "lore": "Proxy entity; canonical configurations pending.",
+      "description": "Proxy entity; canonical configurations pending.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "proxsentience",
+      "dex": "054",
+      "name": "Proxsentience",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Gigabyte",
+      "familyId": "proxy-family",
+      "zodiac": null,
+      "rarity": "Epic",
+      "lore": "Sentient proxy Version Upgrade; canonical configurations pending.",
+      "description": "Sentient proxy Version Upgrade; canonical configurations pending.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "gem-n-eye",
+      "dex": "055",
+      "name": "Gem-N-Eye",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "gemini-family",
+      "zodiac": "Gemini",
+      "rarity": "Common",
+      "lore": "Gemini zodiac sprite; version path and configurations pending.",
+      "description": "Gemini zodiac sprite; version path and configurations pending.",
+      "runtime": {
+        "icon": "💎",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "6-ela",
+      "dex": "056",
+      "name": "6.ela",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "virgo-family",
+      "zodiac": "Virgo",
+      "rarity": "Common",
+      "lore": "Earth Logic Algorithm and Virgo zodiac sprite; configurations pending.",
+      "description": "Earth Logic Algorithm and Virgo zodiac sprite; configurations pending.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "pixelpup",
+      "dex": "057",
+      "name": "PixelPup",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "libra-family",
+      "zodiac": "Libra",
+      "rarity": "Common",
+      "lore": "Libra-family base form.",
+      "description": "Libra-family base form.",
+      "runtime": {
+        "icon": "🐶",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "wireframewolf",
+      "dex": "058",
+      "name": "WireframeWolf",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Megabyte",
+      "familyId": "libra-family",
+      "zodiac": "Libra",
+      "rarity": "Rare",
+      "lore": "Wireframe wolf Version Upgrade.",
+      "description": "Wireframe wolf Version Upgrade.",
+      "runtime": {
+        "icon": "🐶",
+        "color": "#38BDF8",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "lupinfinity",
+      "dex": "059",
+      "name": "Lupinfinity",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Gigabyte",
+      "familyId": "libra-family",
+      "zodiac": "Libra",
+      "rarity": "Epic",
+      "lore": "Infinite wolf final form.",
+      "description": "Infinite wolf final form.",
+      "runtime": {
+        "icon": "🐶",
+        "color": "#38BDF8",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "centaurcher",
+      "dex": "060",
+      "name": "Centaurcher",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "sagittarius-family",
+      "zodiac": "Sagittarius",
+      "rarity": "Common",
+      "lore": "Centaur archer and Sagittarius-family base form.",
+      "description": "Centaur archer and Sagittarius-family base form.",
+      "runtime": {
+        "icon": "🏹",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "quiverandcolt",
+      "dex": "061",
+      "name": "Quiver&Colt",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Megabyte",
+      "familyId": "sagittarius-family",
+      "zodiac": "Sagittarius",
+      "rarity": "Rare",
+      "lore": "Quiver-and-colt Version Upgrade.",
+      "description": "Quiver-and-colt Version Upgrade.",
+      "runtime": {
+        "icon": "🏹",
+        "color": "#38BDF8",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "kernel-coltquiver",
+      "dex": "062",
+      "name": "Kernel:ColtQuiver",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Gigabyte",
+      "familyId": "sagittarius-family",
+      "zodiac": "Sagittarius",
+      "rarity": "Epic",
+      "lore": "Kernel-level Sagittarius final form.",
+      "description": "Kernel-level Sagittarius final form.",
+      "runtime": {
+        "icon": "🏹",
+        "color": "#38BDF8",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "aquobit",
+      "dex": "063",
+      "name": "AquoBit",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Aether"
+      ],
+      "primaryConfiguration": "Aether",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Kilobyte",
+      "familyId": "aquarius-family",
+      "zodiac": "Aquarius",
+      "rarity": "Common",
+      "lore": "Aether-based Aquarius-family base form.",
+      "description": "Aether-based Aquarius-family base form.",
+      "runtime": {
+        "icon": "🐟",
+        "color": "#93C5FD",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "aquomid",
+      "dex": "064",
+      "name": "AquoMid",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Aether",
+        "Torrent"
+      ],
+      "primaryConfiguration": "Aether",
+      "secondaryConfiguration": "Torrent",
+      "configurationStatus": "assigned",
+      "version": "Megabyte",
+      "familyId": "aquarius-family",
+      "zodiac": "Aquarius",
+      "rarity": "Rare",
+      "lore": "Aether and Torrent Aquarius Version Upgrade.",
+      "description": "Aether and Torrent Aquarius Version Upgrade.",
+      "runtime": {
+        "icon": "🐟",
+        "color": "#93C5FD",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "aquomead",
+      "dex": "065",
+      "name": "AquoMead",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [
+        "Aether",
+        "Torrent"
+      ],
+      "primaryConfiguration": "Aether",
+      "secondaryConfiguration": "Torrent",
+      "configurationStatus": "assigned",
+      "version": "Gigabyte",
+      "familyId": "aquarius-family",
+      "zodiac": "Aquarius",
+      "rarity": "Epic",
+      "lore": "Aether and Torrent Aquarius final form.",
+      "description": "Aether and Torrent Aquarius final form.",
+      "runtime": {
+        "icon": "🐟",
+        "color": "#93C5FD",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "leorust",
+      "dex": "066",
+      "name": "LeoRust",
+      "status": "canon-roster",
+      "alignment": "Stained",
+      "configurations": [
+        "Alloy"
+      ],
+      "primaryConfiguration": "Alloy",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Kilobyte",
+      "familyId": "leo-family",
+      "zodiac": "Leo",
+      "rarity": "Uncommon",
+      "lore": "Stained Alloy lion-family base species.",
+      "description": "Stained Alloy lion-family base species.",
+      "runtime": {
+        "icon": "🦁",
+        "color": "#CBD5E1",
+        "captureChance": 80,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "leowreck",
+      "dex": "067",
+      "name": "LeoWreck",
+      "status": "canon-roster",
+      "alignment": "Stained",
+      "configurations": [
+        "Alloy"
+      ],
+      "primaryConfiguration": "Alloy",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Megabyte",
+      "familyId": "leo-family",
+      "zodiac": "Leo",
+      "rarity": "Rare",
+      "lore": "Stained Alloy lion-family Version Upgrade.",
+      "description": "Stained Alloy lion-family Version Upgrade.",
+      "runtime": {
+        "icon": "🦁",
+        "color": "#CBD5E1",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "leoruin",
+      "dex": "068",
+      "name": "LeoRuin",
+      "status": "canon-roster",
+      "alignment": "Stained",
+      "configurations": [
+        "Alloy"
+      ],
+      "primaryConfiguration": "Alloy",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Gigabyte",
+      "familyId": "leo-family",
+      "zodiac": "Leo",
+      "rarity": "Epic",
+      "lore": "Stained Alloy lion-family final species.",
+      "description": "Stained Alloy lion-family final species.",
+      "runtime": {
+        "icon": "🦁",
+        "color": "#CBD5E1",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "leonot",
+      "dex": "069",
+      "name": "LeoNot",
+      "status": "canon-roster",
+      "alignment": "Null",
+      "configurations": [
+        "Spectral"
+      ],
+      "primaryConfiguration": "Spectral",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Kilobyte",
+      "familyId": "leo-family",
+      "zodiac": "Leo",
+      "rarity": "Rare",
+      "lore": "Null Spectral lion-family base species.",
+      "description": "Null Spectral lion-family base species.",
+      "runtime": {
+        "icon": "🦁",
+        "color": "#C084FC",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "leonill",
+      "dex": "070",
+      "name": "LeoNill",
+      "status": "canon-roster",
+      "alignment": "Null",
+      "configurations": [
+        "Spectral"
+      ],
+      "primaryConfiguration": "Spectral",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Megabyte",
+      "familyId": "leo-family",
+      "zodiac": "Leo",
+      "rarity": "Rare",
+      "lore": "Null Spectral lion-family Version Upgrade.",
+      "description": "Null Spectral lion-family Version Upgrade.",
+      "runtime": {
+        "icon": "🦁",
+        "color": "#C084FC",
+        "captureChance": 72,
+        "stability": 4
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "id": "leonone",
+      "dex": "071",
+      "name": "LeoNone",
+      "status": "canon-roster",
+      "alignment": "Null",
+      "configurations": [
+        "Spectral"
+      ],
+      "primaryConfiguration": "Spectral",
+      "secondaryConfiguration": null,
+      "configurationStatus": "assigned",
+      "version": "Gigabyte",
+      "familyId": "leo-family",
+      "zodiac": "Leo",
+      "rarity": "Epic",
+      "lore": "Null Spectral lion-family final species.",
+      "description": "Null Spectral lion-family final species.",
+      "runtime": {
+        "icon": "🦁",
+        "color": "#C084FC",
+        "captureChance": 62,
+        "stability": 5
+      },
+      "metadataStatus": {
+        "alignment": "assigned",
+        "configurations": "assigned",
+        "battleStats": "pending",
+        "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    }
+  ],
+  "searchFields": [
+    "id",
+    "dex",
+    "name",
+    "alignment",
+    "configurations",
+    "version",
+    "familyId",
+    "zodiac",
+    "rarity",
+    "lore"
+  ],
+  "commonIndexModel": {
+    "recordType": "species",
+    "idField": "id",
+    "titleField": "name",
+    "typeField": "alignment",
+    "keywordFields": [
+      "dex",
+      "configurations",
+      "version",
+      "familyId",
+      "zodiac",
+      "rarity",
+      "lore"
+    ],
+    "versionField": "schemaVersion"
+  }
+}
