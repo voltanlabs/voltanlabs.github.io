@@ -1,56 +1,68 @@
 # VoltanLabs Studio
 
-VoltanLabs Studio is an offline-first software development platform for building games, AI tools, creative software, documentation systems, simulations, and future commercial products.
+VoltanLabs Studio is an offline-first, repository-first software development platform for building games, AI tools, creative software, documentation systems, simulations, and future commercial products.
 
-The project has grown into a modular Studio architecture built around shared runtimes, searchable knowledge indexes, diagnostics, Studio Intelligence, reusable assets, and repository health automation.
+The project uses modular runtimes, explicit ownership contracts, searchable knowledge indexes, diagnostics, Studio Intelligence, reusable assets, and repository automation. The current flagship product is **DataByteSprites: Data Discovery**.
 
 ## Current Focus
 
-**Data Discovery Phase 4.3: Canonical Scanner OS Runtime + Studio Intelligence Foundation**
+**Data Discovery Phase 4.4.3: Modular Vertical Slice + Repository Recovery and Governance**
 
-The current priority is stabilizing DataByteSprites: Data Discovery as a mobile-first Scanner OS while expanding the Studio Intelligence platform that validates and documents the repository.
+The immediate priority is to preserve the stable v4 App Shell architecture while recovering damaged canonical data and runtime files, synchronizing documentation, and strengthening automated repository validation.
 
-## Studio Intelligence Foundation
+## Recovery Milestone
 
-The Studio now includes:
+The current recovery pass established:
 
-- Validation Engine
-- Health History
-- Diagnostics Snapshot System
-- UI Layout Audit
-- Module Ownership Audit
-- Studio Intelligence Manager
-- Master Report Bridge
-- Report Timeline
-- Documentation Audit
-- Master Report Export Verification
-- Collapsible Diagnostics Panels
-- Dependency Graph Viewer
-- Coverage Heat Map
-- Repository Evolution Dashboard
-- Predictive Diagnostics
+- A canonical species-index reconstruction tool at `studio/tools/reconstruct-species-index.mjs`.
+- A GitHub Actions workflow that regenerates, validates, commits, and pushes `studio/databytesprites/species.json`.
+- A reconstructed 71-species Studio index generated from the active canon roster.
+- A canonical DataByteSprites Configuration Chart containing 20 configurations.
+- A strict separation between Alignment (`Pristine`, `Stained`, `Null`) and Configuration.
+- An authored first-pass configuration matchup model for battle and Download systems.
 
-The next Studio Intelligence milestone is **Runtime Audit**.
+Recovery utilities must become repeatable generators or validators rather than remaining one-off repair scripts.
 
-## Documentation Map
+## Active Product Architecture
 
-Primary documentation:
+Data Discovery uses the v4 modular App Shell:
 
-- `PROJECT_STATE.md` — living project state.
-- `ROADMAP.md` — active roadmap.
-- `docs/studio-reference.md` — consolidated technical reference.
-- `docs/intelligence-module-registry.md` — Studio Intelligence modules.
-- `studio/intelligence/core.manifest.json` — machine-readable intelligence manifest.
+```text
+Studio Data
+  ↓
+Studio Data Bridge
+  ↓
+Gameplay and State Runtimes
+  ↓
+Dedicated Screen and Control Owners
+  ↓
+DD_PRODUCT_APP_V4_SHELL
+  ↓
+Compatibility Adapters and Visual Helpers
+  ↓
+Player UI
+```
 
-## Development Rules
+The App Shell coordinates lifecycle, routing, context, and action dispatch. It must not absorb screen markup, battle math, Download math, persistence rules, or screen-specific visual ownership.
 
-- Repository-first development.
-- Offline-first architecture.
-- Small, safe commits.
-- Push after each completed phase.
-- Documentation must stay synchronized with implementation.
-- Prefer manifests, registries, and runtime ownership over duplicated logic.
+## DataByteSprites Canon
 
-## Current Highest-Value Task
+### Alignments
 
-Complete the Runtime Audit, continue Scanner OS ownership cleanup, audit Product App v3.5 battle ownership, and keep Diagnostics synchronized with the repository after every major milestone.
+Alignment is a separate sprite-state axis:
+
+- `Pristine`
+- `Stained`
+- `Null`
+
+### Configurations
+
+The canonical configuration vocabulary is:
+
+- Mystic
+- Voltricity
+- Acoustic
+- Torrent
+- Thermal
+- Organic
+- Malware
