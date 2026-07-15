@@ -293,7 +293,8 @@ async function loadSources() {
     required,
     optional
   };
-      }
+ }
+
 function isPlainObject(value) {
   return (
     value !== null &&
