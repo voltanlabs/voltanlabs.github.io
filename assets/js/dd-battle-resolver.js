@@ -7,7 +7,7 @@
     !location.pathname.includes('databytedex')
   ) return;
 
-  var VERSION = '3.4.0';
+  var VERSION = '3.4.1';
   var OWNER = 'dd-battle-resolver';
 
   function battle() { return window.DDBattle24 || null; }
@@ -195,8 +195,10 @@
     }) ? 1.08 : 1;
   }
 
-  function blockedResult(user, move, gate) {
+  function blockedResult(user, move, gate, userMods, targetMods) {
     return {
+      resultType: 'blocked',
+      terminal: false,
       hit: false,
       miss: false,
       actionBlocked: true,
@@ -208,6 +210,10 @@
       signalDamage: 0,
       capturePressure: 0,
       statusApplication: null,
+      modifiers: {
+        user: userMods || statusModifiers(user),
+        target: targetMods || statusModifiers(null)
+      },
       notes: [(user.name || 'Sprite') + ' could not act because of ' + String(gate.reason || 'a status effect') + '.']
     };
   }
@@ -221,7 +227,7 @@
     var userMods = statusModifiers(user);
     var targetMods = statusModifiers(target);
     var gate = actionGate(user, move, opts);
-    if (!gate.allowed) return blockedResult(user, move, gate);
+    if (!gate.allowed) return blockedResult(user, move, gate, userMods, targetMods);
 
     var hit = hitCheck(user, move, target, opts.seed || opts.mode || 'turn', userMods);
     var type = typeResult(move, target);
@@ -229,6 +235,8 @@
 
     if (!effectiveHit) {
       return {
+        resultType: hit.hit ? 'no-effect' : 'miss',
+        terminal: false,
         hit: false,
         miss: true,
         actionBlocked: false,
@@ -273,6 +281,8 @@
     var statusApplication = resolveStatus(user, move, target, opts, true);
 
     return {
+      resultType: 'hit',
+      terminal: false,
       hit: true,
       miss: false,
       actionBlocked: false,
