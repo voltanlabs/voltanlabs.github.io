@@ -1,9 +1,10 @@
 // assets/js/dd-battle-state-runtime.js
-// Canonical battle state, status phases, terminal outcomes, and reward context propagation.
+// Canonical battle state, status phases, terminal outcomes, reward context propagation,
+// action-state decisions, and faint-to-party-switch coordination.
 (function () {
   'use strict';
 
-  const VERSION = '0.5.0';
+  const VERSION = '0.6.0';
   const OWNER = 'dd-battle-state-runtime';
 
   const STATES = Object.freeze({
@@ -13,6 +14,15 @@
     defeat: 'defeat',
     escaped: 'escaped',
     result: 'result'
+  });
+
+  const ACTION_DECISIONS = Object.freeze({
+    allowed: 'allowed',
+    missingContext: 'missing-context',
+    wildDefeated: 'wild-defeated',
+    switchRequired: 'switch-required',
+    partyDefeated: 'party-defeated',
+    battleInactive: 'battle-inactive'
   });
 
   let state = {
@@ -32,20 +42,16 @@
   };
 
   const statusRuntime = () => window.DD_STATUS_RUNTIME || null;
+  const partyRuntime = () => window.DD_PARTY_RUNTIME || null;
+  const partySwitchRuntime = () => window.DD_PARTY_SWITCH_RUNTIME || null;
   const snapshot = () => Object.assign({}, state);
 
   function contextSnapshot() {
     return {
-      encounterId:
-        battleContext.encounterId ||
-        state.encounterId ||
-        null,
+      encounterId: battleContext.encounterId || state.encounterId || null,
       wild: battleContext.wild || null,
       lead: battleContext.lead || null,
-      context: Object.assign(
-        {},
-        battleContext.context || {}
-      )
+      context: Object.assign({}, battleContext.context || {})
     };
   }
 
@@ -66,32 +72,20 @@
 
   function emit() {
     document.dispatchEvent(
-      new CustomEvent(
-        'dd:battle-state-change',
-        {
-          detail: Object.assign(
-            {},
-            snapshot(),
-            {
-              battleContext:
-                contextSnapshot()
-            }
-          )
-        }
-      )
+      new CustomEvent('dd:battle-state-change', {
+        detail: Object.assign({}, snapshot(), {
+          battleContext: contextSnapshot()
+        })
+      })
     );
   }
 
   function set(next, reason) {
     state.value = next || STATES.idle;
     state.reason = reason || null;
-    state.updatedAt =
-      new Date().toISOString();
+    state.updatedAt = new Date().toISOString();
 
-    if (
-      state.value === STATES.active ||
-      state.value === STATES.idle
-    ) {
+    if (state.value === STATES.active || state.value === STATES.idle) {
       state.terminalProcessed = false;
     }
 
@@ -99,24 +93,14 @@
     return snapshot();
   }
 
-  function normalizeStartContext(
-    encounterId,
-    context
-  ) {
-    if (
-      encounterId &&
-      typeof encounterId === 'object'
-    ) {
+  function normalizeStartContext(encounterId, context) {
+    if (encounterId && typeof encounterId === 'object') {
       context = encounterId;
-      encounterId =
-        context.encounterId ||
-        context.battleId ||
-        null;
+      encounterId = context.encounterId || context.battleId || null;
     }
 
     context =
-      context &&
-      typeof context === 'object'
+      context && typeof context === 'object'
         ? context
         : {};
 
@@ -127,8 +111,7 @@
       ('enc-' + Date.now());
 
     return {
-      encounterId:
-        String(resolvedEncounterId),
+      encounterId: String(resolvedEncounterId),
       wild:
         context.wild ||
         context.enemy ||
@@ -139,45 +122,25 @@
         context.recipient ||
         context.playerSprite ||
         null,
-      context: Object.assign(
-        {},
-        context,
-        {
-          encounterId:
-            String(resolvedEncounterId)
-        }
-      )
+      context: Object.assign({}, context, {
+        encounterId: String(resolvedEncounterId)
+      })
     };
   }
 
   function start(encounterId, context) {
-    battleContext =
-      normalizeStartContext(
-        encounterId,
-        context
-      );
-
-    state.encounterId =
-      battleContext.encounterId;
+    battleContext = normalizeStartContext(encounterId, context);
+    state.encounterId = battleContext.encounterId;
     state.terminalProcessed = false;
     state.turn = 0;
 
-    dispatch(
-      'dd:battle-context-ready',
-      contextSnapshot()
-    );
+    dispatch('dd:battle-context-ready', contextSnapshot());
 
-    return set(
-      STATES.active,
-      'battle-start'
-    );
+    return set(STATES.active, 'battle-start');
   }
 
   function updateContext(context) {
-    if (
-      !context ||
-      typeof context !== 'object'
-    ) {
+    if (!context || typeof context !== 'object') {
       return contextSnapshot();
     }
 
@@ -189,10 +152,7 @@
       null;
 
     battleContext = {
-      encounterId:
-        encounterId
-          ? String(encounterId)
-          : null,
+      encounterId: encounterId ? String(encounterId) : null,
       wild:
         context.wild ||
         context.enemy ||
@@ -210,27 +170,16 @@
         battleContext.context || {},
         context,
         encounterId
-          ? {
-              encounterId:
-                String(encounterId)
-            }
+          ? { encounterId: String(encounterId) }
           : {}
       )
     };
 
-    if (
-      battleContext.encounterId &&
-      !state.encounterId
-    ) {
-      state.encounterId =
-        battleContext.encounterId;
+    if (battleContext.encounterId && !state.encounterId) {
+      state.encounterId = battleContext.encounterId;
     }
 
-    dispatch(
-      'dd:battle-context-updated',
-      contextSnapshot()
-    );
-
+    dispatch('dd:battle-context-updated', contextSnapshot());
     return contextSnapshot();
   }
 
@@ -241,8 +190,7 @@
       terminalProcessed: false,
       reason: reason || null,
       turn: 0,
-      updatedAt:
-        new Date().toISOString()
+      updatedAt: new Date().toISOString()
     };
 
     battleContext = {
@@ -252,32 +200,34 @@
       context: {}
     };
 
+    const switchRuntime = partySwitchRuntime();
+    if (
+      switchRuntime &&
+      typeof switchRuntime.clearRequirement === 'function'
+    ) {
+      switchRuntime.clearRequirement('battle-reset');
+    }
+
     emit();
     return snapshot();
   }
 
-  const isActive =
-    () => state.value === STATES.active;
+  const isActive = () => state.value === STATES.active;
 
-  const isTerminal =
-    () => [
+  const isTerminal = () =>
+    [
       STATES.victory,
       STATES.defeat,
       STATES.escaped,
       STATES.result
     ].includes(state.value);
 
-  const canAct =
-    () =>
-      isActive() &&
-      !state.terminalProcessed;
+  const canAct = () =>
+    isActive() &&
+    !state.terminalProcessed;
 
-  function terminalPayload(
-    value,
-    extra
-  ) {
-    const context =
-      contextSnapshot();
+  function terminalPayload(value, extra) {
+    const context = contextSnapshot();
 
     return Object.assign(
       {
@@ -285,8 +235,7 @@
         alreadyProcessed: false,
         state: snapshot(),
         value,
-        encounterId:
-          context.encounterId,
+        encounterId: context.encounterId,
         wild: context.wild,
         lead: context.lead,
         context: context.context,
@@ -296,12 +245,7 @@
     );
   }
 
-  function processTerminal(
-    next,
-    reason,
-    handler,
-    terminalContext
-  ) {
+  function processTerminal(next, reason, handler, terminalContext) {
     if (state.terminalProcessed) {
       return Object.assign(
         {
@@ -318,45 +262,28 @@
     }
 
     state.terminalProcessed = true;
-    state.value =
-      next || STATES.result;
+    state.value = next || STATES.result;
     state.reason = reason || next;
-    state.updatedAt =
-      new Date().toISOString();
+    state.updatedAt = new Date().toISOString();
 
     emit();
 
     let value;
     if (typeof handler === 'function') {
-      value = handler(
-        snapshot(),
-        contextSnapshot()
-      );
+      value = handler(snapshot(), contextSnapshot());
     }
 
-    if (
-      value &&
-      typeof value === 'object'
-    ) {
+    if (value && typeof value === 'object') {
       updateContext(value);
     }
 
-    const result =
-      terminalPayload(value);
+    const result = terminalPayload(value);
 
-    dispatch(
-      'dd:battle-terminal',
-      result
-    );
-
+    dispatch('dd:battle-terminal', result);
     return result;
   }
 
-  const victory = (
-    reason,
-    handler,
-    terminalContext
-  ) =>
+  const victory = (reason, handler, terminalContext) =>
     processTerminal(
       STATES.victory,
       reason || 'wild-defeated',
@@ -364,11 +291,7 @@
       terminalContext
     );
 
-  const defeat = (
-    reason,
-    handler,
-    terminalContext
-  ) =>
+  const defeat = (reason, handler, terminalContext) =>
     processTerminal(
       STATES.defeat,
       reason || 'party-defeated',
@@ -376,11 +299,7 @@
       terminalContext
     );
 
-  const escaped = (
-    reason,
-    handler,
-    terminalContext
-  ) =>
+  const escaped = (reason, handler, terminalContext) =>
     processTerminal(
       STATES.escaped,
       reason || 'signal-lost',
@@ -388,18 +307,11 @@
       terminalContext
     );
 
-  function captureParticipants(
-    actor,
-    target,
-    context
-  ) {
+  function captureParticipants(actor, target, context) {
     context = context || {};
 
-    const actorSide =
-      context.actorSide || null;
-    const targetSide =
-      context.targetSide || null;
-
+    const actorSide = context.actorSide || null;
+    const targetSide = context.targetSide || null;
     const next = {};
 
     if (actorSide === 'player') {
@@ -415,8 +327,7 @@
     }
 
     if (context.encounterId) {
-      next.encounterId =
-        context.encounterId;
+      next.encounterId = context.encounterId;
     }
 
     if (Object.keys(next).length) {
@@ -424,44 +335,29 @@
     }
   }
 
-  function applyStatusApplication(
-    resolution,
-    actor,
-    target,
-    context
-  ) {
+  function applyStatusApplication(resolution, actor, target, context) {
     const application =
       resolution &&
       resolution.statusApplication;
 
-    if (
-      !application ||
-      !application.applied
-    ) {
+    if (!application || !application.applied) {
       return {
         ok: false,
         skipped: true,
         reason: application
           ? 'status-roll-failed'
           : 'no-status-application',
-        application:
-          application || null
+        application: application || null
       };
     }
 
-    const runtime =
-      statusRuntime();
+    const runtime = statusRuntime();
 
-    if (
-      !runtime ||
-      typeof runtime.apply !==
-        'function'
-    ) {
+    if (!runtime || typeof runtime.apply !== 'function') {
       return {
         ok: false,
         skipped: false,
-        reason:
-          'status-runtime-unavailable',
+        reason: 'status-runtime-unavailable',
         application
       };
     }
@@ -475,41 +371,31 @@
       return {
         ok: false,
         skipped: false,
-        reason:
-          'status-target-unavailable',
+        reason: 'status-target-unavailable',
         application
       };
     }
 
-    const status =
-      runtime.apply(
-        recipient,
-        application.id,
-        {
-          duration:
-            application.durationTurns,
-          stacks:
-            application.stacks,
-          data: Object.assign(
-            {},
-            application.data || {},
-            {
-              encounterId:
-                state.encounterId,
-              turn: state.turn,
-              side:
-                application.target ===
-                  'self'
-                  ? context &&
-                    context.actorSide ||
-                    null
-                  : context &&
-                    context.targetSide ||
-                    null
-            }
-          )
-        }
-      );
+    const status = runtime.apply(
+      recipient,
+      application.id,
+      {
+        duration: application.durationTurns,
+        stacks: application.stacks,
+        data: Object.assign(
+          {},
+          application.data || {},
+          {
+            encounterId: state.encounterId,
+            turn: state.turn,
+            side:
+              application.target === 'self'
+                ? context && context.actorSide || null
+                : context && context.targetSide || null
+          }
+        )
+      }
+    );
 
     const result = {
       ok: true,
@@ -519,96 +405,64 @@
       application
     };
 
-    dispatch(
-      'dd:battle-status-applied',
-      result
-    );
-
+    dispatch('dd:battle-status-applied', result);
     return result;
   }
 
-  function applyResolution(
-    resolution,
-    actor,
-    target,
-    context
-  ) {
+  function applyResolution(resolution, actor, target, context) {
     if (!resolution) {
       return {
         ok: false,
-        reason:
-          'missing-resolution'
+        reason: 'missing-resolution'
       };
     }
 
     context = context || {};
 
-    captureParticipants(
+    captureParticipants(actor, target, context);
+
+    const statusResult = applyStatusApplication(
+      resolution,
       actor,
       target,
       context
     );
 
-    const statusResult =
-      applyStatusApplication(
-        resolution,
-        actor,
-        target,
-        context
-      );
-
     const result = {
       ok: true,
       resolution,
       statusResult,
-      actionBlocked:
-        !!resolution.actionBlocked,
+      actionBlocked: !!resolution.actionBlocked,
       state: snapshot(),
-      battleContext:
-        contextSnapshot()
+      battleContext: contextSnapshot()
     };
 
-    dispatch(
-      'dd:battle-resolution-applied',
-      result
-    );
-
+    dispatch('dd:battle-resolution-applied', result);
     return result;
   }
 
-  function tickParticipant(
-    participant,
-    context
-  ) {
-    const runtime =
-      statusRuntime();
+  function tickParticipant(participant, context) {
+    const runtime = statusRuntime();
 
     if (!participant) {
       return {
         ok: false,
-        reason:
-          'missing-participant'
+        reason: 'missing-participant'
       };
     }
 
-    if (
-      !runtime ||
-      typeof runtime.tick !==
-        'function'
-    ) {
+    if (!runtime || typeof runtime.tick !== 'function') {
       return {
         ok: false,
-        reason:
-          'status-runtime-unavailable',
+        reason: 'status-runtime-unavailable',
         participant
       };
     }
 
-    const outcome =
-      runtime.tick(
-        participant,
-        context || {}
-      );
+    const outcome = runtime.tick(
+      participant,
+      context || {}
+    );
 
     return {
       ok: true,
@@ -624,49 +478,27 @@
         outcome.effects
           ? outcome.effects.reduce(
               (sum, effect) =>
-                sum +
-                Number(
-                  effect.damage || 0
-                ),
+                sum + Number(effect.damage || 0),
               0
             )
           : 0,
-      fainted:
-        !!(
-          outcome &&
-          outcome.fainted
-        )
+      fainted: !!(outcome && outcome.fainted)
     };
   }
 
-  function participantSide(
-    participant,
-    context,
-    index
-  ) {
+  function participantSide(participant, context, index) {
     if (
       context &&
-      Array.isArray(
-        context.participantSides
-      )
+      Array.isArray(context.participantSides)
     ) {
-      return context
-        .participantSides[index];
+      return context.participantSides[index];
     }
 
-    if (
-      participant &&
-      battleContext.lead ===
-        participant
-    ) {
+    if (participant && battleContext.lead === participant) {
       return 'player';
     }
 
-    if (
-      participant &&
-      battleContext.wild ===
-        participant
-    ) {
+    if (participant && battleContext.wild === participant) {
       return 'wild';
     }
 
@@ -687,104 +519,355 @@
     );
   }
 
-  function captureTickParticipants(
-    ticks,
-    context
-  ) {
+  function captureTickParticipants(ticks, context) {
     const update = {};
 
-    ticks.forEach(
-      (tick, index) => {
-        if (
-          !tick ||
-          !tick.participant
-        ) {
-          return;
-        }
+    ticks.forEach((tick, index) => {
+      if (!tick || !tick.participant) return;
 
-        const side =
-          participantSide(
-            tick.participant,
-            context,
-            index
-          );
+      const side = participantSide(
+        tick.participant,
+        context,
+        index
+      );
 
-        if (side === 'player') {
-          update.lead =
-            tick.participant;
-        } else if (
-          side === 'wild'
-        ) {
-          update.wild =
-            tick.participant;
-        }
+      if (side === 'player') {
+        update.lead = tick.participant;
+      } else if (side === 'wild') {
+        update.wild = tick.participant;
       }
-    );
+    });
 
     if (Object.keys(update).length) {
       updateContext(update);
     }
   }
 
-  function resolveStatusTerminal(
-    ticks,
-    context
-  ) {
-    if (isTerminal()) return null;
+  function handleActorFaint(actor, context) {
+    context =
+      context && typeof context === 'object'
+        ? context
+        : {};
 
-    captureTickParticipants(
-      ticks,
-      context || {}
+    if (!actor || Number(actor.hp || 0) > 0) {
+      return {
+        ok: false,
+        handled: false,
+        decision: ACTION_DECISIONS.allowed,
+        reason: 'actor-not-fainted',
+        state: snapshot(),
+        battleContext: contextSnapshot()
+      };
+    }
+
+    updateContext(
+      Object.assign({}, context, {
+        lead: actor
+      })
     );
 
-    const fainted =
-      ticks.filter(
-        tick =>
-          tick &&
-          tick.ok &&
-          tick.fainted
+    const switchRuntime = partySwitchRuntime();
+    const party = partyRuntime();
+
+    let switchDecision = null;
+
+    if (
+      switchRuntime &&
+      typeof switchRuntime.requestForFaint === 'function'
+    ) {
+      switchDecision = switchRuntime.requestForFaint(
+        actor,
+        {
+          reason:
+            context.reason ||
+            'active-sprite-fainted',
+          lead: actor,
+          activeSprite: actor,
+          party:
+            context.party ||
+            (
+              party &&
+              typeof party.members === 'function'
+                ? party.members()
+                : undefined
+            ),
+          encounterId:
+            context.encounterId ||
+            state.encounterId,
+          wild:
+            context.wild ||
+            battleContext.wild ||
+            null,
+          source: OWNER
+        }
       );
+    } else {
+      const hasReplacement =
+        party &&
+        typeof party.hasUsableMember === 'function'
+          ? party.hasUsableMember({
+              excludeId: actor.id
+            })
+          : false;
+
+      switchDecision = {
+        ok: hasReplacement,
+        switchRequired: hasReplacement,
+        partyWiped: !hasReplacement,
+        reason: hasReplacement
+          ? 'active-sprite-fainted'
+          : 'party-defeated',
+        candidates:
+          hasReplacement &&
+          party &&
+          typeof party.replacementCandidates === 'function'
+            ? party.replacementCandidates(actor)
+            : []
+      };
+    }
+
+    if (switchDecision.partyWiped) {
+      const terminal = defeat(
+        'party-defeated',
+        null,
+        {
+          lead: actor,
+          wild:
+            context.wild ||
+            battleContext.wild ||
+            null,
+          encounterId:
+            context.encounterId ||
+            state.encounterId
+        }
+      );
+
+      const result = {
+        ok: true,
+        handled: true,
+        decision: ACTION_DECISIONS.partyDefeated,
+        reason: 'party-defeated',
+        switchDecision,
+        terminal,
+        state: snapshot(),
+        battleContext: contextSnapshot()
+      };
+
+      dispatch('dd:battle-action-decision', result);
+      return result;
+    }
+
+    const result = {
+      ok: true,
+      handled: true,
+      decision: ACTION_DECISIONS.switchRequired,
+      reason:
+        switchDecision.reason ||
+        'active-sprite-fainted',
+      switchDecision,
+      terminal: null,
+      state: snapshot(),
+      battleContext: contextSnapshot()
+    };
+
+    dispatch('dd:battle-action-decision', result);
+    return result;
+  }
+
+  function evaluateActionState(input) {
+    input =
+      input && typeof input === 'object'
+        ? input
+        : {};
+
+    const wild =
+      input.wild ||
+      battleContext.wild ||
+      null;
+
+    const actor =
+      input.actor ||
+      input.lead ||
+      battleContext.lead ||
+      null;
+
+    if (!wild || !actor) {
+      const result = {
+        ok: false,
+        block: true,
+        decision: ACTION_DECISIONS.missingContext,
+        reason: !wild
+          ? 'missing-wild'
+          : 'missing-actor',
+        state: snapshot(),
+        battleContext: contextSnapshot()
+      };
+
+      dispatch('dd:battle-action-decision', result);
+      return result;
+    }
+
+    updateContext({
+      wild,
+      lead: actor,
+      encounterId:
+        input.encounterId ||
+        state.encounterId
+    });
+
+    if (Number(wild.hp || 0) <= 0) {
+      let terminal = null;
+
+      if (!state.terminalProcessed) {
+        terminal = victory(
+          'wild-defeated',
+          null,
+          {
+            wild,
+            lead: actor,
+            encounterId:
+              input.encounterId ||
+              state.encounterId
+          }
+        );
+      }
+
+      const result = {
+        ok: true,
+        block: true,
+        decision: ACTION_DECISIONS.wildDefeated,
+        reason: 'wild-defeated',
+        terminal,
+        state: snapshot(),
+        battleContext: contextSnapshot()
+      };
+
+      dispatch('dd:battle-action-decision', result);
+      return result;
+    }
+
+    if (Number(actor.hp || 0) <= 0) {
+      const faintResult = handleActorFaint(
+        actor,
+        Object.assign({}, input, {
+          wild
+        })
+      );
+
+      return Object.assign(
+        {
+          block: true
+        },
+        faintResult
+      );
+    }
+
+    if (!canAct()) {
+      const result = {
+        ok: false,
+        block: true,
+        decision: ACTION_DECISIONS.battleInactive,
+        reason: state.value,
+        state: snapshot(),
+        battleContext: contextSnapshot()
+      };
+
+      dispatch('dd:battle-action-decision', result);
+      return result;
+    }
+
+    const switchRuntime = partySwitchRuntime();
+    if (
+      switchRuntime &&
+      typeof switchRuntime.isSwitchRequired === 'function' &&
+      switchRuntime.isSwitchRequired()
+    ) {
+      const result = {
+        ok: true,
+        block: true,
+        decision: ACTION_DECISIONS.switchRequired,
+        reason:
+          typeof switchRuntime.getReason === 'function'
+            ? switchRuntime.getReason() ||
+              'switch-required'
+            : 'switch-required',
+        switchDecision:
+          typeof switchRuntime.snapshot === 'function'
+            ? switchRuntime.snapshot()
+            : null,
+        state: snapshot(),
+        battleContext: contextSnapshot()
+      };
+
+      dispatch('dd:battle-action-decision', result);
+      return result;
+    }
+
+    const result = {
+      ok: true,
+      block: false,
+      decision: ACTION_DECISIONS.allowed,
+      reason: null,
+      state: snapshot(),
+      battleContext: contextSnapshot()
+    };
+
+    dispatch('dd:battle-action-decision', result);
+    return result;
+  }
+
+  function resolveStatusTerminal(ticks, context) {
+    if (isTerminal()) return null;
+
+    captureTickParticipants(ticks, context || {});
+
+    const fainted = ticks.filter(
+      tick =>
+        tick &&
+        tick.ok &&
+        tick.fainted
+    );
 
     if (!fainted.length) return null;
 
-    const sides =
-      fainted.map(tick =>
-        participantSide(
-          tick.participant,
-          context,
-          ticks.indexOf(tick)
-        )
-      );
+    const sides = fainted.map(tick =>
+      participantSide(
+        tick.participant,
+        context,
+        ticks.indexOf(tick)
+      )
+    );
 
-    const wildFainted =
-      sides.includes('wild');
-
-    const playerFainted =
-      sides.includes('player');
+    const wildFainted = sides.includes('wild');
+    const playerFainted = sides.includes('player');
 
     let result = null;
 
-    if (
-      wildFainted &&
-      playerFainted
-    ) {
-      result =
-        processTerminal(
-          STATES.result,
-          'status-double-faint'
-        );
+    if (wildFainted && playerFainted) {
+      result = processTerminal(
+        STATES.result,
+        'status-double-faint'
+      );
     } else if (wildFainted) {
-      result =
-        victory(
-          'status-wild-defeated'
-        );
-    } else if (
-      playerFainted
-    ) {
-      result =
-        defeat(
-          'status-player-defeated'
-        );
+      result = victory(
+        'status-wild-defeated'
+      );
+    } else if (playerFainted) {
+      const playerTick = fainted.find(
+        tick =>
+          participantSide(
+            tick.participant,
+            context,
+            ticks.indexOf(tick)
+          ) === 'player'
+      );
+
+      result = handleActorFaint(
+        playerTick && playerTick.participant,
+        Object.assign({}, context || {}, {
+          reason: 'status-player-fainted'
+        })
+      );
     }
 
     if (result) {
@@ -794,8 +877,7 @@
           result,
           ticks,
           sides,
-          battleContext:
-            contextSnapshot()
+          battleContext: contextSnapshot()
         }
       );
     }
@@ -803,63 +885,45 @@
     return result;
   }
 
-  function tickPhase(
-    participants,
-    phase,
-    context
-  ) {
+  function tickPhase(participants, phase, context) {
     if (!canAct()) {
       return {
         ok: false,
         reason: state.value,
         phase,
         state: snapshot(),
-        battleContext:
-          contextSnapshot()
+        battleContext: contextSnapshot()
       };
     }
 
     const list =
       Array.isArray(participants)
         ? participants.filter(Boolean)
-        : [participants].filter(
-            Boolean
-          );
+        : [participants].filter(Boolean);
 
-    const ticks =
-      list.map(
-        function (
+    const ticks = list.map(
+      function (participant, index) {
+        return tickParticipant(
           participant,
-          index
-        ) {
-          return tickParticipant(
-            participant,
-            Object.assign(
-              {
-                encounterId:
-                  state.encounterId,
-                turn:
-                  state.turn,
-                participantIndex:
-                  index,
-                phase
-              },
-              context || {}
-            )
-          );
-        }
-      );
+          Object.assign(
+            {
+              encounterId: state.encounterId,
+              turn: state.turn,
+              participantIndex: index,
+              phase
+            },
+            context || {}
+          )
+        );
+      }
+    );
 
-    captureTickParticipants(
+    captureTickParticipants(ticks, context || {});
+
+    const terminal = resolveStatusTerminal(
       ticks,
       context || {}
     );
-
-    const terminal =
-      resolveStatusTerminal(
-        ticks,
-        context || {}
-      );
 
     const result = {
       ok: true,
@@ -867,35 +931,25 @@
       ticks,
       terminal,
       state: snapshot(),
-      battleContext:
-        contextSnapshot()
+      battleContext: contextSnapshot()
     };
 
-    dispatch(
-      'dd:battle-status-phase-ticked',
-      result
-    );
-
+    dispatch('dd:battle-status-phase-ticked', result);
     return result;
   }
 
-  function beginTurn(
-    participants,
-    context
-  ) {
+  function beginTurn(participants, context) {
     if (!canAct()) {
       return {
         ok: false,
         reason: state.value,
         state: snapshot(),
-        battleContext:
-          contextSnapshot()
+        battleContext: contextSnapshot()
       };
     }
 
     state.turn += 1;
-    state.updatedAt =
-      new Date().toISOString();
+    state.updatedAt = new Date().toISOString();
     emit();
 
     return tickPhase(
@@ -905,40 +959,29 @@
     );
   }
 
-  const endTurn = (
-    participants,
-    context
-  ) =>
+  const endTurn = (participants, context) =>
     tickPhase(
       participants,
       'end',
       context || {}
     );
 
-  function tickTurn(
-    participants,
-    context
-  ) {
+  function tickTurn(participants, context) {
     if (!canAct()) {
       return {
         ok: false,
         reason: state.value,
         state: snapshot(),
-        battleContext:
-          contextSnapshot()
+        battleContext: contextSnapshot()
       };
     }
 
-    const startResult =
-      beginTurn(
-        participants,
-        context || {}
-      );
+    const startResult = beginTurn(
+      participants,
+      context || {}
+    );
 
-    if (
-      startResult.terminal ||
-      !canAct()
-    ) {
+    if (startResult.terminal || !canAct()) {
       return {
         ok: true,
         turn: state.turn,
@@ -948,61 +991,44 @@
           startResult.terminal ||
           null,
         state: snapshot(),
-        battleContext:
-          contextSnapshot()
+        battleContext: contextSnapshot()
       };
     }
 
-    const endResult =
-      endTurn(
-        participants,
-        context || {}
-      );
+    const endResult = endTurn(
+      participants,
+      context || {}
+    );
 
     const result = {
       ok: true,
       turn: state.turn,
       start: startResult,
       end: endResult,
-      ticks:
-        endResult.ticks || [],
+      ticks: endResult.ticks || [],
       terminal:
         endResult.terminal ||
         null,
       state: snapshot(),
-      battleContext:
-        contextSnapshot()
+      battleContext: contextSnapshot()
     };
 
-    dispatch(
-      'dd:battle-status-turn-ticked',
-      result
-    );
-
+    dispatch('dd:battle-status-turn-ticked', result);
     return result;
   }
 
-  function applyWildDefeat(
-    wild,
-    tools,
-    context
-  ) {
+  function applyWildDefeat(wild, tools, context) {
     if (!wild) {
       return {
         ok: false,
-        message:
-          'No wild signal.'
+        message: 'No wild signal.'
       };
     }
 
     updateContext(
-      Object.assign(
-        {},
-        context || {},
-        {
-          wild
-        }
-      )
+      Object.assign({}, context || {}, {
+        wild
+      })
     );
 
     return victory(
@@ -1012,22 +1038,15 @@
 
         if (
           tools &&
-          typeof tools
-            .stabilizeSignal ===
-            'function'
+          typeof tools.stabilizeSignal === 'function'
         ) {
-          tools.stabilizeSignal(
-            wild,
-            1
-          );
+          tools.stabilizeSignal(wild, 1);
         }
 
         if (
           tools &&
-          typeof tools.setOdds ===
-            'function' &&
-          typeof tools.odds ===
-            'function'
+          typeof tools.setOdds === 'function' &&
+          typeof tools.odds === 'function'
         ) {
           tools.setOdds(
             wild,
@@ -1042,10 +1061,8 @@
 
         return {
           wild,
-          lead:
-            battleContext.lead,
-          encounterId:
-            battleContext.encounterId,
+          lead: battleContext.lead,
+          encounterId: battleContext.encounterId,
           odds:
             tools &&
             tools.odds
@@ -1059,49 +1076,24 @@
     );
   }
 
-  function shouldBlockAction(
-    wild,
-    actor
-  ) {
-    if (!wild) {
-      return {
-        block: true,
-        reason:
-          'missing-wild'
-      };
-    }
-
-    if (
-      Number(wild.hp || 0) <= 0
-    ) {
-      return {
-        block: true,
-        reason:
-          'wild-defeated'
-      };
-    }
-
-    if (
-      actor &&
-      Number(actor.hp || 0) <= 0
-    ) {
-      return {
-        block: true,
-        reason:
-          'actor-defeated'
-      };
-    }
-
-    if (!canAct()) {
-      return {
-        block: true,
-        reason: state.value
-      };
-    }
+  function shouldBlockAction(wild, actor) {
+    const decision = evaluateActionState({
+      wild,
+      actor
+    });
 
     return {
-      block: false,
-      reason: null
+      block: !!decision.block,
+      reason: decision.reason,
+      decision: decision.decision,
+      state: decision.state,
+      battleContext: decision.battleContext,
+      switchDecision:
+        decision.switchDecision ||
+        null,
+      terminal:
+        decision.terminal ||
+        null
     };
   }
 
@@ -1110,8 +1102,9 @@
       version: VERSION,
       owner: OWNER,
       phase:
-        '4.5-terminal-reward-context',
+        '4.6-action-state-and-faint-ownership',
       STATES,
+      ACTION_DECISIONS,
       snapshot,
       contextSnapshot,
       updateContext,
@@ -1133,6 +1126,8 @@
       tickTurn,
       resolveStatusTerminal,
       applyWildDefeat,
+      evaluateActionState,
+      handleActorFaint,
       shouldBlockAction
     });
 
@@ -1141,8 +1136,7 @@
       'dd:battle-state-runtime-ready',
       {
         detail:
-          window
-            .DD_BATTLE_STATE_RUNTIME
+          window.DD_BATTLE_STATE_RUNTIME
       }
     )
   );
