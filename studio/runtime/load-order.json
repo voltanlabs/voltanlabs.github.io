@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "0.13.0",
+  "schemaVersion": "0.13.1",
   "generatedBy": "VoltanLabs Studio Runtime Loader",
-  "description": "Deterministic load-order and ownership manifest for Data Discovery Phase 4.5 after status behavior integration, explicit status-turn sequencing, canonical battle rewards, terminal reward context propagation, and reward presentation.",
+  "description": "Deterministic load-order and ownership manifest for Data Discovery Phase 4.5 after canonical battle-state ownership correction, canonical battle rewards, terminal reward context propagation, and reward presentation.",
   "runtime": "databyte-discovery-product-app-v4-shell",
   "phase": "4.5-reward-context-and-presentation",
   "phases": [
@@ -43,7 +43,7 @@
     },
     {
       "id": "product:state-ready",
-      "description": "Status, battle state, status flow, reward runtime, reward presentation, battle presentation, collection, party, inventory, and Dex runtime modules are loaded."
+      "description": "Status, battle state, reward runtime, reward presentation, battle presentation, collection, party, inventory, and Dex runtime modules are loaded."
     },
     {
       "id": "product:screen-owners-ready",
@@ -243,26 +243,6 @@
         "dd:battle-context-ready",
         "dd:battle-context-updated",
         "dd:battle-terminal"
-      ],
-      "required": true,
-      "failureBehavior": "show-runtime-error",
-      "status": "active-owner"
-    },
-    {
-      "id": "dd-status-battle-flow",
-      "label": "Status Battle Flow",
-      "script": "/assets/js/dd-status-battle-flow.js?v=status-battle-flow-1-1-0",
-      "phase": "product:state-ready",
-      "requires": [
-        "dd-status-runtime",
-        "dd-battle-resolver",
-        "dd-battle-state-runtime"
-      ],
-      "emits": [
-        "dd:status-battle-flow-ready",
-        "dd:status-battle-turn-started",
-        "dd:status-battle-turn-complete",
-        "DD_STATUS_BATTLE_FLOW"
       ],
       "required": true,
       "failureBehavior": "show-runtime-error",
@@ -547,7 +527,6 @@
         "dd-battle-balance-2-4",
         "dd-battle-resolver",
         "dd-battle-state-runtime",
-        "dd-status-battle-flow",
         "dd-battle-presentation-runtime",
         "dd-collection-runtime",
         "dd-party-runtime",
@@ -816,6 +795,12 @@
       "script": "/assets/js/dd-battle-centerline-fix-4-3.js?v=battle-centerline-4-3-wrapper-1",
       "status": "retired-active-load",
       "replacement": "dd-battle-screen"
+    },
+    {
+      "id": "dd-status-battle-flow",
+      "script": "/assets/js/dd-status-battle-flow.js?v=status-battle-flow-1-1-0",
+      "status": "retirement-candidate",
+      "replacement": "databyte-discovery-product-app-v4-shell + dd-battle-state-runtime"
     }
   ],
   "events": {
@@ -834,7 +819,6 @@
     "DD_TYPE_CHART",
     "DD_STATUS_RUNTIME",
     "DDBattle24",
-    "DD_STATUS_BATTLE_FLOW",
     "DD_GAMEPLAY_RULES",
     "DD_CAPTURE_RUNTIME",
     "DD_ENCOUNTER_RUNTIME",
@@ -891,7 +875,8 @@
       "whole-page battle scrolling",
       "layout-expanding battle messages",
       "interval-based layout patch loops",
-      "active layout wrapper loading"
+      "active layout wrapper loading",
+      "resolver monkey-patching by status battle flow"
     ],
     "battleRewardOwner": "dd-battle-reward-runtime",
     "battleRewardPresentationOwner": "dd-battle-reward-presentation",
