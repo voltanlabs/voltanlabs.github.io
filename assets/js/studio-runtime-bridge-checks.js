@@ -6,7 +6,7 @@
   if (!location.pathname.includes('databyte-discovery')) return;
   if (window.DD_RUNTIME_DIAGNOSTICS) return;
 
-  const VERSION = '1.0.0';
+  const VERSION = '1.1.0';
   const OWNER = 'studio-runtime-bridge-checks';
   const MAX_TRACE = 120;
   const PANEL_ID = 'ddRuntimeDiagnosticsPanel';
@@ -21,23 +21,33 @@
     { id: 'studio-data-bridge', label: 'Studio Data Bridge', test: () => !!window.DD_STUDIO_DATA_BRIDGE },
     { id: 'status-runtime', label: 'Status Runtime', test: () => !!window.DD_STATUS_RUNTIME && typeof window.DD_STATUS_RUNTIME.tick === 'function' && typeof window.DD_STATUS_RUNTIME.actionGate === 'function' },
     { id: 'battle-engine', label: 'Battle Engine', test: () => !!window.DDBattle24 && typeof window.DDBattle24.typeResult === 'function' },
-    { id: 'gameplay-rules', label: 'Gameplay Rules', test: () => !!window.DD_GAMEPLAY_RULES },
-    { id: 'capture-runtime', label: 'Capture Runtime', test: () => !!window.DD_CAPTURE_RUNTIME && typeof window.DD_CAPTURE_RUNTIME.attempt === 'function' },
-    { id: 'encounter-runtime', label: 'Encounter Runtime', test: () => !!window.DD_ENCOUNTER_RUNTIME && typeof window.DD_ENCOUNTER_RUNTIME.create === 'function' },
+    { id: 'gameplay-rules', label: 'Gameplay Rules', test: () => !!window.DD_GAMEPLAY_RULES && typeof window.DD_GAMEPLAY_RULES.odds === 'function' && typeof window.DD_GAMEPLAY_RULES.tuneSprite === 'function' },
+    { id: 'capture-runtime', label: 'Capture Runtime', test: () => !!window.DD_CAPTURE_RUNTIME && typeof window.DD_CAPTURE_RUNTIME.attempt === 'function' && typeof window.DD_CAPTURE_RUNTIME.odds === 'function' },
+    { id: 'encounter-runtime', label: 'Encounter Runtime', test: () => !!window.DD_ENCOUNTER_RUNTIME && typeof window.DD_ENCOUNTER_RUNTIME.create === 'function' && typeof window.DD_ENCOUNTER_RUNTIME.randomCode === 'function' },
     { id: 'battle-balance', label: 'Battle Balance', test: () => !!window.DD_BATTLE_BALANCE },
-    { id: 'battle-resolver', label: 'Battle Resolver', test: () => !!window.DD_BATTLE_RESOLVER && typeof window.DD_BATTLE_RESOLVER.resolve === 'function' },
+    { id: 'battle-resolver', label: 'Battle Resolver', test: () => !!window.DD_BATTLE_RESOLVER && typeof window.DD_BATTLE_RESOLVER.resolve === 'function' && typeof window.DD_BATTLE_RESOLVER.turnOrder === 'function' && typeof window.DD_BATTLE_RESOLVER.chooseEnemyMove === 'function' },
     { id: 'battle-state-runtime', label: 'Battle State Runtime', test: () => !!window.DD_BATTLE_STATE_RUNTIME && typeof window.DD_BATTLE_STATE_RUNTIME.snapshot === 'function' },
     { id: 'status-battle-flow', label: 'Status Battle Flow', test: () => !!window.DD_STATUS_BATTLE_FLOW && typeof window.DD_STATUS_BATTLE_FLOW.health === 'function' },
     { id: 'battle-reward-runtime', label: 'Battle Reward Runtime', test: () => !!window.DD_BATTLE_REWARD_RUNTIME && typeof window.DD_BATTLE_REWARD_RUNTIME.award === 'function' },
     { id: 'battle-reward-presentation', label: 'Battle Reward Presentation', test: () => !!window.DD_BATTLE_REWARD_PRESENTATION },
     { id: 'battle-presentation', label: 'Battle Presentation Runtime', test: () => !!window.DD_BATTLE_PRESENTATION_RUNTIME },
-    { id: 'collection-runtime', label: 'Collection Runtime', test: () => !!window.DD_COLLECTION_RUNTIME },
-    { id: 'party-runtime', label: 'Party Runtime', test: () => !!window.DD_PARTY_RUNTIME },
-    { id: 'inventory-runtime', label: 'Inventory Runtime', test: () => !!window.DD_INVENTORY_RUNTIME },
-    { id: 'dex-runtime', label: 'Dex Runtime', test: () => !!window.DD_DEX_RUNTIME },
+    { id: 'collection-runtime', label: 'Collection Runtime', test: () => !!window.DD_COLLECTION_RUNTIME && typeof window.DD_COLLECTION_RUNTIME.all === 'function' && typeof window.DD_COLLECTION_RUNTIME.add === 'function' },
+    { id: 'party-runtime', label: 'Party Runtime', test: () => !!window.DD_PARTY_RUNTIME && typeof window.DD_PARTY_RUNTIME.lead === 'function' && typeof window.DD_PARTY_RUNTIME.members === 'function' },
+    { id: 'inventory-runtime', label: 'Inventory Runtime', test: () => !!window.DD_INVENTORY_RUNTIME && typeof window.DD_INVENTORY_RUNTIME.read === 'function' && typeof window.DD_INVENTORY_RUNTIME.spend === 'function' },
+    { id: 'dex-runtime', label: 'Dex Runtime', test: () => !!window.DD_DEX_RUNTIME && typeof window.DD_DEX_RUNTIME.stats === 'function' && typeof window.DD_DEX_RUNTIME.records === 'function' },
     { id: 'battle-screen', label: 'Battle Screen Owner', test: () => !!window.DD_BATTLE_SCREEN },
     { id: 'battle-controls', label: 'Battle Controls Owner', test: () => !!window.DD_BATTLE_CONTROLS },
+    { id: 'game-data-manifest', label: 'Game Data Manifest', test: () => !!window.DD_GAME_DATA_MANIFEST && !!window.DD_GAME_DATA_MANIFEST.schemaVersion && !!window.DD_GAME_DATA_MANIFEST.id },
+    { id: 'move-index', label: 'Move Index', test: () => !!window.DD_MOVE_INDEX && Array.isArray(window.DD_MOVE_INDEX.moves) && window.DD_MOVE_INDEX.moves.length > 0 },
+    { id: 'type-chart', label: 'Configuration Chart', test: () => !!window.DD_TYPE_CHART && ((Array.isArray(window.DD_TYPE_CHART.configurations) && window.DD_TYPE_CHART.configurations.length > 0) || (Array.isArray(window.DD_TYPE_CHART.rules) && window.DD_TYPE_CHART.rules.length > 0)) },
+    { id: 'collection-dex-bridge', label: 'Collection/Dex Bridge', test: () => !!window.DD_COLLECTION_DEX_BRIDGE && window.DD_COLLECTION_DEX_BRIDGE.collectionReady === true && window.DD_COLLECTION_DEX_BRIDGE.dexReady === true },
+    { id: 'local-storage', label: 'Local Storage', test: () => typeof localStorage !== 'undefined' },
     { id: 'app-shell', label: 'v4 App Shell', test: () => !!window.DD_PRODUCT_APP_V4_SHELL && !!document.getElementById('ddApp') }
+  ];
+
+  const observations = [
+    { id: 'hp-ring-ui', label: 'HP Ring UI', test: () => !!document.querySelector('.ring.hp') || !!document.querySelector('.ring'), activeWhen: () => !!document.querySelector('.battle-card') },
+    { id: 'signal-meter-ui', label: 'Signal Meter UI', test: () => !!document.querySelector('.signalBox'), activeWhen: () => !!document.querySelector('.battle-card') }
   ];
 
   function safeClone(value) {
@@ -146,6 +156,30 @@
       };
     });
 
+    const observationResults = observations.map(check => {
+      let active = false;
+      let ok = true;
+      let error = null;
+
+      try {
+        active = check.activeWhen ? !!check.activeWhen() : true;
+        ok = !active || !!check.test();
+      } catch (caught) {
+        active = true;
+        ok = false;
+        error = String(caught && caught.message || caught);
+      }
+
+      return {
+        id: check.id,
+        label: check.label,
+        active,
+        ok,
+        error,
+        blocking: false
+      };
+    });
+
     const statusFlow =
       window.DD_STATUS_BATTLE_FLOW &&
       typeof window.DD_STATUS_BATTLE_FLOW.health === 'function'
@@ -174,8 +208,10 @@
       },
       checkedAt: new Date().toISOString(),
       results,
+      observations: observationResults,
       passCount: results.filter(result => result.ok).length,
       failCount: results.filter(result => !result.ok).length,
+      observationFailCount: observationResults.filter(result => result.active && !result.ok).length,
       ready: results.every(result => result.ok),
       battleState,
       statusFlow,
@@ -192,8 +228,34 @@
       })
     );
 
+    renderHealthSummary(results, observationResults);
     updatePanel();
     return window.DD_RUNTIME_HEALTH;
+  }
+
+  function renderHealthSummary(results, observationResults) {
+    const host = document.getElementById('runtimeHealthPanel');
+    if (!host) return;
+
+    let summary = document.getElementById('runtimeHealthChecks');
+    if (!summary) {
+      summary = document.createElement('div');
+      summary.id = 'runtimeHealthChecks';
+      summary.style.cssText = 'margin-top:8px;border-top:1px solid rgba(255,255,255,.1);padding-top:8px;display:grid;gap:3px';
+      host.appendChild(summary);
+    }
+
+    const requiredRows = results.map(result =>
+      '<div>' + (result.ok ? '✅' : '⚠️') + ' ' + result.label + '</div>'
+    );
+
+    const observationRows = observationResults
+      .filter(result => result.active)
+      .map(result =>
+        '<div>' + (result.ok ? '✅' : '⚠️') + ' ' + result.label + ' <span style="opacity:.7">(screen observation)</span></div>'
+      );
+
+    summary.innerHTML = requiredRows.concat(observationRows).join('');
   }
 
   function panel() {
@@ -351,6 +413,35 @@
         );
       }
     );
+  });
+
+
+  [
+    'dd:studio-data-ready',
+    'dd:status-runtime-ready',
+    'dd:battle-engine-ready',
+    'dd:gameplay-rules-ready',
+    'dd:capture-runtime-ready',
+    'dd:encounter-runtime-ready',
+    'dd:battle-balance-ready',
+    'dd:battle-resolver-ready',
+    'dd:battle-state-runtime-ready',
+    'dd:status-battle-flow-ready',
+    'dd:battle-reward-runtime-ready',
+    'dd:battle-reward-presentation-ready',
+    'dd:battle-presentation-runtime-ready',
+    'dd:collection-runtime-ready',
+    'dd:party-runtime-ready',
+    'dd:inventory-runtime-ready',
+    'dd:dex-runtime-ready',
+    'dd:collection-dex-bridge-ready',
+    'dd:v4-shell-ready',
+    'runtime:ready',
+    'dd:screen'
+  ].forEach(eventName => {
+    document.addEventListener(eventName, () => {
+      setTimeout(runChecks, 120);
+    });
   });
 
   window.DD_RUNTIME_DIAGNOSTICS =
