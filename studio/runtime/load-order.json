@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "0.12.0",
+  "schemaVersion": "0.13.0",
   "generatedBy": "VoltanLabs Studio Runtime Loader",
-  "description": "Deterministic load-order and ownership manifest for Data Discovery Phase 4.5 after status behavior integration, explicit status-turn sequencing, and canonical battle reward ownership. The v4 App Shell owns boot, routing, context, and action dispatch; dedicated runtime and screen modules own gameplay.",
+  "description": "Deterministic load-order and ownership manifest for Data Discovery Phase 4.5 after status behavior integration, explicit status-turn sequencing, canonical battle rewards, terminal reward context propagation, and reward presentation.",
   "runtime": "databyte-discovery-product-app-v4-shell",
-  "phase": "4.5-battle-reward-runtime",
+  "phase": "4.5-reward-context-and-presentation",
   "phases": [
     {
       "id": "studio:boot",
@@ -43,7 +43,7 @@
     },
     {
       "id": "product:state-ready",
-      "description": "Status, battle state, status flow, rewards, presentation, collection, party, inventory, and Dex runtime modules are loaded."
+      "description": "Status, battle state, status flow, reward runtime, reward presentation, battle presentation, collection, party, inventory, and Dex runtime modules are loaded."
     },
     {
       "id": "product:screen-owners-ready",
@@ -231,7 +231,7 @@
     {
       "id": "dd-battle-state-runtime",
       "label": "Battle State Runtime",
-      "script": "/assets/js/dd-battle-state-runtime.js?v=battle-state-runtime-0-4-0",
+      "script": "/assets/js/dd-battle-state-runtime.js?v=battle-state-runtime-0-5-0",
       "phase": "product:state-ready",
       "requires": [
         "dd-battle-resolver",
@@ -239,7 +239,10 @@
       ],
       "emits": [
         "dd:battle-state-runtime-ready",
-        "DD_BATTLE_STATE_RUNTIME"
+        "DD_BATTLE_STATE_RUNTIME",
+        "dd:battle-context-ready",
+        "dd:battle-context-updated",
+        "dd:battle-terminal"
       ],
       "required": true,
       "failureBehavior": "show-runtime-error",
@@ -361,6 +364,23 @@
       "required": true,
       "failureBehavior": "show-runtime-error",
       "status": "active-owner"
+    },
+    {
+      "id": "dd-battle-reward-presentation",
+      "label": "Battle Reward Presentation",
+      "script": "/assets/js/dd-battle-reward-presentation.js?v=battle-reward-presentation-1-0-0",
+      "phase": "product:state-ready",
+      "requires": [
+        "dd-battle-reward-runtime"
+      ],
+      "emits": [
+        "dd:battle-reward-presentation-ready",
+        "dd:battle-reward-presented",
+        "DD_BATTLE_REWARD_PRESENTATION"
+      ],
+      "required": true,
+      "failureBehavior": "show-runtime-error",
+      "status": "active-presentation-owner"
     },
     {
       "id": "dd-dex-runtime",
@@ -534,6 +554,7 @@
         "dd-party-switch-runtime",
         "dd-inventory-runtime",
         "dd-battle-reward-runtime",
+        "dd-battle-reward-presentation",
         "dd-dex-runtime",
         "dd-collection-dex-runtime-bridge",
         "dd-scanner-screen",
@@ -835,7 +856,8 @@
     "DD_PRODUCT_APP_V4_SHELL",
     "ddApp",
     "dd:v4-shell-ready",
-    "DD_BATTLE_REWARD_RUNTIME"
+    "DD_BATTLE_REWARD_RUNTIME",
+    "DD_BATTLE_REWARD_PRESENTATION"
   ],
   "canonicalUiRules": {
     "appShellOwner": "databyte-discovery-product-app-v4-shell",
@@ -870,7 +892,10 @@
       "layout-expanding battle messages",
       "interval-based layout patch loops",
       "active layout wrapper loading"
-    ]
+    ],
+    "battleRewardOwner": "dd-battle-reward-runtime",
+    "battleRewardPresentationOwner": "dd-battle-reward-presentation",
+    "battleContextOwner": "dd-battle-state-runtime"
   },
   "knownValidationIssues": [
     {
@@ -912,7 +937,6 @@
   ],
   "nextSystems": [
     "verifyBattleRewardFlow",
-    "rewardPresentation",
     "progressionLevelRules",
     "deterministicBattleRng",
     "partyItemsScreenExtraction",
