@@ -1,11 +1,11 @@
 // assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 4.5: modular app shell with canonical battle-context initialization.
+// Phase 4.6: modular app shell consuming canonical battle action and faint decisions.
 // The shell owns boot, route state, context building, runtime calls, action binding, and screen registry dispatch.
-// Screen/control modules own presentation. Battle State Runtime owns canonical battle context.
+// Screen/control modules own presentation. Battle State Runtime owns canonical battle state and action decisions.
 (function(){
   if(!location.pathname.includes('databyte-discovery'))return;
 
-  const VERSION='4.5.0';
+  const VERSION='4.6.0';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={profile:'vl_databyte_admin_profile_v1',collection:'vl_databyte_discovery_collection_v2',seen:'vl_databyte_seen_v1',party:'vl_databyte_party_v1',items:'vl_databyte_items_v1'};
@@ -14,7 +14,7 @@
   const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))||fallback}catch(e){return fallback}};
   const write=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
 
-  const rt={roster:()=>window.DD_CANON_ROSTER||[],encounter:()=>window.DD_ENCOUNTER_RUNTIME,capture:()=>window.DD_CAPTURE_RUNTIME,resolver:()=>window.DD_BATTLE_RESOLVER,battleState:()=>window.DD_BATTLE_STATE_RUNTIME,battleBus:()=>window.DDBattle24,party:()=>window.DD_PARTY_RUNTIME,inventory:()=>window.DD_INVENTORY_RUNTIME};
+  const rt={roster:()=>window.DD_CANON_ROSTER||[],encounter:()=>window.DD_ENCOUNTER_RUNTIME,capture:()=>window.DD_CAPTURE_RUNTIME,resolver:()=>window.DD_BATTLE_RESOLVER,battleState:()=>window.DD_BATTLE_STATE_RUNTIME,battleBus:()=>window.DDBattle24,party:()=>window.DD_PARTY_RUNTIME,partySwitch:()=>window.DD_PARTY_SWITCH_RUNTIME,inventory:()=>window.DD_INVENTORY_RUNTIME};
   const ui={scanner:()=>window.DD_SCANNER_SCREEN,encounter:()=>window.DD_ENCOUNTER_SCREEN,battle:()=>window.DD_BATTLE_SCREEN,controls:()=>window.DD_BATTLE_CONTROLS,confirm:()=>window.DD_CONFIRM_SCREEN,result:()=>window.DD_RESULT_SCREEN,party:()=>window.DD_PARTY_SCREEN,items:()=>window.DD_ITEMS_SCREEN,dex:()=>window.DD_DEX_SCREEN,admin:()=>window.DD_ADMIN_SCREEN};
   const state={screen:'scanner',returnScreen:null,battleState:'idle',signal:null,result:null,confirm:null,fx:null,log:'Scanner ready. Enter a code or randomize a signal.'};
 
@@ -35,6 +35,7 @@
   function fallbackSpend(id,amount){const it=fallbackItems();amount=Number(amount||1);if(Number(it[id]||0)<amount)return{ok:false,items:it,spent:0};it[id]=Number(it[id]||0)-amount;write(K.items,it);return{ok:true,items:it,spent:amount}}
   function collection(){return rt.party()?rt.party().collection():read(K.collection,[])}
   function party(){return rt.party()?rt.party().ids():read(K.party,[])}
+  function partyMembers(){return rt.party()&&rt.party().members?rt.party().members():fillParty().map(id=>collection().find(s=>s.id===id)).filter(Boolean)}
   function seen(){return read(K.seen,[])}
   function profile(){let p=read(K.profile,null);if(!p){p={name:'Scanner Admin',rank:'Candidate',createdAt:new Date().toISOString()};write(K.profile,p)}return p}
   function normalize(sprite){if(!sprite)return sprite;const s=Object.assign({},sprite);s.maxHp=Number(s.maxHp||s.hp||44);s.hp=Number(s.hp??s.maxHp);s.maxStability=Number(s.maxStability||s.stability||8);s.stability=Number(s.stability??s.maxStability);s.atk=Number(s.atk||s.attack||12);s.def=Number(s.def||s.defense||8);s.speed=Number(s.speed||8);const fallback={id:'signal-strike',name:'Signal Strike',power:24,accuracy:92,captureEffect:1,elements:['Signal'],moveType:'attack'};s.moves=Array.isArray(s.moves)&&s.moves.length?s.moves:[fallback];if(rt.resolver()&&rt.resolver().normalizeMove)s.moves=s.moves.map(rt.resolver().normalizeMove);return s}
@@ -56,17 +57,7 @@
 
   function canonicalBattleStartContext(wild,activeLead){
     const encounterId=String(wild&&wild.id||('ENC-'+Date.now()));
-    return{
-      encounterId,
-      battleId:encounterId,
-      wild,
-      enemy:wild,
-      lead:activeLead,
-      playerSprite:activeLead,
-      source:OWNER,
-      shellVersion:VERSION,
-      startedAt:new Date().toISOString()
-    };
+    return{encounterId,battleId:encounterId,wild,enemy:wild,lead:activeLead,playerSprite:activeLead,source:OWNER,shellVersion:VERSION,startedAt:new Date().toISOString()};
   }
 
   function discover(code){code=(code||($('code')&&$('code').value)||'').trim();if(!code){pushLog('Enter a discovery code first.');fx('warn');render();return}const out=rt.encounter()?rt.encounter().create(code):null;if(!out||!out.signal){pushLog('No signal found. Encounter Runtime unavailable.');fx('warn');render();return}state.signal=normalize(Object.assign({id:'ENC-'+Date.now()},out.signal));state.returnScreen=null;state.battleState='idle';if(rt.battleState())rt.battleState().reset('new-encounter');state.screen='encounter';state.result=null;state.confirm=null;mark(state.signal,'Seen');pushLog('Signal locked from '+(state.signal.encounterPoolLabel||'scanner pool')+'.');fx('discover');render()}
@@ -77,26 +68,16 @@
     const activeLead=normalize(lead());
     const bsr=rt.battleState();
     const context=canonicalBattleStartContext(wild,activeLead);
-
     state.signal=wild;
     state.returnScreen=null;
     state.result=null;
-
-    if(Number(wild.hp||0)<=0){
-      state.battleState='victory';
-      if(bsr){
-        if(typeof bsr.start==='function')bsr.start(context.encounterId,context);
-        if(typeof bsr.victory==='function')bsr.victory('already-defeated',null,context);
-        syncBattleState();
-      }
+    if(bsr&&typeof bsr.start==='function'){
+      bsr.start(context.encounterId,context);
+      if(Number(wild.hp||0)<=0&&typeof bsr.victory==='function')bsr.victory('already-defeated',null,context);
+      syncBattleState();
     }else{
-      state.battleState='active';
-      if(bsr&&typeof bsr.start==='function'){
-        bsr.start(context.encounterId,context);
-        syncBattleState();
-      }
+      state.battleState=Number(wild.hp||0)<=0?'victory':'active';
     }
-
     state.screen='battle';
     pushLog('Battle started.');
     emit('turn',{label:'Battle Start',encounterId:context.encounterId,wild,lead:activeLead,source:OWNER});
@@ -107,7 +88,126 @@
   function chooseEnemyMove(wild,activeLead){return rt.resolver()?rt.resolver().chooseEnemyMove(wild,activeLead):(wild.moves&&wild.moves[0])}
   function turnOrder(activeLead,wild){return rt.resolver()?rt.resolver().turnOrder(activeLead,wild):(Number(activeLead.speed)>=Number(wild.speed)?'player':'enemy')}
   function finishWildDefeat(wild,notes){wild.hp=0;const bsr=rt.battleState();if(bsr&&bsr.applyWildDefeat){const out=bsr.applyWildDefeat(wild,{stabilizeSignal,setOdds,odds,bonus:3},{encounterId:wild.id,wild,lead:lead(),source:OWNER});state.battleState=bsr.snapshot().value;if(out&&out.ok&&out.value&&out.value.message)notes.push(out.value.message.replace('Choose Capture','Choose Download')+' Download window locked at '+odds(wild)+'%.')}else{state.battleState='victory';if(wild.__defeatProcessed)return;wild.__defeatProcessed=true;stabilizeSignal(wild,1);setOdds(wild,odds(wild)+3);notes.push(wild.name+' is defeated. Download window locked at '+odds(wild)+'%. Choose Download or Return.')}fx('success')}
-  function fight(moveId){const wild=normalize(state.signal),activeLead=normalize(lead());if(!wild||!activeLead)return;const bsr=rt.battleState();const block=bsr&&bsr.shouldBlockAction?bsr.shouldBlockAction(wild,activeLead):{block:(state.battleState!=='active'||Number(wild.hp||0)<=0)};if(block.block){state.battleState='victory';state.signal=wild;pushLog(wild.name+' is already defeated. Choose Download or Return.');fx('warn');render();return}if(activeLead.hp<=0){pushLog('Your lead sprite is fainted. Switch party or return.');fx('warn');render();return}const move=(activeLead.moves||[]).find(m=>m.id===moveId)||(activeLead.moves||[])[0];const first=turnOrder(activeLead,wild);const notes=[];function player(){if(wild.hp<=0){finishWildDefeat(wild,notes);return true}const d=resolveHit(activeLead,move,wild,'player');if(!d.hit){notes.push(activeLead.name+' used '+d.move.name+', but missed.');emit('warn');fx('warn');return false}wild.hp=Math.max(0,wild.hp-Number(d.hpDamage||0));setOdds(wild,odds(wild)+Number(d.capturePressure||1));notes.push((d.notes&&d.notes[0]||activeLead.name+' attacked.')+' '+wild.name+' HP '+wild.hp+'/'+wild.maxHp+'. Download +'+d.capturePressure+' → '+odds(wild)+'%.');emit('hit',{text:'-'+d.hpDamage+' HP'});fx('hit');if(wild.hp<=0){finishWildDefeat(wild,notes);return true}return false}function enemy(){if(wild.hp<=0)return false;const m=chooseEnemyMove(wild,activeLead),d=resolveHit(wild,m,activeLead,'enemy');if(!d.hit){notes.push(wild.name+' used '+d.move.name+', but missed.');emit('warn');fx('warn');return false}activeLead.hp=Math.max(0,activeLead.hp-Number(d.hpDamage||0));saveSprite(activeLead);notes.push((d.notes&&d.notes[0]||wild.name+' attacked.')+' '+activeLead.name+' HP '+activeLead.hp+'/'+activeLead.maxHp+'.');emit('hit',{text:'-'+d.hpDamage+' HP'});fx('hit');if(activeLead.hp<=0){const collapse=drainSignal(wild,1,activeLead.name+' fainted and the wild signal');if(collapse)return collapse;notes.push(activeLead.name+' fainted. Wild signal weakened to '+wild.stability+'/'+wild.maxStability+'.')}return false}let collapse=null;if(first==='player'){const done=player();if(!done)collapse=enemy()}else{collapse=enemy();if(!collapse)player()}state.signal=wild;syncBattleState();if(collapse)return fail('Signal Disappeared',collapse,wild);pushLog(notes.join(' '));render()}
+
+  function evaluateBattleAction(wild,activeLead){
+    const bsr=rt.battleState();
+    if(bsr&&typeof bsr.evaluateActionState==='function'){
+      return bsr.evaluateActionState({wild,actor:activeLead,lead:activeLead,party:partyMembers(),encounterId:wild&&wild.id,source:OWNER});
+    }
+    if(bsr&&typeof bsr.shouldBlockAction==='function'){
+      const legacy=bsr.shouldBlockAction(wild,activeLead);
+      return{block:!!legacy.block,decision:legacy.decision||(legacy.reason==='wild-defeated'?'wild-defeated':legacy.reason==='actor-defeated'?'switch-required':legacy.block?'battle-inactive':'allowed'),reason:legacy.reason,state:legacy.state,switchDecision:legacy.switchDecision,terminal:legacy.terminal};
+    }
+    return{block:(state.battleState!=='active'||!wild||!activeLead||Number(wild.hp||0)<=0||Number(activeLead.hp||0)<=0),decision:Number(wild&&wild.hp||0)<=0?'wild-defeated':Number(activeLead&&activeLead.hp||0)<=0?'switch-required':state.battleState!=='active'?'battle-inactive':'allowed',reason:null};
+  }
+
+  function routeBattleDecision(decision,wild,activeLead){
+    if(!decision||!decision.block)return false;
+    syncBattleState();
+    state.signal=wild||state.signal;
+
+    if(decision.decision==='wild-defeated'){
+      pushLog((wild&&wild.name||'The wild signal')+' is defeated. Choose Download or Return.');
+      fx('success');
+      render();
+      return true;
+    }
+
+    if(decision.decision==='switch-required'){
+      pushLog((activeLead&&activeLead.name||'Your lead sprite')+' fainted. Choose an available party sprite.');
+      document.dispatchEvent(new CustomEvent('dd:open-party-switch',{detail:{owner:OWNER,reason:decision.reason||'switch-required',decision,wild,lead:activeLead}}));
+      fx('warn');
+      render();
+      return true;
+    }
+
+    if(decision.decision==='party-defeated'){
+      state.result={type:'failure',title:'Party Defeated',msg:'No usable party sprites remain. Return to the scanner to recover.',sprite:wild,canContinue:false};
+      state.screen='result';
+      pushLog(state.result.msg);
+      fx('fail');
+      render();
+      return true;
+    }
+
+    if(decision.decision==='missing-context'){
+      pushLog('Battle context is unavailable. Return to the scanner and rediscover the signal.');
+      fx('warn');
+      render();
+      return true;
+    }
+
+    pushLog('Battle is not active.');
+    fx('warn');
+    render();
+    return true;
+  }
+
+  function fight(moveId){
+    const wild=normalize(state.signal),activeLead=normalize(lead());
+    if(!wild||!activeLead)return;
+    const initialDecision=evaluateBattleAction(wild,activeLead);
+    if(routeBattleDecision(initialDecision,wild,activeLead))return;
+
+    const move=(activeLead.moves||[]).find(m=>m.id===moveId)||(activeLead.moves||[])[0];
+    const first=turnOrder(activeLead,wild);
+    const notes=[];
+
+    function player(){
+      if(wild.hp<=0){finishWildDefeat(wild,notes);return true}
+      const d=resolveHit(activeLead,move,wild,'player');
+      if(!d.hit){notes.push(activeLead.name+' used '+d.move.name+', but missed.');emit('warn');fx('warn');return false}
+      wild.hp=Math.max(0,wild.hp-Number(d.hpDamage||0));
+      setOdds(wild,odds(wild)+Number(d.capturePressure||1));
+      notes.push((d.notes&&d.notes[0]||activeLead.name+' attacked.')+' '+wild.name+' HP '+wild.hp+'/'+wild.maxHp+'. Download +'+d.capturePressure+' → '+odds(wild)+'%.');
+      emit('hit',{text:'-'+d.hpDamage+' HP'});
+      fx('hit');
+      if(wild.hp<=0){finishWildDefeat(wild,notes);return true}
+      return false
+    }
+
+    function enemy(){
+      if(wild.hp<=0)return false;
+      const m=chooseEnemyMove(wild,activeLead),d=resolveHit(wild,m,activeLead,'enemy');
+      if(!d.hit){notes.push(wild.name+' used '+d.move.name+', but missed.');emit('warn');fx('warn');return false}
+      activeLead.hp=Math.max(0,activeLead.hp-Number(d.hpDamage||0));
+      saveSprite(activeLead);
+      notes.push((d.notes&&d.notes[0]||wild.name+' attacked.')+' '+activeLead.name+' HP '+activeLead.hp+'/'+activeLead.maxHp+'.');
+      emit('hit',{text:'-'+d.hpDamage+' HP'});
+      fx('hit');
+      if(activeLead.hp<=0){
+        const collapse=drainSignal(wild,1,activeLead.name+' fainted and the wild signal');
+        if(collapse)return collapse;
+        notes.push(activeLead.name+' fainted. Wild signal weakened to '+wild.stability+'/'+wild.maxStability+'.');
+        const faintDecision=evaluateBattleAction(wild,activeLead);
+        if(faintDecision&&faintDecision.decision==='party-defeated')return{battleDecision:faintDecision};
+        if(faintDecision&&faintDecision.decision==='switch-required')return{battleDecision:faintDecision};
+      }
+      return false
+    }
+
+    let collapse=null;
+    if(first==='player'){
+      const done=player();
+      if(!done)collapse=enemy();
+    }else{
+      collapse=enemy();
+      if(!collapse)player();
+    }
+
+    state.signal=wild;
+    syncBattleState();
+
+    if(typeof collapse==='string')return fail('Signal Disappeared',collapse,wild);
+    if(collapse&&collapse.battleDecision){
+      pushLog(notes.join(' '));
+      return routeBattleDecision(collapse.battleDecision,wild,activeLead);
+    }
+
+    pushLog(notes.join(' '));
+    render();
+  }
+
   function captureAsk(){if(!state.signal)return;state.confirm={odds:odds(state.signal),byteCoins:items().byteCoins};state.screen='confirm';state.returnScreen=null;fx('coin');render()}
   function captureResolve(){const it=items(),wild=state.signal;if(!wild)return;if(!rt.capture()||!rt.capture().canAttempt(it)){state.result={type:'failure',title:'No ByteCoins',msg:'A ByteCoin is required before another download can be attempted.',sprite:wild,canContinue:true};state.confirm=null;state.screen='result';fx('warn');render();return}const out=rt.capture().attempt(wild,it,wild.id);spendItem('byteCoins',1);if(out.ok){wild.byteCoin='BC-'+String(Date.now()).slice(-6);const c=collection();c.push(wild);write(K.collection,c);if(rt.party())rt.party().add(wild);else fillParty();mark(wild,'Captured');return success('Download Complete',wild.name+' downloaded into '+wild.byteCoin+'.',wild)}rt.capture().onFailedCapture(wild);const collapse=drainSignal(wild,1,'Download failed and the wild signal');if(collapse)return fail('Signal Disappeared',collapse,wild);state.signal=wild;state.confirm=null;state.result={type:'failure',title:'Download Failed',msg:'Roll '+out.roll+' vs '+out.odds+'. Signal weakened to '+wild.stability+'/'+wild.maxStability+'. Download now '+odds(wild)+'%.',sprite:wild,canContinue:true};state.screen='result';pushLog(state.result.msg);fx('fail');render()}
   function success(title,msg,sprite){state.result={type:'success',title,msg,sprite,canContinue:false};state.signal=null;state.confirm=null;state.returnScreen=null;state.battleState='idle';if(rt.battleState())rt.battleState().reset('result-success');state.screen='result';emit('success');fx('success');render()}
@@ -130,7 +230,7 @@
   function ensureRoot(){if($('ddApp'))return;document.body.innerHTML='<div id="ddApp"><header class="top"><b>Data Discovery</b><span>v4 App Shell</span></header><main id="stage" class="stage"></main><section id="controls" class="controls"></section><nav class="nav"><button data-panel="scanner">Scan</button><button data-panel="dex">Dex</button><button data-panel="party">Party</button><button data-panel="items">Items</button><button data-panel="admin">Admin</button></nav></div>'}
   function render(){installShellStyle();ensureRoot();$('stage').innerHTML=screenHtml();$('controls').innerHTML=controlsHtml();applyControlHost();bind();paintFx()}
 
-  window.DD_PRODUCT_APP_V4_SHELL={version:VERSION,owner:OWNER,state,render,discover,randomCode,startBattle,fight,captureAsk,captureResolve,continueBattle,back,panel,returnFromPanel,battleContext,screenContext,canonicalBattleStartContext,screenRegistry,controlsRegistry};
+  window.DD_PRODUCT_APP_V4_SHELL={version:VERSION,owner:OWNER,state,render,discover,randomCode,startBattle,fight,captureAsk,captureResolve,continueBattle,back,panel,returnFromPanel,battleContext,screenContext,canonicalBattleStartContext,evaluateBattleAction,routeBattleDecision,screenRegistry,controlsRegistry};
   seed();
   render();
   document.dispatchEvent(new CustomEvent('dd:v4-shell-ready',{detail:window.DD_PRODUCT_APP_V4_SHELL}));
