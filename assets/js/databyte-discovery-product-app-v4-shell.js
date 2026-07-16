@@ -1,11 +1,12 @@
 // assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 4.4: clean modular app shell for DataByteSprites: Data Discovery.
+// Phase 4.5: modular app shell with canonical battle-context initialization.
 // The shell owns boot, route state, context building, runtime calls, action binding, and screen registry dispatch.
-// Screen/control modules own presentation.
+// Screen/control modules own presentation. Battle State Runtime owns canonical battle context.
 (function(){
   if(!location.pathname.includes('databyte-discovery'))return;
 
-  const VERSION='4.4.3';
+  const VERSION='4.5.0';
+  const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={profile:'vl_databyte_admin_profile_v1',collection:'vl_databyte_discovery_collection_v2',seen:'vl_databyte_seen_v1',party:'vl_databyte_party_v1',items:'vl_databyte_items_v1'};
   const $=id=>document.getElementById(id);
@@ -53,14 +54,60 @@
   function battleContext(){const wild=normalize(state.signal);const activeLead=normalize(lead());return Object.assign(contextBase(),{lead:activeLead,wild,odds:wild?odds(wild):0,signal:wild?Number(wild.stability||0):0,maxSignal:wild?Number(wild.maxStability||1):1,isWildDefeated:isWildDefeated(),latestMessage:state.log,battleState:{value:syncBattleState(),wildDefeated:isWildDefeated(),leadDefeated:activeLead?Number(activeLead.hp||0)<=0:false},moves:activeLead&&activeLead.moves||[]})}
   function screenContext(){return Object.assign(contextBase(),{signal:normalize(state.signal),confirm:state.confirm,result:state.result,battleContext:battleContext()})}
 
+  function canonicalBattleStartContext(wild,activeLead){
+    const encounterId=String(wild&&wild.id||('ENC-'+Date.now()));
+    return{
+      encounterId,
+      battleId:encounterId,
+      wild,
+      enemy:wild,
+      lead:activeLead,
+      playerSprite:activeLead,
+      source:OWNER,
+      shellVersion:VERSION,
+      startedAt:new Date().toISOString()
+    };
+  }
+
   function discover(code){code=(code||($('code')&&$('code').value)||'').trim();if(!code){pushLog('Enter a discovery code first.');fx('warn');render();return}const out=rt.encounter()?rt.encounter().create(code):null;if(!out||!out.signal){pushLog('No signal found. Encounter Runtime unavailable.');fx('warn');render();return}state.signal=normalize(Object.assign({id:'ENC-'+Date.now()},out.signal));state.returnScreen=null;state.battleState='idle';if(rt.battleState())rt.battleState().reset('new-encounter');state.screen='encounter';state.result=null;state.confirm=null;mark(state.signal,'Seen');pushLog('Signal locked from '+(state.signal.encounterPoolLabel||'scanner pool')+'.');fx('discover');render()}
   function randomCode(){const code=rt.encounter()?rt.encounter().randomCode():'DBS-'+Math.random().toString(36).slice(2,7).toUpperCase();if($('code'))$('code').value=code;discover(code)}
-  function startBattle(){if(!state.signal)return;if(Number(state.signal.hp||0)<=0){state.battleState='victory';if(rt.battleState())rt.battleState().victory('already-defeated')}else{state.battleState='active';if(rt.battleState())rt.battleState().start(state.signal.id)}state.screen='battle';state.returnScreen=null;state.result=null;pushLog('Battle started.');emit('turn',{label:'Battle Start'});fx('battle');render()}
+  function startBattle(){
+    if(!state.signal)return;
+    const wild=normalize(state.signal);
+    const activeLead=normalize(lead());
+    const bsr=rt.battleState();
+    const context=canonicalBattleStartContext(wild,activeLead);
+
+    state.signal=wild;
+    state.returnScreen=null;
+    state.result=null;
+
+    if(Number(wild.hp||0)<=0){
+      state.battleState='victory';
+      if(bsr){
+        if(typeof bsr.start==='function')bsr.start(context.encounterId,context);
+        if(typeof bsr.victory==='function')bsr.victory('already-defeated',null,context);
+        syncBattleState();
+      }
+    }else{
+      state.battleState='active';
+      if(bsr&&typeof bsr.start==='function'){
+        bsr.start(context.encounterId,context);
+        syncBattleState();
+      }
+    }
+
+    state.screen='battle';
+    pushLog('Battle started.');
+    emit('turn',{label:'Battle Start',encounterId:context.encounterId,wild,lead:activeLead,source:OWNER});
+    fx('battle');
+    render();
+  }
   function resolveHit(user,move,target,mode){return rt.resolver()?rt.resolver().resolve(user,move,target,{mode,seed:mode+'-'+Date.now()}):{hit:true,move:move,type:{label:'neutral'},hpDamage:2,capturePressure:1,notes:[(user.name||'Sprite')+' used '+(move.name||'Move')+'.']}}
   function chooseEnemyMove(wild,activeLead){return rt.resolver()?rt.resolver().chooseEnemyMove(wild,activeLead):(wild.moves&&wild.moves[0])}
   function turnOrder(activeLead,wild){return rt.resolver()?rt.resolver().turnOrder(activeLead,wild):(Number(activeLead.speed)>=Number(wild.speed)?'player':'enemy')}
-  function finishWildDefeat(wild,notes){wild.hp=0;const bsr=rt.battleState();if(bsr&&bsr.applyWildDefeat){const out=bsr.applyWildDefeat(wild,{stabilizeSignal,setOdds,odds,bonus:3});state.battleState=bsr.snapshot().value;if(out&&out.ok&&out.value&&out.value.message)notes.push(out.value.message.replace('Choose Capture','Choose Download')+' Download window locked at '+odds(wild)+'%.')}else{state.battleState='victory';if(wild.__defeatProcessed)return;wild.__defeatProcessed=true;stabilizeSignal(wild,1);setOdds(wild,odds(wild)+3);notes.push(wild.name+' is defeated. Download window locked at '+odds(wild)+'%. Choose Download or Return.')}fx('success')}
-  function fight(moveId){const wild=normalize(state.signal),activeLead=normalize(lead());if(!wild||!activeLead)return;const bsr=rt.battleState();const block=bsr&&bsr.shouldBlockAction?bsr.shouldBlockAction(wild):{block:(state.battleState!=='active'||Number(wild.hp||0)<=0)};if(block.block){state.battleState='victory';state.signal=wild;pushLog(wild.name+' is already defeated. Choose Download or Return.');fx('warn');render();return}if(activeLead.hp<=0){pushLog('Your lead sprite is fainted. Switch party or return.');fx('warn');render();return}const move=(activeLead.moves||[]).find(m=>m.id===moveId)||(activeLead.moves||[])[0];const first=turnOrder(activeLead,wild);const notes=[];function player(){if(wild.hp<=0){finishWildDefeat(wild,notes);return true}const d=resolveHit(activeLead,move,wild,'player');if(!d.hit){notes.push(activeLead.name+' used '+d.move.name+', but missed.');emit('warn');fx('warn');return false}wild.hp=Math.max(0,wild.hp-Number(d.hpDamage||0));setOdds(wild,odds(wild)+Number(d.capturePressure||1));notes.push((d.notes&&d.notes[0]||activeLead.name+' attacked.')+' '+wild.name+' HP '+wild.hp+'/'+wild.maxHp+'. Download +'+d.capturePressure+' → '+odds(wild)+'%.');emit('hit',{text:'-'+d.hpDamage+' HP'});fx('hit');if(wild.hp<=0){finishWildDefeat(wild,notes);return true}return false}function enemy(){if(wild.hp<=0)return false;const m=chooseEnemyMove(wild,activeLead),d=resolveHit(wild,m,activeLead,'enemy');if(!d.hit){notes.push(wild.name+' used '+d.move.name+', but missed.');emit('warn');fx('warn');return false}activeLead.hp=Math.max(0,activeLead.hp-Number(d.hpDamage||0));saveSprite(activeLead);notes.push((d.notes&&d.notes[0]||wild.name+' attacked.')+' '+activeLead.name+' HP '+activeLead.hp+'/'+activeLead.maxHp+'.');emit('hit',{text:'-'+d.hpDamage+' HP'});fx('hit');if(activeLead.hp<=0){const collapse=drainSignal(wild,1,activeLead.name+' fainted and the wild signal');if(collapse)return collapse;notes.push(activeLead.name+' fainted. Wild signal weakened to '+wild.stability+'/'+wild.maxStability+'.')}return false}let collapse=null;if(first==='player'){const done=player();if(!done)collapse=enemy()}else{collapse=enemy();if(!collapse)player()}state.signal=wild;syncBattleState();if(collapse)return fail('Signal Disappeared',collapse,wild);pushLog(notes.join(' '));render()}
+  function finishWildDefeat(wild,notes){wild.hp=0;const bsr=rt.battleState();if(bsr&&bsr.applyWildDefeat){const out=bsr.applyWildDefeat(wild,{stabilizeSignal,setOdds,odds,bonus:3},{encounterId:wild.id,wild,lead:lead(),source:OWNER});state.battleState=bsr.snapshot().value;if(out&&out.ok&&out.value&&out.value.message)notes.push(out.value.message.replace('Choose Capture','Choose Download')+' Download window locked at '+odds(wild)+'%.')}else{state.battleState='victory';if(wild.__defeatProcessed)return;wild.__defeatProcessed=true;stabilizeSignal(wild,1);setOdds(wild,odds(wild)+3);notes.push(wild.name+' is defeated. Download window locked at '+odds(wild)+'%. Choose Download or Return.')}fx('success')}
+  function fight(moveId){const wild=normalize(state.signal),activeLead=normalize(lead());if(!wild||!activeLead)return;const bsr=rt.battleState();const block=bsr&&bsr.shouldBlockAction?bsr.shouldBlockAction(wild,activeLead):{block:(state.battleState!=='active'||Number(wild.hp||0)<=0)};if(block.block){state.battleState='victory';state.signal=wild;pushLog(wild.name+' is already defeated. Choose Download or Return.');fx('warn');render();return}if(activeLead.hp<=0){pushLog('Your lead sprite is fainted. Switch party or return.');fx('warn');render();return}const move=(activeLead.moves||[]).find(m=>m.id===moveId)||(activeLead.moves||[])[0];const first=turnOrder(activeLead,wild);const notes=[];function player(){if(wild.hp<=0){finishWildDefeat(wild,notes);return true}const d=resolveHit(activeLead,move,wild,'player');if(!d.hit){notes.push(activeLead.name+' used '+d.move.name+', but missed.');emit('warn');fx('warn');return false}wild.hp=Math.max(0,wild.hp-Number(d.hpDamage||0));setOdds(wild,odds(wild)+Number(d.capturePressure||1));notes.push((d.notes&&d.notes[0]||activeLead.name+' attacked.')+' '+wild.name+' HP '+wild.hp+'/'+wild.maxHp+'. Download +'+d.capturePressure+' → '+odds(wild)+'%.');emit('hit',{text:'-'+d.hpDamage+' HP'});fx('hit');if(wild.hp<=0){finishWildDefeat(wild,notes);return true}return false}function enemy(){if(wild.hp<=0)return false;const m=chooseEnemyMove(wild,activeLead),d=resolveHit(wild,m,activeLead,'enemy');if(!d.hit){notes.push(wild.name+' used '+d.move.name+', but missed.');emit('warn');fx('warn');return false}activeLead.hp=Math.max(0,activeLead.hp-Number(d.hpDamage||0));saveSprite(activeLead);notes.push((d.notes&&d.notes[0]||wild.name+' attacked.')+' '+activeLead.name+' HP '+activeLead.hp+'/'+activeLead.maxHp+'.');emit('hit',{text:'-'+d.hpDamage+' HP'});fx('hit');if(activeLead.hp<=0){const collapse=drainSignal(wild,1,activeLead.name+' fainted and the wild signal');if(collapse)return collapse;notes.push(activeLead.name+' fainted. Wild signal weakened to '+wild.stability+'/'+wild.maxStability+'.')}return false}let collapse=null;if(first==='player'){const done=player();if(!done)collapse=enemy()}else{collapse=enemy();if(!collapse)player()}state.signal=wild;syncBattleState();if(collapse)return fail('Signal Disappeared',collapse,wild);pushLog(notes.join(' '));render()}
   function captureAsk(){if(!state.signal)return;state.confirm={odds:odds(state.signal),byteCoins:items().byteCoins};state.screen='confirm';state.returnScreen=null;fx('coin');render()}
   function captureResolve(){const it=items(),wild=state.signal;if(!wild)return;if(!rt.capture()||!rt.capture().canAttempt(it)){state.result={type:'failure',title:'No ByteCoins',msg:'A ByteCoin is required before another download can be attempted.',sprite:wild,canContinue:true};state.confirm=null;state.screen='result';fx('warn');render();return}const out=rt.capture().attempt(wild,it,wild.id);spendItem('byteCoins',1);if(out.ok){wild.byteCoin='BC-'+String(Date.now()).slice(-6);const c=collection();c.push(wild);write(K.collection,c);if(rt.party())rt.party().add(wild);else fillParty();mark(wild,'Captured');return success('Download Complete',wild.name+' downloaded into '+wild.byteCoin+'.',wild)}rt.capture().onFailedCapture(wild);const collapse=drainSignal(wild,1,'Download failed and the wild signal');if(collapse)return fail('Signal Disappeared',collapse,wild);state.signal=wild;state.confirm=null;state.result={type:'failure',title:'Download Failed',msg:'Roll '+out.roll+' vs '+out.odds+'. Signal weakened to '+wild.stability+'/'+wild.maxStability+'. Download now '+odds(wild)+'%.',sprite:wild,canContinue:true};state.screen='result';pushLog(state.result.msg);fx('fail');render()}
   function success(title,msg,sprite){state.result={type:'success',title,msg,sprite,canContinue:false};state.signal=null;state.confirm=null;state.returnScreen=null;state.battleState='idle';if(rt.battleState())rt.battleState().reset('result-success');state.screen='result';emit('success');fx('success');render()}
@@ -83,6 +130,8 @@
   function ensureRoot(){if($('ddApp'))return;document.body.innerHTML='<div id="ddApp"><header class="top"><b>Data Discovery</b><span>v4 App Shell</span></header><main id="stage" class="stage"></main><section id="controls" class="controls"></section><nav class="nav"><button data-panel="scanner">Scan</button><button data-panel="dex">Dex</button><button data-panel="party">Party</button><button data-panel="items">Items</button><button data-panel="admin">Admin</button></nav></div>'}
   function render(){installShellStyle();ensureRoot();$('stage').innerHTML=screenHtml();$('controls').innerHTML=controlsHtml();applyControlHost();bind();paintFx()}
 
-  window.DD_PRODUCT_APP_V4_SHELL={version:VERSION,state,render,discover,randomCode,startBattle,fight,captureAsk,captureResolve,continueBattle,back,panel,returnFromPanel,battleContext,screenContext,screenRegistry,controlsRegistry};
-  seed();render();document.dispatchEvent(new CustomEvent('dd:v4-shell-ready',{detail:window.DD_PRODUCT_APP_V4_SHELL}));
+  window.DD_PRODUCT_APP_V4_SHELL={version:VERSION,owner:OWNER,state,render,discover,randomCode,startBattle,fight,captureAsk,captureResolve,continueBattle,back,panel,returnFromPanel,battleContext,screenContext,canonicalBattleStartContext,screenRegistry,controlsRegistry};
+  seed();
+  render();
+  document.dispatchEvent(new CustomEvent('dd:v4-shell-ready',{detail:window.DD_PRODUCT_APP_V4_SHELL}));
 })();
