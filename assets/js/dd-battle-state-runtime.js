@@ -1,10 +1,10 @@
 // assets/js/dd-battle-state-runtime.js
-// Canonical battle state, status phases, terminal outcomes, reward context propagation,
-// action-state decisions, and faint-to-party-switch coordination.
+// Canonical battle state, resolution application, status phases, terminal outcomes,
+// reward context propagation, action-state decisions, and faint-to-party-switch coordination.
 (function () {
   'use strict';
 
-  const VERSION = '0.6.0';
+  const VERSION = '0.7.0';
   const OWNER = 'dd-battle-state-runtime';
 
   const STATES = Object.freeze({
@@ -25,26 +25,39 @@
     battleInactive: 'battle-inactive'
   });
 
-  let state = {
-    value: STATES.idle,
-    encounterId: null,
-    terminalProcessed: false,
-    reason: null,
-    turn: 0,
-    updatedAt: new Date().toISOString()
-  };
-
-  let battleContext = {
-    encounterId: null,
-    wild: null,
-    lead: null,
-    context: {}
-  };
+  let state = createInitialState();
+  let battleContext = createInitialContext();
 
   const statusRuntime = () => window.DD_STATUS_RUNTIME || null;
+  const captureRuntime = () => window.DD_CAPTURE_RUNTIME || null;
+  const encounterRuntime = () => window.DD_ENCOUNTER_RUNTIME || null;
+  const gameplayRules = () => window.DD_GAMEPLAY_RULES || null;
   const partyRuntime = () => window.DD_PARTY_RUNTIME || null;
   const partySwitchRuntime = () => window.DD_PARTY_SWITCH_RUNTIME || null;
-  const snapshot = () => Object.assign({}, state);
+
+  function createInitialState(reason) {
+    return {
+      value: STATES.idle,
+      encounterId: null,
+      terminalProcessed: false,
+      reason: reason || null,
+      turn: 0,
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  function createInitialContext() {
+    return {
+      encounterId: null,
+      wild: null,
+      lead: null,
+      context: {}
+    };
+  }
+
+  function snapshot() {
+    return Object.assign({}, state);
+  }
 
   function contextSnapshot() {
     return {
@@ -99,10 +112,7 @@
       encounterId = context.encounterId || context.battleId || null;
     }
 
-    context =
-      context && typeof context === 'object'
-        ? context
-        : {};
+    context = context && typeof context === 'object' ? context : {};
 
     const resolvedEncounterId =
       encounterId ||
@@ -112,11 +122,7 @@
 
     return {
       encounterId: String(resolvedEncounterId),
-      wild:
-        context.wild ||
-        context.enemy ||
-        context.defeated ||
-        null,
+      wild: context.wild || context.enemy || context.defeated || null,
       lead:
         context.lead ||
         context.recipient ||
@@ -135,7 +141,6 @@
     state.turn = 0;
 
     dispatch('dd:battle-context-ready', contextSnapshot());
-
     return set(STATES.active, 'battle-start');
   }
 
@@ -169,9 +174,7 @@
         {},
         battleContext.context || {},
         context,
-        encounterId
-          ? { encounterId: String(encounterId) }
-          : {}
+        encounterId ? { encounterId: String(encounterId) } : {}
       )
     };
 
@@ -184,21 +187,8 @@
   }
 
   function reset(reason) {
-    state = {
-      value: STATES.idle,
-      encounterId: null,
-      terminalProcessed: false,
-      reason: reason || null,
-      turn: 0,
-      updatedAt: new Date().toISOString()
-    };
-
-    battleContext = {
-      encounterId: null,
-      wild: null,
-      lead: null,
-      context: {}
-    };
+    state = createInitialState(reason);
+    battleContext = createInitialContext();
 
     const switchRuntime = partySwitchRuntime();
     if (
@@ -222,9 +212,7 @@
       STATES.result
     ].includes(state.value);
 
-  const canAct = () =>
-    isActive() &&
-    !state.terminalProcessed;
+  const canAct = () => isActive() && !state.terminalProcessed;
 
   function terminalPayload(value, extra) {
     const context = contextSnapshot();
@@ -278,7 +266,6 @@
     }
 
     const result = terminalPayload(value);
-
     dispatch('dd:battle-terminal', result);
     return result;
   }
@@ -309,36 +296,25 @@
 
   function captureParticipants(actor, target, context) {
     context = context || {};
-
     const actorSide = context.actorSide || null;
     const targetSide = context.targetSide || null;
     const next = {};
 
-    if (actorSide === 'player') {
-      next.lead = actor;
-    } else if (actorSide === 'wild') {
-      next.wild = actor;
-    }
-
-    if (targetSide === 'player') {
-      next.lead = target;
-    } else if (targetSide === 'wild') {
-      next.wild = target;
-    }
-
-    if (context.encounterId) {
-      next.encounterId = context.encounterId;
-    }
+    if (actorSide === 'player') next.lead = actor;
+    if (actorSide === 'wild') next.wild = actor;
+    if (targetSide === 'player') next.lead = target;
+    if (targetSide === 'wild') next.wild = target;
+    if (context.encounterId) next.encounterId = context.encounterId;
 
     if (Object.keys(next).length) {
       updateContext(next);
     }
+
+    return next;
   }
 
   function applyStatusApplication(resolution, actor, target, context) {
-    const application =
-      resolution &&
-      resolution.statusApplication;
+    const application = resolution && resolution.statusApplication;
 
     if (!application || !application.applied) {
       return {
@@ -352,7 +328,6 @@
     }
 
     const runtime = statusRuntime();
-
     if (!runtime || typeof runtime.apply !== 'function') {
       return {
         ok: false,
@@ -363,9 +338,7 @@
     }
 
     const recipient =
-      application.target === 'self'
-        ? actor
-        : target;
+      application.target === 'self' ? actor : target;
 
     if (!recipient) {
       return {
@@ -376,26 +349,18 @@
       };
     }
 
-    const status = runtime.apply(
-      recipient,
-      application.id,
-      {
-        duration: application.durationTurns,
-        stacks: application.stacks,
-        data: Object.assign(
-          {},
-          application.data || {},
-          {
-            encounterId: state.encounterId,
-            turn: state.turn,
-            side:
-              application.target === 'self'
-                ? context && context.actorSide || null
-                : context && context.targetSide || null
-          }
-        )
-      }
-    );
+    const status = runtime.apply(recipient, application.id, {
+      duration: application.durationTurns,
+      stacks: application.stacks,
+      data: Object.assign({}, application.data || {}, {
+        encounterId: state.encounterId,
+        turn: state.turn,
+        side:
+          application.target === 'self'
+            ? context && context.actorSide || null
+            : context && context.targetSide || null
+      })
+    });
 
     const result = {
       ok: true,
@@ -409,138 +374,214 @@
     return result;
   }
 
-  function applyResolution(resolution, actor, target, context) {
-    if (!resolution) {
+  function clamp(number, minimum, maximum) {
+    return Math.max(
+      minimum,
+      Math.min(maximum, Number(number) || 0)
+    );
+  }
+
+  function targetMaxHp(target) {
+    return Math.max(
+      1,
+      Number(target && (target.maxHp || target.hp) || 1)
+    );
+  }
+
+  function applyHpDamage(target, resolution) {
+    if (!target) {
+      return {
+        applied: false,
+        before: null,
+        after: null,
+        damage: 0,
+        fainted: false
+      };
+    }
+
+    const before = clamp(
+      Number(target.hp == null ? targetMaxHp(target) : target.hp),
+      0,
+      targetMaxHp(target)
+    );
+
+    const damage =
+      resolution.actionBlocked || !resolution.hit
+        ? 0
+        : Math.max(0, Number(resolution.hpDamage || 0));
+
+    const after = clamp(before - damage, 0, targetMaxHp(target));
+    target.hp = after;
+
+    return {
+      applied: damage > 0,
+      before,
+      after,
+      damage,
+      fainted: after <= 0
+    };
+  }
+
+  function applyDownloadPressure(target, resolution, context) {
+    const targetSide = context && context.targetSide;
+    const pressure =
+      resolution.actionBlocked || !resolution.hit
+        ? 0
+        : Math.max(0, Number(resolution.capturePressure || 0));
+
+    if (!target || targetSide !== 'wild' || pressure <= 0) {
+      return {
+        applied: false,
+        pressure: 0,
+        before: null,
+        after: null
+      };
+    }
+
+    const runtime = captureRuntime();
+    if (
+      !runtime ||
+      typeof runtime.odds !== 'function' ||
+      typeof runtime.setOdds !== 'function'
+    ) {
+      return {
+        applied: false,
+        pressure,
+        before: null,
+        after: null,
+        reason: 'capture-runtime-unavailable'
+      };
+    }
+
+    const before = Number(runtime.odds(target) || 0);
+    runtime.setOdds(target, before + pressure);
+    const after = Number(runtime.odds(target) || 0);
+
+    return {
+      applied: true,
+      pressure,
+      before,
+      after
+    };
+  }
+
+  function persistParticipant(participant, side) {
+    if (!participant || side !== 'player') {
+      return {
+        ok: true,
+        skipped: true,
+        reason: 'persistence-not-required'
+      };
+    }
+
+    const runtime = partyRuntime();
+    if (!runtime || typeof runtime.updateSprite !== 'function') {
       return {
         ok: false,
-        reason: 'missing-resolution'
+        skipped: false,
+        reason: 'party-runtime-unavailable'
+      };
+    }
+
+    return {
+      ok: true,
+      skipped: false,
+      value: runtime.updateSprite(participant)
+    };
+  }
+
+  function victoryBonus() {
+    const rules = gameplayRules();
+    if (rules && Number.isFinite(Number(rules.wildDefeatDownloadBonus))) {
+      return Number(rules.wildDefeatDownloadBonus);
+    }
+    return 3;
+  }
+
+  function applyWildDefeat(wild, tools, context) {
+    if (!wild) {
+      return {
+        ok: false,
+        message: 'No wild signal.'
       };
     }
 
     context = context || {};
+    updateContext(Object.assign({}, context, { wild }));
+    wild.hp = 0;
 
-    captureParticipants(actor, target, context);
+    const runtime = captureRuntime();
+    let odds = null;
 
-    const statusResult = applyStatusApplication(
-      resolution,
-      actor,
-      target,
+    if (
+      runtime &&
+      typeof runtime.odds === 'function' &&
+      typeof runtime.setOdds === 'function'
+    ) {
+      const before = Number(runtime.odds(wild) || 0);
+      runtime.setOdds(wild, before + victoryBonus());
+      odds = Number(runtime.odds(wild) || 0);
+    } else if (
+      tools &&
+      typeof tools.setOdds === 'function' &&
+      typeof tools.odds === 'function'
+    ) {
+      const before = Number(tools.odds(wild) || 0);
+      tools.setOdds(wild, before + victoryBonus());
+      odds = Number(tools.odds(wild) || 0);
+    }
+
+    return victory(
+      'wild-defeated',
+      function () {
+        return {
+          wild,
+          lead: battleContext.lead,
+          encounterId: battleContext.encounterId,
+          odds,
+          message:
+            (wild.name || 'Wild signal') +
+            ' is defeated. Choose Download or Return.'
+        };
+      },
       context
     );
-
-    const result = {
-      ok: true,
-      resolution,
-      statusResult,
-      actionBlocked: !!resolution.actionBlocked,
-      state: snapshot(),
-      battleContext: contextSnapshot()
-    };
-
-    dispatch('dd:battle-resolution-applied', result);
-    return result;
   }
 
-  function tickParticipant(participant, context) {
-    const runtime = statusRuntime();
-
-    if (!participant) {
+  function applyFaintSignalPenalty(wild, context) {
+    if (!wild) {
       return {
-        ok: false,
-        reason: 'missing-participant'
+        applied: false,
+        collapsed: false,
+        reason: 'missing-wild'
       };
     }
 
-    if (!runtime || typeof runtime.tick !== 'function') {
-      return {
-        ok: false,
-        reason: 'status-runtime-unavailable',
-        participant
-      };
+    const runtime = encounterRuntime();
+    if (runtime && typeof runtime.onPlayerFaint === 'function') {
+      const value = runtime.onPlayerFaint(wild, context || {});
+      return Object.assign(
+        {
+          applied: true,
+          collapsed: Number(wild.stability || 0) <= 0
+        },
+        value && typeof value === 'object' ? value : {}
+      );
     }
 
-    const outcome = runtime.tick(
-      participant,
-      context || {}
-    );
+    const amount = 1;
+    const before = Number(wild.stability || 0);
+    const after = Math.max(0, before - amount);
+    wild.stability = after;
 
     return {
-      ok: true,
-      participant,
-      outcome,
-      statuses:
-        outcome &&
-        outcome.statuses ||
-        participant.statusEffects ||
-        [],
-      damage:
-        outcome &&
-        outcome.effects
-          ? outcome.effects.reduce(
-              (sum, effect) =>
-                sum + Number(effect.damage || 0),
-              0
-            )
-          : 0,
-      fainted: !!(outcome && outcome.fainted)
+      applied: true,
+      collapsed: after <= 0,
+      amount,
+      before,
+      after,
+      compatibilityFallback: true
     };
-  }
-
-  function participantSide(participant, context, index) {
-    if (
-      context &&
-      Array.isArray(context.participantSides)
-    ) {
-      return context.participantSides[index];
-    }
-
-    if (participant && battleContext.lead === participant) {
-      return 'player';
-    }
-
-    if (participant && battleContext.wild === participant) {
-      return 'wild';
-    }
-
-    const effects =
-      participant &&
-      participant.statusEffects;
-
-    const storedSide =
-      Array.isArray(effects) &&
-      effects[0] &&
-      effects[0].data &&
-      effects[0].data.side;
-
-    return storedSide || (
-      index === 0
-        ? 'player'
-        : 'wild'
-    );
-  }
-
-  function captureTickParticipants(ticks, context) {
-    const update = {};
-
-    ticks.forEach((tick, index) => {
-      if (!tick || !tick.participant) return;
-
-      const side = participantSide(
-        tick.participant,
-        context,
-        index
-      );
-
-      if (side === 'player') {
-        update.lead = tick.participant;
-      } else if (side === 'wild') {
-        update.wild = tick.participant;
-      }
-    });
-
-    if (Object.keys(update).length) {
-      updateContext(update);
-    }
   }
 
   function handleActorFaint(actor, context) {
@@ -568,46 +609,33 @@
 
     const switchRuntime = partySwitchRuntime();
     const party = partyRuntime();
-
     let switchDecision = null;
 
     if (
       switchRuntime &&
       typeof switchRuntime.requestForFaint === 'function'
     ) {
-      switchDecision = switchRuntime.requestForFaint(
-        actor,
-        {
-          reason:
-            context.reason ||
-            'active-sprite-fainted',
-          lead: actor,
-          activeSprite: actor,
-          party:
-            context.party ||
-            (
-              party &&
-              typeof party.members === 'function'
-                ? party.members()
-                : undefined
-            ),
-          encounterId:
-            context.encounterId ||
-            state.encounterId,
-          wild:
-            context.wild ||
-            battleContext.wild ||
-            null,
-          source: OWNER
-        }
-      );
+      switchDecision = switchRuntime.requestForFaint(actor, {
+        reason: context.reason || 'active-sprite-fainted',
+        lead: actor,
+        activeSprite: actor,
+        party:
+          context.party ||
+          (
+            party &&
+            typeof party.members === 'function'
+              ? party.members()
+              : undefined
+          ),
+        encounterId: context.encounterId || state.encounterId,
+        wild: context.wild || battleContext.wild || null,
+        source: OWNER
+      });
     } else {
       const hasReplacement =
         party &&
         typeof party.hasUsableMember === 'function'
-          ? party.hasUsableMember({
-              excludeId: actor.id
-            })
+          ? party.hasUsableMember({ excludeId: actor.id })
           : false;
 
       switchDecision = {
@@ -632,13 +660,8 @@
         null,
         {
           lead: actor,
-          wild:
-            context.wild ||
-            battleContext.wild ||
-            null,
-          encounterId:
-            context.encounterId ||
-            state.encounterId
+          wild: context.wild || battleContext.wild || null,
+          encounterId: context.encounterId || state.encounterId
         }
       );
 
@@ -674,17 +697,189 @@
     return result;
   }
 
+  function resolvePostResolutionDecision(actor, target, context) {
+    const actorSide = context.actorSide || null;
+    const targetSide = context.targetSide || null;
+    const wild =
+      targetSide === 'wild'
+        ? target
+        : actorSide === 'wild'
+          ? actor
+          : battleContext.wild;
+    const lead =
+      targetSide === 'player'
+        ? target
+        : actorSide === 'player'
+          ? actor
+          : battleContext.lead;
+
+    if (wild && Number(wild.hp || 0) <= 0) {
+      return {
+        block: true,
+        decision: ACTION_DECISIONS.wildDefeated,
+        terminal: applyWildDefeat(wild, null, {
+          wild,
+          lead,
+          encounterId: context.encounterId || state.encounterId
+        })
+      };
+    }
+
+    if (lead && Number(lead.hp || 0) <= 0) {
+      const signalResult = applyFaintSignalPenalty(wild, {
+        lead,
+        wild,
+        encounterId: context.encounterId || state.encounterId
+      });
+
+      if (signalResult.collapsed) {
+        return {
+          block: true,
+          decision: ACTION_DECISIONS.battleInactive,
+          reason: 'signal-lost',
+          signalResult,
+          terminal: escaped(
+            'signal-lost',
+            null,
+            {
+              wild,
+              lead,
+              encounterId: context.encounterId || state.encounterId
+            }
+          )
+        };
+      }
+
+      return Object.assign(
+        {
+          block: true,
+          signalResult
+        },
+        handleActorFaint(lead, {
+          wild,
+          lead,
+          party: context.party,
+          encounterId: context.encounterId || state.encounterId,
+          reason: 'active-sprite-fainted'
+        })
+      );
+    }
+
+    return {
+      ok: true,
+      block: false,
+      decision: ACTION_DECISIONS.allowed,
+      reason: null,
+      state: snapshot(),
+      battleContext: contextSnapshot()
+    };
+  }
+
+  function applyResolution(resolution, actor, target, context) {
+    if (!resolution) {
+      return {
+        ok: false,
+        reason: 'missing-resolution'
+      };
+    }
+
+    context =
+      context && typeof context === 'object'
+        ? context
+        : {};
+
+    captureParticipants(actor, target, context);
+
+    if (resolution.actionBlocked) {
+      const blockedResult = {
+        ok: true,
+        resolution,
+        actor,
+        target,
+        actionBlocked: true,
+        hpResult: {
+          applied: false,
+          damage: 0,
+          fainted: false
+        },
+        pressureResult: {
+          applied: false,
+          pressure: 0
+        },
+        statusResult: {
+          ok: false,
+          skipped: true,
+          reason: 'action-blocked'
+        },
+        persistenceResult: {
+          ok: true,
+          skipped: true,
+          reason: 'action-blocked'
+        },
+        decision: {
+          ok: true,
+          block: false,
+          decision: ACTION_DECISIONS.allowed
+        },
+        state: snapshot(),
+        battleContext: contextSnapshot()
+      };
+
+      dispatch('dd:battle-resolution-applied', blockedResult);
+      return blockedResult;
+    }
+
+    const hpResult = applyHpDamage(target, resolution);
+    const pressureResult = applyDownloadPressure(
+      target,
+      resolution,
+      context
+    );
+    const statusResult = applyStatusApplication(
+      resolution,
+      actor,
+      target,
+      context
+    );
+    const persistenceResult = persistParticipant(
+      target,
+      context.targetSide
+    );
+
+    captureParticipants(actor, target, context);
+
+    const decision = resolvePostResolutionDecision(
+      actor,
+      target,
+      context
+    );
+
+    const result = {
+      ok: true,
+      resolution,
+      actor,
+      target,
+      actionBlocked: false,
+      hpResult,
+      pressureResult,
+      statusResult,
+      persistenceResult,
+      decision,
+      state: snapshot(),
+      battleContext: contextSnapshot()
+    };
+
+    dispatch('dd:battle-resolution-applied', result);
+    return result;
+  }
+
   function evaluateActionState(input) {
     input =
       input && typeof input === 'object'
         ? input
         : {};
 
-    const wild =
-      input.wild ||
-      battleContext.wild ||
-      null;
-
+    const wild = input.wild || battleContext.wild || null;
     const actor =
       input.actor ||
       input.lead ||
@@ -696,9 +891,7 @@
         ok: false,
         block: true,
         decision: ACTION_DECISIONS.missingContext,
-        reason: !wild
-          ? 'missing-wild'
-          : 'missing-actor',
+        reason: !wild ? 'missing-wild' : 'missing-actor',
         state: snapshot(),
         battleContext: contextSnapshot()
       };
@@ -710,26 +903,17 @@
     updateContext({
       wild,
       lead: actor,
-      encounterId:
-        input.encounterId ||
-        state.encounterId
+      encounterId: input.encounterId || state.encounterId
     });
 
     if (Number(wild.hp || 0) <= 0) {
       let terminal = null;
-
       if (!state.terminalProcessed) {
-        terminal = victory(
-          'wild-defeated',
-          null,
-          {
-            wild,
-            lead: actor,
-            encounterId:
-              input.encounterId ||
-              state.encounterId
-          }
-        );
+        terminal = applyWildDefeat(wild, null, {
+          wild,
+          lead: actor,
+          encounterId: input.encounterId || state.encounterId
+        });
       }
 
       const result = {
@@ -747,18 +931,12 @@
     }
 
     if (Number(actor.hp || 0) <= 0) {
-      const faintResult = handleActorFaint(
-        actor,
-        Object.assign({}, input, {
-          wild
-        })
-      );
-
       return Object.assign(
-        {
-          block: true
-        },
-        faintResult
+        { block: true },
+        handleActorFaint(
+          actor,
+          Object.assign({}, input, { wild })
+        )
       );
     }
 
@@ -788,8 +966,7 @@
         decision: ACTION_DECISIONS.switchRequired,
         reason:
           typeof switchRuntime.getReason === 'function'
-            ? switchRuntime.getReason() ||
-              'switch-required'
+            ? switchRuntime.getReason() || 'switch-required'
             : 'switch-required',
         switchDecision:
           typeof switchRuntime.snapshot === 'function'
@@ -816,16 +993,100 @@
     return result;
   }
 
+  function tickParticipant(participant, context) {
+    const runtime = statusRuntime();
+
+    if (!participant) {
+      return {
+        ok: false,
+        reason: 'missing-participant'
+      };
+    }
+
+    if (!runtime || typeof runtime.tick !== 'function') {
+      return {
+        ok: false,
+        reason: 'status-runtime-unavailable',
+        participant
+      };
+    }
+
+    const outcome = runtime.tick(participant, context || {});
+
+    return {
+      ok: true,
+      participant,
+      outcome,
+      statuses:
+        outcome && outcome.statuses ||
+        participant.statusEffects ||
+        [],
+      damage:
+        outcome && outcome.effects
+          ? outcome.effects.reduce(
+              (sum, effect) =>
+                sum + Number(effect.damage || 0),
+              0
+            )
+          : 0,
+      fainted: !!(outcome && outcome.fainted)
+    };
+  }
+
+  function participantSide(participant, context, index) {
+    if (
+      context &&
+      Array.isArray(context.participantSides)
+    ) {
+      return context.participantSides[index];
+    }
+
+    if (participant && battleContext.lead === participant) {
+      return 'player';
+    }
+
+    if (participant && battleContext.wild === participant) {
+      return 'wild';
+    }
+
+    const effects = participant && participant.statusEffects;
+    const storedSide =
+      Array.isArray(effects) &&
+      effects[0] &&
+      effects[0].data &&
+      effects[0].data.side;
+
+    return storedSide || (index === 0 ? 'player' : 'wild');
+  }
+
+  function captureTickParticipants(ticks, context) {
+    const update = {};
+
+    ticks.forEach((tick, index) => {
+      if (!tick || !tick.participant) return;
+
+      const side = participantSide(
+        tick.participant,
+        context,
+        index
+      );
+
+      if (side === 'player') update.lead = tick.participant;
+      if (side === 'wild') update.wild = tick.participant;
+    });
+
+    if (Object.keys(update).length) {
+      updateContext(update);
+    }
+  }
+
   function resolveStatusTerminal(ticks, context) {
     if (isTerminal()) return null;
 
     captureTickParticipants(ticks, context || {});
 
     const fainted = ticks.filter(
-      tick =>
-        tick &&
-        tick.ok &&
-        tick.fainted
+      tick => tick && tick.ok && tick.fainted
     );
 
     if (!fainted.length) return null;
@@ -840,7 +1101,6 @@
 
     const wildFainted = sides.includes('wild');
     const playerFainted = sides.includes('player');
-
     let result = null;
 
     if (wildFainted && playerFainted) {
@@ -849,8 +1109,10 @@
         'status-double-faint'
       );
     } else if (wildFainted) {
-      result = victory(
-        'status-wild-defeated'
+      result = applyWildDefeat(
+        battleContext.wild,
+        null,
+        context || {}
       );
     } else if (playerFainted) {
       const playerTick = fainted.find(
@@ -871,15 +1133,12 @@
     }
 
     if (result) {
-      dispatch(
-        'dd:battle-status-terminal',
-        {
-          result,
-          ticks,
-          sides,
-          battleContext: contextSnapshot()
-        }
-      );
+      dispatch('dd:battle-status-terminal', {
+        result,
+        ticks,
+        sides,
+        battleContext: contextSnapshot()
+      });
     }
 
     return result;
@@ -901,25 +1160,22 @@
         ? participants.filter(Boolean)
         : [participants].filter(Boolean);
 
-    const ticks = list.map(
-      function (participant, index) {
-        return tickParticipant(
-          participant,
-          Object.assign(
-            {
-              encounterId: state.encounterId,
-              turn: state.turn,
-              participantIndex: index,
-              phase
-            },
-            context || {}
-          )
-        );
-      }
-    );
+    const ticks = list.map(function (participant, index) {
+      return tickParticipant(
+        participant,
+        Object.assign(
+          {
+            encounterId: state.encounterId,
+            turn: state.turn,
+            participantIndex: index,
+            phase
+          },
+          context || {}
+        )
+      );
+    });
 
     captureTickParticipants(ticks, context || {});
-
     const terminal = resolveStatusTerminal(
       ticks,
       context || {}
@@ -959,12 +1215,13 @@
     );
   }
 
-  const endTurn = (participants, context) =>
-    tickPhase(
+  function endTurn(participants, context) {
+    return tickPhase(
       participants,
       'end',
       context || {}
     );
+  }
 
   function tickTurn(participants, context) {
     if (!canAct()) {
@@ -987,9 +1244,7 @@
         turn: state.turn,
         start: startResult,
         end: null,
-        terminal:
-          startResult.terminal ||
-          null,
+        terminal: startResult.terminal || null,
         state: snapshot(),
         battleContext: contextSnapshot()
       };
@@ -1006,9 +1261,7 @@
       start: startResult,
       end: endResult,
       ticks: endResult.ticks || [],
-      terminal:
-        endResult.terminal ||
-        null,
+      terminal: endResult.terminal || null,
       state: snapshot(),
       battleContext: contextSnapshot()
     };
@@ -1017,70 +1270,8 @@
     return result;
   }
 
-  function applyWildDefeat(wild, tools, context) {
-    if (!wild) {
-      return {
-        ok: false,
-        message: 'No wild signal.'
-      };
-    }
-
-    updateContext(
-      Object.assign({}, context || {}, {
-        wild
-      })
-    );
-
-    return victory(
-      'wild-defeated',
-      function () {
-        wild.hp = 0;
-
-        if (
-          tools &&
-          typeof tools.stabilizeSignal === 'function'
-        ) {
-          tools.stabilizeSignal(wild, 1);
-        }
-
-        if (
-          tools &&
-          typeof tools.setOdds === 'function' &&
-          typeof tools.odds === 'function'
-        ) {
-          tools.setOdds(
-            wild,
-            tools.odds(wild) +
-              Number(
-                tools.bonus == null
-                  ? 3
-                  : tools.bonus
-              )
-          );
-        }
-
-        return {
-          wild,
-          lead: battleContext.lead,
-          encounterId: battleContext.encounterId,
-          odds:
-            tools &&
-            tools.odds
-              ? tools.odds(wild)
-              : null,
-          message:
-            wild.name +
-            ' is defeated. Choose Download or Return.'
-        };
-      }
-    );
-  }
-
   function shouldBlockAction(wild, actor) {
-    const decision = evaluateActionState({
-      wild,
-      actor
-    });
+    const decision = evaluateActionState({ wild, actor });
 
     return {
       block: !!decision.block,
@@ -1088,12 +1279,8 @@
       decision: decision.decision,
       state: decision.state,
       battleContext: decision.battleContext,
-      switchDecision:
-        decision.switchDecision ||
-        null,
-      terminal:
-        decision.terminal ||
-        null
+      switchDecision: decision.switchDecision || null,
+      terminal: decision.terminal || null
     };
   }
 
@@ -1101,8 +1288,7 @@
     Object.freeze({
       version: VERSION,
       owner: OWNER,
-      phase:
-        '4.6-action-state-and-faint-ownership',
+      phase: '4.7-canonical-resolution-application',
       STATES,
       ACTION_DECISIONS,
       snapshot,
@@ -1119,25 +1305,26 @@
       escaped,
       applyStatusApplication,
       applyResolution,
+      applyHpDamage,
+      applyDownloadPressure,
+      applyWildDefeat,
+      applyFaintSignalPenalty,
+      persistParticipant,
       tickParticipant,
       tickPhase,
       beginTurn,
       endTurn,
       tickTurn,
       resolveStatusTerminal,
-      applyWildDefeat,
       evaluateActionState,
+      resolvePostResolutionDecision,
       handleActorFaint,
       shouldBlockAction
     });
 
   document.dispatchEvent(
-    new CustomEvent(
-      'dd:battle-state-runtime-ready',
-      {
-        detail:
-          window.DD_BATTLE_STATE_RUNTIME
-      }
-    )
+    new CustomEvent('dd:battle-state-runtime-ready', {
+      detail: window.DD_BATTLE_STATE_RUNTIME
+    })
   );
 })();
