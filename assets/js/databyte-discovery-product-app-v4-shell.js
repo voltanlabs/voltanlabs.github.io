@@ -1,7 +1,7 @@
 // assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 4.7.1: modular app shell orchestrating canonical battle owners.
+// Phase 4.7.2: modular app shell orchestrating canonical battle owners.
 // The shell owns boot, route state, context building, runtime calls, action binding,
-// turn transaction safety, and screen registry dispatch.
+// turn transaction safety, control unlock recovery, and screen registry dispatch.
 // Resolver owns calculations. Battle State Runtime owns resolution application,
 // battle state, faint, and terminal decisions. Screen/control modules own presentation.
 (function(){
@@ -9,7 +9,7 @@
 
   if(!location.pathname.includes('databyte-discovery'))return;
 
-  const VERSION='4.7.1';
+  const VERSION='4.7.2';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={
@@ -497,7 +497,6 @@
 
   function routeBattleDecision(decision,wild,activeLead){
     if(!decision||!decision.block)return false;
-
     syncBattleState();
     state.signal=wild||state.signal;
 
@@ -667,7 +666,12 @@
     state.turnBusy=true;
     state.turnPhase='action-gate';
     state.lastTurnError=null;
-    render();
+
+    // Lock only the existing move controls. Rebuilding the whole battle DOM
+    // here created a dependency on the final render succeeding before input
+    // could be restored.
+    applyControlHost();
+    applyTurnLock();
 
     try{
       const initialDecision=evaluateBattleAction(wild,activeLead);
@@ -747,7 +751,6 @@
 
         state.signal=wild;
         syncBattleState();
-
         const decision=applied&&applied.decision;
         return{
           stop:!!(decision&&decision.block),
@@ -836,7 +839,45 @@
     }finally{
       state.turnBusy=false;
       state.turnPhase=null;
-      render();
+
+      try{
+        render();
+      }catch(renderError){
+        state.lastTurnError={
+          phase:'turn-final-render',
+          message:renderError&&renderError.message
+            ?renderError.message
+            :String(renderError),
+          at:new Date().toISOString()
+        };
+
+        dispatchDiagnostic('dd:battle-final-render-error',{
+          phase:'turn-final-render',
+          message:state.lastTurnError.message,
+          encounterId:wild&&wild.id||null,
+          wild,
+          lead:activeLead
+        });
+
+        // Preserve access to the current controls even if a presentation
+        // module throws while the screen is being rebuilt.
+        forceUnlockControls();
+
+        pushLog(
+          'Battle controls recovered after a display error. '+
+          'The last action completed.'
+        );
+
+        try{
+          const stage=$('stage');
+          if(stage){
+            const notice=document.createElement('p');
+            notice.className='log';
+            notice.textContent=state.log;
+            stage.appendChild(notice);
+          }
+        }catch(_){}
+      }
     }
   }
 
@@ -1260,6 +1301,32 @@
       });
   }
 
+  function forceUnlockControls(){
+    state.turnBusy=false;
+    state.turnPhase=null;
+
+    const host=$('controls');
+    if(host){
+      host.setAttribute('aria-busy','false');
+    }
+
+    document
+      .querySelectorAll('#controls button')
+      .forEach(button=>{
+        button.disabled=false;
+      });
+
+    try{
+      bind();
+    }catch(error){
+      dispatchDiagnostic('dd:battle-control-rebind-error',{
+        message:error&&error.message
+          ?error.message
+          :String(error)
+      });
+    }
+  }
+
   function runAction(button){
     const action=button.dataset.action;
     if(state.turnBusy&&action==='move')return;
@@ -1300,18 +1367,18 @@
     document.body.innerHTML=
       '<div id="ddApp">'+
         '<header class="top">'+
-          '<b>Data Discovery</b>'+
-          '<span>v4 App Shell</span>'+
-        '</header>'+
-        '<main id="stage" class="stage"></main>'+
-        '<section id="controls" class="controls"></section>'+
-        '<nav class="nav">'+
-          '<button data-panel="scanner">Scan</button>'+
-          '<button data-panel="dex">Dex</button>'+
-          '<button data-panel="party">Party</button>'+
-          '<button data-panel="items">Items</button>'+
-          '<button data-panel="admin">Admin</button>'+
-        '</nav>'+
+          '<b>Data Discovery</b>'+ 
+          '<span>v4 App Shell</span>'+ 
+        '</header>'+ 
+        '<main id="stage" class="stage"></main>'+ 
+        '<section id="controls" class="controls"></section>'+ 
+        '<nav class="nav">'+ 
+          '<button data-panel="scanner">Scan</button>'+ 
+          '<button data-panel="dex">Dex</button>'+ 
+          '<button data-panel="party">Party</button>'+ 
+          '<button data-panel="items">Items</button>'+ 
+          '<button data-panel="admin">Admin</button>'+ 
+        '</nav>'+ 
       '</div>';
   }
 
@@ -1328,7 +1395,7 @@
   window.DD_PRODUCT_APP_V4_SHELL={
     version:VERSION,
     owner:OWNER,
-    phase:'4.7.1-turn-transaction-recovery',
+    phase:'4.7.2-turn-unlock-recovery',
     state,
     render,
     discover,
@@ -1346,6 +1413,7 @@
     canonicalBattleStartContext,
     evaluateBattleAction,
     routeBattleDecision,
+    forceUnlockControls,
     screenRegistry,
     controlsRegistry
   };
