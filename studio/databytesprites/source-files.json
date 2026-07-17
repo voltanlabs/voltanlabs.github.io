@@ -216,6 +216,19 @@
       "version": "1.0.0"
     },
     {
+      "id": "src-dd-party-switch-runtime",
+      "name": "dd-party-switch-runtime.js",
+      "fileType": "active-runtime",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "active-party-slot-and-required-switch-state",
+      "path": "/assets/js/dd-party-switch-runtime.js",
+      "dependencies": [
+        "src-dd-party-runtime"
+      ],
+      "version": "0.2.0"
+    },
+    {
       "id": "src-dd-inventory-runtime",
       "name": "dd-inventory-runtime.js",
       "fileType": "active-runtime",
@@ -328,9 +341,11 @@
       "dependencies": [
         "src-dd-status-battle-flow",
         "src-dd-battle-screen",
-        "src-dd-battle-controls"
+        "src-dd-battle-controls",
+        "src-dd-party-runtime",
+        "src-dd-party-switch-runtime"
       ],
-      "version": "4.4.3"
+      "version": "4.7.3"
     }
   ],
   "compatibilityLayers": [

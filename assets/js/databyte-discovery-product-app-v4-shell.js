@@ -1,5 +1,5 @@
 // assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 4.7.2: modular app shell orchestrating canonical battle owners.
+// Phase 4.7.3: modular app shell with recovered party-switch ownership.
 // The shell owns boot, route state, context building, runtime calls, action binding,
 // turn transaction safety, control unlock recovery, and screen registry dispatch.
 // Resolver owns calculations. Battle State Runtime owns resolution application,
@@ -9,7 +9,7 @@
 
   if(!location.pathname.includes('databyte-discovery'))return;
 
-  const VERSION='4.7.2';
+  const VERSION='4.7.3';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={
@@ -229,7 +229,25 @@
   }
 
   function lead(){
-    return normalize(rt.party()?rt.party().lead():fallbackLead());
+    const partyRuntime=rt.party();
+    const switchRuntime=rt.partySwitch();
+
+    if(
+      partyRuntime&&
+      switchRuntime&&
+      typeof partyRuntime.members==='function'&&
+      typeof switchRuntime.getActive==='function'
+    ){
+      const members=partyRuntime.members();
+      const activeIndex=Number(switchRuntime.getActive()||0);
+      const activeLead=members[activeIndex];
+
+      if(activeLead&&Number(activeLead.hp||0)>0){
+        return normalize(activeLead);
+      }
+    }
+
+    return normalize(partyRuntime?partyRuntime.lead():fallbackLead());
   }
 
   function fillParty(){
@@ -1395,7 +1413,7 @@
   window.DD_PRODUCT_APP_V4_SHELL={
     version:VERSION,
     owner:OWNER,
-    phase:'4.7.2-turn-unlock-recovery',
+    phase:'4.7.3-party-switch-recovery',
     state,
     render,
     discover,

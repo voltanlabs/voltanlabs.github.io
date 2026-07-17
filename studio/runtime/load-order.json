@@ -297,7 +297,7 @@
     {
       "id": "dd-party-switch-runtime",
       "label": "Party Switch Runtime",
-      "script": "/assets/js/dd-party-switch-runtime.js?v=party-switch-runtime-1",
+      "script": "/assets/js/dd-party-switch-runtime.js?v=party-switch-runtime-2",
       "phase": "product:state-ready",
       "requires": [
         "dd-party-runtime"
@@ -307,8 +307,8 @@
         "dd:party-switch",
         "dd:party-switch-required"
       ],
-      "required": false,
-      "failureBehavior": "warn-only",
+      "required": true,
+      "failureBehavior": "show-runtime-error",
       "status": "active-owner"
     },
     {
@@ -514,7 +514,7 @@
     {
       "id": "databyte-discovery-product-app-v4-shell",
       "label": "Data Discovery v4 App Shell",
-      "script": "/assets/js/databyte-discovery-product-app-v4-shell.js?v=v4-shell-4-7-0",
+      "script": "/assets/js/databyte-discovery-product-app-v4-shell.js?v=v4-shell-4-7-3",
       "phase": "product:app-ready",
       "requires": [
         "dd-canon-roster",

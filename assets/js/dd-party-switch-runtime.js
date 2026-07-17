@@ -1,244 +1,115 @@
-// assets/js/dd-party-runtime.js
-// Phase 4.5.1: canonical party persistence, lead selection, and usable-member queries.
+// Phase 4.7.3: canonical party-switch state and validation owner.
 (function () {
   'use strict';
 
+  if (!location.pathname.includes('databyte-discovery')) return;
+
   const VERSION = '0.2.0';
-  const OWNER = 'dd-party-runtime';
-  const KEY_COLLECTION = 'vl_databyte_discovery_collection_v2';
-  const KEY_PARTY = 'vl_databyte_party_v1';
-  const MAX_PARTY = 5;
+  const OWNER = 'dd-party-switch-runtime';
+  let activeSlot = 0;
+  let switchRequired = false;
+  let switchReason = null;
 
-  function read(key, fallback) {
-    try {
-      return JSON.parse(localStorage.getItem(key)) || fallback;
-    } catch {
-      return fallback;
-    }
+  function emit(type, detail) {
+    document.dispatchEvent(new CustomEvent(type, {
+      detail: Object.assign({
+        owner: OWNER,
+        version: VERSION
+      }, detail || {})
+    }));
   }
 
-  function write(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
-    return value;
+  function normalizeSlot(slot) {
+    const value = Number(slot);
+    return Number.isInteger(value) && value >= 0 ? value : -1;
   }
 
-  function collection() {
-    return read(KEY_COLLECTION, []);
+  function getActive() {
+    return activeSlot;
   }
 
-  function partyIds() {
-    return read(KEY_PARTY, []);
-  }
-
-  function exists(id, list) {
-    return list.some(sprite => sprite && sprite.id === id);
-  }
-
-  function isUsable(sprite) {
+  function canSwitch(party, slot) {
+    const index = normalizeSlot(slot);
     return !!(
-      sprite &&
-      Number(sprite.hp || 0) > 0
+      Array.isArray(party) &&
+      index >= 0 &&
+      party[index] &&
+      Number(party[index].hp || 0) > 0
     );
   }
 
-  function saveParty(ids) {
-    const sprites = collection();
-    const clean = [
-      ...new Set(
-        (ids || []).filter(id => exists(id, sprites))
-      )
-    ].slice(0, MAX_PARTY);
+  function setActive(slot) {
+    const index = normalizeSlot(slot);
+    if (index < 0) return activeSlot;
 
-    return write(KEY_PARTY, clean);
-  }
+    const previousSlot = activeSlot;
+    activeSlot = index;
+    switchRequired = false;
+    switchReason = null;
 
-  function autoFill() {
-    const sprites = collection();
-    const ids = partyIds().filter(id => exists(id, sprites));
-
-    sprites.forEach(sprite => {
-      if (
-        ids.length < MAX_PARTY &&
-        sprite &&
-        sprite.id &&
-        !ids.includes(sprite.id)
-      ) {
-        ids.push(sprite.id);
-      }
+    emit('dd:party-switch', {
+      slot: activeSlot,
+      previousSlot
     });
 
-    return saveParty(ids);
+    return activeSlot;
   }
 
-  function members() {
-    const sprites = collection();
-    const ids = autoFill();
+  function requireSwitch(reason) {
+    switchRequired = true;
+    switchReason = reason || 'switch-required';
 
-    return ids
-      .map(id => sprites.find(sprite => sprite && sprite.id === id))
-      .filter(Boolean);
-  }
-
-  function usableMembers(options) {
-    options = options || {};
-
-    const excludedId =
-      options.excludeId ||
-      options.activeId ||
-      null;
-
-    return members().filter(sprite => {
-      if (!isUsable(sprite)) return false;
-      if (excludedId && sprite.id === excludedId) return false;
-      return true;
+    emit('dd:party-switch-required', {
+      slot: activeSlot,
+      reason: switchReason
     });
+
+    return switchRequired;
   }
 
-  function hasUsableMember(options) {
-    return usableMembers(options).length > 0;
+  function isSwitchRequired() {
+    return switchRequired;
   }
 
-  function partyWiped() {
-    return !hasUsableMember();
-  }
-
-  function lead() {
-    const party = members();
-    const available = party.find(isUsable);
-
+  function partyWiped(party) {
     return (
-      available ||
-      party[0] ||
-      collection()[0] ||
-      null
+      !Array.isArray(party) ||
+      !party.some(member => Number(member && member.hp || 0) > 0)
     );
-  }
-
-  function activeIndex() {
-    const currentLead = lead();
-    if (!currentLead) return -1;
-
-    return members().findIndex(
-      sprite => sprite && sprite.id === currentLead.id
-    );
-  }
-
-  function replacementCandidates(activeSprite) {
-    const activeId =
-      activeSprite &&
-      activeSprite.id ||
-      null;
-
-    return usableMembers({
-      excludeId: activeId
-    });
-  }
-
-  function add(sprite) {
-    if (!sprite || !sprite.id) return autoFill();
-
-    const ids = partyIds();
-    if (
-      !ids.includes(sprite.id) &&
-      ids.length < MAX_PARTY
-    ) {
-      ids.push(sprite.id);
-    }
-
-    return saveParty(ids);
-  }
-
-  function remove(id) {
-    return saveParty(
-      partyIds().filter(item => item !== id)
-    );
-  }
-
-  function swap(fromIndex, toIndex) {
-    const ids = autoFill();
-
-    if (
-      fromIndex < 0 ||
-      toIndex < 0 ||
-      fromIndex >= ids.length ||
-      toIndex >= ids.length
-    ) {
-      return ids;
-    }
-
-    const next = ids.slice();
-    const moved = next.splice(fromIndex, 1)[0];
-    next.splice(toIndex, 0, moved);
-
-    return saveParty(next);
-  }
-
-  function updateSprite(sprite) {
-    if (!sprite || !sprite.id) return sprite;
-
-    const sprites = collection();
-    const index = sprites.findIndex(
-      item => item && item.id === sprite.id
-    );
-
-    if (index >= 0) {
-      sprites[index] = sprite;
-      write(KEY_COLLECTION, sprites);
-    }
-
-    return sprite;
   }
 
   function reset() {
-    return write(KEY_PARTY, []);
+    activeSlot = 0;
+    switchRequired = false;
+    switchReason = null;
+    return health();
   }
 
   function health() {
-    const party = members();
-    const usable = party.filter(isUsable);
-
     return {
       owner: OWNER,
       version: VERSION,
-      memberCount: party.length,
-      usableCount: usable.length,
-      partyWiped: usable.length === 0,
-      activeIndex: activeIndex()
+      activeSlot,
+      switchRequired,
+      switchReason
     };
   }
 
-  window.DD_PARTY_RUNTIME = Object.freeze({
+  window.DD_PARTY_SWITCH_RUNTIME = Object.freeze({
     version: VERSION,
     owner: OWNER,
-    phase: '4.5.1-party-availability-contract',
-    maxParty: MAX_PARTY,
-    keys: {
-      collection: KEY_COLLECTION,
-      party: KEY_PARTY
-    },
-    collection,
-    ids: partyIds,
-    save: saveParty,
-    autoFill,
-    members,
-    usableMembers,
-    hasUsableMember,
+    phase: '4.7.3-party-switch-recovery',
+    getActive,
+    setActive,
+    requireSwitch,
+    isSwitchRequired,
+    canSwitch,
     partyWiped,
-    isUsable,
-    lead,
-    activeIndex,
-    replacementCandidates,
-    add,
-    remove,
-    swap,
-    updateSprite,
     reset,
     health
   });
 
-  document.dispatchEvent(
-    new CustomEvent('dd:party-runtime-ready', {
-      detail: window.DD_PARTY_RUNTIME
-    })
-  );
+  emit('dd:party-switch-runtime-ready', {
+    runtime: window.DD_PARTY_SWITCH_RUNTIME
+  });
 })();
