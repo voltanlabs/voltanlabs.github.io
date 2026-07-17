@@ -226,7 +226,7 @@
       "dependencies": [
         "src-dd-party-runtime"
       ],
-      "version": "0.2.0"
+      "version": "0.3.0"
     },
     {
       "id": "src-dd-inventory-runtime",

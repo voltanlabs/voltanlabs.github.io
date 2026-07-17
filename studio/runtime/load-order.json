@@ -297,7 +297,7 @@
     {
       "id": "dd-party-switch-runtime",
       "label": "Party Switch Runtime",
-      "script": "/assets/js/dd-party-switch-runtime.js?v=party-switch-runtime-2",
+      "script": "/assets/js/dd-party-switch-runtime.js?v=party-switch-runtime-3",
       "phase": "product:state-ready",
       "requires": [
         "dd-party-runtime"

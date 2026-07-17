@@ -4,7 +4,7 @@
 
   if (!location.pathname.includes('databyte-discovery')) return;
 
-  const VERSION = '0.2.0';
+  const VERSION = '0.3.0';
   const OWNER = 'dd-party-switch-runtime';
   let activeSlot = 0;
   let switchRequired = false;
@@ -71,6 +71,54 @@
     return switchRequired;
   }
 
+  function clearRequirement(reason) {
+    const wasRequired = switchRequired;
+    switchRequired = false;
+    switchReason = null;
+
+    if (wasRequired) {
+      emit('dd:party-switch-requirement-cleared', {
+        slot: activeSlot,
+        reason: reason || 'requirement-cleared'
+      });
+    }
+
+    return !switchRequired;
+  }
+
+  function requestForFaint(actor, context) {
+    context = context && typeof context === 'object' ? context : {};
+    const party = Array.isArray(context.party) ? context.party : [];
+    const actorId = actor && actor.id || null;
+    const candidates = party.filter((member, index) => (
+      index !== activeSlot &&
+      member &&
+      Number(member.hp || 0) > 0 &&
+      (!actorId || member.id !== actorId)
+    ));
+
+    if (!candidates.length) {
+      clearRequirement('party-defeated');
+      return {
+        ok: false,
+        switchRequired: false,
+        partyWiped: true,
+        reason: 'party-defeated',
+        candidates: []
+      };
+    }
+
+    const reason = context.reason || 'active-sprite-fainted';
+    requireSwitch(reason);
+    return {
+      ok: true,
+      switchRequired: true,
+      partyWiped: false,
+      reason,
+      candidates
+    };
+  }
+
   function partyWiped(party) {
     return (
       !Array.isArray(party) ||
@@ -80,8 +128,7 @@
 
   function reset() {
     activeSlot = 0;
-    switchRequired = false;
-    switchReason = null;
+    clearRequirement('runtime-reset');
     return health();
   }
 
@@ -98,11 +145,13 @@
   window.DD_PARTY_SWITCH_RUNTIME = Object.freeze({
     version: VERSION,
     owner: OWNER,
-    phase: '4.7.3-party-switch-recovery',
+    phase: '4.7.4-faint-switch-contract',
     getActive,
     setActive,
     requireSwitch,
     isSwitchRequired,
+    clearRequirement,
+    requestForFaint,
     canSwitch,
     partyWiped,
     reset,
