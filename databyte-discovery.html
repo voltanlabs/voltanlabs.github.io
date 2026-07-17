@@ -22,7 +22,7 @@
     <div class="dd-boot-card">
       <div class="dd-boot-kicker">Scanner OS Boot</div>
       <div class="dd-boot-title">Data Discovery</div>
-      <div class="dd-boot-sub">Loading Phase 4.5 battle runtime...</div>
+      <div class="dd-boot-sub">Loading Phase 4.7 battle runtime...</div>
       <div id="ddBootError" class="dd-boot-error" hidden></div>
     </div>
   </div>
@@ -46,7 +46,7 @@
   <script src="/assets/js/dd-battle-resolver.js?v=battle-resolver-3-4-0"></script>
 
   <!-- Canonical battle state -->
-  <script src="/assets/js/dd-battle-state-runtime.js?v=battle-state-runtime-0-5-0"></script>
+  <script src="/assets/js/dd-battle-state-runtime.js?v=battle-state-runtime-0-7-0"></script>
 
   <!-- Persistent product state -->
   <script src="/assets/js/dd-collection-runtime.js?v=collection-runtime-1"></script>
@@ -73,7 +73,7 @@
   <script src="/assets/js/dd-result-screen.js?v=result-screen-owner-1"></script>
 
   <!-- Active application shell -->
-  <script src="/assets/js/databyte-discovery-product-app-v4-shell.js?v=v4-shell-4-4-3"></script>
+  <script src="/assets/js/databyte-discovery-product-app-v4-shell.js?v=v4-shell-4-7-0"></script>
 
   <!-- Post-shell behavior and compatibility adapters -->
   <script src="/assets/js/dd-scanner-behavior-4-3.js?v=behavior-4-3-1"></script>
@@ -88,7 +88,7 @@
   <script src="/assets/js/dd-scan-bg.js?v=0912-direct-os-2"></script>
 
   <!-- Runtime diagnostics -->
-  <script src="/assets/js/studio-runtime-bridge-checks.js?v=bridge-checks-3"></script>
+  <script src="/assets/js/studio-runtime-bridge-checks.js?v=bridge-checks-1-2-0"></script>
 
   <script>
     (function () {
@@ -129,7 +129,7 @@
         document.dispatchEvent(new CustomEvent('runtime:ready', {
           detail: {
             owner: 'databyte-discovery.html',
-            phase: '4.5-reward-context-and-presentation',
+            phase: '4.7-canonical-resolution-and-throttled-diagnostics',
             requiredGlobals: requiredGlobals.slice(),
             at: new Date().toISOString()
           }
@@ -146,7 +146,7 @@
       document.dispatchEvent(new CustomEvent('runtime:module-failed', {
         detail: {
           owner: 'databyte-discovery.html',
-          phase: '4.5-reward-context-and-presentation',
+          phase: '4.7-canonical-resolution-and-throttled-diagnostics',
           missing: missing,
           at: new Date().toISOString()
         }
