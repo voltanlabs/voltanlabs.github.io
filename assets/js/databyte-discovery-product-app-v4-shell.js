@@ -1,11 +1,12 @@
 // assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 4.6: modular app shell consuming canonical battle action and faint decisions.
+// Phase 4.7: modular app shell orchestrating canonical battle owners.
 // The shell owns boot, route state, context building, runtime calls, action binding, and screen registry dispatch.
-// Screen/control modules own presentation. Battle State Runtime owns canonical battle state and action decisions.
+// Resolver owns calculations. Battle State Runtime owns resolution application, battle state, faint, and terminal decisions.
+// Screen/control modules own presentation.
 (function(){
   if(!location.pathname.includes('databyte-discovery'))return;
 
-  const VERSION='4.6.0';
+  const VERSION='4.7.0';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={profile:'vl_databyte_admin_profile_v1',collection:'vl_databyte_discovery_collection_v2',seen:'vl_databyte_seen_v1',party:'vl_databyte_party_v1',items:'vl_databyte_items_v1'};
@@ -41,14 +42,11 @@
   function normalize(sprite){if(!sprite)return sprite;const s=Object.assign({},sprite);s.maxHp=Number(s.maxHp||s.hp||44);s.hp=Number(s.hp??s.maxHp);s.maxStability=Number(s.maxStability||s.stability||8);s.stability=Number(s.stability??s.maxStability);s.atk=Number(s.atk||s.attack||12);s.def=Number(s.def||s.defense||8);s.speed=Number(s.speed||8);const fallback={id:'signal-strike',name:'Signal Strike',power:24,accuracy:92,captureEffect:1,elements:['Signal'],moveType:'attack'};s.moves=Array.isArray(s.moves)&&s.moves.length?s.moves:[fallback];if(rt.resolver()&&rt.resolver().normalizeMove)s.moves=s.moves.map(rt.resolver().normalizeMove);return s}
   function fallbackLead(){const c=collection().map(normalize),p=party();return c.find(s=>p.includes(s.id)&&Number(s.hp)>0)||c.find(s=>Number(s.hp)>0)||c[0]||null}
   function lead(){return normalize(rt.party()?rt.party().lead():fallbackLead())}
-  function saveSprite(sprite){if(rt.party())return rt.party().updateSprite(sprite);const c=collection();const i=c.findIndex(x=>x.id===sprite.id);if(i>=0){c[i]=sprite;write(K.collection,c)}return sprite}
   function fillParty(){if(rt.party())return rt.party().autoFill();const c=collection(),p=party().filter(id=>c.some(s=>s.id===id));c.forEach(s=>{if(p.length<5&&!p.includes(s.id))p.push(s.id)});write(K.party,p.slice(0,5));return p.slice(0,5)}
   function mark(sprite,status){if(!sprite)return;const list=seen();const i=list.findIndex(x=>(typeof x==='string'?x:x.name)===sprite.name);const rec={name:sprite.name,dex:sprite.dex,type:sprite.type,rarity:sprite.rarity,status,seenAt:new Date().toISOString()};if(i>=0)list[i]=rec;else list.push(rec);write(K.seen,list)}
   function seed(){profile();if(rt.inventory())rt.inventory().ensure();else if(!localStorage.getItem(K.items))write(K.items,{byteCoins:8,boosts:0,repairPulses:0});if(!collection().length&&rt.roster().length){const base=rt.roster()[0];let starter=rt.encounter()&&rt.encounter().tuneSignal?rt.encounter().tuneSignal(base,'STARTER-Leovolt',{starter:true}):base;starter=normalize(Object.assign({id:'DBS-STARTER-'+Date.now(),byteCoin:'BC-0001'},starter,{rarity:'Starter'}));write(K.collection,[starter]);if(rt.party())rt.party().save([starter.id]);else write(K.party,[starter.id]);mark(starter,'Captured')}fillParty()}
   function odds(sprite){return rt.capture()?rt.capture().odds(sprite):Number(sprite&&sprite.currentChance||30)}
-  function setOdds(sprite,value){return rt.capture()?rt.capture().setOdds(sprite,value):(sprite.currentChance=value)}
   function drainSignal(wild,amount,reason){wild.stability=Math.max(0,Number(wild.stability||0)-Number(amount||1));return wild.stability<=0?((reason||'The wild signal')+' collapsed. '+wild.name+' disappeared from scanner range.'):null}
-  function stabilizeSignal(wild,amount){wild.stability=Math.min(Number(wild.maxStability||wild.stability||1),Number(wild.stability||0)+Number(amount||1));return wild.stability}
   function isWildDefeated(){return !!(state.signal&&Number(state.signal.hp||0)<=0)}
   function syncBattleState(){const bsr=rt.battleState();if(bsr&&bsr.snapshot)state.battleState=bsr.snapshot().value;return state.battleState}
   function contextBase(){return{state,version:VERSION,profile:profile(),items:items(),collection:collection(),party:party(),seen:seen(),roster:rt.roster(),log:state.log}}
@@ -62,6 +60,7 @@
 
   function discover(code){code=(code||($('code')&&$('code').value)||'').trim();if(!code){pushLog('Enter a discovery code first.');fx('warn');render();return}const out=rt.encounter()?rt.encounter().create(code):null;if(!out||!out.signal){pushLog('No signal found. Encounter Runtime unavailable.');fx('warn');render();return}state.signal=normalize(Object.assign({id:'ENC-'+Date.now()},out.signal));state.returnScreen=null;state.battleState='idle';if(rt.battleState())rt.battleState().reset('new-encounter');state.screen='encounter';state.result=null;state.confirm=null;mark(state.signal,'Seen');pushLog('Signal locked from '+(state.signal.encounterPoolLabel||'scanner pool')+'.');fx('discover');render()}
   function randomCode(){const code=rt.encounter()?rt.encounter().randomCode():'DBS-'+Math.random().toString(36).slice(2,7).toUpperCase();if($('code'))$('code').value=code;discover(code)}
+
   function startBattle(){
     if(!state.signal)return;
     const wild=normalize(state.signal);
@@ -71,140 +70,167 @@
     state.signal=wild;
     state.returnScreen=null;
     state.result=null;
-    if(bsr&&typeof bsr.start==='function'){
-      bsr.start(context.encounterId,context);
-      if(Number(wild.hp||0)<=0&&typeof bsr.victory==='function')bsr.victory('already-defeated',null,context);
-      syncBattleState();
-    }else{
-      state.battleState=Number(wild.hp||0)<=0?'victory':'active';
+    if(!bsr||typeof bsr.start!=='function'){
+      pushLog('Battle State Runtime unavailable. Battle cannot start.');
+      fx('warn');
+      render();
+      return;
     }
+    bsr.start(context.encounterId,context);
+    syncBattleState();
     state.screen='battle';
     pushLog('Battle started.');
     emit('turn',{label:'Battle Start',encounterId:context.encounterId,wild,lead:activeLead,source:OWNER});
     fx('battle');
     render();
   }
-  function resolveHit(user,move,target,mode){return rt.resolver()?rt.resolver().resolve(user,move,target,{mode,seed:mode+'-'+Date.now()}):{hit:true,move:move,type:{label:'neutral'},hpDamage:2,capturePressure:1,notes:[(user.name||'Sprite')+' used '+(move.name||'Move')+'.']}}
-  function chooseEnemyMove(wild,activeLead){return rt.resolver()?rt.resolver().chooseEnemyMove(wild,activeLead):(wild.moves&&wild.moves[0])}
-  function turnOrder(activeLead,wild){return rt.resolver()?rt.resolver().turnOrder(activeLead,wild):(Number(activeLead.speed)>=Number(wild.speed)?'player':'enemy')}
-  function finishWildDefeat(wild,notes){wild.hp=0;const bsr=rt.battleState();if(bsr&&bsr.applyWildDefeat){const out=bsr.applyWildDefeat(wild,{stabilizeSignal,setOdds,odds,bonus:3},{encounterId:wild.id,wild,lead:lead(),source:OWNER});state.battleState=bsr.snapshot().value;if(out&&out.ok&&out.value&&out.value.message)notes.push(out.value.message.replace('Choose Capture','Choose Download')+' Download window locked at '+odds(wild)+'%.')}else{state.battleState='victory';if(wild.__defeatProcessed)return;wild.__defeatProcessed=true;stabilizeSignal(wild,1);setOdds(wild,odds(wild)+3);notes.push(wild.name+' is defeated. Download window locked at '+odds(wild)+'%. Choose Download or Return.')}fx('success')}
+
+  function resolverRequired(){
+    const resolver=rt.resolver();
+    if(!resolver||typeof resolver.resolve!=='function')return null;
+    return resolver;
+  }
+  function resolveHit(user,move,target,mode){const resolver=resolverRequired();return resolver?resolver.resolve(user,move,target,{mode,seed:mode+'-'+Date.now(),source:OWNER}):null}
+  function chooseEnemyMove(wild,activeLead){const resolver=resolverRequired();return resolver&&typeof resolver.chooseEnemyMove==='function'?resolver.chooseEnemyMove(wild,activeLead):null}
+  function turnOrder(activeLead,wild){const resolver=resolverRequired();return resolver&&typeof resolver.turnOrder==='function'?resolver.turnOrder(activeLead,wild):null}
 
   function evaluateBattleAction(wild,activeLead){
     const bsr=rt.battleState();
-    if(bsr&&typeof bsr.evaluateActionState==='function'){
-      return bsr.evaluateActionState({wild,actor:activeLead,lead:activeLead,party:partyMembers(),encounterId:wild&&wild.id,source:OWNER});
-    }
-    if(bsr&&typeof bsr.shouldBlockAction==='function'){
-      const legacy=bsr.shouldBlockAction(wild,activeLead);
-      return{block:!!legacy.block,decision:legacy.decision||(legacy.reason==='wild-defeated'?'wild-defeated':legacy.reason==='actor-defeated'?'switch-required':legacy.block?'battle-inactive':'allowed'),reason:legacy.reason,state:legacy.state,switchDecision:legacy.switchDecision,terminal:legacy.terminal};
-    }
-    return{block:(state.battleState!=='active'||!wild||!activeLead||Number(wild.hp||0)<=0||Number(activeLead.hp||0)<=0),decision:Number(wild&&wild.hp||0)<=0?'wild-defeated':Number(activeLead&&activeLead.hp||0)<=0?'switch-required':state.battleState!=='active'?'battle-inactive':'allowed',reason:null};
+    if(!bsr||typeof bsr.evaluateActionState!=='function')return{block:true,decision:'missing-context',reason:'battle-state-runtime-unavailable'};
+    return bsr.evaluateActionState({wild,actor:activeLead,lead:activeLead,party:partyMembers(),encounterId:wild&&wild.id,source:OWNER});
   }
 
   function routeBattleDecision(decision,wild,activeLead){
     if(!decision||!decision.block)return false;
     syncBattleState();
     state.signal=wild||state.signal;
+    if(decision.reason==='signal-lost'){fail('Signal Disappeared',(wild&&wild.name||'The wild signal')+' disappeared from scanner range.',wild);return true}
+    if(decision.decision==='wild-defeated'){const message=decision.terminal&&decision.terminal.value&&decision.terminal.value.message;pushLog(message||((wild&&wild.name||'The wild signal')+' is defeated. Choose Download or Return.'));fx('success');render();return true}
+    if(decision.decision==='switch-required'){pushLog((activeLead&&activeLead.name||'Your lead sprite')+' fainted. Choose an available party sprite.');document.dispatchEvent(new CustomEvent('dd:open-party-switch',{detail:{owner:OWNER,reason:decision.reason||'switch-required',decision,wild,lead:activeLead}}));fx('warn');render();return true}
+    if(decision.decision==='party-defeated'){state.result={type:'failure',title:'Party Defeated',msg:'No usable party sprites remain. Return to the scanner to recover.',sprite:wild,canContinue:false};state.screen='result';pushLog(state.result.msg);fx('fail');render();return true}
+    if(decision.decision==='missing-context'){pushLog(decision.reason==='battle-state-runtime-unavailable'?'Battle State Runtime is unavailable.':'Battle context is unavailable. Return to the scanner and rediscover the signal.');fx('warn');render();return true}
+    pushLog('Battle is not active.');fx('warn');render();return true;
+  }
 
-    if(decision.decision==='wild-defeated'){
-      pushLog((wild&&wild.name||'The wild signal')+' is defeated. Choose Download or Return.');
-      fx('success');
-      render();
-      return true;
-    }
-
-    if(decision.decision==='switch-required'){
-      pushLog((activeLead&&activeLead.name||'Your lead sprite')+' fainted. Choose an available party sprite.');
-      document.dispatchEvent(new CustomEvent('dd:open-party-switch',{detail:{owner:OWNER,reason:decision.reason||'switch-required',decision,wild,lead:activeLead}}));
-      fx('warn');
-      render();
-      return true;
-    }
-
-    if(decision.decision==='party-defeated'){
-      state.result={type:'failure',title:'Party Defeated',msg:'No usable party sprites remain. Return to the scanner to recover.',sprite:wild,canContinue:false};
-      state.screen='result';
-      pushLog(state.result.msg);
-      fx('fail');
-      render();
-      return true;
-    }
-
-    if(decision.decision==='missing-context'){
-      pushLog('Battle context is unavailable. Return to the scanner and rediscover the signal.');
-      fx('warn');
-      render();
-      return true;
-    }
-
-    pushLog('Battle is not active.');
-    fx('warn');
-    render();
-    return true;
+  function resolutionNote(actor,target,resolution,applied){
+    const moveName=resolution&&resolution.move&&resolution.move.name||'Move';
+    if(!resolution)return 'Battle Resolver returned no result.';
+    if(resolution.actionBlocked)return actor.name+' could not act.';
+    if(!resolution.hit)return actor.name+' used '+moveName+', but missed.';
+    const base=resolution.notes&&resolution.notes[0]||actor.name+' used '+moveName+'.';
+    const hp=applied&&applied.hpResult;
+    const pressure=applied&&applied.pressureResult;
+    let text=base;
+    if(hp&&hp.after!=null)text+=' '+target.name+' HP '+hp.after+'/'+target.maxHp+'.';
+    if(pressure&&pressure.applied)text+=' Download +'+pressure.pressure+' → '+pressure.after+'%.';
+    return text;
   }
 
   function fight(moveId){
     const wild=normalize(state.signal),activeLead=normalize(lead());
+    const bsr=rt.battleState();
+    const resolver=resolverRequired();
+
     if(!wild||!activeLead)return;
+    if(!bsr||typeof bsr.applyResolution!=='function'||typeof bsr.beginTurn!=='function'||typeof bsr.endTurn!=='function'){
+      pushLog('Canonical Battle State Runtime is unavailable.');
+      fx('warn');
+      render();
+      return;
+    }
+    if(!resolver){
+      pushLog('Battle Resolver is unavailable.');
+      fx('warn');
+      render();
+      return;
+    }
+
     const initialDecision=evaluateBattleAction(wild,activeLead);
     if(routeBattleDecision(initialDecision,wild,activeLead))return;
 
     const move=(activeLead.moves||[]).find(m=>m.id===moveId)||(activeLead.moves||[])[0];
+    const enemyMove=chooseEnemyMove(wild,activeLead);
     const first=turnOrder(activeLead,wild);
     const notes=[];
+    const participants=[activeLead,wild];
+    const turnContext={encounterId:wild.id,wild,lead:activeLead,party:partyMembers(),participantSides:['player','wild'],source:OWNER};
 
-    function player(){
-      if(wild.hp<=0){finishWildDefeat(wild,notes);return true}
-      const d=resolveHit(activeLead,move,wild,'player');
-      if(!d.hit){notes.push(activeLead.name+' used '+d.move.name+', but missed.');emit('warn');fx('warn');return false}
-      wild.hp=Math.max(0,wild.hp-Number(d.hpDamage||0));
-      setOdds(wild,odds(wild)+Number(d.capturePressure||1));
-      notes.push((d.notes&&d.notes[0]||activeLead.name+' attacked.')+' '+wild.name+' HP '+wild.hp+'/'+wild.maxHp+'. Download +'+d.capturePressure+' → '+odds(wild)+'%.');
-      emit('hit',{text:'-'+d.hpDamage+' HP'});
-      fx('hit');
-      if(wild.hp<=0){finishWildDefeat(wild,notes);return true}
-      return false
+    if(!move||!enemyMove||!first){
+      pushLog('Battle Resolver could not prepare the turn.');
+      fx('warn');
+      render();
+      return;
     }
 
-    function enemy(){
-      if(wild.hp<=0)return false;
-      const m=chooseEnemyMove(wild,activeLead),d=resolveHit(wild,m,activeLead,'enemy');
-      if(!d.hit){notes.push(wild.name+' used '+d.move.name+', but missed.');emit('warn');fx('warn');return false}
-      activeLead.hp=Math.max(0,activeLead.hp-Number(d.hpDamage||0));
-      saveSprite(activeLead);
-      notes.push((d.notes&&d.notes[0]||wild.name+' attacked.')+' '+activeLead.name+' HP '+activeLead.hp+'/'+activeLead.maxHp+'.');
-      emit('hit',{text:'-'+d.hpDamage+' HP'});
-      fx('hit');
-      if(activeLead.hp<=0){
-        const collapse=drainSignal(wild,1,activeLead.name+' fainted and the wild signal');
-        if(collapse)return collapse;
-        notes.push(activeLead.name+' fainted. Wild signal weakened to '+wild.stability+'/'+wild.maxStability+'.');
-        const faintDecision=evaluateBattleAction(wild,activeLead);
-        if(faintDecision&&faintDecision.decision==='party-defeated')return{battleDecision:faintDecision};
-        if(faintDecision&&faintDecision.decision==='switch-required')return{battleDecision:faintDecision};
+    const startResult=bsr.beginTurn(participants,turnContext);
+    state.signal=wild;
+    syncBattleState();
+
+    if(startResult&&startResult.terminal){
+      const startDecision=evaluateBattleAction(wild,activeLead);
+      routeBattleDecision(startDecision,wild,activeLead);
+      return;
+    }
+
+    function applyAction(actor,selectedMove,target,mode,actorSide,targetSide){
+      const resolution=resolveHit(actor,selectedMove,target,mode);
+      if(!resolution)return{stop:true,decision:{block:true,decision:'missing-context',reason:'battle-resolver-unavailable'}};
+
+      const applied=bsr.applyResolution(resolution,actor,target,{
+        encounterId:wild.id,
+        wild,
+        lead:activeLead,
+        party:partyMembers(),
+        actorSide,
+        targetSide,
+        source:OWNER
+      });
+
+      notes.push(resolutionNote(actor,target,resolution,applied));
+
+      if(resolution.hit&&!resolution.actionBlocked){
+        emit('hit',{text:'-'+Number(applied&&applied.hpResult&&applied.hpResult.damage||0)+' HP'});
+        fx('hit');
+      }else{
+        emit('warn');
+        fx('warn');
       }
-      return false
+
+      state.signal=wild;
+      syncBattleState();
+
+      const decision=applied&&applied.decision;
+      return{stop:!!(decision&&decision.block),decision,applied,resolution};
     }
 
-    let collapse=null;
+    let actionResult=null;
     if(first==='player'){
-      const done=player();
-      if(!done)collapse=enemy();
+      actionResult=applyAction(activeLead,move,wild,'player','player','wild');
+      if(!actionResult.stop)actionResult=applyAction(wild,enemyMove,activeLead,'enemy','wild','player');
     }else{
-      collapse=enemy();
-      if(!collapse)player();
+      actionResult=applyAction(wild,enemyMove,activeLead,'enemy','wild','player');
+      if(!actionResult.stop)actionResult=applyAction(activeLead,move,wild,'player','player','wild');
     }
 
     state.signal=wild;
     syncBattleState();
+    pushLog(notes.join(' '));
 
-    if(typeof collapse==='string')return fail('Signal Disappeared',collapse,wild);
-    if(collapse&&collapse.battleDecision){
-      pushLog(notes.join(' '));
-      return routeBattleDecision(collapse.battleDecision,wild,activeLead);
+    if(actionResult&&actionResult.stop){
+      routeBattleDecision(actionResult.decision,wild,activeLead);
+      return;
     }
 
-    pushLog(notes.join(' '));
+    const endResult=bsr.endTurn(participants,turnContext);
+    state.signal=wild;
+    syncBattleState();
+
+    if(endResult&&endResult.terminal){
+      const endDecision=evaluateBattleAction(wild,activeLead);
+      routeBattleDecision(endDecision,wild,activeLead);
+      return;
+    }
+
     render();
   }
 
