@@ -27,7 +27,11 @@
     booted=true;
     bg();
 
-    load('ddScannerOsRuntimeLoader','/assets/js/dd-scanner-os-runtime.js?v=scanner-os-runtime-4-3-2');
+    // Scanner OS is part of the canonical HTML load chain. Only recover it
+    // dynamically for legacy entry points that did not load the owner.
+    if(!window.DD_SCANNER_OS_RUNTIME){
+      load('ddScannerOsRuntimeLoader','/assets/js/dd-scanner-os-runtime.js?v=scanner-os-runtime-4-7-5');
+    }
   }
 
   function boot(){

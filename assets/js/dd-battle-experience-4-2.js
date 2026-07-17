@@ -32,6 +32,8 @@
     if(type==='download'||type==='success'){rootPulse('dd-download-pulse')}
   });
   document.addEventListener('dd:party-switch',ev=>{rootPulse('dd-switch-pulse');const d=ev.detail||{};floatText(d.name?'Go, '+d.name+'!':'Switch')});
-  setInterval(tick,700);
+  document.addEventListener('dd:battle-resolution-applied',tick);
+  document.addEventListener('dd:party-switch',tick);
+  document.addEventListener('dd:screen',tick);
   setTimeout(tick,1000);
 })();

@@ -618,7 +618,7 @@
     {
       "id": "dd-scanner-os-runtime",
       "label": "Scanner OS Runtime",
-      "script": "/assets/js/dd-scanner-os-runtime.js?v=scanner-os-runtime-4-3-2",
+      "script": "/assets/js/dd-scanner-os-runtime.js?v=scanner-os-runtime-4-7-5",
       "phase": "product:scanner-os-ready",
       "requires": [
         "databyte-discovery-product-app-v4-shell"
@@ -633,7 +633,7 @@
     {
       "id": "dd-battle-experience-4-2",
       "label": "Battle Experience 4.2",
-      "script": "/assets/js/dd-battle-experience-4-2.js?v=battle-experience-4-4-1",
+      "script": "/assets/js/dd-battle-experience-4-2.js?v=battle-experience-4-7-5",
       "phase": "product:effects-ready",
       "requires": [
         "dd-battle-presentation-runtime",
@@ -664,7 +664,7 @@
     {
       "id": "dd-scan-bg",
       "label": "Scanner Background Effects and Scanner OS Bootstrap",
-      "script": "/assets/js/dd-scan-bg.js?v=0912-direct-os-2",
+      "script": "/assets/js/dd-scan-bg.js?v=direct-os-4-7-5",
       "phase": "product:effects-ready",
       "requires": [
         "databyte-discovery-product-app-v4-shell"

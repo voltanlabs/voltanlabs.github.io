@@ -2,10 +2,12 @@
 // Canonical Scanner OS layout owner for Data Discovery Phase 4.3.
 (function(){
   if(!location.pathname.includes('databyte-discovery'))return;
+  if(window.DD_SCANNER_OS_RUNTIME)return;
 
   var STYLE_ID='ddScannerOsRuntimeStyle';
   var lastToastKey='';
   var toastTimer=null;
+  var cleanupFrame=null;
 
   function addStyle(){
     if(document.getElementById(STYLE_ID))return;
@@ -119,12 +121,28 @@
     if(app)app.dataset.scannerOsRuntime='canonical-4-3-stable-battle-toast';
   }
 
+  function scheduleCleanup(){
+    if(cleanupFrame!==null)return;
+    cleanupFrame=requestAnimationFrame(function(){
+      cleanupFrame=null;
+      cleanupBattleUi();
+    });
+  }
+
   function boot(){
     addStyle();
     tag();
     cleanupBattleUi();
-    setInterval(cleanupBattleUi,250);
-    document.dispatchEvent(new CustomEvent('dd:scanner-os-runtime-ready',{detail:{id:'dd-scanner-os-runtime',phase:'4.3',battleUi:'stable-toast-log'}}));
+    document.addEventListener('dd:battle-resolution-applied',scheduleCleanup);
+    document.addEventListener('dd:battle-status-phase-ticked',scheduleCleanup);
+    document.addEventListener('dd:party-switch',scheduleCleanup);
+    document.addEventListener('dd:screen',scheduleCleanup);
+    window.DD_SCANNER_OS_RUNTIME=Object.freeze({
+      version:'4.7.5',
+      owner:'dd-scanner-os-runtime',
+      scheduleCleanup:scheduleCleanup
+    });
+    document.dispatchEvent(new CustomEvent('dd:scanner-os-runtime-ready',{detail:window.DD_SCANNER_OS_RUNTIME}));
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
