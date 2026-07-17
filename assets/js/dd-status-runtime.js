@@ -1,9 +1,10 @@
 // assets/js/dd-status-runtime.js
+// Status ownership runtime with guarded dispatch and re-entrancy-safe ticking.
 (function () {
   'use strict';
   if (window.DD_STATUS_RUNTIME) return;
 
-  const VERSION = '1.1.0';
+  const VERSION = '1.2.0';
   const OWNER = 'DD_STATUS_RUNTIME';
 
   const DEFINITIONS = Object.freeze({
@@ -19,6 +20,11 @@
   const clone = value => JSON.parse(JSON.stringify(value));
   const clamp = (n, min, max) => Math.max(min, Math.min(max, Number(n) || 0));
 
+  const activeTicks = new WeakSet();
+  let dispatchDepth = 0;
+  const MAX_DISPATCH_DEPTH = 12;
+  let lastError = null;
+
   function hash(text) {
     text = String(text || 'status');
     let value = 2166136261;
@@ -29,10 +35,43 @@
     return Math.abs(value >>> 0);
   }
 
-  function dispatch(name, detail) {
-    document.dispatchEvent(new CustomEvent(name, {
-      detail: Object.assign({ owner: OWNER, version: VERSION, at: new Date().toISOString() }, detail || {})
-    }));
+  function safeDispatch(name, detail) {
+    if (dispatchDepth >= MAX_DISPATCH_DEPTH) {
+      lastError = {
+        type: 'dispatch-depth',
+        event: name,
+        at: new Date().toISOString()
+      };
+      try {
+        console.error('[' + OWNER + '] blocked recursive event dispatch:', name);
+      } catch (_) {}
+      return false;
+    }
+
+    dispatchDepth += 1;
+    try {
+      document.dispatchEvent(new CustomEvent(name, {
+        detail: Object.assign({
+          owner: OWNER,
+          version: VERSION,
+          at: new Date().toISOString()
+        }, detail || {})
+      }));
+      return true;
+    } catch (error) {
+      lastError = {
+        type: 'dispatch-error',
+        event: name,
+        message: error && error.message ? error.message : String(error),
+        at: new Date().toISOString()
+      };
+      try {
+        console.error('[' + OWNER + '] event dispatch failed:', name, error);
+      } catch (_) {}
+      return false;
+    } finally {
+      dispatchDepth = Math.max(0, dispatchDepth - 1);
+    }
   }
 
   function ensure(target) {
@@ -59,6 +98,7 @@
 
   function apply(target, status, options = {}) {
     if (!target || typeof target !== 'object') return null;
+
     const id = normalizeId(typeof status === 'string' ? status : status && status.id);
     if (!id) return null;
 
@@ -78,14 +118,18 @@
       );
       existing.data = Object.assign({}, existing.data || {}, options.data || {});
       existing.updatedAt = new Date().toISOString();
-      dispatch('dd:status-applied', { target, status: existing, refreshed: true });
+      safeDispatch('dd:status-applied', {
+        target,
+        status: existing,
+        refreshed: true
+      });
       return existing;
     }
 
     const entry = {
       id,
       label: config.label || id,
-      duration: Number(options.duration ?? config.duration ?? 1),
+      duration: Math.max(0, Number(options.duration ?? config.duration ?? 1)),
       stacks: requestedStacks,
       data: Object.assign({}, options.data || {}),
       appliedAt: new Date().toISOString(),
@@ -93,27 +137,45 @@
     };
 
     ensure(target).push(entry);
-    dispatch('dd:status-applied', { target, status: entry, refreshed: false });
+    safeDispatch('dd:status-applied', {
+      target,
+      status: entry,
+      refreshed: false
+    });
     return entry;
   }
 
-  function remove(target, status, reason) {
+  function remove(target, status, reason, options = {}) {
     const id = normalizeId(status);
     const list = ensure(target);
     const index = list.findIndex(entry => normalizeId(entry.id) === id);
     if (index < 0) return false;
+
     const removed = list.splice(index, 1)[0];
-    dispatch('dd:status-removed', { target, status: removed, reason: reason || 'removed' });
-    return true;
+    if (!options.silent) {
+      safeDispatch('dd:status-removed', {
+        target,
+        status: removed,
+        reason: reason || 'removed'
+      });
+    }
+    return removed;
   }
 
   function clear(target, reason) {
+    if (!target || typeof target !== 'object') return [];
     const removed = ensure(target).slice();
     target.statusEffects = [];
-    removed.forEach(status => dispatch('dd:status-removed', {
-      target, status, reason: reason || 'cleared'
-    }));
-    dispatch('dd:status-cleared', { target, removed });
+
+    removed.forEach(status => {
+      safeDispatch('dd:status-removed', {
+        target,
+        status,
+        reason: reason || 'cleared'
+      });
+    });
+
+    safeDispatch('dd:status-cleared', { target, removed });
     return removed;
   }
 
@@ -126,19 +188,29 @@
       damageTakenMultiplier: 1
     };
 
-    ensure(target).forEach(status => {
+    ensure(target).slice().forEach(status => {
       const config = definition(status);
       const stacks = Math.max(1, Number(status.stacks || 1));
       Object.keys(result).forEach(key => {
-        if (config[key] !== undefined) result[key] *= Math.pow(Number(config[key]), stacks);
+        if (config[key] !== undefined) {
+          result[key] *= Math.pow(Number(config[key]), stacks);
+        }
       });
     });
+
     return result;
   }
 
   function actionGate(target, context = {}) {
     const frozen = get(target, 'freeze');
-    if (!frozen) return { allowed: true, blocked: false, reason: null, status: null };
+    if (!frozen) {
+      return {
+        allowed: true,
+        blocked: false,
+        reason: null,
+        status: null
+      };
+    }
 
     const config = definition(frozen);
     const chance = clamp(config.actionBlockChance || 0, 0, 100);
@@ -160,75 +232,183 @@
       roll
     };
 
-    dispatch(blocked ? 'dd:status-action-blocked' : 'dd:status-action-allowed', {
-      target, result, context
-    });
+    safeDispatch(
+      blocked ? 'dd:status-action-blocked' : 'dd:status-action-allowed',
+      { target, result, context }
+    );
+
     return result;
   }
 
   function tick(target, context = {}) {
     const phase = context.phase || 'end';
-    const effects = [];
-    const expired = [];
 
-    ensure(target).slice().forEach(status => {
-      const config = definition(status);
-      const stacks = Math.max(1, Number(status.stacks || 1));
-      let damage = 0;
-
-      if (
-        config.tickDamage &&
-        (config.tickPhase || 'end') === phase &&
-        Number(target.hp || 0) > 0
-      ) {
-        damage = Math.min(
-          Number(target.hp || 0),
-          Math.max(0, Math.round(Number(config.tickDamage || 0) * stacks))
-        );
-        target.hp = Math.max(0, Number(target.hp || 0) - damage);
-      }
-
-      if (phase === 'end') {
-        status.duration = Math.max(0, Number(status.duration || 0) - 1);
-      }
-
-      const effect = {
-        status,
+    if (!target || typeof target !== 'object') {
+      return {
+        target,
         phase,
-        damage,
+        effects: [],
+        expired: [],
+        hp: 0,
+        fainted: true,
+        statuses: [],
+        ok: false,
+        reason: 'missing-target'
+      };
+    }
+
+    if (activeTicks.has(target)) {
+      const result = {
+        target,
+        phase,
+        effects: [],
+        expired: [],
         hp: Number(target.hp || 0),
-        expired: phase === 'end' && Number(status.duration || 0) <= 0
+        fainted: Number(target.hp || 0) <= 0,
+        statuses: ensure(target),
+        ok: false,
+        reason: 'reentrant-tick-blocked'
+      };
+      safeDispatch('dd:status-tick-blocked', {
+        target,
+        context,
+        result
+      });
+      return result;
+    }
+
+    activeTicks.add(target);
+
+    const effects = [];
+    const expiredIds = [];
+    const expiredEntries = [];
+
+    try {
+      const snapshot = ensure(target).slice();
+
+      for (let index = 0; index < snapshot.length; index += 1) {
+        const status = snapshot[index];
+        if (!status || !get(target, status.id)) continue;
+
+        const config = definition(status);
+        const stacks = Math.max(1, Number(status.stacks || 1));
+        let damage = 0;
+
+        if (
+          config.tickDamage &&
+          (config.tickPhase || 'end') === phase &&
+          Number(target.hp || 0) > 0
+        ) {
+          damage = Math.min(
+            Number(target.hp || 0),
+            Math.max(0, Math.round(Number(config.tickDamage || 0) * stacks))
+          );
+          target.hp = Math.max(0, Number(target.hp || 0) - damage);
+        }
+
+        if (phase === 'end') {
+          status.duration = Math.max(0, Number(status.duration || 0) - 1);
+          status.updatedAt = new Date().toISOString();
+        }
+
+        const isExpired =
+          phase === 'end' &&
+          Number(status.duration || 0) <= 0;
+
+        const effect = {
+          status,
+          phase,
+          damage,
+          hp: Number(target.hp || 0),
+          expired: isExpired
+        };
+
+        effects.push(effect);
+
+        safeDispatch('dd:status-ticked', {
+          target,
+          status,
+          context,
+          effect
+        });
+
+        if (damage > 0) {
+          safeDispatch('dd:status-damage', {
+            target,
+            status,
+            damage,
+            hp: target.hp,
+            context
+          });
+        }
+
+        if (isExpired && !expiredIds.includes(normalizeId(status.id))) {
+          expiredIds.push(normalizeId(status.id));
+          expiredEntries.push(status);
+        }
+      }
+
+      expiredIds.forEach((id, index) => {
+        const status = expiredEntries[index] || get(target, id) || id;
+        remove(target, id, 'expired', { silent: true });
+        safeDispatch('dd:status-removed', {
+          target,
+          status,
+          reason: 'expired'
+        });
+        safeDispatch('dd:status-expired', {
+          target,
+          status,
+          context
+        });
+      });
+
+      return {
+        target,
+        phase,
+        effects,
+        expired: expiredIds.slice(),
+        hp: Number(target.hp || 0),
+        fainted: Number(target.hp || 0) <= 0,
+        statuses: ensure(target),
+        ok: true
+      };
+    } catch (error) {
+      lastError = {
+        type: 'tick-error',
+        phase,
+        message: error && error.message ? error.message : String(error),
+        at: new Date().toISOString()
       };
 
-      effects.push(effect);
-      dispatch('dd:status-ticked', { target, status, context, effect });
+      safeDispatch('dd:status-runtime-error', {
+        target,
+        context,
+        error: lastError
+      });
 
-      if (damage > 0) {
-        dispatch('dd:status-damage', { target, status, damage, hp: target.hp, context });
-      }
-      if (effect.expired) expired.push(status.id);
-    });
-
-    expired.forEach(id => {
-      const status = get(target, id);
-      remove(target, id, 'expired');
-      dispatch('dd:status-expired', { target, status: status || id, context });
-    });
-
-    return {
-      target,
-      phase,
-      effects,
-      expired,
-      hp: Number(target && target.hp || 0),
-      fainted: Number(target && target.hp || 0) <= 0,
-      statuses: ensure(target)
-    };
+      return {
+        target,
+        phase,
+        effects,
+        expired: expiredIds.slice(),
+        hp: Number(target.hp || 0),
+        fainted: Number(target.hp || 0) <= 0,
+        statuses: ensure(target),
+        ok: false,
+        reason: 'tick-error',
+        message: lastError.message
+      };
+    } finally {
+      activeTicks.delete(target);
+    }
   }
 
   const serialize = target => clone(ensure(target));
 
   function deserialize(target, data) {
+    if (!target || typeof target !== 'object') return [];
+
     target.statusEffects = Array.isArray(data)
       ? clone(data).map(entry => ({
           id: normalizeId(entry.id),
@@ -240,6 +420,7 @@
           updatedAt: entry.updatedAt || new Date().toISOString()
         }))
       : [];
+
     return target.statusEffects;
   }
 
@@ -248,7 +429,18 @@
       owner: OWNER,
       version: VERSION,
       supported: Object.keys(DEFINITIONS),
-      capabilities: ['lifecycle', 'stacking', 'serialization', 'action-gates', 'stat-modifiers', 'turn-damage']
+      capabilities: [
+        'lifecycle',
+        'stacking',
+        'serialization',
+        'action-gates',
+        'stat-modifiers',
+        'turn-damage',
+        'reentrancy-guard',
+        'safe-dispatch'
+      ],
+      dispatchDepth,
+      lastError
     };
   }
 
@@ -271,6 +463,5 @@
     health
   });
 
-  dispatch('dd:status-runtime-ready', health());
+  safeDispatch('dd:status-runtime-ready', health());
 })();
-    
