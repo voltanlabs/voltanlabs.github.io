@@ -126,10 +126,10 @@
       '}' +
       '.present-hit .fighter.wild .ring,' +
       '.present-hit .fighter.lead .ring{' +
-      'filter:drop-shadow(0 0 16px rgba(251,113,133,.45))' +
+      'outline:2px solid rgba(251,113,133,.55)' +
       '}' +
       '.present-status .fighter .ring{' +
-      'filter:drop-shadow(0 0 14px rgba(168,85,247,.45))' +
+      'outline:2px solid rgba(168,85,247,.55)' +
       '}' +
       '.present-success .downloadGauge,' +
       '.present-download .downloadGauge{' +

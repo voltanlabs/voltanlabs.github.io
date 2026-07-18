@@ -17,5 +17,10 @@
     },{passive:false});
   }
   function tick(){install();const app=$('ddApp');if(app){app.dataset.layout='viewport-lock-4-2';app.dataset.battleViewport='stable-4-2-compact'}}
-  install();preventPageScroll();setInterval(tick,1000);setTimeout(tick,600);
+  install();preventPageScroll();
+  document.addEventListener('dd:v4-shell-ready',tick);
+  document.addEventListener('dd:screen',tick);
+  window.addEventListener('resize',tick,{passive:true});
+  window.addEventListener('orientationchange',tick,{passive:true});
+  setTimeout(tick,0);
 })();

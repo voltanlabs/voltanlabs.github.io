@@ -6,7 +6,7 @@
   if (!location.pathname.includes('databyte-discovery')) return;
   if (window.DD_BATTLE_REWARD_PRESENTATION) return;
 
-  const VERSION = '1.0.0';
+  const VERSION = '1.1.0';
   const OWNER = 'dd-battle-reward-presentation';
   const STYLE_ID = 'ddBattleRewardPresentationStyle';
   const ROOT_ID = 'ddBattleRewardPresentationRoot';
@@ -129,6 +129,8 @@
     const drops = Array.isArray(reward.drops)
       ? reward.drops
       : [];
+    const progression = reward.progression || {};
+    const progress = progression.after || null;
 
     element.innerHTML =
       '<div class="dd-reward-title">BATTLE REWARDS</div>' +
@@ -138,6 +140,29 @@
       '<div class="dd-reward-row"><span>ByteCoins</span><strong>+' +
       Number(reward.byteCoins || 0) +
       '</strong></div>' +
+      (
+        progress
+          ? '<div class="dd-reward-row"><span>' +
+            String(progress.tier || 'Kilobyte') +
+            ' Level</span><strong>' +
+            Number(progress.level || 1) +
+            '</strong></div>'
+          : ''
+      ) +
+      (
+        progression.leveledUp
+          ? '<div class="dd-reward-drop">LEVEL UP +' +
+            Number(progression.levelsGained || 1) +
+            '</div>'
+          : ''
+      ) +
+      (
+        progression.tierUpgraded
+          ? '<div class="dd-reward-drop">VERSION UPGRADE: ' +
+            String(progress && progress.tier || '') +
+            '</div>'
+          : ''
+      ) +
       (
         reward.recipientKey
           ? '<div class="dd-reward-row"><span>Recipient</span><strong>' +

@@ -1,12 +1,12 @@
 // assets/js/studio-runtime-bridge-checks.js
-// Phase 4.7.1: lightweight runtime ownership verification and throttled battle lifecycle diagnostics.
+// Phase 4.9: lightweight runtime ownership verification and throttled battle lifecycle diagnostics.
 (function () {
   'use strict';
 
   if (!location.pathname.includes('databyte-discovery')) return;
   if (window.DD_RUNTIME_DIAGNOSTICS) return;
 
-  const VERSION = '1.2.0';
+  const VERSION = '1.4.0';
   const OWNER = 'studio-runtime-bridge-checks';
   const MAX_TRACE = 80;
   const PANEL_ID = 'ddRuntimeDiagnosticsPanel';
@@ -36,6 +36,11 @@
     { id: 'battle-reward-runtime', label: 'Battle Reward Runtime', test: () => !!window.DD_BATTLE_REWARD_RUNTIME && typeof window.DD_BATTLE_REWARD_RUNTIME.award === 'function' },
     { id: 'battle-reward-presentation', label: 'Battle Reward Presentation', test: () => !!window.DD_BATTLE_REWARD_PRESENTATION },
     { id: 'battle-presentation', label: 'Battle Presentation Runtime', test: () => !!window.DD_BATTLE_PRESENTATION_RUNTIME },
+    { id: 'battle-runtime', label: 'Battle Runtime Facade', test: () => !!window.DD_BATTLE_RUNTIME && typeof window.DD_BATTLE_RUNTIME.validate === 'function' && window.DD_BATTLE_RUNTIME.validate().ok },
+    { id: 'player-runtime', label: 'Player Runtime', test: () => !!window.DD_PLAYER_RUNTIME && typeof window.DD_PLAYER_RUNTIME.snapshot === 'function' },
+    { id: 'screen-registry', label: 'Screen Registry', test: () => !!window.DD_SCREEN_REGISTRY && typeof window.DD_SCREEN_REGISTRY.renderScreen === 'function' && window.DD_SCREEN_REGISTRY.validate().ok },
+    { id: 'app-presentation', label: 'App Presentation Runtime', test: () => !!window.DD_APP_PRESENTATION_RUNTIME },
+    { id: 'app-bootstrap', label: 'App Bootstrap', test: () => !!window.DD_APP_BOOTSTRAP },
     { id: 'collection-runtime', label: 'Collection Runtime', test: () => !!window.DD_COLLECTION_RUNTIME && typeof window.DD_COLLECTION_RUNTIME.all === 'function' && typeof window.DD_COLLECTION_RUNTIME.add === 'function' },
     { id: 'party-runtime', label: 'Party Runtime', test: () => !!window.DD_PARTY_RUNTIME && typeof window.DD_PARTY_RUNTIME.lead === 'function' && typeof window.DD_PARTY_RUNTIME.members === 'function' },
     { id: 'inventory-runtime', label: 'Inventory Runtime', test: () => !!window.DD_INVENTORY_RUNTIME && typeof window.DD_INVENTORY_RUNTIME.read === 'function' && typeof window.DD_INVENTORY_RUNTIME.spend === 'function' },
@@ -145,16 +150,21 @@
 
     lastHealth = {
       version: VERSION,
-      phase: '4.7.1-throttled-runtime-diagnostics',
+      phase: '4.9-bootstrap-aware-runtime-diagnostics',
       runtime: 'databyte-discovery-product-app-v4-shell',
       canonicalOwners: {
         app: 'databyte-discovery-product-app-v4-shell',
+        battleFacade: 'dd-battle-runtime',
+        playerState: 'dd-player-runtime',
+        screens: 'dd-screen-registry',
+        appPresentation: 'dd-app-presentation-runtime',
+        bootstrap: 'dd-app-bootstrap',
         battleMath: 'dd-battle-resolver',
         battleState: 'dd-battle-state-runtime',
         status: 'dd-status-runtime',
         rewards: 'dd-battle-reward-runtime',
         rewardPresentation: 'dd-battle-reward-presentation',
-        battlePresentation: 'dd-battle-presentation-runtime'
+        battlePresentation: 'dd-app-presentation-runtime'
       },
       checkedAt: new Date().toISOString(),
       results,
@@ -242,7 +252,7 @@
     window.addEventListener(eventName, event => record(eventName, event && event.detail || {}));
   });
 
-  ['dd:studio-data-ready','dd:status-runtime-ready','dd:battle-engine-ready','dd:gameplay-rules-ready','dd:capture-runtime-ready','dd:encounter-runtime-ready','dd:battle-balance-ready','dd:battle-resolver-ready','dd:battle-state-runtime-ready','dd:battle-reward-runtime-ready','dd:battle-reward-presentation-ready','dd:battle-presentation-runtime-ready','dd:collection-runtime-ready','dd:party-runtime-ready','dd:inventory-runtime-ready','dd:dex-runtime-ready','dd:collection-dex-bridge-ready','dd:v4-shell-ready','runtime:ready','dd:screen'].forEach(eventName => {
+  ['dd:studio-data-ready','dd:status-runtime-ready','dd:battle-engine-ready','dd:gameplay-rules-ready','dd:capture-runtime-ready','dd:encounter-runtime-ready','dd:battle-balance-ready','dd:battle-resolver-ready','dd:battle-state-runtime-ready','dd:battle-reward-runtime-ready','dd:battle-reward-presentation-ready','dd:battle-presentation-runtime-ready','dd:battle-runtime-ready','dd:player-runtime-ready','dd:screen-registry-ready','dd:app-presentation-runtime-ready','dd:collection-runtime-ready','dd:party-runtime-ready','dd:inventory-runtime-ready','dd:dex-runtime-ready','dd:collection-dex-bridge-ready','dd:v4-shell-ready','runtime:ready','dd:screen'].forEach(eventName => {
     document.addEventListener(eventName, () => scheduleChecks());
   });
 

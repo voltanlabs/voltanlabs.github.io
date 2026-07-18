@@ -1,7 +1,7 @@
 {
   "schemaVersion": "0.3.0",
   "generatedBy": "VoltanLabs Studio DataByteSprites Mechanics Graph",
-  "description": "Data Discovery v4.4.4 mechanics and ownership graph after status-runtime and live turn-flow integration.",
+  "description": "Data Discovery Phase 6.0 mechanics and ownership graph for deterministic battle, progression, Version Upgrades, history, and save recovery.",
   "graphModel": {
     "nodeTypes": [
       "system",
@@ -18,6 +18,7 @@
       "owns",
       "renders",
       "coordinates",
+      "calls",
       "observes",
       "futureHook",
       "replaces"
@@ -75,39 +76,25 @@
       "path": "/assets/js/dd-status-runtime.js"
     },
     {
-      "id": "battle-helper",
-      "label": "DDBattle24",
+      "id": "battle-core",
+      "label": "DD_BATTLE_CORE_RUNTIME",
       "nodeType": "runtimeOwner",
       "status": "active-owner",
-      "path": "/assets/js/dd-battle-engine-2-4.js"
-    },
-    {
-      "id": "battle-resolver",
-      "label": "DD_BATTLE_RESOLVER",
-      "nodeType": "runtimeOwner",
-      "status": "active-owner",
-      "path": "/assets/js/dd-battle-resolver.js"
-    },
-    {
-      "id": "battle-state",
-      "label": "DD_BATTLE_STATE_RUNTIME",
-      "nodeType": "runtimeOwner",
-      "status": "active-owner",
-      "path": "/assets/js/dd-battle-state-runtime.js"
+      "path": "/assets/js/dd-battle-core-runtime.js"
     },
     {
       "id": "status-flow",
       "label": "DD_STATUS_BATTLE_FLOW",
       "nodeType": "runtimeOwner",
-      "status": "active-owner",
+      "status": "implemented-not-loaded",
       "path": "/assets/js/dd-status-battle-flow.js"
     },
     {
       "id": "battle-presentation",
-      "label": "DD_BATTLE_PRESENTATION_RUNTIME",
+      "label": "DD_APP_PRESENTATION_RUNTIME",
       "nodeType": "presentationOwner",
       "status": "active-owner",
-      "path": "/assets/js/dd-battle-presentation-runtime.js"
+      "path": "/assets/js/dd-app-presentation-runtime.js"
     },
     {
       "id": "app-shell",
@@ -146,36 +133,51 @@
     },
     {
       "id": "rewards",
-      "label": "Battle Rewards",
-      "nodeType": "futureSystem",
-      "status": "planned",
-      "path": "#battle-rewards"
+      "label": "Battle Rewards and Progression",
+      "nodeType": "runtimeOwner",
+      "status": "active-owner",
+      "path": "/assets/js/dd-battle-reward-runtime.js"
+    },
+    {
+      "id": "player-runtime",
+      "label": "DD_PLAYER_RUNTIME",
+      "nodeType": "runtimeOwner",
+      "status": "active-owner",
+      "path": "/assets/js/dd-player-runtime.js"
+    },
+    {
+      "id": "progression-system",
+      "label": "XP, Levels, Version Upgrades, and History",
+      "nodeType": "system",
+      "status": "active",
+      "path": "/assets/js/dd-battle-reward-runtime.js"
+    },
+    {
+      "id": "save-recovery-system",
+      "label": "Rolling Player Save Recovery",
+      "nodeType": "system",
+      "status": "active",
+      "path": "/assets/js/dd-player-runtime.js"
     }
   ],
   "edges": [
     {
       "source": "moves",
-      "target": "battle-resolver",
+      "target": "battle-core",
       "edgeType": "feeds",
       "reason": "Moves provide power, accuracy, configuration, and statusEffect definitions."
     },
     {
       "source": "configurations",
-      "target": "battle-helper",
+      "target": "battle-core",
       "edgeType": "feeds",
-      "reason": "The authored chart provides configuration matchups."
+      "reason": "Authored configuration data feeds deterministic battle calculations."
     },
     {
-      "source": "battle-helper",
-      "target": "battle-resolver",
-      "edgeType": "dependsOn",
-      "reason": "Resolver consumes configuration results and enemy move scoring."
-    },
-    {
-      "source": "battle-resolver",
+      "source": "battle-core",
       "target": "battle-system",
       "edgeType": "owns",
-      "reason": "Resolver owns battle outcome calculations."
+      "reason": "Battle Core owns calculation, order, action application, and terminal results."
     },
     {
       "source": "status-runtime",
@@ -184,34 +186,22 @@
       "reason": "Status Runtime owns status lifecycle state."
     },
     {
-      "source": "battle-state",
+      "source": "battle-core",
       "target": "status-runtime",
       "edgeType": "dependsOn",
-      "reason": "Battle State applies and ticks canonical statuses."
-    },
-    {
-      "source": "status-flow",
-      "target": "battle-resolver",
-      "edgeType": "coordinates",
-      "reason": "The flow bridge observes each live resolution."
-    },
-    {
-      "source": "status-flow",
-      "target": "battle-state",
-      "edgeType": "coordinates",
-      "reason": "The flow bridge forwards outcomes and completed turns."
-    },
-    {
-      "source": "status-flow",
-      "target": "status-runtime",
-      "edgeType": "dependsOn",
-      "reason": "Canonical status ownership remains in Status Runtime."
+      "reason": "Battle Core uses silent status-owner calls for modifiers, gates, application, and ticks."
     },
     {
       "source": "battle-presentation",
       "target": "status-runtime",
       "edgeType": "observes",
       "reason": "Presentation listens to status lifecycle events without mutation."
+    },
+    {
+      "source": "app-shell",
+      "target": "battle-core",
+      "edgeType": "calls",
+      "reason": "Shell locks input and consumes one structured turn result."
     },
     {
       "source": "app-shell",
@@ -227,19 +217,31 @@
     },
     {
       "source": "app-shell",
-      "target": "status-flow",
-      "edgeType": "dependsOn",
-      "reason": "Live resolver calls are coordinated through the status-flow bridge."
+      "target": "rewards",
+      "edgeType": "calls",
+      "reason": "Shell invokes the reward owner once after a core victory result."
     },
     {
       "source": "rewards",
-      "target": "battle-state",
-      "edgeType": "futureHook",
-      "reason": "Rewards will consume terminal battle states."
+      "target": "progression-system",
+      "edgeType": "owns",
+      "reason": "The reward runtime owns XP thresholds, levels, Version Upgrade tiers, deterministic drops, and battle history."
+    },
+    {
+      "source": "rewards",
+      "target": "player-runtime",
+      "edgeType": "calls",
+      "reason": "Progression applies one persisted sprite update through the canonical player owner."
+    },
+    {
+      "source": "player-runtime",
+      "target": "save-recovery-system",
+      "edgeType": "owns",
+      "reason": "The player runtime owns rolling backup creation and missing-primary recovery."
     }
   ],
   "orphanPolicy": {
     "description": "Every edge endpoint must match a node id. Planned nodes must never be labeled active.",
-    "lastRepairPass": "4.4.4-status-flow-integration"
+    "lastRepairPass": "6.0.0-progression-loop"
   }
 }

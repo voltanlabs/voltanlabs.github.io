@@ -1,8 +1,8 @@
 # Data Discovery Gameplay Ownership and Gap Audit
 
 Status: active canon  
-Phase: 4.4.3 Modular Vertical Slice  
-Last reviewed: 2026-07-10
+Phase: 6.0 Progression Loop
+Last reviewed: 2026-07-17
 
 ## Purpose
 
@@ -61,16 +61,13 @@ The shell may keep minimal missing-module diagnostics for these screens, but tho
 | Gameplay rules | `dd-gameplay-rules-2-4.js` | Active foundation |
 | Encounter generation | `dd-encounter-runtime.js` | Active |
 | Download odds and attempts | `dd-capture-runtime.js` | Active |
-| Battle helper bus | `dd-battle-engine-2-4.js` | Active foundation |
-| Battle balance | `dd-battle-balance-2-4.js` | Active |
-| Damage, accuracy, turn order, enemy move choice | `dd-battle-resolver.js` | Active |
-| Battle terminal state | `dd-battle-state-runtime.js` | Active |
-| Non-layout battle effects | `dd-battle-presentation-runtime.js` | Active |
-| Collection storage | `dd-collection-runtime.js` | Active |
-| Party storage | `dd-party-runtime.js` | Active |
-| Active-party switching state | `dd-party-switch-runtime.js` | Active |
-| Inventory storage | `dd-inventory-runtime.js` | Active foundation |
-| Dex seen/downloaded state | `dd-dex-runtime.js` | Active |
+| Damage, accuracy, turn order, enemy action, and terminal state | `dd-battle-core-runtime.js` | Active owner |
+| Status modifiers, gates, application, and ticks | `dd-status-runtime.js` | Active owner through silent calls |
+| XP, levels, Version Upgrades, drops, and battle history | `dd-battle-reward-runtime.js` | Active owner |
+| Player collection, party, inventory, Dex, and save backup | `dd-player-runtime.js` | Active owner |
+| Legacy battle engine, balance, resolver, state, and facade | Former battle modules | Implemented but not loaded |
+| App layout, battle toast, party overlay, and battle effects | `dd-app-presentation-runtime.js` | Active canonical owner |
+| Legacy player-domain runtime files | Former collection/party/inventory/Dex modules | Archived compatibility references |
 
 ## Current Playable Loop
 

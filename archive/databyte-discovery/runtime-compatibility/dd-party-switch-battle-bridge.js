@@ -6,7 +6,6 @@
   const switchRt=()=>window.DD_PARTY_SWITCH_RUNTIME;
   const present=()=>window.DD_BATTLE_PRESENTATION_RUNTIME;
   const $=id=>document.getElementById(id);
-  let patched=false;
   let lastRequiredId=null;
   let lastWipe=false;
 
@@ -15,23 +14,6 @@
   function healthy(m){return Number(m&&m.hp||0)>0}
   function inBattle(){return !!($('ddApp')&&$('stage')&&document.body.textContent.includes('Download Window'))}
   function log(text){if(present()&&present().warn)present().warn({text});}
-
-  function patchPartyRuntime(){
-    const rt=partyRt(), sw=switchRt();
-    if(!rt||!sw||patched)return;
-    const originalLead=typeof rt.lead==='function'?rt.lead.bind(rt):null;
-    rt.__phase41OriginalLead=originalLead;
-    rt.lead=function(){
-      const list=members();
-      let slot=activeSlot();
-      if(!list.length)return originalLead?originalLead():null;
-      if(!list[slot])slot=0;
-      if(list[slot])return list[slot];
-      return originalLead?originalLead():list.find(healthy)||list[0]||null;
-    };
-    patched=true;
-    document.dispatchEvent(new CustomEvent('dd:party-switch-bridge-ready',{detail:{phase:'4.1',patched:true}}));
-  }
 
   function blockBattleControls(){
     const controls=$('controls');
@@ -73,6 +55,7 @@
 
   document.addEventListener('dd:party-switch',()=>{lastRequiredId=null;lastWipe=false;setTimeout(blockBattleControls,60)});
   document.addEventListener('dd:party-switch-required',()=>setTimeout(blockBattleControls,60));
-  setInterval(()=>{patchPartyRuntime();ensureRequired();blockBattleControls();},500);
-  setTimeout(()=>{patchPartyRuntime();ensureRequired();blockBattleControls();},900);
+  document.addEventListener('dd:battle-resolution-applied',()=>{ensureRequired();blockBattleControls()});
+  document.addEventListener('dd:screen',()=>{ensureRequired();blockBattleControls()});
+  document.dispatchEvent(new CustomEvent('dd:party-switch-bridge-ready',{detail:{phase:'4.7.6',patched:false,eventDriven:true}}));
 })();

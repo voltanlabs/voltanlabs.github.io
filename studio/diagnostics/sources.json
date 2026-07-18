@@ -260,12 +260,36 @@
       "status": "active-owner"
     },
     {
+      "id": "dd-battle-core-runtime-js",
+      "label": "Data Discovery Deterministic Battle Core",
+      "path": "/assets/js/dd-battle-core-runtime.js",
+      "kind": "script",
+      "collection": "file",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-battle-reward-runtime-js",
+      "label": "Data Discovery Progression and Reward Runtime",
+      "path": "/assets/js/dd-battle-reward-runtime.js",
+      "kind": "script",
+      "collection": "file",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-battle-reward-presentation-js",
+      "label": "Data Discovery Reward Presentation",
+      "path": "/assets/js/dd-battle-reward-presentation.js",
+      "kind": "presentation",
+      "collection": "file",
+      "status": "active-owner"
+    },
+    {
       "id": "dd-battle-balance-2-4-js",
       "label": "Data Discovery Phase 2.4 Battle Balance",
       "path": "/assets/js/dd-battle-balance-2-4.js",
       "kind": "script",
       "collection": "file",
-      "status": "active-owner"
+      "status": "implemented-not-loaded"
     },
     {
       "id": "dd-battle-resolver-js",
@@ -273,7 +297,7 @@
       "path": "/assets/js/dd-battle-resolver.js",
       "kind": "script",
       "collection": "file",
-      "status": "active-owner"
+      "status": "implemented-not-loaded"
     },
     {
       "id": "dd-battle-state-runtime-js",
@@ -281,63 +305,103 @@
       "path": "/assets/js/dd-battle-state-runtime.js",
       "kind": "script",
       "collection": "file",
-      "status": "active-owner"
+      "status": "implemented-not-loaded"
     },
     {
       "id": "dd-battle-presentation-runtime-js",
       "label": "Data Discovery Battle Presentation Runtime",
-      "path": "/assets/js/dd-battle-presentation-runtime.js",
+      "path": "/archive/databyte-discovery/recovery-diagnostics/dd-battle-presentation-runtime.js",
+      "kind": "script",
+      "collection": "file",
+      "status": "retired-active-load"
+    },
+    {
+      "id": "dd-player-runtime-js",
+      "label": "Data Discovery Player Runtime",
+      "path": "/assets/js/dd-player-runtime.js",
       "kind": "script",
       "collection": "file",
       "status": "active-owner"
+    },
+    {
+      "id": "dd-battle-runtime-js",
+      "label": "Data Discovery Battle Runtime Facade",
+      "path": "/assets/js/dd-battle-runtime.js",
+      "kind": "script",
+      "collection": "file",
+      "status": "implemented-not-loaded"
+    },
+    {
+      "id": "dd-screen-registry-js",
+      "label": "Data Discovery Screen Registry",
+      "path": "/assets/js/dd-screen-registry.js",
+      "kind": "script",
+      "collection": "file",
+      "status": "active-public-facade"
+    },
+    {
+      "id": "dd-app-presentation-runtime-js",
+      "label": "Data Discovery App Presentation Runtime",
+      "path": "/assets/js/dd-app-presentation-runtime.js",
+      "kind": "script",
+      "collection": "file",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-app-bootstrap-js",
+      "label": "Data Discovery Module Bootstrap",
+      "path": "/assets/js/dd-app-bootstrap.js",
+      "kind": "script",
+      "collection": "file",
+      "status": "active-entrypoint"
     },
     {
       "id": "dd-collection-runtime-js",
       "label": "Data Discovery Collection Runtime",
-      "path": "/assets/js/dd-collection-runtime.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-collection-runtime.js",
       "kind": "script",
       "collection": "file",
-      "status": "active-owner"
+      "status": "archived-recovery-reference"
     },
     {
       "id": "dd-party-runtime-js",
       "label": "Data Discovery Party Runtime",
-      "path": "/assets/js/dd-party-runtime.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-party-runtime.js",
       "kind": "script",
       "collection": "file",
-      "status": "active-owner"
+      "status": "archived-recovery-reference"
     },
     {
       "id": "dd-party-switch-runtime-js",
       "label": "Data Discovery Party Switch Runtime",
-      "path": "/assets/js/dd-party-switch-runtime.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-party-switch-runtime.js",
       "kind": "script",
       "collection": "file",
-      "status": "active-owner"
+      "status": "archived-recovery-reference"
     },
     {
       "id": "dd-inventory-runtime-js",
       "label": "Data Discovery Inventory Runtime",
-      "path": "/assets/js/dd-inventory-runtime.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-inventory-runtime.js",
       "kind": "script",
       "collection": "file",
-      "status": "active-foundation"
+      "status": "archived-recovery-reference"
     },
     {
       "id": "dd-dex-runtime-js",
       "label": "Data Discovery Dex Runtime",
-      "path": "/assets/js/dd-dex-runtime.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-dex-runtime.js",
       "kind": "script",
       "collection": "file",
-      "status": "active-foundation"
+      "status": "archived-recovery-reference"
     },
     {
       "id": "dd-collection-dex-runtime-bridge-js",
       "label": "Data Discovery Collection Dex Runtime Bridge",
-      "path": "/assets/js/dd-collection-dex-runtime-bridge.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-collection-dex-runtime-bridge.js",
       "kind": "script",
       "collection": "file",
-      "status": "compatibility-adapter"
+      "status": "archived-recovery-reference"
     },
     {
       "id": "dd-scanner-screen-js",
@@ -414,58 +478,58 @@
     {
       "id": "dd-scanner-behavior-4-3-js",
       "label": "Data Discovery Scanner OS Behavior Guard",
-      "path": "/assets/js/dd-scanner-behavior-4-3.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-scanner-behavior-4-3.js",
       "kind": "script",
       "collection": "file",
-      "status": "compatibility"
+      "status": "archived-recovery-reference"
     },
     {
       "id": "dd-party-switch-ui-js",
       "label": "Data Discovery Party Switch UI",
-      "path": "/assets/js/dd-party-switch-ui.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-party-switch-ui.js",
       "kind": "overlay",
       "collection": "file",
-      "status": "compatibility-ui"
+      "status": "archived-recovery-reference"
     },
     {
       "id": "dd-party-switch-battle-bridge-js",
       "label": "Data Discovery Party Switch Battle Bridge",
-      "path": "/assets/js/dd-party-switch-battle-bridge.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-party-switch-battle-bridge.js",
       "kind": "script",
       "collection": "file",
-      "status": "compatibility-adapter"
+      "status": "archived-recovery-reference"
     },
     {
       "id": "dd-party-switch-refresh-js",
       "label": "Data Discovery Party Switch Refresh",
-      "path": "/assets/js/dd-party-switch-refresh.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-party-switch-refresh.js",
       "kind": "script",
       "collection": "file",
-      "status": "compatibility-visual-only"
+      "status": "archived-recovery-reference"
     },
     {
       "id": "dd-battle-experience-4-2-js",
       "label": "Data Discovery Battle Experience 4.2",
-      "path": "/assets/js/dd-battle-experience-4-2.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-battle-experience-4-2.js",
       "kind": "script",
       "collection": "file",
-      "status": "compatibility-merge-candidate"
+      "status": "archived-renderer-freeze-evidence"
     },
     {
       "id": "dd-layout-viewport-lock-4-2-js",
       "label": "Data Discovery Viewport Lock 4.2",
-      "path": "/assets/js/dd-layout-viewport-lock-4-2.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-layout-viewport-lock-4-2.js",
       "kind": "script",
       "collection": "file",
-      "status": "compatibility-layout-guard"
+      "status": "archived-recovery-reference"
     },
     {
       "id": "dd-scanner-os-runtime-js",
       "label": "Data Discovery Scanner OS Runtime",
-      "path": "/assets/js/dd-scanner-os-runtime.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-scanner-os-runtime.js",
       "kind": "script",
       "collection": "file",
-      "status": "active-shell-layout-stabilizer"
+      "status": "archived-recovery-reference"
     },
     {
       "id": "dd-mobile-game-tray-4-2-js",
@@ -494,18 +558,18 @@
     {
       "id": "dd-health-signal-bridge-js",
       "label": "Data Discovery Health Signal Bridge",
-      "path": "/assets/js/dd-health-signal-bridge.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-health-signal-bridge.js",
       "kind": "script",
       "collection": "file",
-      "status": "compatibility-visual-only"
+      "status": "archived-ownership-violation-evidence"
     },
     {
       "id": "dd-scan-bg-js",
       "label": "Data Discovery Scanner Background and Scanner OS Bootstrap",
-      "path": "/assets/js/dd-scan-bg.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-scan-bg.js",
       "kind": "script",
       "collection": "file",
-      "status": "visual-bootstrap"
+      "status": "archived-renderer-contention-evidence"
     },
     {
       "id": "databytedex-renderer-js",
@@ -562,7 +626,8 @@
       "label": "Bridge Health Checks Script",
       "path": "/assets/js/studio-runtime-bridge-checks.js",
       "kind": "script",
-      "collection": "file"
+      "collection": "file",
+      "status": "studio-tooling-only"
     }
   ],
   "validationHints": {

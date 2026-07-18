@@ -110,7 +110,7 @@
       : [];
   }
 
-  function movesForSpecies(speciesId, movesData) {
+  function movesForSpecies(speciesId, movesData, species) {
     var moves = allMoves(movesData);
     var sets = moveSets(movesData);
     var ids = ['signal-strike'];
@@ -119,6 +119,15 @@
     });
 
     if (set && Array.isArray(set.moves)) ids = set.moves.slice();
+
+    if (!set && species) {
+      var configurations = configurationsFor(species);
+      var specialty = moves.find(function (move) {
+        return move.id !== 'signal-strike' &&
+          configurations.indexOf(move.configuration) >= 0;
+      });
+      if (specialty) ids.push(specialty.id);
+    }
 
     return ids
       .map(function (moveId) {
@@ -132,7 +141,7 @@
   function overlaySprite(sprite, species, movesData) {
     if (!species) {
       return Object.assign({}, sprite, {
-        moves: movesForSpecies(null, movesData)
+        moves: movesForSpecies(null, movesData, null)
       });
     }
 
@@ -164,7 +173,7 @@
       assetRefs: species.assetRefs || sprite.assetRefs || [],
       dexRefs: species.dexRefs || sprite.dexRefs || [],
       dependencies: species.dependencies || sprite.dependencies || [],
-      moves: movesForSpecies(species.id, movesData),
+      moves: movesForSpecies(species.id, movesData, species),
       hp: hp,
       maxHp: hp,
       atk: attack,

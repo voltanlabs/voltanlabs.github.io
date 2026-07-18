@@ -24,6 +24,6 @@
   }
   document.addEventListener('dd:party-switch',()=>setTimeout(refresh,80));
   document.addEventListener('dd:party-switch-required',()=>setTimeout(refresh,80));
-  setInterval(()=>{style();removeChip();const slot=activeSlot();if(slot!==lastSlot){lastSlot=slot;refresh()}},900);
-  setTimeout(refresh,1400);
+  document.addEventListener('dd:screen',()=>{style();removeChip();const slot=activeSlot();if(slot!==lastSlot){lastSlot=slot;refresh()}});
+  setTimeout(refresh,0);
 })();

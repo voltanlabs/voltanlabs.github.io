@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Runtime Prefix Diagnostic</title></head>
+<body style="background:#07111f;color:white;font-family:system-ui;padding:24px">
+  <h1>Runtime Prefix Diagnostic</h1>
+  <p id="status">Starting...</p>
+  <script>
+    const count = new URLSearchParams(location.search).get('count') || '6';
+    const status = document.getElementById('status');
+    status.textContent = 'Loading first ' + count + ' runtime owners...';
+    const script = document.createElement('script');
+    script.src = '/assets/js/dd-runtime-prefix-' + count + '.js?v=prefix-4-9-2';
+    script.onload = () => { status.textContent = 'PASS: first ' + count + ' owners completed.'; document.body.dataset.ready = 'true'; };
+    script.onerror = () => { status.textContent = 'ERROR: prefix bundle could not load.'; };
+    document.head.appendChild(script);
+  </script>
+</body>
+</html>

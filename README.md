@@ -6,9 +6,9 @@ The project uses modular runtimes, explicit ownership contracts, searchable know
 
 ## Current Focus
 
-**Data Discovery Phase 4.4.3: Modular Vertical Slice + Repository Recovery and Governance**
+**Data Discovery Phase 6.0.4: Progression Loop + Runtime Recovery**
 
-The immediate priority is to preserve the stable v4 App Shell architecture while recovering damaged canonical data and runtime files, synchronizing documentation, and strengthening automated repository validation.
+The current release consolidates the live game into one generated 19-module browser bundle. A deterministic battle core owns each complete turn, the player runtime owns all persistent player domains, and the reward runtime owns XP, levels, stat growth, ByteCoins, Version Upgrade tiers, and battle history. The next priority is authored upgrade content and ceremony presentation without reopening those ownership boundaries.
 
 ## Recovery Milestone
 
@@ -25,20 +25,20 @@ Recovery utilities must become repeatable generators or validators rather than r
 
 ## Active Product Architecture
 
-Data Discovery uses the v4 modular App Shell:
+Data Discovery uses the consolidated v4 modular App Shell:
 
 ```text
 Studio Data
   ↓
 Studio Data Bridge
   ↓
-Gameplay and State Runtimes
+Deterministic Battle, Player, Reward, and Gameplay Runtimes
   ↓
 Dedicated Screen and Control Owners
   ↓
 DD_PRODUCT_APP_V4_SHELL
   ↓
-Compatibility Adapters and Visual Helpers
+Generated Runtime Bundle and Presentation Owners
   ↓
 Player UI
 ```

@@ -6,7 +6,7 @@
   if (!location.pathname.includes('databyte-discovery')) return;
   if (window.DD_BATTLE_REWARD_RUNTIME) return;
 
-  const VERSION = '1.0.0';
+  const VERSION = '1.1.0';
   const OWNER = 'dd-battle-reward-runtime';
   const STORAGE_KEY = 'vl_databyte_battle_rewards_v1';
 
@@ -16,7 +16,9 @@
     byteCoinsEarned: 0,
     dropsEarned: {},
     spriteXp: {},
+    spriteProgress: {},
     processedBattles: {},
+    battleHistory: [],
     lastReward: null
   });
 
@@ -95,11 +97,21 @@
         ? next.spriteXp
         : {};
 
+    next.spriteProgress =
+      next.spriteProgress &&
+      typeof next.spriteProgress === 'object'
+        ? next.spriteProgress
+        : {};
+
     next.processedBattles =
       next.processedBattles &&
       typeof next.processedBattles === 'object'
         ? next.processedBattles
         : {};
+
+    next.battleHistory = Array.isArray(next.battleHistory)
+      ? next.battleHistory.slice(-100)
+      : [];
 
     return next;
   }
@@ -131,6 +143,10 @@
 
   function inventory() {
     return window.DD_INVENTORY_RUNTIME || null;
+  }
+
+  function player() {
+    return window.DD_PLAYER_RUNTIME || null;
   }
 
   function battleState() {
@@ -305,6 +321,87 @@
     );
   }
 
+  function xpFloor(level) {
+    const safeLevel = Math.max(1, Math.floor(Number(level) || 1));
+    return 20 * (safeLevel - 1) * safeLevel;
+  }
+
+  function levelFromXp(totalXp) {
+    const xp = Math.max(0, Number(totalXp) || 0);
+    let level = 1;
+    while (level < 30 && xp >= xpFloor(level + 1)) level += 1;
+    return level;
+  }
+
+  function tierForLevel(level) {
+    const value = Math.max(1, Number(level) || 1);
+    if (value >= 25) return 'Petabyte';
+    if (value >= 15) return 'Terabyte';
+    if (value >= 10) return 'Gigabyte';
+    if (value >= 5) return 'Megabyte';
+    return 'Kilobyte';
+  }
+
+  function progressionSnapshot(sprite, totalXp) {
+    const xp = Math.max(0, Number(totalXp) || 0);
+    const level = levelFromXp(xp);
+    const currentFloor = xpFloor(level);
+    const nextFloor = level >= 30 ? currentFloor : xpFloor(level + 1);
+    return {
+      recipientKey: recipientKey(sprite),
+      level,
+      tier: tierForLevel(level),
+      totalXp: xp,
+      levelXp: Math.max(0, xp - currentFloor),
+      levelXpRequired: level >= 30 ? 0 : Math.max(1, nextFloor - currentFloor),
+      progressPercent: level >= 30
+        ? 100
+        : clamp(Math.round((xp - currentFloor) / (nextFloor - currentFloor) * 100), 0, 100)
+    };
+  }
+
+  function applyProgression(recipient, previousXp, totalXp) {
+    const before = progressionSnapshot(recipient, previousXp);
+    const after = progressionSnapshot(recipient, totalXp);
+    const levelsGained = Math.max(0, after.level - before.level);
+    const tierUpgraded = before.tier !== after.tier;
+    const runtime = player();
+    let updatedSprite = null;
+
+    if (
+      recipient &&
+      runtime &&
+      runtime.collection &&
+      typeof runtime.collection.find === 'function' &&
+      typeof runtime.collection.update === 'function'
+    ) {
+      const current = runtime.collection.find(recipient.id) || recipient;
+      const defenseGain = Math.max(0, Math.floor(after.level / 2) - Math.floor(before.level / 2));
+      const speedGain = Math.max(0, Math.floor(after.level / 3) - Math.floor(before.level / 3));
+      updatedSprite = Object.assign({}, current, {
+        level: after.level,
+        xp: after.totalXp,
+        xpToNext: after.levelXpRequired,
+        progressionTier: after.tier,
+        maxHp: Math.max(1, Number(current.maxHp || current.hp || 1) + levelsGained * 2),
+        hp: Math.max(0, Number(current.hp || 0) + levelsGained * 2),
+        atk: Math.max(1, Number(current.atk || current.attack || 1) + levelsGained),
+        def: Math.max(1, Number(current.def || current.defense || 1) + defenseGain),
+        speed: Math.max(1, Number(current.speed || 1) + speedGain)
+      });
+      runtime.collection.update(updatedSprite);
+    }
+
+    return {
+      before,
+      after,
+      levelsGained,
+      leveledUp: levelsGained > 0,
+      tierUpgraded,
+      updatedSprite
+    };
+  }
+
   function award(context) {
     const reward = calculate(context);
     const profile = read();
@@ -343,11 +440,17 @@
     profile.byteCoinsEarned +=
       reward.byteCoins;
 
-    profile.spriteXp[key] =
-      Math.max(
-        0,
-        Number(profile.spriteXp[key] || 0)
-      ) + reward.xp;
+    const previousXp = Math.max(
+      0,
+      Number(profile.spriteXp[key] || 0)
+    );
+    profile.spriteXp[key] = previousXp + reward.xp;
+    const progression = applyProgression(
+      reward.recipient,
+      previousXp,
+      profile.spriteXp[key]
+    );
+    profile.spriteProgress[key] = progression.after;
 
     const inventoryResults = [
       addInventoryReward(
@@ -380,6 +483,7 @@
       reward,
       {
         recipientKey: key,
+        progression,
         inventoryResults,
         awardedAt:
           new Date().toISOString()
@@ -390,6 +494,21 @@
       reward.encounterId
     ] = storedReward;
     profile.lastReward = storedReward;
+    profile.battleHistory.push({
+      encounterId: reward.encounterId,
+      result: 'victory',
+      opponent: reward.defeated,
+      recipientKey: key,
+      xp: reward.xp,
+      byteCoins: reward.byteCoins,
+      drops: reward.drops,
+      level: progression.after.level,
+      tier: progression.after.tier,
+      leveledUp: progression.leveledUp,
+      tierUpgraded: progression.tierUpgraded,
+      at: storedReward.awardedAt
+    });
+    profile.battleHistory = profile.battleHistory.slice(-100);
 
     const saved = write(profile);
 
@@ -412,8 +531,8 @@
           reward.encounterId,
         recipientKey: key,
         xp: reward.xp,
-        totalXp:
-          saved.spriteXp[key]
+        totalXp: saved.spriteXp[key],
+        progression
       }
     );
 
@@ -477,6 +596,20 @@
     );
   }
 
+  function getProgression(sprite) {
+    const profile = read();
+    const key = recipientKey(sprite);
+    return profile.spriteProgress[key] || progressionSnapshot(
+      sprite,
+      profile.spriteXp[key] || 0
+    );
+  }
+
+  function getHistory(limit) {
+    const history = read().battleHistory.slice().reverse();
+    return history.slice(0, Math.max(1, Number(limit) || 20));
+  }
+
   function health() {
     return {
       owner: OWNER,
@@ -489,7 +622,8 @@
       processedBattleCount:
         Object.keys(
           read().processedBattles
-        ).length
+        ).length,
+      historyCount: read().battleHistory.length
     };
   }
 
@@ -509,6 +643,11 @@
       calculate,
       award,
       getSpriteXp,
+      getProgression,
+      getHistory,
+      xpFloor,
+      levelFromXp,
+      tierForLevel,
       health
     });
 

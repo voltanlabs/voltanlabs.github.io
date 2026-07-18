@@ -6,9 +6,9 @@ This file governs work throughout this repository. It describes the current arch
 
 VoltanLabs is an offline-first, browser-first software studio and product repository hosted as a static GitHub Pages site. Its flagship product is **DataByteSprites: Data Discovery**. The repository also contains VoltanLabs Studio, Studio Intelligence and diagnostics, the Knowledge Engine, the Generator/Creator Suite, the Technology Vault, and public product pages.
 
-The active recovery milestone is **Data Discovery Phase 4.4.3 Modular Vertical Slice + Repository Recovery and Governance**, with the live Data Discovery shell currently identifying itself as v4.7.x. The repository is mid-migration. Older documents and legacy files may describe v3 or v3.5 behavior; do not assume that the newest-looking filename or document is active. The live HTML script chain, current ownership registry, runtime manifests, and exported browser globals must be reconciled before changing behavior.
+The active milestone is **Data Discovery Phase 6.0.4 Progression Loop + Runtime Recovery**, loaded by bootstrap 1.9.4 as one generated bundle containing 19 explicitly ordered browser modules. The live shell is v4.10.2. Older documents and legacy files may describe v3, v3.5, or the Phase 4 compatibility chain; do not assume that the newest-looking filename or document is active. The live HTML entry point, bootstrap registry, runtime manifest, ownership map, and exported browser globals must agree before behavior changes are merged.
 
-Recovery and stabilization take priority over feature expansion. Do not hide damaged canonical data or generators behind new fallback logic.
+Runtime consolidation and deterministic recovery remain the baseline for feature work. Do not hide damaged canonical data or generators behind new fallback logic.
 
 ## Architectural Model
 
@@ -64,15 +64,14 @@ Current canonical boundaries are:
 - `dd-gameplay-rules-2-4.js` owns shared gameplay tuning baselines.
 - `dd-encounter-runtime.js` owns encounter selection, rarity pools, and initial encounter signal/stability.
 - `dd-capture-runtime.js` owns Download/capture odds, caps, attempts, failed-attempt bonuses, and Download-related item effects.
-- `dd-battle-engine-2-4.js` owns shared battle helper and configuration/type functions; it does not own application state or screen markup.
-- `dd-battle-resolver.js` owns turn order, action gates, hit checks, damage calculation, enemy move selection, status outputs, and structured turn results.
-- `dd-battle-state-runtime.js` owns applying resolver results, battle state transitions, faint decisions, forced-switch decisions, and battle terminal state.
-- `dd-battle-reward-runtime.js` owns reward calculation and reward application.
-- `dd-collection-runtime.js`, `dd-party-runtime.js`, `dd-party-switch-runtime.js`, `dd-inventory-runtime.js`, and `dd-dex-runtime.js` own their respective persistent domains.
+- `dd-battle-core-runtime.js` owns battle calculation, application, turn order, retaliation, transaction guards, faint decisions, and terminal results in one synchronous event-free transaction.
+- `dd-battle-reward-runtime.js` owns idempotent reward calculation and application, XP thresholds, levels, stat growth, Version Upgrade tiers, and persistent battle history.
+- `dd-player-runtime.js` owns collection, party, active slot, forced switching, inventory, Dex, individual saved progression, rolling backups, and party recovery. Its legacy domain globals are compatibility views only.
 - Dedicated `DD_*_SCREEN` globals own screen markup and screen-specific presentation.
 - `DD_BATTLE_CONTROLS` owns battle control markup and control layout.
 - `DD_PRODUCT_APP_V4_SHELL` owns boot, routing, context construction, screen registry dispatch, action binding, lifecycle coordination, turn-transaction safety, and recovery from control locks.
-- Scanner OS, viewport, health-signal, party-switch UI, battle-experience, and similar compatibility modules must remain adapters or visual-only helpers unless ownership is explicitly transferred and documented.
+- `dd-app-bootstrap.js` owns the single module entry point and ordered bundle readiness contract; `studio/tools/build-data-discovery-runtime.mjs` reproducibly builds the loaded bundle from that registry.
+- Legacy engine, resolver, state, Scanner OS, viewport, health-signal, party-switch UI, battle-experience, and similar compatibility modules are not loaded. They remain reference or archive material unless ownership is explicitly transferred and documented.
 
 The application shell must not absorb battle math, Download math, status rules, persistence rules, canonical content, or dedicated screen markup. Domain runtimes must not manipulate screen layout. Presentation modules must not mutate canonical battle state.
 
@@ -115,15 +114,15 @@ Battle work must preserve a deterministic transaction boundary:
 ```text
 user action
   -> shell locks controls
-  -> resolver calculates structured outcome
-  -> battle-state runtime applies outcome once
-  -> reward/party/inventory owners apply domain changes
+  -> battle core calculates and applies one structured turn
+  -> player owner persists party effects once
+  -> reward owner applies terminal rewards once
   -> presentation renders resulting context
   -> shell unlocks or enters a terminal/forced-switch state
 ```
 
 - Never calculate and apply the same damage in separate owners.
-- Never apply a resolver result more than once.
+- Never apply a battle-core result more than once.
 - Maintain explicit turn IDs or equivalent guards against duplicate dispatch.
 - Forced switching, fainting, Download eligibility, victory, defeat, and return-to-scanner are state decisions, not CSS or screen decisions.
 - Visual effects and messages may observe outcomes but must not determine them.
@@ -301,14 +300,15 @@ Do not combine repository-wide formatting, file moves, behavior changes, generat
 - Do not introduce an architectural migration as an incidental fix. Document and approve the ownership transfer first.
 - When uncertain whether a file is active, classify it through evidence and record the uncertainty instead of guessing.
 
-## Current Recovery Blockers
+## Current Recovery Risks
 
-At the time this guidance was created, contributors must assume the following are recovery-blocked until revalidated:
+At the Phase 6.0.4 baseline, contributors must keep the following recovery risks visible until separately revalidated:
 
 - Canonical `abilities.json`, `lore.json`, and `game-data.v1.json` have been observed failing JSON parsing.
 - The canonical `studio/tools/generate-game-data.mjs` has been observed failing JavaScript syntax validation.
 - The reconstructed generator reports missing or invalid battle statistics across the species index and incomplete ability, item, encounter, and type-rule coverage.
 - Several older architecture documents reference directories or owners that do not exist in the current tree or are no longer active.
-- The v4 product boots through a substantial compatibility chain that still needs ownership consolidation and regression coverage.
+- Historical manifests, Studio registries, and architecture snapshots may still name unloaded Phase 4 owners; current documents must classify these as legacy rather than active.
+- Authored Version Upgrade forms, per-tier move unlocks, and the upgrade ceremony are planned data/presentation work. The current runtime implements thresholds, tiers, stat growth, and history only.
 
 Re-run the relevant checks before relying on this blocker list; update current-state documentation when a blocker is resolved.

@@ -1,7 +1,7 @@
 // assets/js/dd-result-screen.js
 // Core Stabilization v1.0: canonical Download result presentation owner.
 (function(){
-  const VERSION='1.0.0';
+  const VERSION='1.1.0';
   const STYLE_ID='ddResultScreenStyle';
 
   function esc(value){
@@ -36,6 +36,11 @@
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultStat{padding:10px 6px;border:1px solid rgba(125,211,252,.18);border-radius:14px;background:rgba(15,23,42,.62);color:#BAE6FD;font-size:11px}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultStat b{display:block;margin-top:3px;color:white;font-size:16px}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultNext{margin:0;color:#BAE6FD;font-size:12px;line-height:1.35}',
+      '#ddApp .result-card[data-owner="dd-result-screen"] .rewardPanel{display:grid;gap:7px;width:min(100%,430px);padding:10px;border:1px solid rgba(255,215,0,.3);border-radius:14px;background:rgba(15,23,42,.72);box-sizing:border-box}',
+      '#ddApp .result-card[data-owner="dd-result-screen"] .rewardRow{display:flex;justify-content:space-between;gap:12px;color:#BAE6FD;font-size:12px;font-weight:800}',
+      '#ddApp .result-card[data-owner="dd-result-screen"] .rewardRow b{color:#FFD700}',
+      '#ddApp .result-card[data-owner="dd-result-screen"] .xpTrack{height:7px;border-radius:999px;background:#020617;overflow:hidden}',
+      '#ddApp .result-card[data-owner="dd-result-screen"] .xpTrack i{display:block;height:100%;background:linear-gradient(90deg,#38BDF8,#A78BFA,#FFD700)}',
       '@media(max-height:700px){#ddApp .result-card[data-owner="dd-result-screen"]{gap:8px}#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon{width:min(29vw,116px);height:min(29vw,116px);font-size:42px}#ddApp .result-card[data-owner="dd-result-screen"] .resultMessage{font-size:13px}}'
     ].join('');
     document.head.appendChild(style);
@@ -47,6 +52,11 @@
     const result=ctx.result||{};
     const type=normalizeType(result.type);
     const success=type==='success';
+    const battleVictory=result.reason==='battle-victory';
+    const rewardResult=result.reward||{};
+    const reward=rewardResult.reward||rewardResult;
+    const progression=reward.progression||{};
+    const progress=progression.after||null;
     const sprite=result.sprite||result.signal||result.downloadedSprite||null;
     const collection=Array.isArray(ctx.collection)?ctx.collection:[];
     const party=Array.isArray(ctx.party)?ctx.party:[];
@@ -54,10 +64,24 @@
     const title=result.title||(success?'Download Complete':type==='failure'?'Download Failed':'Result');
     const message=result.msg||result.message||(success?'The signal was added to your collection.':'The signal could not be downloaded.');
     const icon=sprite&&sprite.icon?sprite.icon:(success?'✓':type==='failure'?'!':'◇');
-    const status=success?'SAVED':type==='failure'?'SIGNAL LOST':'COMPLETE';
-    const next=success?'The downloaded sprite is now available in your collection and party systems.':'Return to the Scanner and search for another signal.';
+    const status=battleVictory?'VICTORY':success?'SAVED':type==='failure'?'SIGNAL LOST':'COMPLETE';
+    const next=battleVictory
+      ?'Continue to the defeated signal to attempt a Download, or return to the Scanner.'
+      :success
+        ?'The downloaded sprite is now available in your collection and party systems.'
+        :'Return to the Scanner and search for another signal.';
+    const rewardHtml=battleVictory&&rewardResult.ok
+      ?`<div class="rewardPanel">
+        <div class="rewardRow"><span>Battle XP</span><b>+${esc(reward.xp||0)}</b></div>
+        <div class="rewardRow"><span>ByteCoins</span><b>+${esc(reward.byteCoins||0)}</b></div>
+        ${progress?`<div class="rewardRow"><span>${esc(progress.tier)} Level</span><b>${esc(progress.level)}</b></div>
+        <div class="xpTrack" aria-label="Level progress ${esc(progress.progressPercent)} percent"><i style="width:${esc(progress.progressPercent)}%"></i></div>`:''}
+        ${progression.leveledUp?`<div class="rewardRow"><span>Level Up</span><b>+${esc(progression.levelsGained)}</b></div>`:''}
+        ${progression.tierUpgraded?`<div class="rewardRow"><span>Version Upgrade</span><b>${esc(progress.tier)}</b></div>`:''}
+      </div>`
+      :'';
 
-    return `<section class="card result-card ${esc(type)}" data-owner="dd-result-screen"><div class="resultTop"><span>Scanner Result</span><b>${esc(status)}</b></div><div class="resultCore"><div class="resultIcon" aria-hidden="true">${esc(icon)}</div><h1>${esc(title)}</h1><p class="resultMessage">${esc(message)}</p>${sprite?`<p class="resultNext">${esc(sprite.name||'DataByte Sprite')} • #${esc(sprite.dex||'?')} • ${esc(sprite.rarity||'Common')}</p>`:''}</div><div><div class="resultSummary"><div class="resultStat">Collection<b>${esc(collection.length)}</b></div><div class="resultStat">Party Slots<b>${esc(party.length)}/5</b></div><div class="resultStat">ByteCoins<b>${esc(inventory.byteCoins||0)}</b></div></div><p class="resultNext">${esc(next)}</p></div></section>`;
+    return `<section class="card result-card ${esc(type)}" data-owner="dd-result-screen"><div class="resultTop"><span>${battleVictory?'Battle Result':'Scanner Result'}</span><b>${esc(status)}</b></div><div class="resultCore"><div class="resultIcon" aria-hidden="true">${esc(icon)}</div><h1>${esc(title)}</h1><p class="resultMessage">${esc(message)}</p>${rewardHtml}${sprite?`<p class="resultNext">${esc(sprite.name||'DataByte Sprite')} • #${esc(sprite.dex||'?')} • ${esc(sprite.rarity||'Common')}</p>`:''}</div><div><div class="resultSummary"><div class="resultStat">Collection<b>${esc(collection.length)}</b></div><div class="resultStat">Party Slots<b>${esc(party.length)}/5</b></div><div class="resultStat">ByteCoins<b>${esc(inventory.byteCoins||0)}</b></div></div><p class="resultNext">${esc(next)}</p></div></section>`;
   }
 
   installStyle();

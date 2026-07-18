@@ -76,7 +76,8 @@
   document.addEventListener('dd:open-party-switch',()=>show(false));
   document.addEventListener('dd:party-switch-required',()=>show(true));
   document.addEventListener('dd:party-switch',hide);
+  document.addEventListener('dd:screen',tick);
+  document.addEventListener('dd:v4-shell-ready',tick);
   window.DD_PARTY_SWITCH_UI={show,hide,isOpen:()=>open};
-  setInterval(tick,700);
-  setTimeout(tick,1200);
+  setTimeout(tick,0);
 })();

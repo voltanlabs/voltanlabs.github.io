@@ -1,7 +1,7 @@
 // assets/js/dd-battle-controls.js
 // Phase 4.3 Ownership Correction: battle controls renderer and controls layout owner.
 (function(){
-  const VERSION='0.2.1';
+  const VERSION='0.3.0';
   const STYLE_ID='ddBattleControlsStyle';
 
   function esc(value){
@@ -26,6 +26,7 @@
       '#ddApp #controls.battleControlsHost button.gold{grid-column:1/-1!important;background:#FFD700!important;color:#111827!important}',
       '#ddApp #controls.battleControlsHost .move{background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(15,23,42,.78))!important;border:1px solid rgba(96,165,250,.18)!important}',
       '#ddApp #controls.battleControlsHost .move small{display:block!important;margin-top:3px!important;color:#BAE6FD!important;font-size:10px!important;font-weight:800!important;line-height:1.05!important}',
+      '#ddApp #controls.battleControlsHost .move .moveMeta{color:#A78BFA!important;text-transform:uppercase!important;letter-spacing:.04em!important}',
       '@media(max-height:760px){#ddApp #controls.battleControlsHost{padding:7px!important;gap:6px!important}#ddApp #controls.battleControlsHost>.battleMoves,#ddApp #controls.battleControlsHost>.battleActions{gap:6px!important}#ddApp #controls.battleControlsHost button{min-height:35px!important;padding:7px 8px!important;font-size:13px!important}}'
     ].join('');
     document.head.appendChild(style);
@@ -36,13 +37,19 @@
     const moves=Array.isArray(context&&context.moves)?context.moves:Array.isArray(lead.moves)?lead.moves:[];
     return moves.slice(0,4).map(function(move,index){
       if(typeof move==='string')return {id:slug(move),name:move,index:index};
-      return {id:slug(move&&move.id||move&&move.name||('move-'+index)),name:(move&&move.name)||('Move '+(index+1)),index:index,type:move&&move.type,power:move&&move.power,accuracy:move&&move.accuracy};
+      return {id:slug(move&&move.id||move&&move.name||('move-'+index)),name:(move&&move.name)||('Move '+(index+1)),index:index,type:move&&move.type,moveType:move&&move.moveType,power:move&&move.power,accuracy:move&&move.accuracy,configuration:move&&move.configuration,statusEffect:move&&move.statusEffect,description:move&&move.description};
     });
   }
 
   function renderMoveButton(move){
     const stats=(move.power||move.accuracy)?`<small>${move.power?'PWR '+esc(move.power):''}${move.power&&move.accuracy?' • ':''}${move.accuracy?'ACC '+esc(move.accuracy)+'%':''}</small>`:'';
-    return `<button class="move" data-action="move" data-move-id="${esc(move.id)}" data-move-index="${esc(move.index)}">${esc(move.name)}${stats}</button>`;
+    const status=move.statusEffect&&move.statusEffect.id
+      ?String(move.statusEffect.id)
+      :'';
+    const meta=[move.configuration||move.moveType||move.type,status]
+      .filter(Boolean)
+      .join(' • ');
+    return `<button class="move" data-action="move" data-move-id="${esc(move.id)}" data-move-index="${esc(move.index)}" title="${esc(move.description||'')}">${esc(move.name)}${stats}${meta?`<small class="moveMeta">${esc(meta)}</small>`:''}</button>`;
   }
 
   function renderMoveGrid(context){

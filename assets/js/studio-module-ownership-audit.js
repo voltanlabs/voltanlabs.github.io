@@ -4,9 +4,8 @@
     ['Roster','dd-canon-roster'],['Studio Data','dd-studio-data-bridge'],['Rules','dd-gameplay-rules-2-4'],
     ['Capture','dd-capture-runtime'],['Encounter','dd-encounter-runtime'],['Battle Resolver','dd-battle-resolver'],
     ['Battle State','dd-battle-state-runtime'],['Battle Presentation','dd-battle-presentation-runtime'],
-    ['Collection','dd-collection-runtime'],['Party','dd-party-runtime'],['Party Switch','dd-party-switch-runtime'],
-    ['Inventory','dd-inventory-runtime'],['Dex','dd-dex-runtime'],['Product UI','databyte-discovery-product-app-v3-5'],
-    ['Behavior Guard','dd-scanner-behavior-4-3'],['Scanner Layout','dd-scanner-os-runtime']
+    ['Battle Facade','dd-battle-runtime'],['Player State','dd-player-runtime'],['Screen Registry','dd-screen-registry'],
+    ['Product UI','databyte-discovery-product-app-v4-shell'],['App Presentation','dd-app-presentation-runtime']
   ];
   function report(){return window.VOLTAN_VALIDATION_REPORT||null}
   function html(s){return String(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}

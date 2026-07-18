@@ -15,7 +15,8 @@
 
   function findLayoutScripts() {
     const names = [
-      "dd-scanner-os-runtime",
+      "dd-app-bootstrap",
+      "dd-app-presentation-runtime",
       "dd-mobile-game-tray",
       "dd-unified-scanner-shell",
       "dd-battle-centerline-fix",
@@ -64,14 +65,12 @@
       src.includes("dd-unified-scanner-shell") ||
       src.includes("dd-battle-centerline-fix")
     ));
-    const hasScannerOs = scripts.some((src) => src.includes("dd-scanner-os-runtime"));
-    const hasBehaviorGuard = scriptSrcs().some((src) => src.includes("dd-scanner-behavior-4-3"));
+    const hasAppPresentation = !!window.DD_APP_PRESENTATION_RUNTIME;
     return {
       layoutScripts: scripts,
-      hasScannerOs,
-      hasBehaviorGuard,
+      hasAppPresentation,
       activeWrapperScripts,
-      duplicateLayoutRisk: activeWrapperScripts.length > 0 || scripts.filter((src) => src.includes("dd-scanner-os-runtime")).length > 1
+      duplicateLayoutRisk: activeWrapperScripts.length > 0 || scriptSrcs().some(src => /dd-scanner-os-runtime|dd-layout-viewport-lock/.test(src))
     };
   }
 
@@ -80,8 +79,7 @@
     if (report.overflow.horizontalOverflow) findings.push({ severity: "warning", message: "Page has horizontal overflow risk.", detail: report.overflow.document });
     if (report.overflow.overflowingElements.length) findings.push({ severity: "info", message: `${report.overflow.overflowingElements.length} overflowing element sample(s) detected.`, detail: report.overflow.overflowingElements });
     if (report.scanner.duplicateLayoutRisk) findings.push({ severity: "warning", message: "Potential duplicate Scanner/Battle layout ownership detected.", detail: report.scanner.layoutScripts });
-    if (location.pathname.includes("databyte-discovery") && !report.scanner.hasScannerOs) findings.push({ severity: "warning", message: "Data Discovery page did not expose dd-scanner-os-runtime in loaded scripts.", detail: report.scanner.layoutScripts });
-    if (location.pathname.includes("databyte-discovery") && !report.scanner.hasBehaviorGuard) findings.push({ severity: "info", message: "Data Discovery page did not expose dd-scanner-behavior-4-3 in loaded scripts yet.", detail: report.scanner.layoutScripts });
+    if (location.pathname.includes("databyte-discovery") && !report.scanner.hasAppPresentation) findings.push({ severity: "warning", message: "Data Discovery page did not expose DD_APP_PRESENTATION_RUNTIME.", detail: report.scanner.layoutScripts });
     if (!findings.length) findings.push({ severity: "ok", message: "No immediate UI layout risks detected.", detail: null });
     return findings;
   }

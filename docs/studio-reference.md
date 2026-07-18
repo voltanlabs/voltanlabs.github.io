@@ -1,7 +1,7 @@
 # VoltanLabs Studio Reference
 
 Status: active consolidated reference  
-Current phase: Data Discovery Phase 4.3 Canonical Scanner OS Runtime + Studio Intelligence Foundation
+Current phase: Data Discovery Phase 6.0 Progression Loop + Studio Intelligence Foundation
 
 ## Purpose
 
@@ -134,19 +134,22 @@ Primary paths:
 - `databytedex.html`
 - `studio/databytesprites/`
 
-The flagship product is DataByteSprites: Data Discovery. It is currently in Phase 4.3 Scanner OS stabilization.
+The flagship product is DataByteSprites: Data Discovery. It is currently in Phase 6.0 progression stabilization.
 
-Current active product app:
+Current active product app shell:
 
-- `assets/js/databyte-discovery-product-app-v3-5.js`
+- `assets/js/databyte-discovery-product-app-v4-shell.js`
 
-Canonical Scanner OS layout owner:
+Canonical battle and player owners:
 
-- `assets/js/dd-scanner-os-runtime.js`
+- `assets/js/dd-battle-core-runtime.js`
+- `assets/js/dd-player-runtime.js`
+- `assets/js/dd-battle-reward-runtime.js`
 
-Scanner OS bootstrap:
+Runtime bootstrap:
 
-- `assets/js/dd-scan-bg.js`
+- `assets/js/dd-app-bootstrap.js`
+- `assets/js/dd-runtime-bundle.js`
 
 Retired from active Scanner OS layout loading:
 
@@ -159,26 +162,16 @@ Retired from active Scanner OS layout loading:
 
 ```text
 databyte-discovery.html
-├── dd-canon-roster.js
-├── dd-studio-data-bridge.js
-├── dd-battle-engine-2-4.js
-├── dd-gameplay-rules-2-4.js
-├── dd-capture-runtime.js
-├── dd-encounter-runtime.js
-├── dd-battle-balance-2-4.js
-├── dd-battle-resolver.js
-├── dd-battle-state-runtime.js
-├── dd-battle-presentation-runtime.js
-├── dd-collection-runtime.js
-├── dd-party-runtime.js
-├── dd-party-switch-runtime.js
-├── dd-inventory-runtime.js
-├── dd-dex-runtime.js
-├── dd-collection-dex-runtime-bridge.js
-├── databyte-discovery-product-app-v3-5.js
-├── dd-health-signal-bridge.js
-└── dd-scan-bg.js
-    └── dd-scanner-os-runtime.js
+└── dd-app-bootstrap.js
+    └── dd-runtime-bundle.js (19 ordered owners)
+        ├── canon + Studio data
+        ├── status + gameplay + capture + encounter
+        ├── dd-player-runtime.js
+        ├── dd-battle-core-runtime.js
+        ├── reward runtime + presentation
+        ├── screen/control owners + registry
+        ├── databyte-discovery-product-app-v4-shell.js
+        └── dd-app-presentation-runtime.js
 ```
 
 ## Runtime Ownership Summary
@@ -190,18 +183,13 @@ databyte-discovery.html
 | Gameplay rules | `dd-gameplay-rules-2-4.js` | Active foundation |
 | Encounter generation | `dd-encounter-runtime.js` | Active owner |
 | Capture/download logic | `dd-capture-runtime.js` | Active owner |
-| Battle helpers | `dd-battle-engine-2-4.js` | Active foundation |
-| Battle resolver | `dd-battle-resolver.js` | Active owner |
-| Battle state | `dd-battle-state-runtime.js` | Active foundation |
-| Battle presentation | `dd-battle-presentation-runtime.js` | Active foundation |
-| Collection | `dd-collection-runtime.js` | Active foundation |
-| Party | `dd-party-runtime.js` | Active foundation |
-| Party switching | `dd-party-switch-runtime.js` | Active foundation |
-| Inventory | `dd-inventory-runtime.js` | Active foundation |
-| Dex state | `dd-dex-runtime.js` | Active foundation |
-| Product UI orchestration | `databyte-discovery-product-app-v3-5.js` | Active, still too large |
-| Scanner OS layout | `dd-scanner-os-runtime.js` | Canonical owner |
-| Background visuals/bootstrap | `dd-scan-bg.js` | Active visual/bootstrap owner |
+| Battle calculation, turn, and state | `dd-battle-core-runtime.js` | Active owner |
+| Legacy battle resolver/state | `dd-battle-resolver.js`, `dd-battle-state-runtime.js` | Implemented but not loaded |
+| App and battle presentation | `dd-app-presentation-runtime.js` | Active owner |
+| Collection, party, switching, inventory, Dex, and save backup | `dd-player-runtime.js` | Active owner |
+| XP, levels, Version Upgrades, rewards, and battle history | `dd-battle-reward-runtime.js` | Active owner |
+| Product UI orchestration | `databyte-discovery-product-app-v4-shell.js` | Active shell |
+| Runtime load/readiness | `dd-app-bootstrap.js` | Active entry point |
 
 ## Repository Area Map
 
@@ -228,7 +216,7 @@ databyte-discovery.html
 - Product App v3.5 still owns too much rendering and layout behavior.
 - Scanner OS layout ownership must remain consolidated in `dd-scanner-os-runtime.js`.
 - Runtime Audit is the next needed Studio Intelligence module.
-- Party, inventory, rewards, missions, progression, abilities, and animations need deeper runtime ownership.
+- Missions, authored ability coverage, additional specialty moves, and explicit multi-slot save management remain future runtime work.
 - Studio can validate and report, but it cannot yet auto-assemble complete game content or safely mutate repository files from the browser.
 
 ## Architecture Rules

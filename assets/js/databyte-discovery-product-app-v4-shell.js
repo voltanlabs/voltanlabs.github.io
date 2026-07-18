@@ -1,5 +1,5 @@
 // assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 4.7.3: modular app shell with recovered party-switch ownership.
+// Phase 4.9: modular app shell behind player, battle, and screen facades.
 // The shell owns boot, route state, context building, runtime calls, action binding,
 // turn transaction safety, control unlock recovery, and screen registry dispatch.
 // Resolver owns calculations. Battle State Runtime owns resolution application,
@@ -9,7 +9,7 @@
 
   if(!location.pathname.includes('databyte-discovery'))return;
 
-  const VERSION='4.7.3';
+  const VERSION='4.10.2';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={
@@ -37,12 +37,16 @@
     roster:()=>window.DD_CANON_ROSTER||[],
     encounter:()=>window.DD_ENCOUNTER_RUNTIME,
     capture:()=>window.DD_CAPTURE_RUNTIME,
-    resolver:()=>window.DD_BATTLE_RESOLVER,
-    battleState:()=>window.DD_BATTLE_STATE_RUNTIME,
-    battleBus:()=>window.DDBattle24,
-    party:()=>window.DD_PARTY_RUNTIME,
-    partySwitch:()=>window.DD_PARTY_SWITCH_RUNTIME,
-    inventory:()=>window.DD_INVENTORY_RUNTIME
+    player:()=>window.DD_PLAYER_RUNTIME,
+    battle:()=>window.DD_BATTLE_RUNTIME,
+    resolver:()=>window.DD_BATTLE_RUNTIME&&window.DD_BATTLE_RUNTIME.resolver(),
+    battleState:()=>window.DD_BATTLE_RUNTIME&&window.DD_BATTLE_RUNTIME.state(),
+    battleBus:()=>window.DD_BATTLE_RUNTIME,
+    screenRegistry:()=>window.DD_SCREEN_REGISTRY,
+    party:()=>window.DD_PLAYER_RUNTIME&&window.DD_PLAYER_RUNTIME.party,
+    partySwitch:()=>window.DD_PLAYER_RUNTIME&&window.DD_PLAYER_RUNTIME.partySwitch,
+    inventory:()=>window.DD_PLAYER_RUNTIME&&window.DD_PLAYER_RUNTIME.inventory,
+    rewards:()=>window.DD_BATTLE_REWARD_RUNTIME
   };
 
   const ui={
@@ -83,6 +87,7 @@
       '#ddApp .top{padding:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:46px;box-sizing:border-box}',
       '#ddApp .top span{color:#BAE6FD;font-size:12px}',
       '#ddApp .stage{overflow:auto;min-height:0}',
+      '#ddApp .stage.battleStage{display:grid;overflow:hidden}',
       '#ddApp .card{padding:16px;box-sizing:border-box}',
       '#ddApp #controls{padding:10px;display:grid;gap:8px;box-sizing:border-box;min-height:0}',
       '#ddApp #controls input{padding:14px;border-radius:16px;background:#020617;color:white;border:1px solid rgba(255,255,255,.16)}',
@@ -213,9 +218,6 @@
       moveType:'attack'
     };
     s.moves=Array.isArray(s.moves)&&s.moves.length?s.moves:[fallback];
-    if(rt.resolver()&&rt.resolver().normalizeMove){
-      s.moves=s.moves.map(rt.resolver().normalizeMove);
-    }
     return s;
   }
 
@@ -242,12 +244,22 @@
       const activeIndex=Number(switchRuntime.getActive()||0);
       const activeLead=members[activeIndex];
 
-      if(activeLead&&Number(activeLead.hp||0)>0){
-        return normalize(activeLead);
+      // During a battle the active slot remains authoritative even after it
+      // faints. Returning the next usable member here would repaint only the
+      // old card's HP while leaving the old name/icon visible until the user
+      // completed the required switch.
+      if(
+        activeLead&&
+        (
+          state.screen==='battle'||
+          Number(activeLead.hp||0)>0
+        )
+      ){
+        return activeLead;
       }
     }
 
-    return normalize(partyRuntime?partyRuntime.lead():fallbackLead());
+    return partyRuntime?partyRuntime.lead():fallbackLead();
   }
 
   function fillParty(){
@@ -319,8 +331,8 @@
   }
 
   function syncBattleState(){
-    const bsr=rt.battleState();
-    if(bsr&&bsr.snapshot)state.battleState=bsr.snapshot().value;
+    const core=window.DD_BATTLE_CORE_RUNTIME;
+    if(core&&core.snapshot)state.battleState=core.snapshot();
     return state.battleState;
   }
 
@@ -338,10 +350,11 @@
     };
   }
 
-  function battleContext(){
+  function battleContext(baseContext){
+    const base=baseContext||contextBase();
     const wild=normalize(state.signal);
     const activeLead=normalize(lead());
-    return Object.assign(contextBase(),{
+    return Object.assign({},base,{
       lead:activeLead,
       wild,
       odds:wild?odds(wild):0,
@@ -361,16 +374,20 @@
   }
 
   function screenContext(){
-    return Object.assign(contextBase(),{
+    const base=contextBase();
+    const context=Object.assign({},base,{
       signal:normalize(state.signal),
       confirm:state.confirm,
-      result:state.result,
-      battleContext:battleContext()
+      result:state.result
     });
+    if(state.screen==='battle'||state.screen==='confirm'||state.screen==='result'){
+      context.battleContext=battleContext(base);
+    }
+    return context;
   }
 
   function canonicalBattleStartContext(wild,activeLead){
-    const encounterId=String(wild&&wild.id||('ENC-'+Date.now()));
+    const encounterId='ENC-'+Date.now()+'-'+String(wild&&wild.id||'signal');
     return{
       encounterId,
       battleId:encounterId,
@@ -430,8 +447,10 @@
 
     const wild=normalize(state.signal);
     const activeLead=normalize(lead());
-    const bsr=rt.battleState();
     const context=canonicalBattleStartContext(wild,activeLead);
+    const leadIndex=partyMembers().findIndex(member =>
+      member&&activeLead&&member.id===activeLead.id
+    );
 
     state.signal=wild;
     state.returnScreen=null;
@@ -440,14 +459,22 @@
     state.turnPhase=null;
     state.lastTurnError=null;
 
-    if(!bsr||typeof bsr.start!=='function'){
-      pushLog('Battle State Runtime unavailable. Battle cannot start.');
+    if(leadIndex>=0&&rt.partySwitch()){
+      rt.partySwitch().setActive(leadIndex);
+    }
+
+    if(!window.DD_BATTLE_CORE_RUNTIME){
+      pushLog('Battle Core Runtime unavailable. Battle cannot start.');
       fx('warn');
       render();
       return;
     }
 
-    bsr.start(context.encounterId,context);
+    window.DD_BATTLE_CORE_RUNTIME.start({
+      encounterId:context.encounterId,
+      lead:activeLead,
+      wild
+    });
     syncBattleState();
     state.screen='battle';
     pushLog('Battle started.');
@@ -522,7 +549,8 @@
       fail(
         'Signal Disappeared',
         (wild&&wild.name||'The wild signal')+' disappeared from scanner range.',
-        wild
+        wild,
+        false
       );
       return true;
     }
@@ -537,7 +565,6 @@
         ' is defeated. Choose Download or Return.'
       ));
       fx('success');
-      render();
       return true;
     }
 
@@ -556,22 +583,21 @@
         }
       }));
       fx('warn');
-      render();
       return true;
     }
 
     if(decision.decision==='party-defeated'){
       state.result={
         type:'failure',
+        reason:'party-defeated',
         title:'Party Defeated',
-        msg:'No usable party sprites remain. Return to the scanner to recover.',
+        msg:'No usable party sprites remain. Return to the scanner to restore the team.',
         sprite:wild,
         canContinue:false
       };
       state.screen='result';
       pushLog(state.result.msg);
       fx('fail');
-      render();
       return true;
     }
 
@@ -582,13 +608,11 @@
           :'Battle context is unavailable. Return to the scanner and rediscover the signal.'
       );
       fx('warn');
-      render();
       return true;
     }
 
     pushLog('Battle is not active.');
     fx('warn');
-    render();
     return true;
   }
 
@@ -647,7 +671,131 @@
     });
   }
 
+  function animateTurnResult(result){
+    if(!result||!Array.isArray(result.actions))return;
+    result.actions.forEach((action,index)=>{
+      const actorSelector=action.mode==='player'?'.fighter.lead':'.fighter.wild';
+      const targetSelector=action.mode==='player'?'.fighter.wild':'.fighter.lead';
+      const actor=document.querySelector(actorSelector);
+      const target=document.querySelector(targetSelector);
+      setTimeout(()=>{
+        if(actor)actor.classList.add('dd-attacking');
+        if(target&&action.hit)target.classList.add('dd-hit');
+        setTimeout(()=>{
+          if(actor)actor.classList.remove('dd-attacking');
+          if(target)target.classList.remove('dd-hit');
+        },320);
+      },index*110);
+    });
+  }
+
   function fight(moveId){
+    if(state.turnBusy)return;
+
+    const core=window.DD_BATTLE_CORE_RUNTIME;
+    const wild=normalize(state.signal);
+    const activeLead=normalize(lead());
+    if(!core||typeof core.runTurn!=='function'||!wild||!activeLead){
+      pushLog('Battle Core Runtime is unavailable.');
+      fx('warn');
+      render();
+      return;
+    }
+
+    const move=
+      (activeLead.moves||[]).find(item=>item.id===moveId)||
+      (activeLead.moves||[])[0];
+    state.turnBusy=true;
+    state.turnPhase='core-turn';
+    applyControlHost();
+    applyTurnLock();
+
+    try{
+      const result=core.runTurn({
+        encounterId:wild.id,
+        lead:activeLead,
+        wild,
+        move
+      });
+      if(!result||result.ok===false){
+        throw new Error(result&&result.reason||'battle-core-turn-failed');
+      }
+
+      state.signal=wild;
+      pushLog(result.message||'Battle turn completed.');
+      animateTurnResult(result);
+
+      if(result.terminal==='wild-defeated'){
+        const rewards=window.DD_BATTLE_REWARD_RUNTIME;
+        const coreState=core.snapshot();
+        const rewardResult=rewards&&typeof rewards.award==='function'
+          ?rewards.award({
+            encounterId:coreState.battleId,
+            defeated:wild,
+            wild,
+            recipient:activeLead,
+            lead:activeLead
+          })
+          :null;
+        pushLog(
+          result.message+' '+wild.name+
+          ' is defeated. '+
+          (rewardResult&&rewardResult.ok
+            ?'Rewards applied. '
+            :'')+
+          'Choose Download or Return.'
+        );
+        state.result={
+          type:'success',
+          reason:'battle-victory',
+          title:'Battle Victory',
+          msg:wild.name+' was defeated. Progression and rewards are secured.',
+          sprite:wild,
+          reward:rewardResult,
+          canContinue:true
+        };
+        state.returnScreen='battle';
+        state.screen='result';
+        fx('success');
+      }else if(result.terminal==='lead-defeated'){
+        const replacements=partyMembers().filter(member =>
+          member&&member.id!==activeLead.id&&Number(member.hp||0)>0
+        );
+        if(replacements.length){
+          pushLog(activeLead.name+' fainted. Choose an available party sprite.');
+          setTimeout(()=>document.dispatchEvent(
+            new CustomEvent('dd:open-party-switch')
+          ),0);
+        }else{
+          state.result={
+            type:'failure',
+            reason:'party-defeated',
+            title:'Party Defeated',
+            msg:'No usable party sprites remain. Return to the scanner to restore the team.',
+            sprite:wild,
+            canContinue:false
+          };
+          state.screen='result';
+          pushLog(state.result.msg);
+          fx('fail');
+        }
+      }
+    }catch(error){
+      state.lastTurnError={
+        phase:'core-turn',
+        message:error&&error.message?error.message:String(error),
+        at:new Date().toISOString()
+      };
+      pushLog('Battle turn stopped safely. Try the action again.');
+      fx('warn');
+    }finally{
+      state.turnBusy=false;
+      state.turnPhase=null;
+      if(!patchBattleHud())render();
+    }
+  }
+
+  function legacyFight(moveId){
     if(state.turnBusy){
       pushLog('The current turn is still resolving.');
       fx('warn');
@@ -659,6 +807,7 @@
     const activeLead=normalize(lead());
     const bsr=rt.battleState();
     const resolver=resolverRequired();
+
 
     if(!wild||!activeLead)return;
 
@@ -716,6 +865,7 @@
         throw new Error('Battle Resolver could not prepare the turn.');
       }
 
+
       state.turnPhase='begin-turn';
       const startResult=assertOwnerResult(
         bsr.beginTurn(participants,turnContext),
@@ -739,7 +889,10 @@
 
         state.turnPhase=mode+'-application';
         const applied=assertOwnerResult(
-          bsr.applyResolution(resolution,actor,target,{
+          (typeof bsr.applyResolutionLite==='function'
+            ?bsr.applyResolutionLite
+            :bsr.applyResolution
+          ).call(bsr,resolution,actor,target,{
             encounterId:wild.id,
             wild,
             lead:activeLead,
@@ -753,22 +906,10 @@
 
         notes.push(resolutionNote(actor,target,resolution,applied));
 
-        if(resolution.hit&&!resolution.actionBlocked){
-          emit('hit',{
-            text:'-'+Number(
-              applied&&
-              applied.hpResult&&
-              applied.hpResult.damage||0
-            )+' HP'
-          });
-          fx('hit');
-        }else{
-          emit('warn');
-          fx('warn');
-        }
-
         state.signal=wild;
-        syncBattleState();
+        if(applied&&applied.state&&applied.state.value){
+          state.battleState=applied.state.value;
+        }
         const decision=applied&&applied.decision;
         return{
           stop:!!(decision&&decision.block),
@@ -780,48 +921,21 @@
 
       let actionResult=null;
 
-      if(first==='player'){
-        actionResult=applyAction(
-          activeLead,
-          move,
-          wild,
-          'player',
-          'player',
-          'wild'
-        );
-        if(!actionResult.stop){
-          actionResult=applyAction(
-            wild,
-            enemyMove,
-            activeLead,
-            'enemy',
-            'wild',
-            'player'
-          );
-        }
-      }else{
-        actionResult=applyAction(
-          wild,
-          enemyMove,
-          activeLead,
-          'enemy',
-          'wild',
-          'player'
-        );
-        if(!actionResult.stop){
-          actionResult=applyAction(
-            activeLead,
-            move,
-            wild,
-            'player',
-            'player',
-            'wild'
-          );
-        }
-      }
+      // Recovery baseline: one authoritative resolution per input. The former
+      // paired player/enemy resolutions crash the browser renderer and will be
+      // restored only after the transaction owner supports queued retaliation.
+      actionResult=applyAction(
+        activeLead,
+        move,
+        wild,
+        'player',
+        'player',
+        'wild'
+      );
+
+      if(!actionResult.stop)return;
 
       state.signal=wild;
-      syncBattleState();
       pushLog(notes.join(' '));
 
       if(actionResult&&actionResult.stop){
@@ -830,12 +944,24 @@
       }
 
       state.turnPhase='end-turn';
-      const endResult=assertOwnerResult(
-        bsr.endTurn(participants,turnContext),
-        'Battle State Runtime endTurn'
+      const hasActiveStatuses=participants.some(participant =>
+        Array.isArray(participant&&participant.statusEffects)&&
+        participant.statusEffects.length>0
       );
+      const endResult=hasActiveStatuses
+        ?assertOwnerResult(
+          bsr.endTurn(participants,turnContext),
+          'Battle State Runtime endTurn'
+        )
+        :{
+          ok:true,
+          terminal:null,
+          state:{value:state.battleState}
+        };
       state.signal=wild;
-      syncBattleState();
+      if(endResult&&endResult.state&&endResult.state.value){
+        state.battleState=endResult.state.value;
+      }
 
       if(endResult.terminal){
         const endDecision=evaluateBattleAction(wild,activeLead);
@@ -843,58 +969,16 @@
         return;
       }
 
-      dispatchDiagnostic('dd:battle-turn-complete',{
-        encounterId:wild.id,
-        turn:
-          endResult&&
-          endResult.state&&
-          endResult.state.turn||null,
-        wild,
-        lead:activeLead
-      });
     }catch(error){
       recoverTurnError(error,wild,activeLead);
     }finally{
       state.turnBusy=false;
       state.turnPhase=null;
-
-      try{
-        render();
-      }catch(renderError){
-        state.lastTurnError={
-          phase:'turn-final-render',
-          message:renderError&&renderError.message
-            ?renderError.message
-            :String(renderError),
-          at:new Date().toISOString()
-        };
-
-        dispatchDiagnostic('dd:battle-final-render-error',{
-          phase:'turn-final-render',
-          message:state.lastTurnError.message,
-          encounterId:wild&&wild.id||null,
-          wild,
-          lead:activeLead
-        });
-
-        // Preserve access to the current controls even if a presentation
-        // module throws while the screen is being rebuilt.
-        forceUnlockControls();
-
-        pushLog(
-          'Battle controls recovered after a display error. '+
-          'The last action completed.'
-        );
-
-        try{
-          const stage=$('stage');
-          if(stage){
-            const notice=document.createElement('p');
-            notice.className='log';
-            notice.textContent=state.log;
-            stage.appendChild(notice);
-          }
-        }catch(_){}
+      if(state.screen==='battle'){
+        applyControlHost();
+        applyTurnLock();
+      }else{
+        setTimeout(render,0);
       }
     }
   }
@@ -994,14 +1078,14 @@
     state.battleState='idle';
     state.turnBusy=false;
     state.turnPhase=null;
-    if(rt.battleState())rt.battleState().reset('result-success');
+    if(window.DD_BATTLE_CORE_RUNTIME)window.DD_BATTLE_CORE_RUNTIME.reset();
     state.screen='result';
     emit('success');
     fx('success');
     render();
   }
 
-  function fail(title,msg,sprite){
+  function fail(title,msg,sprite,shouldRender){
     state.result={
       type:'failure',
       title,
@@ -1015,10 +1099,10 @@
     state.battleState='idle';
     state.turnBusy=false;
     state.turnPhase=null;
-    if(rt.battleState())rt.battleState().reset('result-fail');
+    if(window.DD_BATTLE_CORE_RUNTIME)window.DD_BATTLE_CORE_RUNTIME.reset();
     state.screen='result';
     fx('fail');
-    render();
+    if(shouldRender!==false)render();
   }
 
   function continueBattle(){
@@ -1033,6 +1117,11 @@
   }
 
   function back(){
+    const restoreAfterDefeat=!!(
+      state.result&&state.result.reason==='party-defeated'
+    );
+    let recovery=null;
+
     if(
       state.signal&&
       ['encounter','battle','confirm'].includes(state.screen)&&
@@ -1053,11 +1142,23 @@
     state.battleState='idle';
     state.turnBusy=false;
     state.turnPhase=null;
-    if(rt.battleState())rt.battleState().reset('return');
+    if(window.DD_BATTLE_CORE_RUNTIME)window.DD_BATTLE_CORE_RUNTIME.reset();
+    if(
+      restoreAfterDefeat&&
+      rt.player()&&
+      rt.player().recovery&&
+      typeof rt.player().recovery.restoreParty==='function'
+    ){
+      recovery=rt.player().recovery.restoreParty();
+    }
     state.signal=null;
     state.confirm=null;
     state.result=null;
-    pushLog('Scanner ready.');
+    pushLog(
+      recovery
+        ?'Scanner ready. '+Number(recovery.restored||0)+' party sprite(s) restored to full HP.'
+        :'Scanner ready.'
+    );
     fx('return');
     render();
   }
@@ -1134,7 +1235,7 @@
       return `<section class="card">
         <h2>Party</h2>
         <p class="hint">
-          Runtime: ${rt.party()?'DD_PARTY_RUNTIME':'fallback local storage'}
+          Runtime: ${rt.player()?'DD_PLAYER_RUNTIME':'fallback local storage'}
         </p>
         <div class="grid">
           ${members.map(x=>
@@ -1151,7 +1252,7 @@
       return `<section class="card">
         <h2>Inventory</h2>
         <p class="hint">
-          Runtime: ${rt.inventory()?'DD_INVENTORY_RUNTIME':'fallback local storage'}
+          Runtime: ${rt.player()?'DD_PLAYER_RUNTIME':'fallback local storage'}
         </p>
         <div class="grid">
           <div class="mini">ByteCoins<br><b>${esc(it.byteCoins||0)}</b></div>
@@ -1182,12 +1283,30 @@
         </div>
       </section>`;
     },
-    admin:ctx=>
-      `<section class="card">
+    admin:ctx=>{
+      const rewardRuntime=rt.rewards();
+      const rewardProfile=rewardRuntime&&rewardRuntime.read
+        ?rewardRuntime.read()
+        :{victories:0,totalXp:0,battleHistory:[]};
+      const history=rewardRuntime&&rewardRuntime.getHistory
+        ?rewardRuntime.getHistory(8)
+        :[];
+      return `<section class="card">
         <h2>${esc(profile().name)}</h2>
-        <p>App Shell: v${VERSION}</p>
-        <p>Screen Registry: active</p>
-      </section>`
+        <div class="grid">
+          <div class="mini">Victories<br><b>${esc(rewardProfile.victories||0)}</b></div>
+          <div class="mini">Total XP<br><b>${esc(rewardProfile.totalXp||0)}</b></div>
+        </div>
+        <h3>Battle History</h3>
+        <div class="grid">
+          ${history.map(entry=>`<div class="mini">
+            ${esc(entry.result||'battle').toUpperCase()} • ${esc(entry.opponent&&entry.opponent.name||'Unknown')}
+            <br>+${esc(entry.xp||0)} XP • Lv ${esc(entry.level||1)} ${esc(entry.tier||'Kilobyte')}
+          </div>`).join('')||'<p>No completed battles yet.</p>'}
+        </div>
+        <p class="hint">Progress is saved automatically on this device.</p>
+      </section>`;
+    }
   };
 
   const screenRegistry={
@@ -1267,7 +1386,7 @@
       <button id="battleStart">Back to Battle</button>`,
     result:ctx=>
       ctx.result&&ctx.result.canContinue
-        ?`<button id="continueBattle" class="gold">Continue Battle</button>
+        ?`<button id="continueBattle" class="gold">${ctx.result.reason==='battle-victory'?'Continue to Download':'Continue Battle'}</button>
           <button id="back">Return to Scanner</button>`
         :`<button id="back" class="gold">Return to Scanner</button>`,
     party:panelReturnControls,
@@ -1284,22 +1403,35 @@
     return entry.fallback(ctx);
   }
 
-  function screenHtml(){
-    const ctx=screenContext();
+  function screenHtml(ctx){
+    ctx=ctx||screenContext();
+    const registry=rt.screenRegistry();
+    if(registry&&registry.has&&registry.has(state.screen)){
+      return registry.renderScreen(state.screen,ctx);
+    }
     return callScreen(
       screenRegistry[state.screen]||screenRegistry.scanner,
       ctx
     );
   }
 
-  function controlsHtml(){
-    const ctx=screenContext();
+  function controlsHtml(ctx){
+    ctx=ctx||screenContext();
+    const registry=rt.screenRegistry();
+    if(registry&&registry.renderControls){
+      const rendered=registry.renderControls(state.screen,ctx);
+      if(rendered!=null)return rendered;
+    }
     const fn=controlsRegistry[state.screen]||controlsRegistry.scanner;
     return fn(ctx);
   }
 
   function applyControlHost(){
     const host=$('controls');
+    const stage=$('stage');
+    if(stage){
+      stage.classList.toggle('battleStage',state.screen==='battle');
+    }
     if(!host)return;
     host.className=
       state.screen==='battle'
@@ -1350,7 +1482,9 @@
     if(state.turnBusy&&action==='move')return;
 
     if(action==='move'){
-      return fight(button.dataset.moveId||button.dataset.moveIndex);
+      const moveId=button.dataset.moveId||button.dataset.moveIndex;
+      setTimeout(()=>fight(moveId),80);
+      return;
     }
     if(action==='download')return captureAsk();
     if(action==='items')return panel('items');
@@ -1403,17 +1537,109 @@
   function render(){
     installShellStyle();
     ensureRoot();
-    $('stage').innerHTML=screenHtml();
-    $('controls').innerHTML=controlsHtml();
+    const ctx=screenContext();
+    const nextScreen=screenHtml(ctx);
+    const nextControls=controlsHtml(ctx);
+    $('stage').innerHTML=nextScreen;
+    $('controls').innerHTML=nextControls;
     applyControlHost();
     bind();
     paintFx();
   }
 
+  function patchBattleHud(){
+    if(state.screen!=='battle'||!state.signal)return false;
+
+    const wild=normalize(state.signal);
+    const activeLead=normalize(lead());
+    if(!wild||!activeLead)return false;
+
+    // Terminal turns change the available controls and must use the canonical
+    // screen renderer. Ordinary attacks only need their existing HUD patched.
+    if(Number(wild.hp||0)<=0||Number(activeLead.hp||0)<=0)return false;
+
+    const updateFighter=(selector,sprite)=>{
+      const fighter=document.querySelector(selector);
+      if(!fighter)return false;
+
+      const hpText=fighter.querySelector('.avatar b');
+      if(hpText){
+        hpText.textContent=Number(sprite.hp||0)+'/'+Number(sprite.maxHp||0);
+      }
+
+      const hpRing=fighter.querySelector('.ring.hp');
+      if(hpRing){
+        const maxHp=Number(sprite.maxHp||0);
+        const healthPct=maxHp>0
+          ?Math.max(0,Math.min(100,Math.round(Number(sprite.hp||0)/maxHp*100)))
+          :0;
+        const healthColor=healthPct>50
+          ?'#22C55E'
+          :(healthPct>25?'#FFD700':'#FB7185');
+        hpRing.style.setProperty('--hp-pct',String(healthPct));
+        hpRing.style.setProperty('--hp-color',healthColor);
+        hpRing.dataset.hpPercent=String(healthPct);
+        hpRing.setAttribute(
+          'aria-label',
+          'HP '+Number(sprite.hp||0)+' of '+maxHp
+        );
+      }
+
+      const statusRow=fighter.querySelector('.statusRow');
+      if(statusRow){
+        const statuses=Array.isArray(sprite.statusEffects)
+          ?sprite.statusEffects
+          :[];
+        statusRow.innerHTML=statuses.slice(0,2).map(status=>
+          `<span class="statusChip">${esc(status.label||status.id)} ${esc(status.duration||'')}</span>`
+        ).join('');
+      }
+      return true;
+    };
+
+    if(
+      !updateFighter('.fighter.lead',activeLead)||
+      !updateFighter('.fighter.wild',wild)
+    )return false;
+
+    const signal=Number(wild.stability||0);
+    const maxSignal=Number(wild.maxStability||1);
+    const signalText=document.querySelector('.signalBox span');
+    if(signalText)signalText.textContent=signal+'/'+maxSignal;
+    const signalBar=document.querySelector('.signalBox i');
+    if(signalBar){
+      signalBar.style.width=Math.max(
+        0,
+        Math.min(100,signal/maxSignal*100)
+      )+'%';
+    }
+
+    const downloadOdds=Number(odds(wild)||0);
+    const captureCap=Number(wild.captureCap||100);
+    const downloadText=document.querySelector('.downloadGauge span');
+    if(downloadText){
+      downloadText.textContent=Math.round(downloadOdds)+'% / '+captureCap+'%';
+    }
+    const downloadBar=document.querySelector('.downloadGauge i');
+    if(downloadBar){
+      downloadBar.style.width=Math.max(
+        0,
+        Math.min(100,downloadOdds/captureCap*100)
+      )+'%';
+    }
+
+    const logLine=document.querySelector('.battleLog li:last-child');
+    if(logLine)logLine.textContent='▸ '+(state.log||'Awaiting command.');
+
+    applyControlHost();
+    applyTurnLock();
+    return true;
+  }
+
   window.DD_PRODUCT_APP_V4_SHELL={
     version:VERSION,
     owner:OWNER,
-    phase:'4.7.3-party-switch-recovery',
+    phase:'4.9-screen-registry-and-module-bootstrap',
     state,
     render,
     discover,

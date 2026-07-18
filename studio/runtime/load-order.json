@@ -1,9 +1,16 @@
 {
-  "schemaVersion": "0.13.2",
+  "schemaVersion": "0.15.0",
   "generatedBy": "VoltanLabs Studio Runtime Loader",
-  "description": "Deterministic load-order and ownership manifest for Data Discovery Phase 4.7 after canonical battle resolution, battle-state runtime 0.7.0, throttled runtime diagnostics, and Product App history archival.",
+  "description": "Deterministic module-bootstrap manifest for Data Discovery Phase 6.0 progression, strategy, history, and save recovery.",
   "runtime": "databyte-discovery-product-app-v4-shell",
-  "phase": "4.7-canonical-resolution-and-throttled-diagnostics",
+  "phase": "6.0-progression-loop",
+  "entrypoint": {
+    "id": "dd-app-bootstrap",
+    "script": "/assets/js/dd-app-bootstrap.js?v=bootstrap-1-9-4",
+    "type": "module",
+    "global": "DD_APP_BOOTSTRAP",
+    "bundle": "/assets/js/dd-runtime-bundle.js?v=progression-6-0-3"
+  },
   "phases": [
     {
       "id": "studio:boot",
@@ -18,8 +25,8 @@
       "description": "Studio data bridge overlays manifest, species, move, and configuration data."
     },
     {
-      "id": "product:battle-engine-ready",
-      "description": "Recovered battle helper owns configuration lookup, feedback, enemy move scoring, and status-runtime delegation."
+      "id": "product:battle-core-ready",
+      "description": "The deterministic battle core owns move normalization, turn execution, strategic statuses, and terminal results."
     },
     {
       "id": "product:gameplay-rules-ready",
@@ -67,14 +74,14 @@
     },
     {
       "id": "runtime:health-ready",
-      "description": "Bridge health checks validate the Phase 4.7 shell and required UI/runtime globals."
+      "description": "Bridge health checks validate the Phase 4.8 shell, public facades, and required UI/runtime globals."
     }
   ],
   "modules": [
     {
       "id": "dd-canon-roster",
       "label": "Data Discovery Canon Roster",
-      "script": "/assets/js/dd-canon-roster.js?v=product-roster-1",
+      "script": "/assets/js/dd-canon-roster.js?v=recovery-4-9-1",
       "phase": "product:roster-ready",
       "requires": [],
       "emits": [
@@ -87,7 +94,7 @@
     {
       "id": "dd-studio-data-bridge",
       "label": "Studio Data Bridge",
-      "script": "/assets/js/dd-studio-data-bridge.js?v=studio-bridge-3",
+      "script": "/assets/js/dd-studio-data-bridge.js?v=progression-moves-2-4-2",
       "phase": "product:studio-bridge-ready",
       "requires": [
         "dd-canon-roster"
@@ -106,7 +113,7 @@
     {
       "id": "dd-status-runtime",
       "label": "Status Runtime",
-      "script": "/assets/js/dd-status-runtime.js?v=status-runtime-1-1-0",
+      "script": "/assets/js/dd-status-runtime.js?v=progression-status-1-3-0",
       "phase": "product:state-ready",
       "requires": [],
       "emits": [
@@ -124,27 +131,9 @@
       "status": "active-owner"
     },
     {
-      "id": "dd-battle-engine-2-4",
-      "label": "Battle Engine Hooks",
-      "script": "/assets/js/dd-battle-engine-2-4.js?v=battle-engine-3-3-0",
-      "phase": "product:battle-engine-ready",
-      "requires": [
-        "dd-studio-data-bridge",
-        "dd-status-runtime"
-      ],
-      "emits": [
-        "DDBattle24",
-        "dd:battle-engine-ready",
-        "dd:battle:*"
-      ],
-      "required": true,
-      "failureBehavior": "show-runtime-error",
-      "status": "active-owner"
-    },
-    {
       "id": "dd-gameplay-rules-2-4",
       "label": "Gameplay Rules Runtime",
-      "script": "/assets/js/dd-gameplay-rules-2-4.js?v=gameplay-rules-1",
+      "script": "/assets/js/dd-gameplay-rules-2-4.js?v=recovery-4-9-1",
       "phase": "product:gameplay-rules-ready",
       "requires": [
         "dd-studio-data-bridge"
@@ -160,7 +149,7 @@
     {
       "id": "dd-capture-runtime",
       "label": "Capture / Download Runtime",
-      "script": "/assets/js/dd-capture-runtime.js?v=capture-runtime-1",
+      "script": "/assets/js/dd-capture-runtime.js?v=recovery-4-9-1",
       "phase": "product:capture-runtime-ready",
       "requires": [
         "dd-gameplay-rules-2-4"
@@ -176,7 +165,7 @@
     {
       "id": "dd-encounter-runtime",
       "label": "Encounter Runtime",
-      "script": "/assets/js/dd-encounter-runtime.js?v=encounter-runtime-1",
+      "script": "/assets/js/dd-encounter-runtime.js?v=recovery-4-9-1",
       "phase": "product:encounter-runtime-ready",
       "requires": [
         "dd-canon-roster",
@@ -193,146 +182,48 @@
       "status": "active-owner"
     },
     {
-      "id": "dd-battle-balance-2-4",
-      "label": "Battle Balance Layer",
-      "script": "/assets/js/dd-battle-balance-2-4.js?v=battle-balance-2",
-      "phase": "product:balance-ready",
-      "requires": [
-        "dd-studio-data-bridge",
-        "dd-battle-engine-2-4",
-        "dd-gameplay-rules-2-4"
-      ],
-      "emits": [
-        "dd:battle-balance-ready",
-        "DD_BATTLE_BALANCE"
-      ],
-      "required": true,
-      "failureBehavior": "show-runtime-error",
-      "status": "active-owner"
-    },
-    {
-      "id": "dd-battle-resolver",
-      "label": "Battle Resolver",
-      "script": "/assets/js/dd-battle-resolver.js?v=battle-resolver-3-4-0",
-      "phase": "product:battle-resolver-ready",
-      "requires": [
-        "dd-battle-engine-2-4",
-        "dd-gameplay-rules-2-4",
-        "dd-status-runtime"
-      ],
-      "emits": [
-        "dd:battle-resolver-ready",
-        "DD_BATTLE_RESOLVER"
-      ],
-      "required": true,
-      "failureBehavior": "show-runtime-error",
-      "status": "active-owner"
-    },
-    {
-      "id": "dd-battle-state-runtime",
-      "label": "Battle State Runtime",
-      "script": "/assets/js/dd-battle-state-runtime.js?v=battle-state-runtime-0-7-0",
-      "phase": "product:state-ready",
-      "requires": [
-        "dd-battle-resolver",
-        "dd-status-runtime"
-      ],
-      "emits": [
-        "dd:battle-state-runtime-ready",
-        "DD_BATTLE_STATE_RUNTIME",
-        "dd:battle-context-ready",
-        "dd:battle-context-updated",
-        "dd:battle-terminal"
-      ],
-      "required": true,
-      "failureBehavior": "show-runtime-error",
-      "status": "active-owner"
-    },
-    {
-      "id": "dd-battle-presentation-runtime",
-      "label": "Battle Presentation Runtime",
-      "script": "/assets/js/dd-battle-presentation-runtime.js?v=battle-presentation-runtime-3",
-      "phase": "product:state-ready",
-      "requires": [
-        "dd-battle-state-runtime"
-      ],
-      "emits": [
-        "dd:battle-presentation-runtime-ready",
-        "DD_BATTLE_PRESENTATION_RUNTIME"
-      ],
-      "required": true,
-      "failureBehavior": "show-runtime-error",
-      "status": "active-owner"
-    },
-    {
-      "id": "dd-collection-runtime",
-      "label": "Collection Runtime",
-      "script": "/assets/js/dd-collection-runtime.js?v=collection-runtime-1",
+      "id": "dd-player-runtime",
+      "label": "Player Runtime",
+      "script": "/assets/js/dd-player-runtime.js?v=progression-save-1-2-1",
       "phase": "product:state-ready",
       "requires": [],
       "emits": [
+        "dd:player-runtime-ready",
+        "DD_PLAYER_RUNTIME",
         "dd:collection-runtime-ready",
-        "DD_COLLECTION_RUNTIME"
-      ],
-      "required": true,
-      "failureBehavior": "show-runtime-error",
-      "status": "active-owner"
-    },
-    {
-      "id": "dd-party-runtime",
-      "label": "Party Runtime",
-      "script": "/assets/js/dd-party-runtime.js?v=party-runtime-1",
-      "phase": "product:state-ready",
-      "requires": [
-        "dd-collection-runtime"
-      ],
-      "emits": [
         "dd:party-runtime-ready",
-        "DD_PARTY_RUNTIME"
+        "dd:party-switch-runtime-ready",
+        "dd:inventory-runtime-ready",
+        "dd:dex-runtime-ready"
       ],
       "required": true,
       "failureBehavior": "show-runtime-error",
       "status": "active-owner"
     },
     {
-      "id": "dd-party-switch-runtime",
-      "label": "Party Switch Runtime",
-      "script": "/assets/js/dd-party-switch-runtime.js?v=party-switch-runtime-3",
+      "id": "dd-battle-core-runtime",
+      "label": "Battle Core Runtime",
+      "script": "/assets/js/dd-battle-core-runtime.js?v=progression-battle-1-2-0",
       "phase": "product:state-ready",
       "requires": [
-        "dd-party-runtime"
+        "dd-capture-runtime",
+        "dd-player-runtime"
       ],
       "emits": [
-        "dd:party-switch-runtime-ready",
-        "dd:party-switch",
-        "dd:party-switch-required"
+        "DD_BATTLE_CORE_RUNTIME"
       ],
       "required": true,
       "failureBehavior": "show-runtime-error",
-      "status": "active-owner"
-    },
-    {
-      "id": "dd-inventory-runtime",
-      "label": "Inventory Runtime",
-      "script": "/assets/js/dd-inventory-runtime.js?v=inventory-runtime-1",
-      "phase": "product:state-ready",
-      "requires": [],
-      "emits": [
-        "dd:inventory-runtime-ready",
-        "DD_INVENTORY_RUNTIME"
-      ],
-      "required": true,
-      "failureBehavior": "show-runtime-error",
-      "status": "active-owner"
+      "status": "active-battle-owner"
     },
     {
       "id": "dd-battle-reward-runtime",
       "label": "Battle Reward Runtime",
-      "script": "/assets/js/dd-battle-reward-runtime.js?v=battle-reward-runtime-1-0-0",
+      "script": "/assets/js/dd-battle-reward-runtime.js?v=progression-reward-1-1-0",
       "phase": "product:state-ready",
       "requires": [
-        "dd-battle-state-runtime",
-        "dd-inventory-runtime"
+        "dd-battle-core-runtime",
+        "dd-player-runtime"
       ],
       "emits": [
         "dd:battle-reward-runtime-ready",
@@ -348,7 +239,7 @@
     {
       "id": "dd-battle-reward-presentation",
       "label": "Battle Reward Presentation",
-      "script": "/assets/js/dd-battle-reward-presentation.js?v=battle-reward-presentation-1-0-0",
+      "script": "/assets/js/dd-battle-reward-presentation.js?v=progression-reward-ui-1-1-0",
       "phase": "product:state-ready",
       "requires": [
         "dd-battle-reward-runtime"
@@ -363,59 +254,13 @@
       "status": "active-presentation-owner"
     },
     {
-      "id": "dd-dex-runtime",
-      "label": "Dex Runtime",
-      "script": "/assets/js/dd-dex-runtime.js?v=dex-runtime-1",
-      "phase": "product:state-ready",
-      "requires": [
-        "dd-collection-runtime"
-      ],
-      "emits": [
-        "dd:dex-runtime-ready",
-        "DD_DEX_RUNTIME"
-      ],
-      "required": true,
-      "failureBehavior": "show-runtime-error",
-      "status": "active-owner"
-    },
-    {
-      "id": "dd-collection-dex-runtime-bridge",
-      "label": "Collection Dex Runtime Bridge",
-      "script": "/assets/js/dd-collection-dex-runtime-bridge.js?v=collection-dex-bridge-1",
-      "phase": "product:state-ready",
-      "requires": [
-        "dd-collection-runtime",
-        "dd-dex-runtime"
-      ],
-      "emits": [
-        "dd:collection-dex-runtime-bridge-ready"
-      ],
-      "required": false,
-      "failureBehavior": "warn-only",
-      "status": "compatibility-adapter"
-    },
-    {
-      "id": "dd-layout-viewport-lock-4-2",
-      "label": "Viewport Lock Layout 4.2",
-      "script": "/assets/js/dd-layout-viewport-lock-4-2.js?v=layout-lock-4-2-1",
-      "phase": "product:screen-owners-ready",
-      "requires": [],
-      "emits": [
-        "viewport-lock-layout"
-      ],
-      "required": false,
-      "failureBehavior": "warn-only",
-      "status": "compatibility"
-    },
-    {
       "id": "dd-scanner-screen",
       "label": "Scanner Screen Owner",
-      "script": "/assets/js/dd-scanner-screen.js?v=scanner-screen-owner-1",
+      "script": "/assets/js/dd-scanner-screen.js?v=recovery-4-9-1",
       "phase": "product:screen-owners-ready",
       "requires": [
         "dd-encounter-runtime",
-        "dd-collection-runtime",
-        "dd-inventory-runtime"
+        "dd-player-runtime"
       ],
       "emits": [
         "dd:scanner-screen-ready",
@@ -428,7 +273,7 @@
     {
       "id": "dd-encounter-screen",
       "label": "Encounter Screen Owner",
-      "script": "/assets/js/dd-encounter-screen.js?v=encounter-screen-owner-1",
+      "script": "/assets/js/dd-encounter-screen.js?v=recovery-4-9-1",
       "phase": "product:screen-owners-ready",
       "requires": [
         "dd-encounter-runtime",
@@ -445,10 +290,10 @@
     {
       "id": "dd-battle-screen",
       "label": "Battle Screen Owner",
-      "script": "/assets/js/dd-battle-screen.js?v=battle-screen-owner-3",
+      "script": "/assets/js/dd-battle-screen.js?v=progression-layout-0-5-1",
       "phase": "product:screen-owners-ready",
       "requires": [
-        "dd-battle-state-runtime",
+        "dd-battle-core-runtime",
         "dd-capture-runtime",
         "dd-encounter-runtime"
       ],
@@ -463,10 +308,10 @@
     {
       "id": "dd-battle-controls",
       "label": "Battle Controls Owner",
-      "script": "/assets/js/dd-battle-controls.js?v=battle-controls-owner-3",
+      "script": "/assets/js/dd-battle-controls.js?v=progression-moves-0-3-0",
       "phase": "product:screen-owners-ready",
       "requires": [
-        "dd-battle-state-runtime"
+        "dd-battle-core-runtime"
       ],
       "emits": [
         "dd:battle-controls-ready",
@@ -479,11 +324,11 @@
     {
       "id": "dd-confirm-screen",
       "label": "Download Confirmation Screen Owner",
-      "script": "/assets/js/dd-confirm-screen.js?v=confirm-screen-owner-1",
+      "script": "/assets/js/dd-confirm-screen.js?v=recovery-4-9-1",
       "phase": "product:screen-owners-ready",
       "requires": [
         "dd-capture-runtime",
-        "dd-inventory-runtime"
+        "dd-player-runtime"
       ],
       "emits": [
         "dd:confirm-screen-ready",
@@ -496,12 +341,10 @@
     {
       "id": "dd-result-screen",
       "label": "Download Result Screen Owner",
-      "script": "/assets/js/dd-result-screen.js?v=result-screen-owner-1",
+      "script": "/assets/js/dd-result-screen.js?v=progression-result-1-1-0",
       "phase": "product:screen-owners-ready",
       "requires": [
-        "dd-collection-runtime",
-        "dd-party-runtime",
-        "dd-inventory-runtime"
+        "dd-player-runtime"
       ],
       "emits": [
         "dd:result-screen-ready",
@@ -512,36 +355,47 @@
       "status": "active-screen-owner"
     },
     {
-      "id": "databyte-discovery-product-app-v4-shell",
-      "label": "Data Discovery v4 App Shell",
-      "script": "/assets/js/databyte-discovery-product-app-v4-shell.js?v=v4-shell-4-7-3",
-      "phase": "product:app-ready",
+      "id": "dd-screen-registry",
+      "label": "Screen Registry Facade",
+      "script": "/assets/js/dd-screen-registry.js?v=progression-result-routing-1-1-0",
+      "phase": "product:screen-owners-ready",
       "requires": [
-        "dd-canon-roster",
-        "dd-studio-data-bridge",
-        "dd-status-runtime",
-        "dd-battle-engine-2-4",
-        "dd-gameplay-rules-2-4",
-        "dd-capture-runtime",
-        "dd-encounter-runtime",
-        "dd-battle-balance-2-4",
-        "dd-battle-resolver",
-        "dd-battle-state-runtime",
-        "dd-battle-presentation-runtime",
-        "dd-collection-runtime",
-        "dd-party-runtime",
-        "dd-party-switch-runtime",
-        "dd-inventory-runtime",
-        "dd-battle-reward-runtime",
-        "dd-battle-reward-presentation",
-        "dd-dex-runtime",
-        "dd-collection-dex-runtime-bridge",
         "dd-scanner-screen",
         "dd-encounter-screen",
         "dd-battle-screen",
         "dd-battle-controls",
         "dd-confirm-screen",
         "dd-result-screen"
+      ],
+      "emits": [
+        "dd:screen-registry-ready",
+        "DD_SCREEN_REGISTRY"
+      ],
+      "required": true,
+      "failureBehavior": "show-runtime-error",
+      "status": "active-public-facade"
+    },
+    {
+      "id": "databyte-discovery-product-app-v4-shell",
+      "label": "Data Discovery v4 App Shell",
+      "script": "/assets/js/databyte-discovery-product-app-v4-shell.js?v=progression-shell-4-10-2",
+      "phase": "product:app-ready",
+      "requires": [
+        "dd-canon-roster",
+        "dd-studio-data-bridge",
+        "dd-status-runtime",
+        "dd-gameplay-rules-2-4",
+        "dd-capture-runtime",
+        "dd-encounter-runtime",
+        "dd-battle-core-runtime",
+        "dd-player-runtime",
+        "dd-scanner-screen",
+        "dd-encounter-screen",
+        "dd-battle-screen",
+        "dd-battle-controls",
+        "dd-confirm-screen",
+        "dd-result-screen",
+        "dd-screen-registry"
       ],
       "emits": [
         "dd:v4-shell-ready",
@@ -553,150 +407,22 @@
       "status": "active-app-shell"
     },
     {
-      "id": "dd-scanner-behavior-4-3",
-      "label": "Scanner OS Behavior Guard",
-      "script": "/assets/js/dd-scanner-behavior-4-3.js?v=behavior-4-3-1",
-      "phase": "product:behavior-ready",
+      "id": "dd-app-presentation-runtime",
+      "label": "App Presentation Runtime",
+      "script": "/assets/js/dd-app-presentation-runtime.js?v=recovery-4-9-1",
+      "phase": "product:presentation-ready",
       "requires": [
+        "dd-player-runtime",
+        "dd-screen-registry",
         "databyte-discovery-product-app-v4-shell"
       ],
       "emits": [
-        "dd:scanner-behavior-guard-ready"
+        "dd:app-presentation-runtime-ready",
+        "DD_APP_PRESENTATION_RUNTIME"
       ],
-      "required": false,
-      "failureBehavior": "warn-only",
-      "status": "compatibility"
-    },
-    {
-      "id": "dd-party-switch-battle-bridge",
-      "label": "Party Switch Battle Bridge",
-      "script": "/assets/js/dd-party-switch-battle-bridge.js?v=party-switch-bridge-1",
-      "phase": "product:behavior-ready",
-      "requires": [
-        "dd-party-switch-runtime",
-        "databyte-discovery-product-app-v4-shell"
-      ],
-      "emits": [
-        "dd:party-switch-bridge-ready",
-        "dd:party-fainted",
-        "dd:party-wiped"
-      ],
-      "required": false,
-      "failureBehavior": "warn-only",
-      "status": "compatibility-adapter"
-    },
-    {
-      "id": "dd-party-switch-ui",
-      "label": "Party Switch UI",
-      "script": "/assets/js/dd-party-switch-ui.js?v=party-switch-ui-4",
-      "phase": "product:behavior-ready",
-      "requires": [
-        "dd-party-switch-runtime",
-        "databyte-discovery-product-app-v4-shell"
-      ],
-      "emits": [
-        "party-switch-overlay"
-      ],
-      "required": false,
-      "failureBehavior": "warn-only",
-      "status": "compatibility-ui"
-    },
-    {
-      "id": "dd-party-switch-refresh",
-      "label": "Party Switch HUD Refresh",
-      "script": "/assets/js/dd-party-switch-refresh.js?v=party-switch-refresh-2",
-      "phase": "product:behavior-ready",
-      "requires": [
-        "dd-party-switch-runtime",
-        "dd-party-switch-ui"
-      ],
-      "emits": [],
-      "required": false,
-      "failureBehavior": "warn-only",
-      "status": "compatibility-visual-only"
-    },
-    {
-      "id": "dd-scanner-os-runtime",
-      "label": "Scanner OS Runtime",
-      "script": "/assets/js/dd-scanner-os-runtime.js?v=scanner-os-runtime-4-7-5",
-      "phase": "product:scanner-os-ready",
-      "requires": [
-        "databyte-discovery-product-app-v4-shell"
-      ],
-      "emits": [
-        "dd:scanner-os-runtime-ready"
-      ],
-      "required": false,
-      "failureBehavior": "warn-only",
-      "status": "active-shell-layout-stabilizer"
-    },
-    {
-      "id": "dd-battle-experience-4-2",
-      "label": "Battle Experience 4.2",
-      "script": "/assets/js/dd-battle-experience-4-2.js?v=battle-experience-4-7-5",
-      "phase": "product:effects-ready",
-      "requires": [
-        "dd-battle-presentation-runtime",
-        "databyte-discovery-product-app-v4-shell"
-      ],
-      "emits": [
-        "battle-experience-ui"
-      ],
-      "required": false,
-      "failureBehavior": "warn-only",
-      "status": "compatibility-merge-candidate"
-    },
-    {
-      "id": "dd-health-signal-bridge",
-      "label": "Health Signal Compatibility Bridge",
-      "script": "/assets/js/dd-health-signal-bridge.js?v=health-signal-1",
-      "phase": "product:effects-ready",
-      "requires": [
-        "databyte-discovery-product-app-v4-shell"
-      ],
-      "emits": [
-        "health-signal-ui"
-      ],
-      "required": false,
-      "failureBehavior": "warn-only",
-      "status": "compatibility-visual-only"
-    },
-    {
-      "id": "dd-scan-bg",
-      "label": "Scanner Background Effects and Scanner OS Bootstrap",
-      "script": "/assets/js/dd-scan-bg.js?v=direct-os-4-7-5",
-      "phase": "product:effects-ready",
-      "requires": [
-        "databyte-discovery-product-app-v4-shell"
-      ],
-      "emits": [
-        "scanner:background-ready"
-      ],
-      "required": false,
-      "failureBehavior": "warn-only",
-      "status": "compatibility-visual-only"
-    },
-    {
-      "id": "studio-runtime-bridge-checks",
-      "label": "Bridge Health Checks Script",
-      "script": "/assets/js/studio-runtime-bridge-checks.js?v=bridge-checks-1-2-0",
-      "phase": "runtime:health-ready",
-      "requires": [
-        "databyte-discovery-product-app-v4-shell",
-        "dd-scanner-screen",
-        "dd-encounter-screen",
-        "dd-battle-screen",
-        "dd-battle-controls",
-        "dd-confirm-screen",
-        "dd-result-screen"
-      ],
-      "emits": [
-        "runtime:health-check",
-        "DD_RUNTIME_HEALTH"
-      ],
-      "required": false,
-      "failureBehavior": "warn-only",
-      "status": "active-diagnostics"
+      "required": true,
+      "failureBehavior": "show-runtime-error",
+      "status": "active-owner"
     }
   ],
   "legacyModules": [
@@ -800,7 +526,7 @@
       "id": "dd-status-battle-flow",
       "script": "/assets/js/dd-status-battle-flow.js?v=status-battle-flow-1-1-0",
       "status": "retirement-candidate",
-      "replacement": "databyte-discovery-product-app-v4-shell + dd-battle-state-runtime"
+      "replacement": "dd-battle-core-runtime"
     }
   ],
   "events": {
@@ -818,14 +544,14 @@
     "DD_MOVE_INDEX",
     "DD_TYPE_CHART",
     "DD_STATUS_RUNTIME",
-    "DDBattle24",
     "DD_GAMEPLAY_RULES",
     "DD_CAPTURE_RUNTIME",
     "DD_ENCOUNTER_RUNTIME",
-    "DD_BATTLE_BALANCE",
-    "DD_BATTLE_RESOLVER",
-    "DD_BATTLE_STATE_RUNTIME",
-    "DD_BATTLE_PRESENTATION_RUNTIME",
+    "DD_PLAYER_RUNTIME",
+    "DD_BATTLE_CORE_RUNTIME",
+    "DD_SCREEN_REGISTRY",
+    "DD_APP_PRESENTATION_RUNTIME",
+    "DD_APP_BOOTSTRAP",
     "DD_COLLECTION_RUNTIME",
     "DD_PARTY_RUNTIME",
     "DD_PARTY_SWITCH_RUNTIME",
@@ -845,20 +571,24 @@
   ],
   "canonicalUiRules": {
     "appShellOwner": "databyte-discovery-product-app-v4-shell",
-    "screenRegistryOwner": "databyte-discovery-product-app-v4-shell",
+    "screenRegistryOwner": "dd-screen-registry",
     "scannerScreenOwner": "dd-scanner-screen",
     "encounterScreenOwner": "dd-encounter-screen",
     "battleScreenOwner": "dd-battle-screen",
     "battleControlsOwner": "dd-battle-controls",
     "confirmScreenOwner": "dd-confirm-screen",
     "resultScreenOwner": "dd-result-screen",
-    "battleMathOwner": "dd-battle-resolver",
-    "battleStateOwner": "dd-battle-state-runtime",
-    "battleEffectsOwner": "dd-battle-presentation-runtime",
+    "battleMathOwner": "dd-battle-core-runtime",
+    "battleStateOwner": "dd-battle-core-runtime",
+    "battlePublicFacade": "dd-battle-core-runtime",
+    "playerStateOwner": "dd-player-runtime",
+    "appPresentationOwner": "dd-app-presentation-runtime",
+    "runtimeBootstrapOwner": "dd-app-bootstrap",
+    "battleEffectsOwner": "dd-app-presentation-runtime",
     "statusRuntimeOwner": "dd-status-runtime",
     "configurationSource": "DD_TYPE_CHART",
     "alignmentModel": "Alignment is independent from Configuration.",
-    "hpDisplay": "Both lead and wild sprite HP are displayed as circular HP rings.",
+    "hpDisplay": "Both lead and wild sprite HP are displayed as thin circular progress edges around opaque sprite circles.",
     "signalDisplay": "Signal is displayed separately as encounter stability and is not drawn as the wild sprite ring.",
     "mobileLayout": "The v4 shell owns the app frame. Dedicated screen modules own internal screen layout.",
     "temporaryScreens": [
@@ -880,7 +610,10 @@
     ],
     "battleRewardOwner": "dd-battle-reward-runtime",
     "battleRewardPresentationOwner": "dd-battle-reward-presentation",
-    "battleContextOwner": "dd-battle-state-runtime"
+    "progressionOwner": "dd-battle-reward-runtime",
+    "battleHistoryOwner": "dd-battle-reward-runtime",
+    "saveRecoveryOwner": "dd-player-runtime",
+    "battleContextOwner": "dd-battle-core-runtime"
   },
   "knownValidationIssues": [
     {

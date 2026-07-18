@@ -115,12 +115,16 @@
   }
 
   function trace(phase, detail) {
-    safeDispatch('dd:battle-runtime-trace', Object.assign({
+    transaction.lastTrace = Object.assign({
       phase,
-      transaction: transactionSnapshot(),
-      state: snapshot(),
-      battleContext: contextSnapshot()
-    }, detail || {}));
+      transactionPhase: transaction.phase,
+      transactionActive: transaction.active,
+      battleState: state.value,
+      turn: state.turn,
+      encounterId: battleContext.encounterId || state.encounterId || null,
+      at: new Date().toISOString()
+    }, detail || {});
+    return transaction.lastTrace;
   }
 
   function beginTransaction(phase) {
@@ -841,7 +845,6 @@
           state: snapshot(),
           battleContext: contextSnapshot()
         };
-        safeDispatch('dd:battle-resolution-applied', blockedResult);
         return blockedResult;
       }
 
@@ -881,7 +884,6 @@
         state: snapshot(),
         battleContext: contextSnapshot()
       };
-      safeDispatch('dd:battle-resolution-applied', result);
       return result;
     });
   }
@@ -1153,7 +1155,6 @@
       state: snapshot(),
       battleContext: contextSnapshot()
     };
-    safeDispatch('dd:battle-status-phase-ticked', result);
     return result;
   }
 
@@ -1184,8 +1185,67 @@
 
   function endTurn(participants, context) {
     return guardedTransaction('end-turn', function () {
+      const list = Array.isArray(participants)
+        ? participants.filter(Boolean)
+        : [participants].filter(Boolean);
+      const hasStatuses = list.some(participant =>
+        Array.isArray(participant.statusEffects) &&
+        participant.statusEffects.length > 0
+      );
+      if (!hasStatuses) {
+        return {
+          ok: true,
+          phase: 'end',
+          ticks: [],
+          terminal: null,
+          state: snapshot(),
+          battleContext: contextSnapshot()
+        };
+      }
       return tickPhaseCore(participants, 'end', context || {});
     });
+  }
+
+  function applyResolutionLite(resolution, actor, target, context) {
+    if (!resolution) return { ok: false, reason: 'missing-resolution' };
+    context = context && typeof context === 'object' ? context : {};
+
+    if (context.actorSide === 'player') battleContext.lead = actor;
+    if (context.actorSide === 'wild') battleContext.wild = actor;
+    if (context.targetSide === 'player') battleContext.lead = target;
+    if (context.targetSide === 'wild') battleContext.wild = target;
+    if (context.encounterId) {
+      battleContext.encounterId = String(context.encounterId);
+      state.encounterId = state.encounterId || battleContext.encounterId;
+    }
+
+    const hpResult = resolution.actionBlocked
+      ? { applied: false, damage: 0, fainted: false }
+      : applyHpDamage(target, resolution);
+    const pressureResult = resolution.actionBlocked
+      ? { applied: false, pressure: 0 }
+      : applyDownloadPressure(target, resolution, context);
+    const persistenceResult = resolution.actionBlocked
+      ? { ok: true, skipped: true, reason: 'action-blocked' }
+      : persistParticipant(target, context.targetSide);
+    const decision = resolution.actionBlocked
+      ? { ok: true, block: false, decision: ACTION_DECISIONS.allowed }
+      : resolvePostResolutionDecision(actor, target, context);
+
+    return {
+      ok: true,
+      resolution,
+      actor,
+      target,
+      actionBlocked: !!resolution.actionBlocked,
+      hpResult,
+      pressureResult,
+      statusResult: { ok: false, skipped: true, reason: 'recovery-lite-path' },
+      persistenceResult,
+      decision,
+      state: snapshot(),
+      battleContext: contextSnapshot()
+    };
   }
 
   function tickTurn(participants, context) {
@@ -1279,6 +1339,7 @@
     escaped,
     applyStatusApplication,
     applyResolution,
+    applyResolutionLite,
     applyHpDamage,
     applyDownloadPressure,
     applyWildDefeat,

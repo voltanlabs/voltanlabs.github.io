@@ -103,14 +103,14 @@
       "ownerRole": "status-state-runtime",
       "path": "/assets/js/dd-status-runtime.js",
       "dependencies": [],
-      "version": "1.0.0"
+      "version": "1.3.0"
     },
     {
       "id": "src-dd-battle-engine-2-4",
       "name": "dd-battle-engine-2-4.js",
-      "fileType": "active-runtime",
+      "fileType": "legacy-runtime-reference",
       "project": "DataByteSprites",
-      "status": "active-owner",
+      "status": "implemented-not-loaded",
       "ownerRole": "configuration-and-battle-helper",
       "path": "/assets/js/dd-battle-engine-2-4.js",
       "dependencies": [
@@ -123,9 +123,9 @@
     {
       "id": "src-dd-battle-resolver",
       "name": "dd-battle-resolver.js",
-      "fileType": "active-runtime",
+      "fileType": "legacy-runtime-reference",
       "project": "DataByteSprites",
-      "status": "active-owner",
+      "status": "implemented-not-loaded",
       "ownerRole": "battle-resolution-runtime",
       "path": "/assets/js/dd-battle-resolver.js",
       "dependencies": [
@@ -137,9 +137,9 @@
     {
       "id": "src-dd-battle-state-runtime",
       "name": "dd-battle-state-runtime.js",
-      "fileType": "active-runtime",
+      "fileType": "legacy-runtime-reference",
       "project": "DataByteSprites",
-      "status": "active-owner",
+      "status": "implemented-not-loaded",
       "ownerRole": "battle-and-status-transition-runtime",
       "path": "/assets/js/dd-battle-state-runtime.js",
       "dependencies": [
@@ -151,9 +151,9 @@
     {
       "id": "src-dd-status-battle-flow",
       "name": "dd-status-battle-flow.js",
-      "fileType": "active-runtime-bridge",
+      "fileType": "legacy-runtime-reference",
       "project": "DataByteSprites",
-      "status": "active-owner",
+      "status": "implemented-not-loaded",
       "ownerRole": "live-status-turn-coordinator",
       "path": "/assets/js/dd-status-battle-flow.js",
       "dependencies": [
@@ -166,11 +166,11 @@
     {
       "id": "src-dd-battle-presentation-runtime",
       "name": "dd-battle-presentation-runtime.js",
-      "fileType": "active-presentation-runtime",
+      "fileType": "legacy-presentation-reference",
       "project": "DataByteSprites",
-      "status": "active-owner",
-      "ownerRole": "battle-and-status-presentation",
-      "path": "/assets/js/dd-battle-presentation-runtime.js",
+      "status": "retired-active-load",
+      "ownerRole": "superseded-by-app-presentation-runtime",
+      "path": "/archive/databyte-discovery/recovery-diagnostics/dd-battle-presentation-runtime.js",
       "dependencies": [
         "src-dd-battle-state-runtime",
         "src-dd-status-runtime"
@@ -205,37 +205,107 @@
       "version": "3.0.0"
     },
     {
-      "id": "src-dd-party-runtime",
-      "name": "dd-party-runtime.js",
+      "id": "src-dd-player-runtime",
+      "name": "dd-player-runtime.js",
       "fileType": "active-runtime",
       "project": "DataByteSprites",
       "status": "active-owner",
+      "ownerRole": "collection-party-active-slot-inventory-dex",
+      "path": "/assets/js/dd-player-runtime.js",
+      "dependencies": [
+        "dbs-game-data"
+      ],
+      "version": "1.2.1"
+    },
+    {
+      "id": "src-dd-battle-core-runtime",
+      "name": "dd-battle-core-runtime.js",
+      "fileType": "active-runtime",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "deterministic-battle-calculation-turn-and-state-owner",
+      "path": "/assets/js/dd-battle-core-runtime.js",
+      "dependencies": [
+        "src-dd-status-runtime",
+        "src-dd-capture-runtime",
+        "src-dd-player-runtime"
+      ],
+      "version": "1.2.0"
+    },
+    {
+      "id": "src-dd-battle-reward-runtime",
+      "name": "dd-battle-reward-runtime.js",
+      "fileType": "active-runtime",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "battle-rewards-xp-levels-version-upgrades-and-history",
+      "path": "/assets/js/dd-battle-reward-runtime.js",
+      "dependencies": [
+        "src-dd-player-runtime",
+        "src-dd-battle-core-runtime"
+      ],
+      "version": "1.1.0"
+    },
+    {
+      "id": "src-dd-battle-reward-presentation",
+      "name": "dd-battle-reward-presentation.js",
+      "fileType": "active-presentation",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "battle-reward-toast-presentation",
+      "path": "/assets/js/dd-battle-reward-presentation.js",
+      "dependencies": [
+        "src-dd-battle-reward-runtime"
+      ],
+      "version": "1.1.0"
+    },
+    {
+      "id": "src-dd-battle-runtime",
+      "name": "dd-battle-runtime.js",
+      "fileType": "legacy-runtime-reference",
+      "project": "DataByteSprites",
+      "status": "implemented-not-loaded",
+      "ownerRole": "public-battle-runtime-facade",
+      "path": "/assets/js/dd-battle-runtime.js",
+      "dependencies": [
+        "src-dd-battle-resolver",
+        "src-dd-battle-state-runtime",
+        "src-dd-status-runtime"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "src-dd-party-runtime",
+      "name": "dd-party-runtime.js",
+      "fileType": "compatibility-reference",
+      "project": "DataByteSprites",
+      "status": "archived-recovery-reference",
       "ownerRole": "party-state-runtime",
-      "path": "/assets/js/dd-party-runtime.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-party-runtime.js",
       "dependencies": [],
       "version": "1.0.0"
     },
     {
       "id": "src-dd-party-switch-runtime",
       "name": "dd-party-switch-runtime.js",
-      "fileType": "active-runtime",
+      "fileType": "compatibility-reference",
       "project": "DataByteSprites",
-      "status": "active-owner",
+      "status": "archived-recovery-reference",
       "ownerRole": "active-party-slot-and-required-switch-state",
-      "path": "/assets/js/dd-party-switch-runtime.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-party-switch-runtime.js",
       "dependencies": [
-        "src-dd-party-runtime"
+        "src-dd-player-runtime"
       ],
       "version": "0.3.0"
     },
     {
       "id": "src-dd-inventory-runtime",
       "name": "dd-inventory-runtime.js",
-      "fileType": "active-runtime",
+      "fileType": "compatibility-reference",
       "project": "DataByteSprites",
-      "status": "active-owner",
+      "status": "archived-recovery-reference",
       "ownerRole": "inventory-state-runtime",
-      "path": "/assets/js/dd-inventory-runtime.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-inventory-runtime.js",
       "dependencies": [
         "dbs-game-data"
       ],
@@ -244,11 +314,11 @@
     {
       "id": "src-dd-dex-runtime",
       "name": "dd-dex-runtime.js",
-      "fileType": "active-runtime",
+      "fileType": "compatibility-reference",
       "project": "DataByteSprites",
-      "status": "active-owner",
+      "status": "archived-recovery-reference",
       "ownerRole": "dex-progress-runtime",
-      "path": "/assets/js/dd-dex-runtime.js",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-dex-runtime.js",
       "dependencies": [],
       "version": "1.0.0"
     },
@@ -287,9 +357,9 @@
       "ownerRole": "battle-screen",
       "path": "/assets/js/dd-battle-screen.js",
       "dependencies": [
-        "src-dd-battle-state-runtime"
+        "src-dd-battle-core-runtime"
       ],
-      "version": "active"
+      "version": "0.5.1"
     },
     {
       "id": "src-dd-battle-controls",
@@ -300,9 +370,9 @@
       "ownerRole": "battle-controls",
       "path": "/assets/js/dd-battle-controls.js",
       "dependencies": [
-        "src-dd-battle-state-runtime"
+        "src-dd-battle-core-runtime"
       ],
-      "version": "active"
+      "version": "0.3.0"
     },
     {
       "id": "src-dd-confirm-screen",
@@ -326,7 +396,7 @@
       "ownerRole": "download-result-screen",
       "path": "/assets/js/dd-result-screen.js",
       "dependencies": [
-        "src-dd-party-runtime"
+        "src-dd-player-runtime"
       ],
       "version": "1.0.0"
     },
@@ -339,35 +409,119 @@
       "ownerRole": "boot-routing-context-actions",
       "path": "/assets/js/databyte-discovery-product-app-v4-shell.js",
       "dependencies": [
-        "src-dd-status-battle-flow",
+        "src-dd-battle-core-runtime",
+        "src-dd-player-runtime",
+        "src-dd-battle-screen",
+        "src-dd-battle-controls"
+      ],
+      "version": "4.10.2"
+    },
+    {
+      "id": "src-dd-screen-registry",
+      "name": "dd-screen-registry.js",
+      "fileType": "active-runtime-facade",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "public-screen-and-controls-registry",
+      "path": "/assets/js/dd-screen-registry.js",
+      "dependencies": [
+        "src-dd-scanner-screen",
+        "src-dd-encounter-screen",
         "src-dd-battle-screen",
         "src-dd-battle-controls",
-        "src-dd-party-runtime",
-        "src-dd-party-switch-runtime"
+        "src-dd-confirm-screen",
+        "src-dd-result-screen"
       ],
-      "version": "4.7.3"
+      "version": "1.1.0"
+    },
+    {
+      "id": "src-dd-app-presentation-runtime",
+      "name": "dd-app-presentation-runtime.js",
+      "fileType": "active-presentation-runtime",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "app-layout-overlays-and-lifecycle-presentation",
+      "path": "/assets/js/dd-app-presentation-runtime.js",
+      "dependencies": [
+        "src-dd-player-runtime",
+        "src-dd-screen-registry",
+        "src-dd-product-app-v4-shell"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "src-dd-app-bootstrap",
+      "name": "dd-app-bootstrap.js",
+      "fileType": "active-module-entrypoint",
+      "project": "DataByteSprites",
+      "status": "active-owner",
+      "ownerRole": "deterministic-module-loading-and-readiness",
+      "path": "/assets/js/dd-app-bootstrap.js",
+      "dependencies": [
+        "src-dd-player-runtime",
+        "src-dd-battle-core-runtime",
+        "src-dd-screen-registry",
+        "src-dd-app-presentation-runtime",
+        "src-dd-product-app-v4-shell"
+      ],
+      "version": "1.9.4"
     }
   ],
   "compatibilityLayers": [
     {
       "id": "src-dd-scanner-os-runtime",
-      "path": "/assets/js/dd-scanner-os-runtime.js",
-      "status": "active-layout-stabilizer"
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-scanner-os-runtime.js",
+      "status": "archived-recovery-reference"
     },
     {
       "id": "src-dd-party-switch-battle-bridge",
-      "path": "/assets/js/dd-party-switch-battle-bridge.js",
-      "status": "compatibility-adapter"
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-party-switch-battle-bridge.js",
+      "status": "archived-recovery-reference"
     },
     {
       "id": "src-dd-battle-experience-4-2",
-      "path": "/assets/js/dd-battle-experience-4-2.js",
-      "status": "compatibility-merge-candidate"
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-battle-experience-4-2.js",
+      "status": "archived-renderer-freeze-evidence"
     },
     {
       "id": "src-dd-health-signal-bridge",
-      "path": "/assets/js/dd-health-signal-bridge.js",
-      "status": "compatibility-visual-only"
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-health-signal-bridge.js",
+      "status": "archived-ownership-violation-evidence"
+    },
+    {
+      "id": "src-dd-layout-viewport-lock-4-2",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-layout-viewport-lock-4-2.js",
+      "status": "archived-recovery-reference"
+    },
+    {
+      "id": "src-dd-scanner-behavior-4-3",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-scanner-behavior-4-3.js",
+      "status": "archived-recovery-reference"
+    },
+    {
+      "id": "src-dd-party-switch-ui",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-party-switch-ui.js",
+      "status": "archived-recovery-reference"
+    },
+    {
+      "id": "src-dd-party-switch-refresh",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-party-switch-refresh.js",
+      "status": "archived-recovery-reference"
+    },
+    {
+      "id": "src-dd-scan-bg",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-scan-bg.js",
+      "status": "archived-renderer-contention-evidence"
+    },
+    {
+      "id": "src-dd-collection-runtime",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-collection-runtime.js",
+      "status": "archived-recovery-reference"
+    },
+    {
+      "id": "src-dd-collection-dex-runtime-bridge",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-collection-dex-runtime-bridge.js",
+      "status": "archived-recovery-reference"
     }
   ],
   "legacyReferences": [

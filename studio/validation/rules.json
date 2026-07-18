@@ -1,12 +1,12 @@
 {
   "schemaVersion": "0.2.1",
   "generatedBy": "VoltanLabs Studio Validation Engine",
-  "description": "Reusable validation rules for Studio registries, DataByteSprites indexes, Phase 4.3 runtime manifests, source ownership maps, diagnostics alignment, documentation drift checks, and mechanics graphs.",
+  "description": "Reusable validation rules for Studio registries, DataByteSprites indexes, Phase 6.0 runtime manifests, progression ownership, source ownership maps, diagnostics alignment, documentation drift checks, and mechanics graphs.",
   "validationEngine": {
     "id": "studio-validation-engine",
     "status": "active",
-    "phase": "Phase 4.3",
-    "goal": "Validate the canonical Scanner OS runtime, Product App v3.5 orchestration, split runtime owners, cross-index consistency, runtime load order, documentation drift, source-aware repair paths, and diagnostics readiness before new gameplay systems are added."
+    "phase": "Phase 6.0",
+    "goal": "Validate the single module bootstrap, deterministic battle core, canonical progression and player-save owners, screen and presentation owners, cross-index consistency, documentation drift, and diagnostics readiness."
   },
   "ruleSets": [
     {
@@ -54,8 +54,8 @@
       "name": "Canonical Runtime Ownership",
       "severity": "error",
       "targetKinds": ["runtime", "sourceFile"],
-      "checks": ["productAppV35Active", "battleResolverActive", "captureRuntimeActive", "encounterRuntimeActive", "gameplayRulesActive", "compatibilityLayersVisualOnly"],
-      "description": "Data Discovery diagnostics must recognize Product App v3.5 as the UI orchestrator, Scanner OS Runtime as the layout owner, Scanner Behavior Guard as the active-flow guard, and split runtimes as gameplay owners. Compatibility layers may assist display but must not own HP, Signal, download odds, or battle state."
+      "checks": ["productAppV4Active", "moduleBootstrapActive", "screenRegistryActive", "appPresentationActive", "battleResolverActive", "captureRuntimeActive", "encounterRuntimeActive", "gameplayRulesActive"],
+      "description": "Data Discovery diagnostics must recognize the module bootstrap as loader, Product App v4 as orchestrator, the screen registry as screen dispatcher, app presentation as layout owner, and split runtimes as gameplay owners. Archived compatibility layers must not own HP, Signal, download odds, battle state, screens, or layout."
     },
     {
       "id": "duplicate-gameplay-ownership",
@@ -87,34 +87,28 @@
       "severity": "warning",
       "targetKinds": ["documentation"],
       "checks": ["readmeMentionsCurrentRuntimePhase", "readmeMentionsDiagnostics", "readmeMentionsRuntimeOwnership", "readmeMentionsDataDiscovery"],
-      "description": "README and roadmap documentation should reflect the active Phase 4.3 Scanner OS runtime, Product App v3.5, runtime ownership, and diagnostics capabilities."
+      "description": "README and roadmap documentation should reflect the active Phase 6.0 module bootstrap, battle core, progression loop, Product App v4 shell, canonical ownership, and diagnostics capabilities."
     }
   ],
   "canonicalRuntime": {
-    "phase": "Phase 4.3",
-    "runtime": "databyte-discovery-product-app-v3-5",
-    "layoutOwner": "dd-scanner-os-runtime",
-    "behaviorGuard": "dd-scanner-behavior-4-3",
+    "phase": "Phase 6.0",
+    "runtime": "databyte-discovery-product-app-v4-shell",
+    "bootstrapOwner": "dd-app-bootstrap",
+    "layoutOwner": "dd-app-presentation-runtime",
+    "screenRegistryOwner": "dd-screen-registry",
     "requiredRuntimeOwners": [
       "dd-canon-roster",
       "dd-studio-data-bridge",
       "dd-gameplay-rules-2-4",
       "dd-capture-runtime",
       "dd-encounter-runtime",
-      "dd-battle-engine-2-4",
-      "dd-battle-balance-2-4",
-      "dd-battle-resolver",
-      "dd-battle-state-runtime",
-      "dd-battle-presentation-runtime",
-      "dd-collection-runtime",
-      "dd-party-runtime",
-      "dd-party-switch-runtime",
-      "dd-inventory-runtime",
-      "dd-dex-runtime",
-      "dd-collection-dex-runtime-bridge",
-      "databyte-discovery-product-app-v3-5",
-      "dd-scanner-behavior-4-3",
-      "dd-scanner-os-runtime"
+      "dd-status-runtime",
+      "dd-battle-core-runtime",
+      "dd-battle-reward-runtime",
+      "dd-player-runtime",
+      "dd-screen-registry",
+      "databyte-discovery-product-app-v4-shell",
+      "dd-app-presentation-runtime"
     ],
     "visualOnlyCompatibilityLayers": [
       "dd-health-signal-bridge",
@@ -130,27 +124,26 @@
       "retired-active-load"
     ],
     "gameplayOwnership": {
-      "ui": "databyte-discovery-product-app-v3-5",
-      "layout": "dd-scanner-os-runtime",
-      "behaviorGuard": "dd-scanner-behavior-4-3",
-      "battle": "dd-battle-resolver",
+      "ui": "databyte-discovery-product-app-v4-shell",
+      "layout": "dd-app-presentation-runtime",
+      "screens": "dd-screen-registry",
+      "battle": "dd-battle-core-runtime",
       "capture": "dd-capture-runtime",
       "encounter": "dd-encounter-runtime",
       "rules": "dd-gameplay-rules-2-4",
-      "battleEvents": "dd-battle-engine-2-4",
-      "battleState": "dd-battle-state-runtime",
-      "battlePresentation": "dd-battle-presentation-runtime",
-      "collection": "dd-collection-runtime",
-      "party": "dd-party-runtime",
-      "partySwitching": "dd-party-switch-runtime",
-      "inventory": "dd-inventory-runtime",
-      "dex": "dd-dex-runtime",
-      "balance": "dd-battle-balance-2-4",
+      "battleEvents": "none; battle core returns one structured result",
+      "battleState": "dd-battle-core-runtime",
+      "battlePresentation": "dd-app-presentation-runtime",
+      "playerState": "dd-player-runtime",
+      "balance": "dd-battle-core-runtime",
       "roster": "dd-canon-roster",
-      "studioData": "dd-studio-data-bridge"
+      "studioData": "dd-studio-data-bridge",
+      "progression": "dd-battle-reward-runtime",
+      "battleHistory": "dd-battle-reward-runtime",
+      "playerSaveBackup": "dd-player-runtime"
     },
     "uiCanon": {
-      "hpDisplay": "HP rings for lead and wild sprites",
+      "hpDisplay": "thin outer HP progress edges for lead and wild sprites",
       "signalDisplay": "Separate Signal meter for encounter stability",
       "deprecated": ["horizontal battle HP bars", "Signal-as-enemy-HP", "wild Signal ring", "active layout wrapper loading"]
     }
@@ -215,7 +208,7 @@
   ],
   "documentationDrift": {
     "requiredReadmePhrases": [
-      "Phase 4.3",
+      "Phase 6.0",
       "Data Discovery",
       "Runtime",
       "Diagnostics",
@@ -225,9 +218,9 @@
   "nextImplementationSteps": [
     "Keep the Diagnostics source registry as the single list of validation targets.",
     "Teach the validation engine to consume canonicalRuntime rules from this manifest.",
-    "Validate Product App v3.5 and split runtime owners against the runtime manifest and source-files index.",
+    "Validate Product App v4, module bootstrap, screen registry, presentation runtime, and split runtime owners against the runtime manifest and source-files index.",
     "Warn when legacy-reference files are marked as active gameplay owners.",
     "Validate HP ring and Signal meter UI expectations through runtime health checks.",
-    "Run diagnostics and compare health, coverage, errors, warnings, and cross-index consistency after Phase 4.3 alignment."
+    "Run diagnostics and compare health, coverage, errors, warnings, and cross-index consistency after Phase 4.9 alignment."
   ]
 }

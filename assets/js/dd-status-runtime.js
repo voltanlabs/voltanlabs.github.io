@@ -4,7 +4,7 @@
   'use strict';
   if (window.DD_STATUS_RUNTIME) return;
 
-  const VERSION = '1.2.0';
+  const VERSION = '1.3.0';
   const OWNER = 'DD_STATUS_RUNTIME';
 
   const DEFINITIONS = Object.freeze({
@@ -13,7 +13,12 @@
     shock: { duration: 2, maxStacks: 2, accuracyMultiplier: 0.82, speedMultiplier: 0.8, label: 'Shock' },
     corruption: { duration: 4, maxStacks: 3, tickDamage: 1, attackMultiplier: 0.9, defenseMultiplier: 0.9, tickPhase: 'end', label: 'Corruption' },
     shield: { duration: 3, maxStacks: 2, damageTakenMultiplier: 0.72, label: 'Shield' },
-    boost: { duration: 3, maxStacks: 2, attackMultiplier: 1.18, speedMultiplier: 1.12, label: 'Boost' }
+    boost: { duration: 3, maxStacks: 2, attackMultiplier: 1.18, speedMultiplier: 1.12, label: 'Boost' },
+    charged: { duration: 2, maxStacks: 2, attackMultiplier: 1.15, speedMultiplier: 1.08, label: 'Charged' },
+    guarded: { duration: 2, maxStacks: 1, damageTakenMultiplier: 0.68, label: 'Guarded' },
+    misdirected: { duration: 1, maxStacks: 1, accuracyMultiplier: 0.72, label: 'Misdirected' },
+    bound: { duration: 1, maxStacks: 1, speedMultiplier: 0.55, label: 'Bound' },
+    infected: { duration: 3, maxStacks: 3, tickDamage: 2, attackMultiplier: 0.9, tickPhase: 'end', label: 'Infected' }
   });
 
   const normalizeId = value => String(value || '').trim().toLowerCase();
@@ -118,11 +123,13 @@
       );
       existing.data = Object.assign({}, existing.data || {}, options.data || {});
       existing.updatedAt = new Date().toISOString();
-      safeDispatch('dd:status-applied', {
-        target,
-        status: existing,
-        refreshed: true
-      });
+      if (!options.silent) {
+        safeDispatch('dd:status-applied', {
+          target,
+          status: existing,
+          refreshed: true
+        });
+      }
       return existing;
     }
 
@@ -137,11 +144,13 @@
     };
 
     ensure(target).push(entry);
-    safeDispatch('dd:status-applied', {
-      target,
-      status: entry,
-      refreshed: false
-    });
+    if (!options.silent) {
+      safeDispatch('dd:status-applied', {
+        target,
+        status: entry,
+        refreshed: false
+      });
+    }
     return entry;
   }
 
@@ -232,11 +241,6 @@
       roll
     };
 
-    safeDispatch(
-      blocked ? 'dd:status-action-blocked' : 'dd:status-action-allowed',
-      { target, result, context }
-    );
-
     return result;
   }
 
@@ -269,11 +273,13 @@
         ok: false,
         reason: 'reentrant-tick-blocked'
       };
-      safeDispatch('dd:status-tick-blocked', {
-        target,
-        context,
-        result
-      });
+      if (!context.silent) {
+        safeDispatch('dd:status-tick-blocked', {
+          target,
+          context,
+          result
+        });
+      }
       return result;
     }
 
@@ -325,14 +331,16 @@
 
         effects.push(effect);
 
-        safeDispatch('dd:status-ticked', {
-          target,
-          status,
-          context,
-          effect
-        });
+        if (!context.silent) {
+          safeDispatch('dd:status-ticked', {
+            target,
+            status,
+            context,
+            effect
+          });
+        }
 
-        if (damage > 0) {
+        if (damage > 0 && !context.silent) {
           safeDispatch('dd:status-damage', {
             target,
             status,
@@ -351,16 +359,18 @@
       expiredIds.forEach((id, index) => {
         const status = expiredEntries[index] || get(target, id) || id;
         remove(target, id, 'expired', { silent: true });
-        safeDispatch('dd:status-removed', {
-          target,
-          status,
-          reason: 'expired'
-        });
-        safeDispatch('dd:status-expired', {
-          target,
-          status,
-          context
-        });
+        if (!context.silent) {
+          safeDispatch('dd:status-removed', {
+            target,
+            status,
+            reason: 'expired'
+          });
+          safeDispatch('dd:status-expired', {
+            target,
+            status,
+            context
+          });
+        }
       });
 
       return {
@@ -381,11 +391,13 @@
         at: new Date().toISOString()
       };
 
-      safeDispatch('dd:status-runtime-error', {
-        target,
-        context,
-        error: lastError
-      });
+      if (!context.silent) {
+        safeDispatch('dd:status-runtime-error', {
+          target,
+          context,
+          error: lastError
+        });
+      }
 
       return {
         target,

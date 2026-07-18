@@ -411,40 +411,58 @@
       "status": "active-owner"
     },
     {
+      "id": "dd-battle-core-runtime",
+      "name": "Deterministic Battle Core Runtime",
+      "path": "/assets/js/dd-battle-core-runtime.js",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-battle-reward-runtime",
+      "name": "Battle Progression and Reward Runtime",
+      "path": "/assets/js/dd-battle-reward-runtime.js",
+      "status": "active-owner"
+    },
+    {
+      "id": "dd-battle-reward-presentation",
+      "name": "Battle Reward Presentation",
+      "path": "/assets/js/dd-battle-reward-presentation.js",
+      "status": "active-presentation-owner"
+    },
+    {
       "id": "dd-battle-engine-2-4",
       "name": "Battle Helper Runtime",
       "path": "/assets/js/dd-battle-engine-2-4.js",
-      "status": "active-owner"
+      "status": "implemented-not-loaded"
     },
     {
       "id": "dd-battle-balance-2-4",
       "name": "Battle Balance Runtime",
       "path": "/assets/js/dd-battle-balance-2-4.js",
-      "status": "active-owner"
+      "status": "implemented-not-loaded"
     },
     {
       "id": "dd-battle-resolver",
       "name": "Battle Resolver Runtime",
       "path": "/assets/js/dd-battle-resolver.js",
-      "status": "active-owner"
+      "status": "implemented-not-loaded"
     },
     {
       "id": "dd-battle-state-runtime",
       "name": "Battle State Runtime",
       "path": "/assets/js/dd-battle-state-runtime.js",
-      "status": "active-owner"
+      "status": "implemented-not-loaded"
     },
     {
       "id": "dd-battle-presentation-runtime",
-      "name": "Battle Presentation Runtime",
-      "path": "/assets/js/dd-battle-presentation-runtime.js",
-      "status": "active-owner"
+      "name": "Battle Presentation Runtime (Archived)",
+      "path": "/archive/databyte-discovery/recovery-diagnostics/dd-battle-presentation-runtime.js",
+      "status": "retired-active-load"
     },
     {
       "id": "dd-collection-runtime",
-      "name": "Collection Runtime",
-      "path": "/assets/js/dd-collection-runtime.js",
-      "status": "active-owner"
+      "name": "Collection Runtime (Archived Compatibility Owner)",
+      "path": "/archive/databyte-discovery/runtime-compatibility/dd-collection-runtime.js",
+      "status": "retired-active-load"
     },
     {
       "id": "dd-party-runtime",
