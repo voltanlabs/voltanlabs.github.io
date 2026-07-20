@@ -1,4 +1,4 @@
-// assets/js/databyte-discovery-product-app-v4-shell.js
+﻿// assets/js/databyte-discovery-product-app-v4-shell.js
 // Phase 4.9: modular app shell behind player, battle, and screen facades.
 // The shell owns boot, route state, context building, runtime calls, action binding,
 // turn transaction safety, control unlock recovery, and screen registry dispatch.
@@ -10,6 +10,7 @@
   if(!location.pathname.includes('databyte-discovery'))return;
 
   const VERSION='4.10.4';
+  const PRODUCT_PHASE='6.0.4';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={
@@ -118,6 +119,7 @@
       detail:Object.assign({
         owner:OWNER,
         version:VERSION,
+        productPhase:PRODUCT_PHASE,
         at:new Date().toISOString()
       },detail||{})
     }));
@@ -340,6 +342,7 @@
     return{
       state,
       version:VERSION,
+        productPhase:PRODUCT_PHASE,
       profile:profile(),
       items:items(),
       collection:collection(),
@@ -396,7 +399,8 @@
       lead:activeLead,
       playerSprite:activeLead,
       source:OWNER,
-      shellVersion:VERSION,
+      shellversion:VERSION,
+        productPhase:PRODUCT_PHASE,
       startedAt:new Date().toISOString()
     };
   }
@@ -831,7 +835,7 @@
   const fallback={
     scanner:ctx=>
       `<section class="card scanner-card">
-        <div class="scannerOrb">📡</div>
+        <div class="scannerOrb">ðŸ“¡</div>
         <h1>Signal Ready</h1>
         <p>${esc(ctx.log)}</p>
       </section>`,
@@ -878,7 +882,7 @@
         <div class="grid">
           ${members.map(x=>
             `<div class="mini">
-              ${esc(x.icon||'◇')} ${esc(x.name)}
+              ${esc(x.icon||'â—‡')} ${esc(x.name)}
               <br>HP ${esc(x.hp)}/${esc(x.maxHp)}
             </div>`
           ).join('')||'<p>No downloaded sprites yet.</p>'}
@@ -906,11 +910,11 @@
       capd.forEach(x=>sn.add(x));
       return `<section class="card">
         <h2>DataByteDex</h2>
-        <p>${sn.size}/${rt.roster().length} seen • ${capd.size} downloaded</p>
+        <p>${sn.size}/${rt.roster().length} seen â€¢ ${capd.size} downloaded</p>
         <div class="grid">
           ${rt.roster().map(x=>
             `<div class="mini">
-              ${esc(x.icon||'◇')} #${esc(x.dex)} ${esc(x.name)}
+              ${esc(x.icon||'â—‡')} #${esc(x.dex)} ${esc(x.name)}
               <br>${capd.has(x.name)
                 ?'Downloaded'
                 :sn.has(x.name)
@@ -938,8 +942,8 @@
         <h3>Battle History</h3>
         <div class="grid">
           ${history.map(entry=>`<div class="mini">
-            ${esc(entry.result||'battle').toUpperCase()} • ${esc(entry.opponent&&entry.opponent.name||'Unknown')}
-            <br>+${esc(entry.xp||0)} XP • Lv ${esc(entry.level||1)} ${esc(entry.tier||'Kilobyte')}
+            ${esc(entry.result||'battle').toUpperCase()} â€¢ ${esc(entry.opponent&&entry.opponent.name||'Unknown')}
+            <br>+${esc(entry.xp||0)} XP â€¢ Lv ${esc(entry.level||1)} ${esc(entry.tier||'Kilobyte')}
           </div>`).join('')||'<p>No completed battles yet.</p>'}
         </div>
         <p class="hint">Progress is saved automatically on this device.</p>
@@ -1268,7 +1272,7 @@
     }
 
     const logLine=document.querySelector('.battleLog li:last-child');
-    if(logLine)logLine.textContent='▸ '+(state.log||'Awaiting command.');
+    if(logLine)logLine.textContent='â–¸ '+(state.log||'Awaiting command.');
 
     applyControlHost();
     applyTurnLock();
@@ -1277,6 +1281,7 @@
 
   window.DD_PRODUCT_APP_V4_SHELL={
     version:VERSION,
+        productPhase:PRODUCT_PHASE,
     owner:OWNER,
     phase:'4.10-canonical-battle-core-shell',
     state,
@@ -1306,3 +1311,4 @@
     detail:window.DD_PRODUCT_APP_V4_SHELL
   }));
 })();
+
