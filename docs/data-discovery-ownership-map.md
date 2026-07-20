@@ -6,6 +6,11 @@ Current live phase: **6.0 Progression Loop**
 
 Current recovery revision: **6.0.4 / bootstrap 1.9.4**
 
+Presentation recovery target: **Phase 4.10.4 visual consolidation**. The app
+presentation runtime will coordinate shared visual effects and safe sprite
+asset loading; screen renderers remain presentation-only and gameplay owners
+remain unchanged.
+
 ## Governance Status
 
 The Architecture Freeze remains active. The active HTML path and

@@ -2982,6 +2982,20 @@
     return context||{};
   }
 
+  function safeSpriteAsset(value){
+    const raw=String(value||'').trim();
+    if(!raw)return '';
+    try{
+      const origin=location&&location.origin||'http://localhost';
+      const url=new URL(raw,origin);
+      return url.origin===origin&&url.pathname.startsWith('/assets/')
+        ?url.href
+        :'';
+    }catch(error){
+      return '';
+    }
+  }
+
   function installStyle(){
     if(document.getElementById(STYLE_ID))return;
 
@@ -3000,6 +3014,7 @@
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .vs{align-self:center;text-align:center;color:#FFD700;font-weight:1000}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .ring{width:min(25vw,116px);height:min(25vw,116px);border-radius:999px;margin:0 auto;display:grid;place-items:center;background:conic-gradient(from -90deg,var(--hp-color) 0 calc(var(--hp-pct)*1%),rgba(71,85,105,.48) calc(var(--hp-pct)*1%) 100%);border:0;position:relative;transform:none!important;box-sizing:border-box;transition:background .18s ease}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar{position:relative;width:calc(100% - 8px);height:calc(100% - 8px);border-radius:999px;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,#103258 0%,#0a2039 52%,#07111f 100%);font-size:clamp(28px,8vw,40px);line-height:1}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar img{width:88%;height:88%;object-fit:contain;border-radius:999px}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar b{font-size:10px;color:#BAE6FD;margin-top:-12px}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleMeters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .signalBox,#ddApp .battle-card[data-owner="dd-battle-screen"] .downloadGauge{min-width:0;margin:0;padding:7px 9px;border:1px solid rgba(96,165,250,.25);border-radius:14px;background:rgba(15,23,42,.55)}',
@@ -3036,8 +3051,13 @@
   function renderHpRing(sprite){
     const s=normalizeSprite(sprite);
     const healthPct=pct(s.hp,s.maxHp);
+    const asset=safeSpriteAsset(s.spriteAsset||s.asset);
+    const visual=asset
+      ?`<img src="${esc(asset)}" alt="" aria-hidden="true">`
+      :'';
     return `<div class="ring hp" style="--hp-pct:${healthPct};--hp-color:${hpColor(s.hp,s.maxHp)}" data-hp-percent="${healthPct}" aria-label="HP ${esc(s.hp)} of ${esc(s.maxHp)}">
       <div class="avatar">
+        ${visual}
         <span>${esc(s.icon||'◇')}</span>
         <b>${esc(s.hp)}/${esc(s.maxHp)}</b>
       </div>
@@ -3147,6 +3167,7 @@
     renderBattleScreen,
     renderFighter,
     renderHpRing,
+    safeSpriteAsset,
     hpColor,
     renderSignalMeter,
     renderDownloadGauge,
@@ -3379,7 +3400,7 @@
     const icon=sprite&&sprite.icon?sprite.icon:(success?'✓':type==='failure'?'!':'◇');
     const status=battleVictory?'VICTORY':success?'SAVED':type==='failure'?'SIGNAL LOST':'COMPLETE';
     const next=battleVictory
-      ?'Continue to the defeated signal to attempt a Download, or return to the Scanner.'
+      ?'Continue to open the Download confirmation, or return to the Scanner.'
       :success
         ?'The downloaded sprite is now available in your collection and party systems.'
         :'Return to the Scanner and search for another signal.';
@@ -3515,7 +3536,7 @@
 
   if(!location.pathname.includes('databyte-discovery'))return;
 
-  const VERSION='4.10.2';
+  const VERSION='4.10.4';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={
@@ -3930,7 +3951,7 @@
     state.turnBusy=false;
     state.turnPhase=null;
     state.lastTurnError=null;
-    if(rt.battleState())rt.battleState().reset('new-encounter');
+    if(window.DD_BATTLE_CORE_RUNTIME)window.DD_BATTLE_CORE_RUNTIME.reset();
     state.screen='encounter';
     state.result=null;
     state.confirm=null;
@@ -3993,188 +4014,6 @@
     });
     fx('battle');
     render();
-  }
-
-  function resolverRequired(){
-    const resolver=rt.resolver();
-    if(!resolver||typeof resolver.resolve!=='function')return null;
-    return resolver;
-  }
-
-  function resolveHit(user,move,target,mode){
-    const resolver=resolverRequired();
-    return resolver
-      ?resolver.resolve(user,move,target,{
-        mode,
-        seed:mode+'-'+Date.now(),
-        source:OWNER
-      })
-      :null;
-  }
-
-  function chooseEnemyMove(wild,activeLead){
-    const resolver=resolverRequired();
-    return resolver&&typeof resolver.chooseEnemyMove==='function'
-      ?resolver.chooseEnemyMove(wild,activeLead)
-      :null;
-  }
-
-  function turnOrder(activeLead,wild){
-    const resolver=resolverRequired();
-    return resolver&&typeof resolver.turnOrder==='function'
-      ?resolver.turnOrder(activeLead,wild)
-      :null;
-  }
-
-  function evaluateBattleAction(wild,activeLead){
-    const bsr=rt.battleState();
-    if(!bsr||typeof bsr.evaluateActionState!=='function'){
-      return{
-        block:true,
-        decision:'missing-context',
-        reason:'battle-state-runtime-unavailable'
-      };
-    }
-
-    return bsr.evaluateActionState({
-      wild,
-      actor:activeLead,
-      lead:activeLead,
-      party:partyMembers(),
-      encounterId:wild&&wild.id,
-      source:OWNER
-    });
-  }
-
-  function routeBattleDecision(decision,wild,activeLead){
-    if(!decision||!decision.block)return false;
-    syncBattleState();
-    state.signal=wild||state.signal;
-
-    if(decision.reason==='signal-lost'){
-      fail(
-        'Signal Disappeared',
-        (wild&&wild.name||'The wild signal')+' disappeared from scanner range.',
-        wild,
-        false
-      );
-      return true;
-    }
-
-    if(decision.decision==='wild-defeated'){
-      const message=
-        decision.terminal&&
-        decision.terminal.value&&
-        decision.terminal.value.message;
-      pushLog(message||(
-        (wild&&wild.name||'The wild signal')+
-        ' is defeated. Choose Download or Return.'
-      ));
-      fx('success');
-      return true;
-    }
-
-    if(decision.decision==='switch-required'){
-      pushLog(
-        (activeLead&&activeLead.name||'Your lead sprite')+
-        ' fainted. Choose an available party sprite.'
-      );
-      document.dispatchEvent(new CustomEvent('dd:open-party-switch',{
-        detail:{
-          owner:OWNER,
-          reason:decision.reason||'switch-required',
-          decision,
-          wild,
-          lead:activeLead
-        }
-      }));
-      fx('warn');
-      return true;
-    }
-
-    if(decision.decision==='party-defeated'){
-      state.result={
-        type:'failure',
-        reason:'party-defeated',
-        title:'Party Defeated',
-        msg:'No usable party sprites remain. Return to the scanner to restore the team.',
-        sprite:wild,
-        canContinue:false
-      };
-      state.screen='result';
-      pushLog(state.result.msg);
-      fx('fail');
-      return true;
-    }
-
-    if(decision.decision==='missing-context'){
-      pushLog(
-        decision.reason==='battle-state-runtime-unavailable'
-          ?'Battle State Runtime is unavailable.'
-          :'Battle context is unavailable. Return to the scanner and rediscover the signal.'
-      );
-      fx('warn');
-      return true;
-    }
-
-    pushLog('Battle is not active.');
-    fx('warn');
-    return true;
-  }
-
-  function resolutionNote(actor,target,resolution,applied){
-    const moveName=resolution&&resolution.move&&resolution.move.name||'Move';
-    if(!resolution)return 'Battle Resolver returned no result.';
-    if(resolution.actionBlocked)return actor.name+' could not act.';
-    if(!resolution.hit)return actor.name+' used '+moveName+', but missed.';
-
-    const base=
-      resolution.notes&&resolution.notes[0]
-      ||actor.name+' used '+moveName+'.';
-    const hp=applied&&applied.hpResult;
-    const pressure=applied&&applied.pressureResult;
-    let text=base;
-
-    if(hp&&hp.after!=null){
-      text+=' '+target.name+' HP '+hp.after+'/'+target.maxHp+'.';
-    }
-    if(pressure&&pressure.applied){
-      text+=' Download +'+pressure.pressure+' → '+pressure.after+'%.';
-    }
-    return text;
-  }
-
-  function assertOwnerResult(result,phase){
-    if(!result||result.ok===false){
-      const reason=result&&result.reason
-        ?String(result.reason)
-        :'no result returned';
-      throw new Error(phase+' failed: '+reason);
-    }
-    return result;
-  }
-
-  function recoverTurnError(error,wild,activeLead){
-    const message=error&&error.message
-      ?error.message
-      :'Unknown battle transaction error.';
-    state.lastTurnError={
-      phase:state.turnPhase||'unknown',
-      message,
-      at:new Date().toISOString()
-    };
-    state.signal=wild||state.signal;
-    syncBattleState();
-    pushLog('Battle turn recovered after an error. Try the action again.');
-    fx('warn');
-    dispatchDiagnostic('dd:battle-turn-error',{
-      phase:state.turnPhase||'unknown',
-      message,
-      errorName:error&&error.name||'Error',
-      encounterId:wild&&wild.id||null,
-      wild,
-      lead:activeLead
-    });
   }
 
   function animateTurnResult(result){
@@ -4298,194 +4137,6 @@
       state.turnBusy=false;
       state.turnPhase=null;
       if(!patchBattleHud())render();
-    }
-  }
-
-  function legacyFight(moveId){
-    if(state.turnBusy){
-      pushLog('The current turn is still resolving.');
-      fx('warn');
-      render();
-      return;
-    }
-
-    const wild=normalize(state.signal);
-    const activeLead=normalize(lead());
-    const bsr=rt.battleState();
-    const resolver=resolverRequired();
-
-
-    if(!wild||!activeLead)return;
-
-    if(
-      !bsr||
-      typeof bsr.applyResolution!=='function'||
-      typeof bsr.beginTurn!=='function'||
-      typeof bsr.endTurn!=='function'
-    ){
-      pushLog('Canonical Battle State Runtime is unavailable.');
-      fx('warn');
-      render();
-      return;
-    }
-
-    if(!resolver){
-      pushLog('Battle Resolver is unavailable.');
-      fx('warn');
-      render();
-      return;
-    }
-
-    state.turnBusy=true;
-    state.turnPhase='action-gate';
-    state.lastTurnError=null;
-
-    // Lock only the existing move controls. Rebuilding the whole battle DOM
-    // here created a dependency on the final render succeeding before input
-    // could be restored.
-    applyControlHost();
-    applyTurnLock();
-
-    try{
-      const initialDecision=evaluateBattleAction(wild,activeLead);
-      if(routeBattleDecision(initialDecision,wild,activeLead))return;
-
-      state.turnPhase='turn-preparation';
-      const move=
-        (activeLead.moves||[]).find(m=>m.id===moveId)
-        ||(activeLead.moves||[])[0];
-      const enemyMove=chooseEnemyMove(wild,activeLead);
-      const first=turnOrder(activeLead,wild);
-      const notes=[];
-      const participants=[activeLead,wild];
-      const turnContext={
-        encounterId:wild.id,
-        wild,
-        lead:activeLead,
-        party:partyMembers(),
-        participantSides:['player','wild'],
-        source:OWNER
-      };
-
-      if(!move||!enemyMove||!first){
-        throw new Error('Battle Resolver could not prepare the turn.');
-      }
-
-
-      state.turnPhase='begin-turn';
-      const startResult=assertOwnerResult(
-        bsr.beginTurn(participants,turnContext),
-        'Battle State Runtime beginTurn'
-      );
-      state.signal=wild;
-      syncBattleState();
-
-      if(startResult.terminal){
-        const startDecision=evaluateBattleAction(wild,activeLead);
-        routeBattleDecision(startDecision,wild,activeLead);
-        return;
-      }
-
-      function applyAction(actor,selectedMove,target,mode,actorSide,targetSide){
-        state.turnPhase=mode+'-resolution';
-        const resolution=resolveHit(actor,selectedMove,target,mode);
-        if(!resolution){
-          throw new Error('Battle Resolver returned no resolution for '+mode+'.');
-        }
-
-        state.turnPhase=mode+'-application';
-        const applied=assertOwnerResult(
-          (typeof bsr.applyResolutionLite==='function'
-            ?bsr.applyResolutionLite
-            :bsr.applyResolution
-          ).call(bsr,resolution,actor,target,{
-            encounterId:wild.id,
-            wild,
-            lead:activeLead,
-            party:partyMembers(),
-            actorSide,
-            targetSide,
-            source:OWNER
-          }),
-          'Battle State Runtime applyResolution'
-        );
-
-        notes.push(resolutionNote(actor,target,resolution,applied));
-
-        state.signal=wild;
-        if(applied&&applied.state&&applied.state.value){
-          state.battleState=applied.state.value;
-        }
-        const decision=applied&&applied.decision;
-        return{
-          stop:!!(decision&&decision.block),
-          decision,
-          applied,
-          resolution
-        };
-      }
-
-      let actionResult=null;
-
-      // Recovery baseline: one authoritative resolution per input. The former
-      // paired player/enemy resolutions crash the browser renderer and will be
-      // restored only after the transaction owner supports queued retaliation.
-      actionResult=applyAction(
-        activeLead,
-        move,
-        wild,
-        'player',
-        'player',
-        'wild'
-      );
-
-      if(!actionResult.stop)return;
-
-      state.signal=wild;
-      pushLog(notes.join(' '));
-
-      if(actionResult&&actionResult.stop){
-        routeBattleDecision(actionResult.decision,wild,activeLead);
-        return;
-      }
-
-      state.turnPhase='end-turn';
-      const hasActiveStatuses=participants.some(participant =>
-        Array.isArray(participant&&participant.statusEffects)&&
-        participant.statusEffects.length>0
-      );
-      const endResult=hasActiveStatuses
-        ?assertOwnerResult(
-          bsr.endTurn(participants,turnContext),
-          'Battle State Runtime endTurn'
-        )
-        :{
-          ok:true,
-          terminal:null,
-          state:{value:state.battleState}
-        };
-      state.signal=wild;
-      if(endResult&&endResult.state&&endResult.state.value){
-        state.battleState=endResult.state.value;
-      }
-
-      if(endResult.terminal){
-        const endDecision=evaluateBattleAction(wild,activeLead);
-        routeBattleDecision(endDecision,wild,activeLead);
-        return;
-      }
-
-    }catch(error){
-      recoverTurnError(error,wild,activeLead);
-    }finally{
-      state.turnBusy=false;
-      state.turnPhase=null;
-      if(state.screen==='battle'){
-        applyControlHost();
-        applyTurnLock();
-      }else{
-        setTimeout(render,0);
-      }
     }
   }
 
@@ -4613,9 +4264,17 @@
 
   function continueBattle(){
     if(!state.signal)return back();
+    const continueToDownload=!!(
+      state.result&&state.result.reason==='battle-victory'
+    );
     state.confirm=null;
     state.result=null;
     state.returnScreen=null;
+    if(continueToDownload){
+      pushLog('Battle complete. Confirm the Download attempt.');
+      captureAsk();
+      return;
+    }
     state.screen='battle';
     pushLog('Battle resumed.');
     fx('battle');
@@ -4937,6 +4596,7 @@
     const stage=$('stage');
     if(stage){
       stage.classList.toggle('battleStage',state.screen==='battle');
+      stage.dataset.screen=state.screen;
     }
     if(!host)return;
     host.className=
@@ -5026,7 +4686,7 @@
       '<div id="ddApp">'+
         '<header class="top">'+
           '<b>Data Discovery</b>'+ 
-          '<span>v4 App Shell</span>'+ 
+          '<span>Phase 6.0.4</span>'+
         '</header>'+ 
         '<main id="stage" class="stage"></main>'+ 
         '<section id="controls" class="controls"></section>'+ 
@@ -5145,7 +4805,7 @@
   window.DD_PRODUCT_APP_V4_SHELL={
     version:VERSION,
     owner:OWNER,
-    phase:'4.9-screen-registry-and-module-bootstrap',
+    phase:'4.10-canonical-battle-core-shell',
     state,
     render,
     discover,
@@ -5161,8 +4821,6 @@
     battleContext,
     screenContext,
     canonicalBattleStartContext,
-    evaluateBattleAction,
-    routeBattleDecision,
     forceUnlockControls,
     screenRegistry,
     controlsRegistry
@@ -5202,6 +4860,14 @@
       'html,body{height:100%;min-height:100%;overflow:hidden;position:fixed;inset:0;width:100%;overscroll-behavior:none;touch-action:manipulation}',
       '#ddApp{height:100dvh;max-height:100dvh;overflow:hidden}',
       '#ddApp .stage{min-height:0;overflow:hidden;overscroll-behavior:contain}',
+      '#ddApp .stage[data-screen="scanner"],#ddApp .stage[data-screen="encounter"]{position:relative;background:radial-gradient(circle at 50% 36%,rgba(56,189,248,.12),transparent 34%),linear-gradient(rgba(56,189,248,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.08) 1px,transparent 1px);background-size:100% 100%,22px 22px,22px 22px}',
+      '#ddApp .stage[data-screen="scanner"]:before,#ddApp .stage[data-screen="encounter"]:before{content:"";position:absolute;left:-15%;right:-15%;top:-10%;height:18%;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(255,215,0,.22),rgba(56,189,248,.12),transparent);filter:blur(1px);animation:ddPresentationScanSweep 4.8s linear infinite;z-index:0}',
+      '#ddApp .stage[data-screen="scanner"]>.card,#ddApp .stage[data-screen="encounter"]>.card{position:relative;z-index:1}',
+      '#ddApp .scannerOrb:before,#ddApp .scannerOrb:after{animation:ddPresentationRingSpin 12s linear infinite}',
+      '#ddApp .scannerOrb:after{animation-direction:reverse;animation-duration:18s}',
+      '@keyframes ddPresentationScanSweep{from{transform:translateY(-30%)}to{transform:translateY(620%)}}',
+      '@keyframes ddPresentationRingSpin{to{transform:rotate(360deg)}}',
+      '@media(prefers-reduced-motion:reduce){#ddApp .stage[data-screen="scanner"]:before,#ddApp .stage[data-screen="encounter"]:before,#ddApp .scannerOrb:before,#ddApp .scannerOrb:after{animation:none!important}}',
       '#ddApp .controls{overflow:auto;overscroll-behavior:contain}',
       '.dd-switch-panel{position:fixed;inset:10px;z-index:1000003;background:rgba(7,17,31,.98);border:1px solid rgba(125,211,252,.28);border-radius:24px;padding:14px;color:white;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px}',
       '.dd-switch-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.dd-switch-head b{color:#FFD700}',

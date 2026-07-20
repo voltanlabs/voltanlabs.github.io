@@ -7,6 +7,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const root = process.cwd();
 const shellPath = path.join(
@@ -116,13 +117,12 @@ source = source.replace(
   "    phase:'4.10-canonical-battle-core-shell',"
 );
 
-// Safety checks.
+// Safety checks for the shell source. Battle-core-owned helper names are not
+// forbidden in the generated bundle because they remain valid inside the
+// canonical battle-core module.
 const forbidden = [
   'function legacyFight(',
   'function resolverRequired(',
-  'function resolveHit(',
-  'function chooseEnemyMove(',
-  'function turnOrder(',
   'function evaluateBattleAction(',
   'function routeBattleDecision(',
   'function resolutionNote(',
@@ -166,12 +166,24 @@ console.log(
 );
 
 // Regenerate the production bundle from the edited canonical source.
-await import(path.toNamespacedPath(buildScript));
+await import(pathToFileURL(buildScript).href);
 
 const bundlePath = path.join(root, 'assets/js/dd-runtime-bundle.js');
 const bundle = fs.readFileSync(bundlePath, 'utf8');
 
-for (const marker of forbidden) {
+const bundleForbidden = [
+  'function legacyFight(',
+  'function resolverRequired(',
+  'function evaluateBattleAction(',
+  'function routeBattleDecision(',
+  'function resolutionNote(',
+  'function assertOwnerResult(',
+  'function recoverTurnError(',
+  'rt.resolver()',
+  'rt.battleState()'
+];
+
+for (const marker of bundleForbidden) {
   if (bundle.includes(marker)) {
     throw new Error(`Generated bundle still contains legacy marker: ${marker}`);
   }

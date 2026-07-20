@@ -44,6 +44,7 @@ function browserContext(seed = {}) {
     Number,
     String,
     Boolean,
+    URL,
     Error,
     setTimeout,
     clearTimeout
@@ -242,6 +243,8 @@ test('battle fighter ring renders canonical HP percentage and severity color', (
   assert.match(fainted, /aria-label="HP 0 of 40"/);
   const statusFighter = screen.renderFighter({ name: 'Status', hp: 20, maxHp: 20, statusEffects: [{ id: 'misdirected', label: 'Misdirected', duration: 1 }] }, 'wild');
   assert.match(statusFighter, /statusChip">Misdirected 1/);
+  assert.match(screen.renderHpRing({ name: 'Fixture', hp: 10, maxHp: 10, spriteAsset: '/assets/sprites/crabician.gif' }), /<img src="http:\/\/localhost\/assets\/sprites\/crabician\.gif"/);
+  assert.doesNotMatch(screen.renderHpRing({ name: 'Remote', hp: 10, maxHp: 10, spriteAsset: 'https://example.com/remote.gif' }), /<img/);
   const source = fs.readFileSync(path.join(root, 'assets/js/dd-battle-screen.js'), 'utf8');
   assert.match(source, /width:calc\(100% - 8px\)/);
   assert.match(source, /background:radial-gradient\(circle at 50% 42%,#103258/);
@@ -300,6 +303,10 @@ test('HTML entrypoint and bootstrap imports match the runtime manifest', () => {
   assert.deepEqual(entrypoints, [manifest.entrypoint.script]);
   assert.deepEqual(imports, manifest.modules.map(module => module.script));
   assert.equal(new Set(imports).size, imports.length);
+  const shell = fs.readFileSync(path.join(root, 'assets/js/databyte-discovery-product-app-v4-shell.js'), 'utf8');
+  assert.match(shell, /<span>Phase 6\.0\.4<\/span>/);
+  assert.match(shell, /continueToDownload/);
+  assert.match(shell, /Battle complete\. Confirm the Download attempt\./);
 });
 
 test('legacy resolver and state references remain deterministic when isolated', () => {

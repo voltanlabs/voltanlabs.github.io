@@ -48,6 +48,20 @@
     return context||{};
   }
 
+  function safeSpriteAsset(value){
+    const raw=String(value||'').trim();
+    if(!raw)return '';
+    try{
+      const origin=location&&location.origin||'http://localhost';
+      const url=new URL(raw,origin);
+      return url.origin===origin&&url.pathname.startsWith('/assets/')
+        ?url.href
+        :'';
+    }catch(error){
+      return '';
+    }
+  }
+
   function installStyle(){
     if(document.getElementById(STYLE_ID))return;
 
@@ -66,6 +80,7 @@
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .vs{align-self:center;text-align:center;color:#FFD700;font-weight:1000}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .ring{width:min(25vw,116px);height:min(25vw,116px);border-radius:999px;margin:0 auto;display:grid;place-items:center;background:conic-gradient(from -90deg,var(--hp-color) 0 calc(var(--hp-pct)*1%),rgba(71,85,105,.48) calc(var(--hp-pct)*1%) 100%);border:0;position:relative;transform:none!important;box-sizing:border-box;transition:background .18s ease}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar{position:relative;width:calc(100% - 8px);height:calc(100% - 8px);border-radius:999px;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,#103258 0%,#0a2039 52%,#07111f 100%);font-size:clamp(28px,8vw,40px);line-height:1}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar img{width:88%;height:88%;object-fit:contain;border-radius:999px}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar b{font-size:10px;color:#BAE6FD;margin-top:-12px}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleMeters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .signalBox,#ddApp .battle-card[data-owner="dd-battle-screen"] .downloadGauge{min-width:0;margin:0;padding:7px 9px;border:1px solid rgba(96,165,250,.25);border-radius:14px;background:rgba(15,23,42,.55)}',
@@ -102,8 +117,13 @@
   function renderHpRing(sprite){
     const s=normalizeSprite(sprite);
     const healthPct=pct(s.hp,s.maxHp);
+    const asset=safeSpriteAsset(s.spriteAsset||s.asset);
+    const visual=asset
+      ?`<img src="${esc(asset)}" alt="" aria-hidden="true">`
+      :'';
     return `<div class="ring hp" style="--hp-pct:${healthPct};--hp-color:${hpColor(s.hp,s.maxHp)}" data-hp-percent="${healthPct}" aria-label="HP ${esc(s.hp)} of ${esc(s.maxHp)}">
       <div class="avatar">
+        ${visual}
         <span>${esc(s.icon||'◇')}</span>
         <b>${esc(s.hp)}/${esc(s.maxHp)}</b>
       </div>
@@ -213,6 +233,7 @@
     renderBattleScreen,
     renderFighter,
     renderHpRing,
+    safeSpriteAsset,
     hpColor,
     renderSignalMeter,
     renderDownloadGauge,

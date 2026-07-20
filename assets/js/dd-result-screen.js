@@ -66,7 +66,7 @@
     const icon=sprite&&sprite.icon?sprite.icon:(success?'✓':type==='failure'?'!':'◇');
     const status=battleVictory?'VICTORY':success?'SAVED':type==='failure'?'SIGNAL LOST':'COMPLETE';
     const next=battleVictory
-      ?'Continue to the defeated signal to attempt a Download, or return to the Scanner.'
+      ?'Continue to open the Download confirmation, or return to the Scanner.'
       :success
         ?'The downloaded sprite is now available in your collection and party systems.'
         :'Return to the Scanner and search for another signal.';

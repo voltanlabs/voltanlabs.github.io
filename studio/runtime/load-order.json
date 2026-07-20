@@ -378,7 +378,7 @@
     {
       "id": "databyte-discovery-product-app-v4-shell",
       "label": "Data Discovery v4 App Shell",
-      "script": "/assets/js/databyte-discovery-product-app-v4-shell.js?v=progression-shell-4-10-2",
+      "script": "/assets/js/databyte-discovery-product-app-v4-shell.js?v=progression-shell-4-10-4",
       "phase": "product:app-ready",
       "requires": [
         "dd-canon-roster",

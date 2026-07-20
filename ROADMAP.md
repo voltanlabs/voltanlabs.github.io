@@ -1,6 +1,6 @@
 # VoltanLabs Roadmap
 
-Current focus: **Data Discovery Phase 6.0.4 Progression Loop + Runtime Recovery**.
+Current focus: **Data Discovery Phase 6.0.4 Progression Loop + Presentation Recovery**.
 
 See `PROJECT_STATE.md`, `README.md`, `docs/data-discovery-ownership-map.md`,
 `docs/databyte-runtime-load-order.md`, and `docs/studio-reference.md` for the
@@ -61,6 +61,25 @@ calculate them.
 5. **Save portability**
    - Define versioned save migrations, explicit slots, and export/import.
    - Validate corrupt, older, missing, and partially migrated saves.
+
+## Presentation Recovery Path
+
+The next visual milestone consolidates presentation behavior without merging
+gameplay owners:
+
+1. Keep `dd-app-presentation-runtime.js` as the visual coordinator for shared
+   scene backgrounds, motion policy, overlays, and asset loading.
+2. Keep screen render functions internally separated for Scanner, Encounter,
+   Battle, Result, and controls, but reduce their independent visual plumbing.
+3. Add a safe `spriteAsset` presentation field that accepts same-origin assets
+   under `/assets/`; fallback remains the current icon when no asset is present.
+4. Reintroduce the legacy scan beam, rotating rings, rarity glow, and battle
+   attack/hit motion as CSS owned by the presentation layer. No polling loops
+   or animation module may mutate battle state.
+5. Test with `assets/sprites/crabician.gif`, `leovolt.gif`, `nullbot.gif`, and
+   `scorpyone.gif` before wiring canonical Studio asset references.
+6. Add reduced-motion behavior and image-load fallback before promoting any
+   visual asset contract into Studio data.
 
 ## Recovery and Release Gates
 

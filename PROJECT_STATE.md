@@ -56,6 +56,20 @@ events; shell context normalization no longer invokes the battle resolver; and
 the active lead is normalized only once. Superseded compatibility and recovery
 diagnostic files are archived as evidence.
 
+The Phase 4.10.3 shell retirement removes the last duplicated resolver/state
+transaction helpers from the live shell. Battle Core is now the only active
+battle transaction owner. The next presentation pass will consolidate scanner,
+encounter, battle, result, and control visuals behind the existing app
+presentation owner while preserving these gameplay boundaries.
+
+Animated visual fixtures are available under `assets/sprites/` for presentation
+testing only. They are not canonical species records and must not be read by
+battle calculation or persistence code.
+
+Phase 4.10.4 replaces the stale shell label with the current Phase 6.0.4 title
+and routes Battle Victory's Continue action directly to Download confirmation.
+The defeated battle screen is no longer shown as an extra intermediate step.
+
 The v4.7.6 shell also builds one shared context snapshot and prepares both the
 screen and its controls before changing either DOM host. This prevents a late
 context failure from pairing an Encounter screen with stale Scanner controls
