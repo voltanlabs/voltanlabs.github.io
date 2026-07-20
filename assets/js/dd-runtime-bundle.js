@@ -3568,8 +3568,6 @@
     capture:()=>window.DD_CAPTURE_RUNTIME,
     player:()=>window.DD_PLAYER_RUNTIME,
     battle:()=>window.DD_BATTLE_RUNTIME,
-    resolver:()=>window.DD_BATTLE_RUNTIME&&window.DD_BATTLE_RUNTIME.resolver(),
-    battleState:()=>window.DD_BATTLE_RUNTIME&&window.DD_BATTLE_RUNTIME.state(),
     battleBus:()=>window.DD_BATTLE_RUNTIME,
     screenRegistry:()=>window.DD_SCREEN_REGISTRY,
     party:()=>window.DD_PLAYER_RUNTIME&&window.DD_PLAYER_RUNTIME.party,
@@ -4363,7 +4361,7 @@
   const fallback={
     scanner:ctx=>
       `<section class="card scanner-card">
-        <div class="scannerOrb">ðŸ“¡</div>
+        <div class="scannerOrb">Ã°Å¸â€œÂ¡</div>
         <h1>Signal Ready</h1>
         <p>${esc(ctx.log)}</p>
       </section>`,
@@ -4410,7 +4408,7 @@
         <div class="grid">
           ${members.map(x=>
             `<div class="mini">
-              ${esc(x.icon||'â—‡')} ${esc(x.name)}
+              ${esc(x.icon||'Ã¢â€”â€¡')} ${esc(x.name)}
               <br>HP ${esc(x.hp)}/${esc(x.maxHp)}
             </div>`
           ).join('')||'<p>No downloaded sprites yet.</p>'}
@@ -4438,11 +4436,11 @@
       capd.forEach(x=>sn.add(x));
       return `<section class="card">
         <h2>DataByteDex</h2>
-        <p>${sn.size}/${rt.roster().length} seen â€¢ ${capd.size} downloaded</p>
+        <p>${sn.size}/${rt.roster().length} seen Ã¢â‚¬Â¢ ${capd.size} downloaded</p>
         <div class="grid">
           ${rt.roster().map(x=>
             `<div class="mini">
-              ${esc(x.icon||'â—‡')} #${esc(x.dex)} ${esc(x.name)}
+              ${esc(x.icon||'Ã¢â€”â€¡')} #${esc(x.dex)} ${esc(x.name)}
               <br>${capd.has(x.name)
                 ?'Downloaded'
                 :sn.has(x.name)
@@ -4470,8 +4468,8 @@
         <h3>Battle History</h3>
         <div class="grid">
           ${history.map(entry=>`<div class="mini">
-            ${esc(entry.result||'battle').toUpperCase()} â€¢ ${esc(entry.opponent&&entry.opponent.name||'Unknown')}
-            <br>+${esc(entry.xp||0)} XP â€¢ Lv ${esc(entry.level||1)} ${esc(entry.tier||'Kilobyte')}
+            ${esc(entry.result||'battle').toUpperCase()} Ã¢â‚¬Â¢ ${esc(entry.opponent&&entry.opponent.name||'Unknown')}
+            <br>+${esc(entry.xp||0)} XP Ã¢â‚¬Â¢ Lv ${esc(entry.level||1)} ${esc(entry.tier||'Kilobyte')}
           </div>`).join('')||'<p>No completed battles yet.</p>'}
         </div>
         <p class="hint">Progress is saved automatically on this device.</p>
@@ -4800,7 +4798,7 @@
     }
 
     const logLine=document.querySelector('.battleLog li:last-child');
-    if(logLine)logLine.textContent='â–¸ '+(state.log||'Awaiting command.');
+    if(logLine)logLine.textContent='Ã¢â€“Â¸ '+(state.log||'Awaiting command.');
 
     applyControlHost();
     applyTurnLock();
