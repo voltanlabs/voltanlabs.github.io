@@ -1,9 +1,10 @@
-﻿// assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 4.9: modular app shell behind player, battle, and screen facades.
-// The shell owns boot, route state, context building, runtime calls, action binding,
-// turn transaction safety, control unlock recovery, and screen registry dispatch.
-// Resolver owns calculations. Battle State Runtime owns resolution application,
-// battle state, faint, and terminal decisions. Screen/control modules own presentation.
+// assets/js/databyte-discovery-product-app-v4-shell.js
+// Phase 6.0.4 application shell for Data Discovery.
+// The shell owns boot, route state, shared context construction, runtime coordination,
+// screen registry dispatch, and routing between dedicated runtime owners.
+// Battle Core exclusively owns battle transactions, state application, faint handling,
+// victory/defeat decisions, and battle lifecycle.
+// Presentation runtimes exclusively own UI rendering and user interaction.
 (function(){
   'use strict';
 
