@@ -1,4 +1,4 @@
-﻿// assets/js/databyte-discovery-product-app-v4-shell.js
+// assets/js/databyte-discovery-product-app-v4-shell.js
 // Phase 6.0.4 application shell for Data Discovery.
 // The shell owns boot, route state, shared context construction, runtime coordination,
 // screen registry dispatch, and routing between dedicated runtime owners.
@@ -834,7 +834,7 @@
   const fallback={
     scanner:ctx=>
       `<section class="card scanner-card">
-        <div class="scannerOrb">Ã°Å¸â€œÂ¡</div>
+        <div class="scannerOrb">📡</div>
         <h1>Signal Ready</h1>
         <p>${esc(ctx.log)}</p>
       </section>`,
@@ -881,7 +881,7 @@
         <div class="grid">
           ${members.map(x=>
             `<div class="mini">
-              ${esc(x.icon||'Ã¢â€”â€¡')} ${esc(x.name)}
+              ${esc(x.icon||'◇')} ${esc(x.name)}
               <br>HP ${esc(x.hp)}/${esc(x.maxHp)}
             </div>`
           ).join('')||'<p>No downloaded sprites yet.</p>'}
@@ -909,11 +909,11 @@
       capd.forEach(x=>sn.add(x));
       return `<section class="card">
         <h2>DataByteDex</h2>
-        <p>${sn.size}/${rt.roster().length} seen Ã¢â‚¬Â¢ ${capd.size} downloaded</p>
+        <p>${sn.size}/${rt.roster().length} seen • ${capd.size} downloaded</p>
         <div class="grid">
           ${rt.roster().map(x=>
             `<div class="mini">
-              ${esc(x.icon||'Ã¢â€”â€¡')} #${esc(x.dex)} ${esc(x.name)}
+              ${esc(x.icon||'◇')} #${esc(x.dex)} ${esc(x.name)}
               <br>${capd.has(x.name)
                 ?'Downloaded'
                 :sn.has(x.name)
@@ -941,8 +941,8 @@
         <h3>Battle History</h3>
         <div class="grid">
           ${history.map(entry=>`<div class="mini">
-            ${esc(entry.result||'battle').toUpperCase()} Ã¢â‚¬Â¢ ${esc(entry.opponent&&entry.opponent.name||'Unknown')}
-            <br>+${esc(entry.xp||0)} XP Ã¢â‚¬Â¢ Lv ${esc(entry.level||1)} ${esc(entry.tier||'Kilobyte')}
+            ${esc(entry.result||'battle').toUpperCase()} • ${esc(entry.opponent&&entry.opponent.name||'Unknown')}
+            <br>+${esc(entry.xp||0)} XP • Lv ${esc(entry.level||1)} ${esc(entry.tier||'Kilobyte')}
           </div>`).join('')||'<p>No completed battles yet.</p>'}
         </div>
         <p class="hint">Progress is saved automatically on this device.</p>
@@ -1271,7 +1271,7 @@
     }
 
     const logLine=document.querySelector('.battleLog li:last-child');
-    if(logLine)logLine.textContent='Ã¢â€“Â¸ '+(state.log||'Awaiting command.');
+    if(logLine)logLine.textContent='▸ '+(state.log||'Awaiting command.');
 
     applyControlHost();
     applyTurnLock();
