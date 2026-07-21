@@ -1,5 +1,5 @@
 // assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 6.0.4 application shell for Data Discovery.
+// Phase 6.0.5 application shell for Data Discovery.
 // The shell owns boot, route state, shared context construction, runtime coordination,
 // screen registry dispatch, and routing between dedicated runtime owners.
 // Battle Core exclusively owns battle transactions, state application, faint handling,
@@ -10,8 +10,8 @@
 
   if(!location.pathname.includes('databyte-discovery'))return;
 
-  const VERSION='4.10.4';
-  const PRODUCT_PHASE='6.0.4';
+  const VERSION='4.10.5';
+  const PRODUCT_PHASE='6.0.5';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={
@@ -40,8 +40,6 @@
     encounter:()=>window.DD_ENCOUNTER_RUNTIME,
     capture:()=>window.DD_CAPTURE_RUNTIME,
     player:()=>window.DD_PLAYER_RUNTIME,
-    battle:()=>window.DD_BATTLE_RUNTIME,
-    battleBus:()=>window.DD_BATTLE_RUNTIME,
     screenRegistry:()=>window.DD_SCREEN_REGISTRY,
     party:()=>window.DD_PLAYER_RUNTIME&&window.DD_PLAYER_RUNTIME.party,
     partySwitch:()=>window.DD_PLAYER_RUNTIME&&window.DD_PLAYER_RUNTIME.partySwitch,
@@ -110,8 +108,16 @@
   }
 
   function emit(name,detail){
-    if(rt.battleBus()&&rt.battleBus().emit)rt.battleBus().emit(name,detail);
-  }
+  document.dispatchEvent(new CustomEvent('dd:shell-event',{
+    detail:Object.assign({
+      owner:OWNER,
+      version:VERSION,
+      productPhase:PRODUCT_PHASE,
+      name,
+      at:new Date().toISOString()
+    },detail||{})
+  }));
+}
 
   function dispatchDiagnostic(name,detail){
     document.dispatchEvent(new CustomEvent(name,{
