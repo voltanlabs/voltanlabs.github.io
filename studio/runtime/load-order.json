@@ -63,7 +63,7 @@
     {
       "id": "product:effects-ready",
       "description": "Compatibility visual effects load after active owners."
-    },   
+    },
     {
       "id": "runtime:health-ready",
       "description": "Runtime health checks validate the Phase 6.0 shell, active owner contracts, and required UI/runtime globals."
