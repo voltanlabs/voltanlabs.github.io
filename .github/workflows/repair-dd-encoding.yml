@@ -9,16 +9,122 @@ permissions:
 jobs:
   repair:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check out repository
+      - name: Check out main
         uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
 
-      - name: Repair shell encoding
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Repair shell text encoding
         shell: bash
         run: |
           node <<'NODE'
-          const fs = require('fs');
-          const path = 'assets/js/databyte-discovery-product-app-v4-shell.js';
+          const fs = require('node:fs');
+
+          const shellPath =
+            'assets/js/databyte-discovery-product-app-v4-shell.js';
+
+          let text = fs.readFileSync(shellPath, 'utf8');
+
+          // Remove a UTF-8 BOM if one is present.
+          text = text.replace(/^\uFEFF/, '');
+
+          const replacements = new Map([
+            ['Ã°Å¸â€œÂ¡', '📡'],
+            ['Ã¢â€”â€¡', '◇'],
+            ['Ã¢â‚¬Â¢', '•'],
+            ['Ã¢â€“Â¸', '▸']
+          ]);
+
+          for (const [broken, repaired] of replacements) {
+            text = text.split(broken).join(repaired);
+          }
+
+          const remainingPatterns = [
+            'Ã°',
+            'Ã¢',
+            'Â'
+          ].filter(pattern => text.includes(pattern));
+
+          if (remainingPatterns.length) {
+            throw new Error(
+              'Possible mojibake remains in shell: ' +
+              remainingPatterns.join(', ')
+            );
+          }
+
+          fs.writeFileSync(shellPath, text, {
+            encoding: 'utf8'
+          });
+
+          console.log('Repaired:', shellPath);
+          NODE
+
+      - name: Rebuild generated runtime bundle
+        run: |
+          node studio/tools/build-data-discovery-runtime.mjs
+
+      - name: Validate repaired files
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+
+          const files = [
+            'assets/js/databyte-discovery-product-app-v4-shell.js',
+            'assets/js/dd-runtime-bundle.js'
+          ];
+
+          const forbidden = [
+            '\uFEFF',
+            'Ã°Å¸â€œÂ¡',
+            'Ã¢â€”â€¡',
+            'Ã¢â‚¬Â¢',
+            'Ã¢â€“Â¸'
+          ];
+
+          for (const file of files) {
+            const text = fs.readFileSync(file, 'utf8');
+
+            for (const value of forbidden) {
+              if (text.includes(value)) {
+                throw new Error(
+                  `Encoding corruption remains in ${file}: ${value}`
+                );
+              }
+            }
+          }
+
+          console.log('Encoding validation passed.');
+          NODE
+
+      - name: Show changed files
+        run: |
+          git status --short
+          git diff --stat
+          git diff --check
+
+      - name: Commit repaired files
+        shell: bash
+        run: |
+          if git diff --quiet -- \
+            assets/js/databyte-discovery-product-app-v4-shell.js \
+            assets/js/dd-runtime-bundle.js
+          then
+            echo "No encoding changes were needed."
+            exit 0
+          fi
+
+          git add \
+            assets/js/databyte-discovery-product-app-v4-shell.js \
+            assets/js/dd-runtime-bundle.js
+
+          git commit -m "fix(data-discovery): repair shell text encoding"
+          git push origin main
