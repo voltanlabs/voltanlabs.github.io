@@ -41,16 +41,8 @@
       "description": "Encounter Runtime is loaded."
     },
     {
-      "id": "product:balance-ready",
-      "description": "Balance layer normalizes roster and move values before the v4 App Shell boots."
-    },
-    {
-      "id": "product:battle-resolver-ready",
-      "description": "Battle Resolver owns turn order, hit checks, enemy move choice, damage math, and Download pressure output."
-    },
-    {
       "id": "product:state-ready",
-      "description": "Status, battle state, reward runtime, reward presentation, battle presentation, collection, party, inventory, and Dex runtime modules are loaded."
+      "description": "Status, player persistence, party, inventory, Dex, battle rewards, and reward presentation owners are loaded."
     },
     {
       "id": "product:screen-owners-ready",
@@ -71,10 +63,10 @@
     {
       "id": "product:effects-ready",
       "description": "Compatibility visual effects load after active owners."
-    },
+    },   
     {
       "id": "runtime:health-ready",
-      "description": "Bridge health checks validate the Phase 4.8 shell, public facades, and required UI/runtime globals."
+      "description": "Runtime health checks validate the Phase 6.0 shell, active owner contracts, and required UI/runtime globals."
     }
   ],
   "modules": [
