@@ -21,7 +21,7 @@ const modules = Object.freeze([
   '/assets/js/dd-confirm-screen.js?v=recovery-4-9-1',
   '/assets/js/dd-result-screen.js?v=progression-result-1-1-0',
   '/assets/js/dd-screen-registry.js?v=progression-result-routing-1-1-0',
-  '/assets/js/databyte-discovery-product-app-v4-shell.js?v=progression-shell-4-10-4',
+  '/assets/js/databyte-discovery-product-app-v4-shell.js?v=progression-shell-4-10-5',
   '/assets/js/dd-app-presentation-runtime.js?v=recovery-4-9-1'
 ]);
 
