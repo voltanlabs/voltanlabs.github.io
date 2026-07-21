@@ -9,7 +9,7 @@
     "script": "/assets/js/dd-app-bootstrap.js?v=bootstrap-1-9-4",
     "type": "module",
     "global": "DD_APP_BOOTSTRAP",
-    "bundle": "/assets/js/dd-runtime-bundle.js?v=progression-6-0-3"
+    "bundle": "/assets/js/dd-runtime-bundle.js?v=progression-6-0-4"
   },
   "phases": [
     {
