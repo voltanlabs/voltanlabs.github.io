@@ -196,7 +196,7 @@
       "id": "dd-battle-core-runtime",
       "label": "Battle Core Runtime",
       "script": "/assets/js/dd-battle-core-runtime.js?v=progression-battle-1-2-0",
-      "phase": "product:state-ready",
+      "phase": "product:battle-core-ready",
       "requires": [
         "dd-capture-runtime",
         "dd-player-runtime"
