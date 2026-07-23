@@ -1033,11 +1033,12 @@
 
 /* ---- assets/js/dd-capture-runtime.js ---- */
 // assets/js/dd-capture-runtime.js
-// Phase 3 split-module owner for Data Discovery capture odds and capture resolution helpers.
+// Phase 6 capture owner for Download odds, attempts, signal consequences, and completed Download transactions.
 (function(){
   if(!location.pathname.includes('databyte-discovery')&&!location.pathname.includes('databytedex'))return;
 
   function rules(){return window.DD_GAMEPLAY_RULES||null;}
+  function player(){return window.DD_PLAYER_RUNTIME||null;}
   function clamp(n,min,max){return Math.max(min,Math.min(max,Number(n)||0));}
   function rarityOf(sprite){return sprite&&sprite.rarity||'Common';}
   var fallback={
@@ -1086,12 +1087,14 @@
   function onFailedCapture(sprite){return add(sprite,fallback.failBonus);}
   function onBoost(sprite){return add(sprite,fallback.boostBonus);}
   function canAttempt(items){return Number(items&&items.byteCoins||0)>0;}
+
   function roll(sprite,seed){
     var text=String(seed||sprite&&sprite.id||'capture')+Date.now();
     var h=2166136261;
     for(var i=0;i<text.length;i++){h^=text.charCodeAt(i);h+=(h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24);}
     return Math.abs(h>>>0)%100;
   }
+
   function attempt(sprite,items,seed){
     var current=odds(sprite);
     if(!canAttempt(items))return {ok:false,reason:'no-bytecoins',odds:current,roll:null};
@@ -1099,8 +1102,56 @@
     return {ok:r<current,reason:r<current?'captured':'resisted',odds:current,roll:r};
   }
 
+  function resolveFailedAttempt(sprite,options){
+    options=options||{};
+    if(!sprite)return {ok:false,reason:'missing-sprite',collapsed:false,sprite:null};
+    var before=Number(sprite.stability||0);
+    var amount=Math.max(0,Number(options.signalDrain==null?1:options.signalDrain)||0);
+    var chanceBefore=odds(sprite);
+    var chanceAfter=onFailedCapture(sprite);
+    sprite.stability=Math.max(0,before-amount);
+    return {
+      ok:true,
+      reason:'download-resisted',
+      collapsed:sprite.stability<=0,
+      stabilityBefore:before,
+      stabilityAfter:Number(sprite.stability||0),
+      chanceBefore:chanceBefore,
+      chanceAfter:chanceAfter,
+      sprite:sprite
+    };
+  }
+
+  function completeDownload(sprite,options){
+    options=options||{};
+    var runtime=player();
+    if(!sprite||!sprite.id)return {ok:false,reason:'missing-sprite-id',sprite:sprite||null};
+    if(!runtime||!runtime.collection||typeof runtime.collection.add!=='function'){
+      return {ok:false,reason:'player-runtime-unavailable',sprite:sprite};
+    }
+    if(!sprite.byteCoin){
+      sprite.byteCoin=String(options.byteCoin||('BC-'+String(Date.now()).slice(-6)));
+    }
+    var collectionResult=runtime.collection.add(sprite);
+    var partyResult=runtime.party&&typeof runtime.party.add==='function'
+      ?runtime.party.add(sprite)
+      :null;
+    var dexResult=runtime.dex&&typeof runtime.dex.note==='function'
+      ?runtime.dex.note(sprite,'Captured')
+      :null;
+    return {
+      ok:!!(collectionResult&&collectionResult.ok!==false),
+      reason:'download-complete',
+      sprite:sprite,
+      byteCoin:sprite.byteCoin,
+      collection:collectionResult,
+      party:partyResult,
+      dex:dexResult
+    };
+  }
+
   window.DD_CAPTURE_RUNTIME={
-    version:'3.0.0',
+    version:'3.1.0',
     owner:'dd-capture-runtime',
     capFor:capFor,
     baseChance:baseChance,
@@ -1111,10 +1162,12 @@
     onFailedCapture:onFailedCapture,
     onBoost:onBoost,
     canAttempt:canAttempt,
-    attempt:attempt
+    attempt:attempt,
+    resolveFailedAttempt:resolveFailedAttempt,
+    completeDownload:completeDownload
   };
 
-  document.dispatchEvent(new CustomEvent('dd:capture-runtime-ready',{detail:{version:'3.0.0',owner:'dd-capture-runtime'}}));
+  document.dispatchEvent(new CustomEvent('dd:capture-runtime-ready',{detail:{version:'3.1.0',owner:'dd-capture-runtime'}}));
 })();
 
 /* ---- assets/js/dd-encounter-runtime.js ---- */
@@ -1877,14 +1930,16 @@
 
 /* ---- assets/js/dd-battle-reward-runtime.js ---- */
 // assets/js/dd-battle-reward-runtime.js
-// Phase 4.5: canonical, idempotent battle rewards and progression hooks.
+// Phase 4.6: canonical, idempotent battle rewards and progression hooks.
+// Battle Core is the only battle-state authority. Reward Runtime consumes
+// canonical context supplied by Battle Core or the application shell.
 (function () {
   'use strict';
 
   if (!location.pathname.includes('databyte-discovery')) return;
   if (window.DD_BATTLE_REWARD_RUNTIME) return;
 
-  const VERSION = '1.1.0';
+  const VERSION = '1.2.0';
   const OWNER = 'dd-battle-reward-runtime';
   const STORAGE_KEY = 'vl_databyte_battle_rewards_v1';
 
@@ -1950,14 +2005,8 @@
       profile || {}
     );
 
-    next.totalXp = Math.max(
-      0,
-      Number(next.totalXp || 0)
-    );
-    next.victories = Math.max(
-      0,
-      Number(next.victories || 0)
-    );
+    next.totalXp = Math.max(0, Number(next.totalXp || 0));
+    next.victories = Math.max(0, Number(next.victories || 0));
     next.byteCoinsEarned = Math.max(
       0,
       Number(next.byteCoinsEarned || 0)
@@ -1997,9 +2046,7 @@
   function read() {
     try {
       return normalizeProfile(
-        JSON.parse(
-          localStorage.getItem(STORAGE_KEY)
-        )
+        JSON.parse(localStorage.getItem(STORAGE_KEY))
       );
     } catch {
       return normalizeProfile();
@@ -2008,10 +2055,7 @@
 
   function write(profile) {
     const next = normalizeProfile(profile);
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(next)
-    );
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     return next;
   }
 
@@ -2027,33 +2071,22 @@
     return window.DD_PLAYER_RUNTIME || null;
   }
 
-  function battleState() {
-    return window.DD_BATTLE_STATE_RUNTIME || null;
+  function battleCore() {
+    return window.DD_BATTLE_CORE_RUNTIME || null;
   }
 
   function encounterIdFrom(context) {
-    const state =
-      battleState() &&
-      battleState().snapshot
-        ? battleState().snapshot()
-        : null;
+    context = context || {};
 
     return String(
-      context &&
-      (
-        context.encounterId ||
-        context.battleId
-      ) ||
-      state &&
-      state.encounterId ||
+      context.encounterId ||
+      context.battleId ||
       'battle-' + Date.now()
     );
   }
 
   function rarityMultiplier(rarity) {
-    const key = String(
-      rarity || 'Common'
-    ).toLowerCase();
+    const key = String(rarity || 'Common').toLowerCase();
 
     if (key.includes('legendary')) return 2.5;
     if (key.includes('rare')) return 1.7;
@@ -2087,8 +2120,7 @@
     context = context || {};
 
     const defeated = defeatedFrom(context);
-    const encounterId =
-      encounterIdFrom(context);
+    const encounterId = encounterIdFrom(context);
     const rarity = defeated.rarity || 'Common';
     const level = Math.max(
       1,
@@ -2099,8 +2131,7 @@
         1
       )
     );
-    const multiplier =
-      rarityMultiplier(rarity);
+    const multiplier = rarityMultiplier(rarity);
     const seed = hash([
       encounterId,
       defeated.id || defeated.name || 'wild',
@@ -2109,19 +2140,13 @@
     ].join('|'));
 
     const xp = clamp(
-      Math.round(
-        (10 + level * 3) *
-        multiplier
-      ),
+      Math.round((10 + level * 3) * multiplier),
       8,
       250
     );
 
     const byteCoins = clamp(
-      Math.round(
-        (2 + level * 0.75) *
-        multiplier
-      ),
+      Math.round((2 + level * 0.75) * multiplier),
       1,
       60
     );
@@ -2156,25 +2181,17 @@
       },
       recipient: recipientFrom(context),
       seed,
-      calculatedAt:
-        new Date().toISOString()
+      calculatedAt: new Date().toISOString()
     };
   }
 
-  function addInventoryReward(
-    id,
-    amount
-  ) {
+  function addInventoryReward(id, amount) {
     const runtime = inventory();
 
-    if (
-      !runtime ||
-      typeof runtime.add !== 'function'
-    ) {
+    if (!runtime || typeof runtime.add !== 'function') {
       return {
         ok: false,
-        reason:
-          'inventory-runtime-unavailable',
+        reason: 'inventory-runtime-unavailable',
         id,
         amount
       };
@@ -2200,19 +2217,27 @@
   }
 
   function xpFloor(level) {
-    const safeLevel = Math.max(1, Math.floor(Number(level) || 1));
+    const safeLevel = Math.max(
+      1,
+      Math.floor(Number(level) || 1)
+    );
     return 20 * (safeLevel - 1) * safeLevel;
   }
 
   function levelFromXp(totalXp) {
     const xp = Math.max(0, Number(totalXp) || 0);
     let level = 1;
-    while (level < 30 && xp >= xpFloor(level + 1)) level += 1;
+
+    while (level < 30 && xp >= xpFloor(level + 1)) {
+      level += 1;
+    }
+
     return level;
   }
 
   function tierForLevel(level) {
     const value = Math.max(1, Number(level) || 1);
+
     if (value >= 25) return 'Petabyte';
     if (value >= 15) return 'Terabyte';
     if (value >= 10) return 'Gigabyte';
@@ -2224,24 +2249,43 @@
     const xp = Math.max(0, Number(totalXp) || 0);
     const level = levelFromXp(xp);
     const currentFloor = xpFloor(level);
-    const nextFloor = level >= 30 ? currentFloor : xpFloor(level + 1);
+    const nextFloor =
+      level >= 30
+        ? currentFloor
+        : xpFloor(level + 1);
+
     return {
       recipientKey: recipientKey(sprite),
       level,
       tier: tierForLevel(level),
       totalXp: xp,
       levelXp: Math.max(0, xp - currentFloor),
-      levelXpRequired: level >= 30 ? 0 : Math.max(1, nextFloor - currentFloor),
-      progressPercent: level >= 30
-        ? 100
-        : clamp(Math.round((xp - currentFloor) / (nextFloor - currentFloor) * 100), 0, 100)
+      levelXpRequired:
+        level >= 30
+          ? 0
+          : Math.max(1, nextFloor - currentFloor),
+      progressPercent:
+        level >= 30
+          ? 100
+          : clamp(
+              Math.round(
+                (xp - currentFloor) /
+                (nextFloor - currentFloor) *
+                100
+              ),
+              0,
+              100
+            )
     };
   }
 
   function applyProgression(recipient, previousXp, totalXp) {
     const before = progressionSnapshot(recipient, previousXp);
     const after = progressionSnapshot(recipient, totalXp);
-    const levelsGained = Math.max(0, after.level - before.level);
+    const levelsGained = Math.max(
+      0,
+      after.level - before.level
+    );
     const tierUpgraded = before.tier !== after.tier;
     const runtime = player();
     let updatedSprite = null;
@@ -2253,20 +2297,59 @@
       typeof runtime.collection.find === 'function' &&
       typeof runtime.collection.update === 'function'
     ) {
-      const current = runtime.collection.find(recipient.id) || recipient;
-      const defenseGain = Math.max(0, Math.floor(after.level / 2) - Math.floor(before.level / 2));
-      const speedGain = Math.max(0, Math.floor(after.level / 3) - Math.floor(before.level / 3));
+      const current =
+        runtime.collection.find(recipient.id) ||
+        recipient;
+
+      const defenseGain = Math.max(
+        0,
+        Math.floor(after.level / 2) -
+        Math.floor(before.level / 2)
+      );
+
+      const speedGain = Math.max(
+        0,
+        Math.floor(after.level / 3) -
+        Math.floor(before.level / 3)
+      );
+
       updatedSprite = Object.assign({}, current, {
         level: after.level,
         xp: after.totalXp,
         xpToNext: after.levelXpRequired,
         progressionTier: after.tier,
-        maxHp: Math.max(1, Number(current.maxHp || current.hp || 1) + levelsGained * 2),
-        hp: Math.max(0, Number(current.hp || 0) + levelsGained * 2),
-        atk: Math.max(1, Number(current.atk || current.attack || 1) + levelsGained),
-        def: Math.max(1, Number(current.def || current.defense || 1) + defenseGain),
-        speed: Math.max(1, Number(current.speed || 1) + speedGain)
+        maxHp:
+          Math.max(
+            1,
+            Number(current.maxHp || current.hp || 1) +
+            levelsGained * 2
+          ),
+        hp:
+          Math.max(
+            0,
+            Number(current.hp || 0) +
+            levelsGained * 2
+          ),
+        atk:
+          Math.max(
+            1,
+            Number(current.atk || current.attack || 1) +
+            levelsGained
+          ),
+        def:
+          Math.max(
+            1,
+            Number(current.def || current.defense || 1) +
+            defenseGain
+          ),
+        speed:
+          Math.max(
+            1,
+            Number(current.speed || 1) +
+            speedGain
+          )
       });
+
       runtime.collection.update(updatedSprite);
     }
 
@@ -2284,20 +2367,13 @@
     const reward = calculate(context);
     const profile = read();
 
-    if (
-      profile.processedBattles[
-        reward.encounterId
-      ]
-    ) {
+    if (profile.processedBattles[reward.encounterId]) {
       const duplicate = {
         ok: false,
         duplicate: true,
-        encounterId:
-          reward.encounterId,
+        encounterId: reward.encounterId,
         reward:
-          profile.processedBattles[
-            reward.encounterId
-          ],
+          profile.processedBattles[reward.encounterId],
         profile
       };
 
@@ -2309,25 +2385,25 @@
       return duplicate;
     }
 
-    const key = recipientKey(
-      reward.recipient
-    );
+    const key = recipientKey(reward.recipient);
 
     profile.totalXp += reward.xp;
     profile.victories += 1;
-    profile.byteCoinsEarned +=
-      reward.byteCoins;
+    profile.byteCoinsEarned += reward.byteCoins;
 
     const previousXp = Math.max(
       0,
       Number(profile.spriteXp[key] || 0)
     );
+
     profile.spriteXp[key] = previousXp + reward.xp;
+
     const progression = applyProgression(
       reward.recipient,
       previousXp,
       profile.spriteXp[key]
     );
+
     profile.spriteProgress[key] = progression.after;
 
     const inventoryResults = [
@@ -2341,11 +2417,7 @@
       profile.dropsEarned[drop.id] =
         Math.max(
           0,
-          Number(
-            profile.dropsEarned[
-              drop.id
-            ] || 0
-          )
+          Number(profile.dropsEarned[drop.id] || 0)
         ) + drop.amount;
 
       inventoryResults.push(
@@ -2363,15 +2435,14 @@
         recipientKey: key,
         progression,
         inventoryResults,
-        awardedAt:
-          new Date().toISOString()
+        awardedAt: new Date().toISOString()
       }
     );
 
-    profile.processedBattles[
-      reward.encounterId
-    ] = storedReward;
+    profile.processedBattles[reward.encounterId] =
+      storedReward;
     profile.lastReward = storedReward;
+
     profile.battleHistory.push({
       encounterId: reward.encounterId,
       result: 'victory',
@@ -2386,7 +2457,9 @@
       tierUpgraded: progression.tierUpgraded,
       at: storedReward.awardedAt
     });
-    profile.battleHistory = profile.battleHistory.slice(-100);
+
+    profile.battleHistory =
+      profile.battleHistory.slice(-100);
 
     const saved = write(profile);
 
@@ -2405,8 +2478,7 @@
     dispatch(
       'dd:progression-xp-awarded',
       {
-        encounterId:
-          reward.encounterId,
+        encounterId: reward.encounterId,
         recipientKey: key,
         xp: reward.xp,
         totalXp: saved.spriteXp[key],
@@ -2427,25 +2499,39 @@
       {
         encounterId:
           detail.encounterId ||
-          detail.state &&
-          detail.state.encounterId ||
-          detail.value &&
-          detail.value.encounterId,
+          (
+            detail.state &&
+            (
+              detail.state.encounterId ||
+              detail.state.battleId
+            )
+          ) ||
+          (
+            detail.value &&
+            (
+              detail.value.encounterId ||
+              detail.value.battleId
+            )
+          ),
         defeated:
           detail.defeated ||
           detail.wild ||
-          detail.value &&
           (
-            detail.value.wild ||
-            detail.value.defeated
+            detail.value &&
+            (
+              detail.value.wild ||
+              detail.value.defeated
+            )
           ),
         recipient:
           detail.recipient ||
           detail.lead ||
-          detail.value &&
           (
-            detail.value.lead ||
-            detail.value.recipient
+            detail.value &&
+            (
+              detail.value.lead ||
+              detail.value.recipient
+            )
           )
       }
     );
@@ -2453,39 +2539,61 @@
 
   function handleTerminal(event) {
     const detail =
-      event &&
-      event.detail ||
+      (event && event.detail) ||
       {};
 
-    const state =
+    const terminalState =
       detail.state ||
       {};
 
-    if (state.value !== 'victory') return;
+    const terminalValue =
+      terminalState.value ||
+      detail.terminal ||
+      (
+        detail.value &&
+        (
+          detail.value.value ||
+          detail.value.terminal
+        )
+      );
+
+    if (
+      terminalValue !== 'victory' &&
+      terminalValue !== 'wild-defeated'
+    ) {
+      return;
+    }
 
     award(eventContext(detail));
   }
 
   function getSpriteXp(sprite) {
     return Number(
-      read().spriteXp[
-        recipientKey(sprite)
-      ] || 0
+      read().spriteXp[recipientKey(sprite)] || 0
     );
   }
 
   function getProgression(sprite) {
     const profile = read();
     const key = recipientKey(sprite);
-    return profile.spriteProgress[key] || progressionSnapshot(
-      sprite,
-      profile.spriteXp[key] || 0
+
+    return (
+      profile.spriteProgress[key] ||
+      progressionSnapshot(
+        sprite,
+        profile.spriteXp[key] || 0
+      )
     );
   }
 
   function getHistory(limit) {
-    const history = read().battleHistory.slice().reverse();
-    return history.slice(0, Math.max(1, Number(limit) || 20));
+    const history =
+      read().battleHistory.slice().reverse();
+
+    return history.slice(
+      0,
+      Math.max(1, Number(limit) || 20)
+    );
   }
 
   function health() {
@@ -2493,15 +2601,13 @@
       owner: OWNER,
       version: VERSION,
       storageKey: STORAGE_KEY,
-      inventoryAvailable:
-        !!inventory(),
-      battleStateAvailable:
-        !!battleState(),
+      inventoryAvailable: !!inventory(),
+      playerRuntimeAvailable: !!player(),
+      battleCoreAvailable: !!battleCore(),
       processedBattleCount:
-        Object.keys(
-          read().processedBattles
-        ).length,
-      historyCount: read().battleHistory.length
+        Object.keys(read().processedBattles).length,
+      historyCount:
+        read().battleHistory.length
     };
   }
 
@@ -3526,7 +3632,7 @@
 
 /* ---- assets/js/databyte-discovery-product-app-v4-shell.js ---- */
 // assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 6.0.5 application shell for Data Discovery.
+// Phase 6.0.6 application shell for Data Discovery.
 // The shell owns boot, route state, shared context construction, runtime coordination,
 // screen registry dispatch, and routing between dedicated runtime owners.
 // Battle Core exclusively owns battle transactions, state application, faint handling,
@@ -3537,8 +3643,8 @@
 
   if(!location.pathname.includes('databyte-discovery'))return;
 
-  const VERSION='4.10.5';
-  const PRODUCT_PHASE='6.0.5';
+  const VERSION='4.10.6';
+  const PRODUCT_PHASE='6.0.6';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={
@@ -3874,7 +3980,7 @@
     return{
       state,
       version:VERSION,
-        productPhase:PRODUCT_PHASE,
+      productPhase:PRODUCT_PHASE,
       profile:profile(),
       items:items(),
       collection:collection(),
@@ -3932,7 +4038,7 @@
       playerSprite:activeLead,
       source:OWNER,
       shellversion:VERSION,
-        productPhase:PRODUCT_PHASE,
+      productPhase:PRODUCT_PHASE,
       startedAt:new Date().toISOString()
     };
   }
@@ -4024,7 +4130,6 @@
     fx('battle');
     render();
   }
-
   function animateTurnResult(result){
     if(!result||!Array.isArray(result.actions))return;
     result.actions.forEach((action,index)=>{
@@ -4164,9 +4269,10 @@
   function captureResolve(){
     const it=items();
     const wild=state.signal;
+    const captureRuntime=rt.capture();
     if(!wild)return;
 
-    if(!rt.capture()||!rt.capture().canAttempt(it)){
+    if(!captureRuntime||!captureRuntime.canAttempt(it)){
       state.result={
         type:'failure',
         title:'No ByteCoins',
@@ -4181,36 +4287,66 @@
       return;
     }
 
-    const out=rt.capture().attempt(wild,it,wild.id);
+    const out=captureRuntime.attempt(wild,it,wild.id);
     spendItem('byteCoins',1);
 
     if(out.ok){
-      wild.byteCoin='BC-'+String(Date.now()).slice(-6);
-      const c=collection();
-      c.push(wild);
-      write(K.collection,c);
-      if(rt.party())rt.party().add(wild);
-      else fillParty();
-      mark(wild,'Captured');
+      const completed=typeof captureRuntime.completeDownload==='function'
+        ?captureRuntime.completeDownload(wild)
+        :null;
+      if(!completed||completed.ok===false){
+        state.result={
+          type:'failure',
+          reason:'download-transaction-failed',
+          title:'Download Save Failed',
+          msg:'The signal was downloaded, but Player Runtime could not save it safely.',
+          sprite:wild,
+          canContinue:true
+        };
+        state.confirm=null;
+        state.screen='result';
+        pushLog(state.result.msg);
+        fx('warn');
+        render();
+        return;
+      }
       return success(
         'Download Complete',
-        wild.name+' downloaded into '+wild.byteCoin+'.',
+        wild.name+' downloaded into '+completed.byteCoin+'.',
+        completed.sprite||wild
+      );
+    }
+
+    const failed=typeof captureRuntime.resolveFailedAttempt==='function'
+      ?captureRuntime.resolveFailedAttempt(wild,{signalDrain:1})
+      :null;
+
+    if(!failed||failed.ok===false){
+      state.result={
+        type:'failure',
+        reason:'download-resolution-failed',
+        title:'Download Failed',
+        msg:'The Download attempt failed, but Capture Runtime could not resolve the signal state.',
+        sprite:wild,
+        canContinue:true
+      };
+      state.confirm=null;
+      state.screen='result';
+      pushLog(state.result.msg);
+      fx('warn');
+      render();
+      return;
+    }
+
+    if(failed.collapsed){
+      return fail(
+        'Signal Disappeared',
+        'Download failed and the wild signal collapsed. '+wild.name+' disappeared from scanner range.',
         wild
       );
     }
 
-    rt.capture().onFailedCapture(wild);
-    const collapse=drainSignal(
-      wild,
-      1,
-      'Download failed and the wild signal'
-    );
-
-    if(collapse){
-      return fail('Signal Disappeared',collapse,wild);
-    }
-
-    state.signal=wild;
+    state.signal=failed.sprite||wild;
     state.confirm=null;
     state.result={
       type:'failure',
@@ -4219,9 +4355,9 @@
         'Roll '+out.roll+
         ' vs '+out.odds+
         '. Signal weakened to '+
-        wild.stability+'/'+wild.maxStability+
-        '. Download now '+odds(wild)+'%.',
-      sprite:wild,
+        failed.stabilityAfter+'/'+wild.maxStability+
+        '. Download now '+failed.chanceAfter+'%.',
+      sprite:state.signal,
       canContinue:true
     };
     state.screen='result';
@@ -4694,18 +4830,18 @@
     document.body.innerHTML=
       '<div id="ddApp">'+
         '<header class="top">'+
-          '<b>Data Discovery</b>'+ 
-          '<span>Phase 6.0.4</span>'+
-        '</header>'+ 
-        '<main id="stage" class="stage"></main>'+ 
-        '<section id="controls" class="controls"></section>'+ 
-        '<nav class="nav">'+ 
-          '<button data-panel="scanner">Scan</button>'+ 
-          '<button data-panel="dex">Dex</button>'+ 
-          '<button data-panel="party">Party</button>'+ 
-          '<button data-panel="items">Items</button>'+ 
-          '<button data-panel="admin">Admin</button>'+ 
-        '</nav>'+ 
+          '<b>Data Discovery</b>'+
+          '<span>Phase 6.0.6</span>'+
+        '</header>'+
+        '<main id="stage" class="stage"></main>'+
+        '<section id="controls" class="controls"></section>'+
+        '<nav class="nav">'+
+          '<button data-panel="scanner">Scan</button>'+
+          '<button data-panel="dex">Dex</button>'+
+          '<button data-panel="party">Party</button>'+
+          '<button data-panel="items">Items</button>'+
+          '<button data-panel="admin">Admin</button>'+
+        '</nav>'+
       '</div>';
   }
 
@@ -4813,7 +4949,7 @@
 
   window.DD_PRODUCT_APP_V4_SHELL={
     version:VERSION,
-        productPhase:PRODUCT_PHASE,
+    productPhase:PRODUCT_PHASE,
     owner:OWNER,
     phase:'4.10-canonical-battle-core-shell',
     state,
