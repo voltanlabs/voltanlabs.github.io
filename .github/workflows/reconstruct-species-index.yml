@@ -7,7 +7,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: reconstruct-databytesprites-species-index
+  group: reconstruct-databytesprites-species-index-main
   cancel-in-progress: false
 
 jobs:
@@ -15,9 +15,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: Check out main
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
 
       - name: Set up Node.js
@@ -25,82 +26,51 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Check reconstructor syntax
-        run: node --check studio/tools/reconstruct-species-index.mjs
+        run: |
+          node --check studio/tools/reconstruct-species-index.mjs
 
       - name: Reconstruct species index
-        run: node studio/tools/reconstruct-species-index.mjs
-
-      - name: Validate generated species index
         run: |
-          node <<'NODE'
-          const fs = require("node:fs");
+          node studio/tools/reconstruct-species-index.mjs
 
-          const path = "studio/databytesprites/species.json";
-          const document = JSON.parse(fs.readFileSync(path, "utf8"));
-          const species = Array.isArray(document.species)
-            ? document.species
-            : [];
+      - name: Validate reconstructed species index
+        run: |
+          node studio/tools/reconstruct-species-index.mjs --check
 
-          if (species.length !== 71) {
-            throw new Error(
-              `Expected 71 species, found ${species.length}.`
-            );
-          }
+      - name: Verify generated changes
+        shell: bash
+        run: |
+          git status --short
+          git diff --stat
+          git diff --check
 
-          const ids = new Set();
-          const dexNumbers = new Set();
+          unexpected_files="$(
+            git status --porcelain --untracked-files=all |
+            sed -E 's/^.. //' |
+            grep -v '^studio/databytesprites/species.json$' || true
+          )"
 
-          for (const record of species) {
-            if (!record || typeof record !== "object") {
-              throw new Error("Species index contains a non-object record.");
-            }
-
-            if (
-              typeof record.id !== "string" ||
-              record.id.trim() === ""
-            ) {
-              throw new Error("Species record is missing a valid id.");
-            }
-
-            if (
-              typeof record.dex !== "string" ||
-              !/^\d{3}$/.test(record.dex)
-            ) {
-              throw new Error(
-                `Species "${record.id}" has invalid Dex number "${record.dex}".`
-              );
-            }
-
-            if (ids.has(record.id)) {
-              throw new Error(
-                `Duplicate species id "${record.id}".`
-              );
-            }
-
-            if (dexNumbers.has(record.dex)) {
-              throw new Error(
-                `Duplicate Dex number "${record.dex}".`
-              );
-            }
-
-            ids.add(record.id);
-            dexNumbers.add(record.dex);
-          }
-
-          console.log(`Validated ${species.length} species.`);
-          NODE
+          if [ -n "$unexpected_files" ]; then
+            echo "Unexpected files changed during species reconstruction:"
+            echo "$unexpected_files"
+            exit 1
+          fi
 
       - name: Commit reconstructed species index
+        shell: bash
         run: |
-          if git diff --quiet -- studio/databytesprites/species.json; then
+          if git diff --quiet -- studio/databytesprites/species.json
+          then
             echo "species.json is already current."
             exit 0
           fi
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           git add studio/databytesprites/species.json
-          git commit -m "fix: reconstruct DataByteSprites species index"
-          git push origin HEAD:main
+          git commit -m "build(databytesprites): reconstruct species index"
+          git push origin main
