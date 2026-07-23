@@ -1,7 +1,7 @@
-// Data Discovery v4.9: single deterministic browser entry point.
-const VERSION = '1.9.4';
+// Data Discovery v4.10: single deterministic browser entry point.
+const VERSION = '1.9.5';
 const OWNER = 'dd-app-bootstrap';
-const BUNDLE = '/assets/js/dd-runtime-bundle.js?v=progression-6-0-4';
+const BUNDLE = '/assets/js/dd-runtime-bundle.js?v=progression-6-0-6';
 
 const modules = Object.freeze([
   '/assets/js/dd-canon-roster.js?v=recovery-4-9-1',
@@ -21,7 +21,7 @@ const modules = Object.freeze([
   '/assets/js/dd-confirm-screen.js?v=recovery-4-9-1',
   '/assets/js/dd-result-screen.js?v=progression-result-1-1-0',
   '/assets/js/dd-screen-registry.js?v=progression-result-routing-1-1-0',
-  '/assets/js/databyte-discovery-product-app-v4-shell.js?v=progression-shell-4-10-5',
+  '/assets/js/databyte-discovery-product-app-v4-shell.js?v=progression-shell-4-10-6',
   '/assets/js/dd-app-presentation-runtime.js?v=recovery-4-9-1'
 ]);
 
@@ -101,7 +101,7 @@ function waitForReadiness(timeoutMs) {
 window.DD_APP_BOOTSTRAP = Object.freeze({
   version: VERSION,
   owner: OWNER,
-  phase: '4.9-single-module-entry',
+  phase: '6.0.6-progression-loop',
   bundle: BUNDLE,
   modules,
   requiredGlobals,
@@ -111,7 +111,7 @@ window.DD_APP_BOOTSTRAP = Object.freeze({
 async function boot() {
   dispatch('runtime:bootstrap-started', { moduleCount: modules.length });
   try {
-    showProgress('Loading recovery runtime...');
+    showProgress('Loading Data Discovery runtime...');
     await loadClassicScript(BUNDLE, 15000);
     modules.forEach((src, index) => {
       loaded.push(src);
