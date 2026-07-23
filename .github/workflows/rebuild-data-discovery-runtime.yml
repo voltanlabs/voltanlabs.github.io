@@ -1,4 +1,3 @@
-
 name: Rebuild Data Discovery Runtime
 
 on:
@@ -59,25 +58,25 @@ jobs:
             'utf8'
           );
 
-          const shellVersion = 'progression-shell-4-10-5';
+          const shellVersion = 'progression-shell-4-10-6';
 
           const checks = [
             [bootstrap.includes(shellVersion),
-              'Bootstrap does not reference shell 4.10.5.'],
+              'Bootstrap does not reference shell 4.10.6.'],
             [manifest.includes(shellVersion),
-              'Load-order manifest does not reference shell 4.10.5.'],
-            [shell.includes("const VERSION='4.10.5';"),
-              'Source shell version is not 4.10.5.'],
-            [shell.includes("const PRODUCT_PHASE='6.0.5';"),
-              'Source shell product phase is not 6.0.5.'],
+              'Load-order manifest does not reference shell 4.10.6.'],
+            [shell.includes("const VERSION='4.10.6';"),
+              'Source shell version is not 4.10.6.'],
+            [shell.includes("const PRODUCT_PHASE='6.0.6';"),
+              'Source shell product phase is not 6.0.6.'],
             [shell.includes("'dd:shell-event'"),
               'Source shell is missing dd:shell-event.'],
             [!shell.includes('DD_BATTLE_RUNTIME'),
               'Source shell still references DD_BATTLE_RUNTIME.'],
-            [bundle.includes("const VERSION='4.10.5';"),
-              'Bundle does not contain shell version 4.10.5.'],
-            [bundle.includes("const PRODUCT_PHASE='6.0.5';"),
-              'Bundle does not contain product phase 6.0.5.'],
+            [bundle.includes("const VERSION='4.10.6';"),
+              'Bundle does not contain shell version 4.10.6.'],
+            [bundle.includes("const PRODUCT_PHASE='6.0.6';"),
+              'Bundle does not contain product phase 6.0.6.'],
             [bundle.includes("'dd:shell-event'"),
               'Bundle is missing dd:shell-event.'],
             [!bundle.includes('DD_BATTLE_RUNTIME'),
