@@ -1,5 +1,5 @@
 // assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 6.0.5 application shell for Data Discovery.
+// Phase 6.0.6 application shell for Data Discovery.
 // The shell owns boot, route state, shared context construction, runtime coordination,
 // screen registry dispatch, and routing between dedicated runtime owners.
 // Battle Core exclusively owns battle transactions, state application, faint handling,
@@ -10,8 +10,8 @@
 
   if(!location.pathname.includes('databyte-discovery'))return;
 
-  const VERSION='4.10.5';
-  const PRODUCT_PHASE='6.0.5';
+  const VERSION='4.10.6';
+  const PRODUCT_PHASE='6.0.6';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={
@@ -347,7 +347,7 @@
     return{
       state,
       version:VERSION,
-        productPhase:PRODUCT_PHASE,
+      productPhase:PRODUCT_PHASE,
       profile:profile(),
       items:items(),
       collection:collection(),
@@ -405,7 +405,7 @@
       playerSprite:activeLead,
       source:OWNER,
       shellversion:VERSION,
-        productPhase:PRODUCT_PHASE,
+      productPhase:PRODUCT_PHASE,
       startedAt:new Date().toISOString()
     };
   }
@@ -497,7 +497,6 @@
     fx('battle');
     render();
   }
-
   function animateTurnResult(result){
     if(!result||!Array.isArray(result.actions))return;
     result.actions.forEach((action,index)=>{
@@ -637,9 +636,10 @@
   function captureResolve(){
     const it=items();
     const wild=state.signal;
+    const captureRuntime=rt.capture();
     if(!wild)return;
 
-    if(!rt.capture()||!rt.capture().canAttempt(it)){
+    if(!captureRuntime||!captureRuntime.canAttempt(it)){
       state.result={
         type:'failure',
         title:'No ByteCoins',
@@ -654,36 +654,66 @@
       return;
     }
 
-    const out=rt.capture().attempt(wild,it,wild.id);
+    const out=captureRuntime.attempt(wild,it,wild.id);
     spendItem('byteCoins',1);
 
     if(out.ok){
-      wild.byteCoin='BC-'+String(Date.now()).slice(-6);
-      const c=collection();
-      c.push(wild);
-      write(K.collection,c);
-      if(rt.party())rt.party().add(wild);
-      else fillParty();
-      mark(wild,'Captured');
+      const completed=typeof captureRuntime.completeDownload==='function'
+        ?captureRuntime.completeDownload(wild)
+        :null;
+      if(!completed||completed.ok===false){
+        state.result={
+          type:'failure',
+          reason:'download-transaction-failed',
+          title:'Download Save Failed',
+          msg:'The signal was downloaded, but Player Runtime could not save it safely.',
+          sprite:wild,
+          canContinue:true
+        };
+        state.confirm=null;
+        state.screen='result';
+        pushLog(state.result.msg);
+        fx('warn');
+        render();
+        return;
+      }
       return success(
         'Download Complete',
-        wild.name+' downloaded into '+wild.byteCoin+'.',
+        wild.name+' downloaded into '+completed.byteCoin+'.',
+        completed.sprite||wild
+      );
+    }
+
+    const failed=typeof captureRuntime.resolveFailedAttempt==='function'
+      ?captureRuntime.resolveFailedAttempt(wild,{signalDrain:1})
+      :null;
+
+    if(!failed||failed.ok===false){
+      state.result={
+        type:'failure',
+        reason:'download-resolution-failed',
+        title:'Download Failed',
+        msg:'The Download attempt failed, but Capture Runtime could not resolve the signal state.',
+        sprite:wild,
+        canContinue:true
+      };
+      state.confirm=null;
+      state.screen='result';
+      pushLog(state.result.msg);
+      fx('warn');
+      render();
+      return;
+    }
+
+    if(failed.collapsed){
+      return fail(
+        'Signal Disappeared',
+        'Download failed and the wild signal collapsed. '+wild.name+' disappeared from scanner range.',
         wild
       );
     }
 
-    rt.capture().onFailedCapture(wild);
-    const collapse=drainSignal(
-      wild,
-      1,
-      'Download failed and the wild signal'
-    );
-
-    if(collapse){
-      return fail('Signal Disappeared',collapse,wild);
-    }
-
-    state.signal=wild;
+    state.signal=failed.sprite||wild;
     state.confirm=null;
     state.result={
       type:'failure',
@@ -692,9 +722,9 @@
         'Roll '+out.roll+
         ' vs '+out.odds+
         '. Signal weakened to '+
-        wild.stability+'/'+wild.maxStability+
-        '. Download now '+odds(wild)+'%.',
-      sprite:wild,
+        failed.stabilityAfter+'/'+wild.maxStability+
+        '. Download now '+failed.chanceAfter+'%.',
+      sprite:state.signal,
       canContinue:true
     };
     state.screen='result';
@@ -1168,7 +1198,7 @@
       '<div id="ddApp">'+
         '<header class="top">'+
           '<b>Data Discovery</b>'+ 
-          '<span>Phase 6.0.4</span>'+
+          '<span>Phase 6.0.6</span>'+ 
         '</header>'+ 
         '<main id="stage" class="stage"></main>'+ 
         '<section id="controls" class="controls"></section>'+ 
@@ -1286,7 +1316,7 @@
 
   window.DD_PRODUCT_APP_V4_SHELL={
     version:VERSION,
-        productPhase:PRODUCT_PHASE,
+    productPhase:PRODUCT_PHASE,
     owner:OWNER,
     phase:'4.10-canonical-battle-core-shell',
     state,
@@ -1316,5 +1346,3 @@
     detail:window.DD_PRODUCT_APP_V4_SHELL
   }));
 })();
-
-
