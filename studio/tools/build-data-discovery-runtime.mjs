@@ -16,12 +16,19 @@ const registeredSources = [...moduleBlock[1].matchAll(/'([^']+)'/g)].map(match =
 const sources = requestedCount > 0 ? registeredSources.slice(0, requestedCount) : registeredSources;
 if (!sources.length) throw new Error('Bootstrap module registry is empty.');
 
+function normalizeSource(text) {
+  return text
+    .replace(/^\uFEFF/, '')
+    .replace(/[ \t]+$/gm, '')
+    .trim();
+}
+
 const sections = sources.map(source => {
   const relative = source.split('?')[0].replace(/^\//, '');
   const absolute = path.resolve(root, relative);
   if (!absolute.startsWith(root + path.sep)) throw new Error('Source escapes project root: ' + source);
   if (!fs.existsSync(absolute)) throw new Error('Missing runtime source: ' + source);
-  return `\n/* ---- ${relative} ---- */\n${fs.readFileSync(absolute, 'utf8').trim()}\n`;
+  return `\n/* ---- ${relative} ---- */\n${normalizeSource(fs.readFileSync(absolute, 'utf8'))}\n`;
 });
 
 const header = `/* Generated Data Discovery runtime bundle.\n * Do not edit directly. Run: node studio/tools/build-data-discovery-runtime.mjs\n * Inputs: ${sources.length}\n */\n`;
