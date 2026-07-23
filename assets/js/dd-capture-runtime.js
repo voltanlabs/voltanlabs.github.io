@@ -1,9 +1,10 @@
 // assets/js/dd-capture-runtime.js
-// Phase 3 split-module owner for Data Discovery capture odds and capture resolution helpers.
+// Phase 6 capture owner for Download odds, attempts, signal consequences, and completed Download transactions.
 (function(){
   if(!location.pathname.includes('databyte-discovery')&&!location.pathname.includes('databytedex'))return;
 
   function rules(){return window.DD_GAMEPLAY_RULES||null;}
+  function player(){return window.DD_PLAYER_RUNTIME||null;}
   function clamp(n,min,max){return Math.max(min,Math.min(max,Number(n)||0));}
   function rarityOf(sprite){return sprite&&sprite.rarity||'Common';}
   var fallback={
@@ -52,12 +53,14 @@
   function onFailedCapture(sprite){return add(sprite,fallback.failBonus);}
   function onBoost(sprite){return add(sprite,fallback.boostBonus);}
   function canAttempt(items){return Number(items&&items.byteCoins||0)>0;}
+
   function roll(sprite,seed){
     var text=String(seed||sprite&&sprite.id||'capture')+Date.now();
     var h=2166136261;
     for(var i=0;i<text.length;i++){h^=text.charCodeAt(i);h+=(h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24);}
     return Math.abs(h>>>0)%100;
   }
+
   function attempt(sprite,items,seed){
     var current=odds(sprite);
     if(!canAttempt(items))return {ok:false,reason:'no-bytecoins',odds:current,roll:null};
@@ -65,8 +68,56 @@
     return {ok:r<current,reason:r<current?'captured':'resisted',odds:current,roll:r};
   }
 
+  function resolveFailedAttempt(sprite,options){
+    options=options||{};
+    if(!sprite)return {ok:false,reason:'missing-sprite',collapsed:false,sprite:null};
+    var before=Number(sprite.stability||0);
+    var amount=Math.max(0,Number(options.signalDrain==null?1:options.signalDrain)||0);
+    var chanceBefore=odds(sprite);
+    var chanceAfter=onFailedCapture(sprite);
+    sprite.stability=Math.max(0,before-amount);
+    return {
+      ok:true,
+      reason:'download-resisted',
+      collapsed:sprite.stability<=0,
+      stabilityBefore:before,
+      stabilityAfter:Number(sprite.stability||0),
+      chanceBefore:chanceBefore,
+      chanceAfter:chanceAfter,
+      sprite:sprite
+    };
+  }
+
+  function completeDownload(sprite,options){
+    options=options||{};
+    var runtime=player();
+    if(!sprite||!sprite.id)return {ok:false,reason:'missing-sprite-id',sprite:sprite||null};
+    if(!runtime||!runtime.collection||typeof runtime.collection.add!=='function'){
+      return {ok:false,reason:'player-runtime-unavailable',sprite:sprite};
+    }
+    if(!sprite.byteCoin){
+      sprite.byteCoin=String(options.byteCoin||('BC-'+String(Date.now()).slice(-6)));
+    }
+    var collectionResult=runtime.collection.add(sprite);
+    var partyResult=runtime.party&&typeof runtime.party.add==='function'
+      ?runtime.party.add(sprite)
+      :null;
+    var dexResult=runtime.dex&&typeof runtime.dex.note==='function'
+      ?runtime.dex.note(sprite,'Captured')
+      :null;
+    return {
+      ok:!!(collectionResult&&collectionResult.ok!==false),
+      reason:'download-complete',
+      sprite:sprite,
+      byteCoin:sprite.byteCoin,
+      collection:collectionResult,
+      party:partyResult,
+      dex:dexResult
+    };
+  }
+
   window.DD_CAPTURE_RUNTIME={
-    version:'3.0.0',
+    version:'3.1.0',
     owner:'dd-capture-runtime',
     capFor:capFor,
     baseChance:baseChance,
@@ -77,8 +128,10 @@
     onFailedCapture:onFailedCapture,
     onBoost:onBoost,
     canAttempt:canAttempt,
-    attempt:attempt
+    attempt:attempt,
+    resolveFailedAttempt:resolveFailedAttempt,
+    completeDownload:completeDownload
   };
 
-  document.dispatchEvent(new CustomEvent('dd:capture-runtime-ready',{detail:{version:'3.0.0',owner:'dd-capture-runtime'}}));
+  document.dispatchEvent(new CustomEvent('dd:capture-runtime-ready',{detail:{version:'3.1.0',owner:'dd-capture-runtime'}}));
 })();
