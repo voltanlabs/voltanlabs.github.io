@@ -3,8 +3,8 @@
 Status: active  
 Current phase: Data Discovery Phase 6.0 Progression Loop
 
-Latest runtime recovery: Data Discovery Phase 6.0.4 loads one generated runtime
-bundle from bootstrap 1.9.4 and preserves 19 ordered modules in the runtime
+Latest runtime recovery: Data Discovery Phase 6.0.7 loads one generated runtime
+bundle from bootstrap 1.9.6 and preserves 19 ordered modules in the runtime
 manifest. `dd-battle-core-runtime.js` is the active battle calculation,
 application, turn-order, retaliation, and battle-context owner. It uses one
 synchronous event-free transaction per input and returns one result to the
@@ -62,9 +62,14 @@ battle transaction owner. The next presentation pass will consolidate scanner,
 encounter, battle, result, and control visuals behind the existing app
 presentation owner while preserving these gameplay boundaries.
 
-Animated visual fixtures are available under `assets/sprites/` for presentation
-testing only. They are not canonical species records and must not be read by
-battle calculation or persistence code.
+Data Sprite Arena's animated Leovolt, Crabician, and Scorpyone fixtures are
+assigned to those three canonical roster records through local `spriteAsset`
+references. Encounter, Battle, Result, Party, and Dex presentation paths render
+the assets with emoji fallback for unmapped species. Asset references remain
+presentation data and are not read by battle calculation or persistence rules.
+The player owner's roster reconciliation refreshes this authored presentation
+reference on older saved collection records without replacing saved HP, XP,
+levels, stats, or other player-owned progression.
 
 Phase 4.10.4 replaces the stale shell label with the current Phase 6.0.4 title
 and routes Battle Victory's Continue action directly to Download confirmation.

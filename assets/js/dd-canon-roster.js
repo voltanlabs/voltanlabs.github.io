@@ -12,6 +12,11 @@
     Cryo:'#67E8F9',Alloy:'#CBD5E1',Spectral:'#C084FC',Cipher:'#2DD4BF',Neural:'#A78BFA',
     Celestial:'#60A5FA',Aether:'#93C5FD',Seismic:'#A3E635',Unassigned:'#38BDF8'
   };
+  const spriteAssets={
+    Leovolt:'/assets/sprites/leovolt.gif',
+    Crabician:'/assets/sprites/crabician.gif',
+    Scorpyone:'/assets/sprites/scorpyone.gif'
+  };
 
   function rarity(version,alignment,name){
     if(name==='Leovolt')return 'Legendary';
@@ -141,6 +146,7 @@
       secondaryConfiguration:configs[1]||null,configurationStatus:configs.length?'assigned':'pending',
       type:configs.length?configs.join(' / '):'Unassigned',stage:version,version,familyId,zodiac,
       rarity:rare,icon:icon(name,configs),color:colors[primary]||colors[alignment]||colors.Unassigned,
+      spriteAsset:spriteAssets[name]||null,
       chance:chance(rare),stability:stability(rare),lore
     };
   });

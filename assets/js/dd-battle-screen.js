@@ -4,7 +4,7 @@
 (function(){
   'use strict';
 
-  const VERSION='0.5.1';
+  const VERSION='0.6.0';
   const STYLE_ID='ddBattleScreenStyle';
 
   function esc(value){
@@ -120,11 +120,10 @@
     const asset=safeSpriteAsset(s.spriteAsset||s.asset);
     const visual=asset
       ?`<img src="${esc(asset)}" alt="" aria-hidden="true">`
-      :'';
+      :`<span>${esc(s.icon||'◇')}</span>`;
     return `<div class="ring hp" style="--hp-pct:${healthPct};--hp-color:${hpColor(s.hp,s.maxHp)}" data-hp-percent="${healthPct}" aria-label="HP ${esc(s.hp)} of ${esc(s.maxHp)}">
       <div class="avatar">
         ${visual}
-        <span>${esc(s.icon||'◇')}</span>
         <b>${esc(s.hp)}/${esc(s.maxHp)}</b>
       </div>
     </div>`;

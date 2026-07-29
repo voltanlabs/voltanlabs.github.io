@@ -18,6 +18,11 @@
     Cryo:'#67E8F9',Alloy:'#CBD5E1',Spectral:'#C084FC',Cipher:'#2DD4BF',Neural:'#A78BFA',
     Celestial:'#60A5FA',Aether:'#93C5FD',Seismic:'#A3E635',Unassigned:'#38BDF8'
   };
+  const spriteAssets={
+    Leovolt:'/assets/sprites/leovolt.gif',
+    Crabician:'/assets/sprites/crabician.gif',
+    Scorpyone:'/assets/sprites/scorpyone.gif'
+  };
 
   function rarity(version,alignment,name){
     if(name==='Leovolt')return 'Legendary';
@@ -147,6 +152,7 @@
       secondaryConfiguration:configs[1]||null,configurationStatus:configs.length?'assigned':'pending',
       type:configs.length?configs.join(' / '):'Unassigned',stage:version,version,familyId,zodiac,
       rarity:rare,icon:icon(name,configs),color:colors[primary]||colors[alignment]||colors.Unassigned,
+      spriteAsset:spriteAssets[name]||null,
       chance:chance(rare),stability:stability(rare),lore
     };
   });
@@ -1255,7 +1261,7 @@
   if (!location.pathname.includes('databyte-discovery')) return;
   if (window.DD_PLAYER_RUNTIME) return;
 
-  const VERSION = '1.2.1';
+  const VERSION = '1.3.0';
   const OWNER = 'dd-player-runtime';
   const MAX_PARTY = 5;
   const KEYS = Object.freeze({
@@ -1351,9 +1357,16 @@
       const canonicalMoves = Array.isArray(canonical.moves) ? canonical.moves : [];
       const savedMoveIds = (saved.moves || []).map(move => move && (move.id || move.name)).filter(Boolean).join('|');
       const canonicalMoveIds = canonicalMoves.map(move => move && (move.id || move.name)).filter(Boolean).join('|');
-      if (!canonicalMoveIds || canonicalMoveIds === savedMoveIds) return saved;
+      const canonicalAsset = canonical.spriteAsset || null;
+      const savedAsset = saved.spriteAsset || null;
+      const movesChanged = !!canonicalMoveIds && canonicalMoveIds !== savedMoveIds;
+      const assetChanged = canonicalAsset !== savedAsset;
+      if (!movesChanged && !assetChanged) return saved;
       updated += 1;
-      return Object.assign({}, canonical, saved, { moves: canonicalMoves });
+      return Object.assign({}, canonical, saved, {
+        moves: movesChanged ? canonicalMoves : saved.moves,
+        spriteAsset: canonicalAsset
+      });
     });
     if (updated) collectionWrite(next);
     return { ok: true, updated, collection: next };
@@ -2960,7 +2973,7 @@
 // assets/js/dd-encounter-screen.js
 // Core Stabilization v1.0: canonical encounter presentation owner.
 (function(){
-  const VERSION='1.0.0';
+  const VERSION='1.1.0';
   const STYLE_ID='ddEncounterScreenStyle';
 
   function esc(value){
@@ -2979,6 +2992,20 @@
     return String(rarity||'common').toLowerCase().replace(/[^a-z0-9]+/g,'-');
   }
 
+  function safeSpriteAsset(value){
+    const raw=String(value||'').trim();
+    if(!raw)return '';
+    try{
+      const origin=location&&location.origin||'http://localhost';
+      const url=new URL(raw,origin);
+      return url.origin===origin&&url.pathname.startsWith('/assets/sprites/')
+        ?url.href
+        :'';
+    }catch(error){
+      return '';
+    }
+  }
+
   function installStyle(){
     if(document.getElementById(STYLE_ID))return;
     const style=document.createElement('style');
@@ -2994,6 +3021,7 @@
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait.epic{--rarity:#F472B6}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait.legendary{--rarity:#FFD700}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait.starter{--rarity:#22C55E}',
+      '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait img{width:92%;height:92%;object-fit:contain;border-radius:999px}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] h1{margin:0;color:#38BDF8;font-size:clamp(28px,8vw,42px);line-height:1;overflow-wrap:anywhere}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterMeta{color:#E0F2FE;font-size:13px}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterLore{margin:3px 0 0;max-width:34rem;color:#E2E8F0;line-height:1.4;font-size:14px}',
@@ -3028,12 +3056,16 @@
     const types=String(signal.type||'Signal').replace(/\s*\/\s*/g,' • ');
     const source=signal.encounterPoolLabel||'Scanner Pool';
     const lore=signal.lore||signal.description||'An unidentified DataByte signal has entered scanner range.';
+    const asset=safeSpriteAsset(signal.spriteAsset||signal.asset);
+    const portrait=asset
+      ?`<img src="${esc(asset)}" alt="${esc(signal.name||'DataByte Sprite')}">`
+      :esc(signal.icon||'◇');
 
-    return `<section class="card encounter-card" data-owner="dd-encounter-screen"><div class="encounterTop"><span>Signal Locked</span><span class="rarityBadge">${esc(rarity)}</span></div><div class="encounterCore"><div class="encounterPortrait ${esc(rarityClass(rarity))}">${esc(signal.icon||'◇')}</div><h1>${esc(signal.name||'Unknown Signal')}</h1><div class="encounterMeta">#${esc(signal.dex||'?')} • ${esc(types)}</div><p class="encounterLore">${esc(lore)}</p><p class="encounterSource">Detected in ${esc(source)}.</p></div><div><div class="encounterStats"><div class="encounterStat">Download<b>${esc(odds)}%</b></div><div class="encounterStat">HP<b>${esc(hp)}/${esc(maxHp)}</b></div><div class="encounterStat">Signal<b>${esc(stability)}/${esc(maxStability)}</b></div></div><div class="encounterMeters"><div class="meter signalMeter"><div class="meterHead"><span>Signal Stability</span><b>${esc(stability)}/${esc(maxStability)}</b></div><span class="meterTrack"><i style="width:${pct(stability,maxStability)}%"></i></span></div><div class="meter downloadMeter"><div class="meterHead"><span>Download Window</span><b>${esc(odds)}% / Cap ${esc(signal.captureCap||'?')}</b></div><span class="meterTrack"><i style="width:${pct(odds,captureCap)}%"></i></span></div></div></div></section>`;
+    return `<section class="card encounter-card" data-owner="dd-encounter-screen"><div class="encounterTop"><span>Signal Locked</span><span class="rarityBadge">${esc(rarity)}</span></div><div class="encounterCore"><div class="encounterPortrait ${esc(rarityClass(rarity))}">${portrait}</div><h1>${esc(signal.name||'Unknown Signal')}</h1><div class="encounterMeta">#${esc(signal.dex||'?')} • ${esc(types)}</div><p class="encounterLore">${esc(lore)}</p><p class="encounterSource">Detected in ${esc(source)}.</p></div><div><div class="encounterStats"><div class="encounterStat">Download<b>${esc(odds)}%</b></div><div class="encounterStat">HP<b>${esc(hp)}/${esc(maxHp)}</b></div><div class="encounterStat">Signal<b>${esc(stability)}/${esc(maxStability)}</b></div></div><div class="encounterMeters"><div class="meter signalMeter"><div class="meterHead"><span>Signal Stability</span><b>${esc(stability)}/${esc(maxStability)}</b></div><span class="meterTrack"><i style="width:${pct(stability,maxStability)}%"></i></span></div><div class="meter downloadMeter"><div class="meterHead"><span>Download Window</span><b>${esc(odds)}% / Cap ${esc(signal.captureCap||'?')}</b></div><span class="meterTrack"><i style="width:${pct(odds,captureCap)}%"></i></span></div></div></div></section>`;
   }
 
   installStyle();
-  window.DD_ENCOUNTER_SCREEN={version:VERSION,owner:'dd-encounter-screen',status:'active-screen-owner',installStyle,renderEncounterScreen};
+  window.DD_ENCOUNTER_SCREEN={version:VERSION,owner:'dd-encounter-screen',status:'active-screen-owner',installStyle,safeSpriteAsset,renderEncounterScreen};
   document.dispatchEvent(new CustomEvent('dd:encounter-screen-ready',{detail:window.DD_ENCOUNTER_SCREEN}));
 })();
 
@@ -3044,7 +3076,7 @@
 (function(){
   'use strict';
 
-  const VERSION='0.5.1';
+  const VERSION='0.6.0';
   const STYLE_ID='ddBattleScreenStyle';
 
   function esc(value){
@@ -3160,11 +3192,10 @@
     const asset=safeSpriteAsset(s.spriteAsset||s.asset);
     const visual=asset
       ?`<img src="${esc(asset)}" alt="" aria-hidden="true">`
-      :'';
+      :`<span>${esc(s.icon||'◇')}</span>`;
     return `<div class="ring hp" style="--hp-pct:${healthPct};--hp-color:${hpColor(s.hp,s.maxHp)}" data-hp-percent="${healthPct}" aria-label="HP ${esc(s.hp)} of ${esc(s.maxHp)}">
       <div class="avatar">
         ${visual}
-        <span>${esc(s.icon||'◇')}</span>
         <b>${esc(s.hp)}/${esc(s.maxHp)}</b>
       </div>
     </div>`;
@@ -3441,7 +3472,7 @@
 // assets/js/dd-result-screen.js
 // Core Stabilization v1.0: canonical Download result presentation owner.
 (function(){
-  const VERSION='1.1.0';
+  const VERSION='1.2.0';
   const STYLE_ID='ddResultScreenStyle';
 
   function esc(value){
@@ -3457,6 +3488,20 @@
     return 'neutral';
   }
 
+  function safeSpriteAsset(value){
+    const raw=String(value||'').trim();
+    if(!raw)return '';
+    try{
+      const origin=location&&location.origin||'http://localhost';
+      const url=new URL(raw,origin);
+      return url.origin===origin&&url.pathname.startsWith('/assets/sprites/')
+        ?url.href
+        :'';
+    }catch(error){
+      return '';
+    }
+  }
+
   function installStyle(){
     if(document.getElementById(STYLE_ID))return;
     const style=document.createElement('style');
@@ -3470,6 +3515,7 @@
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultCore{display:grid;place-items:center;align-content:center;gap:14px;min-height:0}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon{width:min(42vw,168px);height:min(42vw,168px);border-radius:999px;display:grid;place-items:center;position:relative;background:radial-gradient(circle,rgba(56,189,248,.18),rgba(15,23,42,.94) 68%);border:7px solid var(--result-accent);box-shadow:0 0 40px color-mix(in srgb,var(--result-accent) 36%,transparent);font-size:clamp(50px,15vw,82px)}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon:after{content:"";position:absolute;inset:12%;border-radius:999px;border:1px solid color-mix(in srgb,var(--result-accent) 48%,transparent)}',
+      '#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon img{width:92%;height:92%;object-fit:contain;border-radius:999px}',
       '#ddApp .result-card[data-owner="dd-result-screen"] h1{margin:0;color:var(--result-accent);font-size:clamp(28px,8vw,42px);line-height:1.04;overflow-wrap:anywhere}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultMessage{margin:0;max-width:34rem;color:#E2E8F0;font-size:15px;line-height:1.45}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultSummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%}',
@@ -3504,6 +3550,10 @@
     const title=result.title||(success?'Download Complete':type==='failure'?'Download Failed':'Result');
     const message=result.msg||result.message||(success?'The signal was added to your collection.':'The signal could not be downloaded.');
     const icon=sprite&&sprite.icon?sprite.icon:(success?'✓':type==='failure'?'!':'◇');
+    const asset=safeSpriteAsset(sprite&&(sprite.spriteAsset||sprite.asset));
+    const visual=asset
+      ?`<img src="${esc(asset)}" alt="${esc(sprite.name||'DataByte Sprite')}">`
+      :esc(icon);
     const status=battleVictory?'VICTORY':success?'SAVED':type==='failure'?'SIGNAL LOST':'COMPLETE';
     const next=battleVictory
       ?'Continue to open the Download confirmation, or return to the Scanner.'
@@ -3521,11 +3571,11 @@
       </div>`
       :'';
 
-    return `<section class="card result-card ${esc(type)}" data-owner="dd-result-screen"><div class="resultTop"><span>${battleVictory?'Battle Result':'Scanner Result'}</span><b>${esc(status)}</b></div><div class="resultCore"><div class="resultIcon" aria-hidden="true">${esc(icon)}</div><h1>${esc(title)}</h1><p class="resultMessage">${esc(message)}</p>${rewardHtml}${sprite?`<p class="resultNext">${esc(sprite.name||'DataByte Sprite')} • #${esc(sprite.dex||'?')} • ${esc(sprite.rarity||'Common')}</p>`:''}</div><div><div class="resultSummary"><div class="resultStat">Collection<b>${esc(collection.length)}</b></div><div class="resultStat">Party Slots<b>${esc(party.length)}/5</b></div><div class="resultStat">ByteCoins<b>${esc(inventory.byteCoins||0)}</b></div></div><p class="resultNext">${esc(next)}</p></div></section>`;
+    return `<section class="card result-card ${esc(type)}" data-owner="dd-result-screen"><div class="resultTop"><span>${battleVictory?'Battle Result':'Scanner Result'}</span><b>${esc(status)}</b></div><div class="resultCore"><div class="resultIcon">${visual}</div><h1>${esc(title)}</h1><p class="resultMessage">${esc(message)}</p>${rewardHtml}${sprite?`<p class="resultNext">${esc(sprite.name||'DataByte Sprite')} • #${esc(sprite.dex||'?')} • ${esc(sprite.rarity||'Common')}</p>`:''}</div><div><div class="resultSummary"><div class="resultStat">Collection<b>${esc(collection.length)}</b></div><div class="resultStat">Party Slots<b>${esc(party.length)}/5</b></div><div class="resultStat">ByteCoins<b>${esc(inventory.byteCoins||0)}</b></div></div><p class="resultNext">${esc(next)}</p></div></section>`;
   }
 
   installStyle();
-  window.DD_RESULT_SCREEN={version:VERSION,owner:'dd-result-screen',status:'active-screen-owner',installStyle,renderResultScreen};
+  window.DD_RESULT_SCREEN={version:VERSION,owner:'dd-result-screen',status:'active-screen-owner',installStyle,safeSpriteAsset,renderResultScreen};
   document.dispatchEvent(new CustomEvent('dd:result-screen-ready',{detail:window.DD_RESULT_SCREEN}));
 })();
 
@@ -3632,7 +3682,7 @@
 
 /* ---- assets/js/databyte-discovery-product-app-v4-shell.js ---- */
 // assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 6.0.6 application shell for Data Discovery.
+// Phase 6.0.7 application shell for Data Discovery.
 // The shell owns boot, route state, shared context construction, runtime coordination,
 // screen registry dispatch, and routing between dedicated runtime owners.
 // Battle Core exclusively owns battle transactions, state application, faint handling,
@@ -3643,8 +3693,8 @@
 
   if(!location.pathname.includes('databyte-discovery'))return;
 
-  const VERSION='4.10.6';
-  const PRODUCT_PHASE='6.0.6';
+  const VERSION='4.10.7';
+  const PRODUCT_PHASE='6.0.7';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={
@@ -3662,6 +3712,26 @@
     '>':'&gt;',
     '"':'&quot;'
   }[ch]));
+  const safeSpriteAsset=value=>{
+    const raw=String(value||'').trim();
+    if(!raw)return '';
+    try{
+      const origin=location&&location.origin||'http://localhost';
+      const url=new URL(raw,origin);
+      return url.origin===origin&&url.pathname.startsWith('/assets/sprites/')
+        ?url.href
+        :'';
+    }catch(error){
+      return '';
+    }
+  };
+  const spriteVisual=sprite=>{
+    const value=sprite||{};
+    const asset=safeSpriteAsset(value.spriteAsset||value.asset);
+    return asset
+      ?`<img class="miniSprite" src="${esc(asset)}" alt="${esc(value.name||'DataByte Sprite')}">`
+      :`<span class="miniSpriteFallback" aria-hidden="true">${esc(value.icon||'◇')}</span>`;
+  };
   const read=(key,fallback)=>{
     try{return JSON.parse(localStorage.getItem(key))||fallback}
     catch(e){return fallback}
@@ -3729,6 +3799,8 @@
       '#ddApp .nav button{font-size:11px;padding:9px 3px}',
       '#ddApp .stats,#ddApp .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px}',
       '#ddApp .mini{background:rgba(15,23,42,.8);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:10px}',
+      '#ddApp .miniSprite{display:block;width:64px;height:64px;margin:0 auto 7px;object-fit:contain;border-radius:16px}',
+      '#ddApp .miniSpriteFallback{display:block;margin-bottom:7px;font-size:30px;line-height:1}',
       '#ddApp .hint,#ddApp .log{color:#BAE6FD;font-size:12px;line-height:1.35}',
       '#ddApp .coin,#ddApp .scannerOrb{width:90px;height:90px;border-radius:999px;display:grid;place-items:center;margin:auto;font-size:36px}',
       '#ddApp .coin{background:#FFD700;color:#111827}',
@@ -4550,7 +4622,7 @@
         <div class="grid">
           ${members.map(x=>
             `<div class="mini">
-              ${esc(x.icon||'◇')} ${esc(x.name)}
+              ${spriteVisual(x)}${esc(x.name)}
               <br>HP ${esc(x.hp)}/${esc(x.maxHp)}
             </div>`
           ).join('')||'<p>No downloaded sprites yet.</p>'}
@@ -4582,7 +4654,7 @@
         <div class="grid">
           ${rt.roster().map(x=>
             `<div class="mini">
-              ${esc(x.icon||'◇')} #${esc(x.dex)} ${esc(x.name)}
+              ${spriteVisual(x)}#${esc(x.dex)} ${esc(x.name)}
               <br>${capd.has(x.name)
                 ?'Downloaded'
                 :sn.has(x.name)
@@ -4831,7 +4903,7 @@
       '<div id="ddApp">'+
         '<header class="top">'+
           '<b>Data Discovery</b>'+
-          '<span>Phase 6.0.6</span>'+
+          '<span>Phase 6.0.7</span>'+
         '</header>'+
         '<main id="stage" class="stage"></main>'+
         '<section id="controls" class="controls"></section>'+

@@ -4,9 +4,9 @@ This document is the canonical ownership registry for the Data Discovery applica
 
 Current live phase: **6.0 Progression Loop**
 
-Current recovery revision: **6.0.4 / bootstrap 1.9.4**
+Current recovery revision: **6.0.7 / bootstrap 1.9.6**
 
-Presentation recovery target: **Phase 4.10.4 visual consolidation**. The app
+Presentation recovery target: **Phase 4.10.7 visual consolidation**. The app
 presentation runtime will coordinate shared visual effects and safe sprite
 asset loading; screen renderers remain presentation-only and gameplay owners
 remain unchanged.
@@ -75,6 +75,12 @@ observe lifecycle events but must not infer or mutate canonical battle state.
 canonical current/max HP; the shell updates the same percentage and severity
 color after every completed attack. The opaque inner circle prevents the HP
 gradient from filling behind the sprite.
+
+`dd-canon-roster.js` may assign local presentation-only `spriteAsset` references
+to canonical species. Encounter, Battle, Result, Party, and Dex render those
+assets only after same-origin `/assets/sprites/` validation and fall back to the
+species icon when no asset exists. Sprite assets never determine battle,
+Download, encounter, or persistence behavior.
 
 ## Phase 5.0 Battle Rebuild
 

@@ -1,5 +1,5 @@
 // assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 6.0.6 application shell for Data Discovery.
+// Phase 6.0.7 application shell for Data Discovery.
 // The shell owns boot, route state, shared context construction, runtime coordination,
 // screen registry dispatch, and routing between dedicated runtime owners.
 // Battle Core exclusively owns battle transactions, state application, faint handling,
@@ -10,8 +10,8 @@
 
   if(!location.pathname.includes('databyte-discovery'))return;
 
-  const VERSION='4.10.6';
-  const PRODUCT_PHASE='6.0.6';
+  const VERSION='4.10.7';
+  const PRODUCT_PHASE='6.0.7';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={
@@ -29,6 +29,26 @@
     '>':'&gt;',
     '"':'&quot;'
   }[ch]));
+  const safeSpriteAsset=value=>{
+    const raw=String(value||'').trim();
+    if(!raw)return '';
+    try{
+      const origin=location&&location.origin||'http://localhost';
+      const url=new URL(raw,origin);
+      return url.origin===origin&&url.pathname.startsWith('/assets/sprites/')
+        ?url.href
+        :'';
+    }catch(error){
+      return '';
+    }
+  };
+  const spriteVisual=sprite=>{
+    const value=sprite||{};
+    const asset=safeSpriteAsset(value.spriteAsset||value.asset);
+    return asset
+      ?`<img class="miniSprite" src="${esc(asset)}" alt="${esc(value.name||'DataByte Sprite')}">`
+      :`<span class="miniSpriteFallback" aria-hidden="true">${esc(value.icon||'◇')}</span>`;
+  };
   const read=(key,fallback)=>{
     try{return JSON.parse(localStorage.getItem(key))||fallback}
     catch(e){return fallback}
@@ -96,6 +116,8 @@
       '#ddApp .nav button{font-size:11px;padding:9px 3px}',
       '#ddApp .stats,#ddApp .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px}',
       '#ddApp .mini{background:rgba(15,23,42,.8);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:10px}',
+      '#ddApp .miniSprite{display:block;width:64px;height:64px;margin:0 auto 7px;object-fit:contain;border-radius:16px}',
+      '#ddApp .miniSpriteFallback{display:block;margin-bottom:7px;font-size:30px;line-height:1}',
       '#ddApp .hint,#ddApp .log{color:#BAE6FD;font-size:12px;line-height:1.35}',
       '#ddApp .coin,#ddApp .scannerOrb{width:90px;height:90px;border-radius:999px;display:grid;place-items:center;margin:auto;font-size:36px}',
       '#ddApp .coin{background:#FFD700;color:#111827}',
@@ -917,7 +939,7 @@
         <div class="grid">
           ${members.map(x=>
             `<div class="mini">
-              ${esc(x.icon||'◇')} ${esc(x.name)}
+              ${spriteVisual(x)}${esc(x.name)}
               <br>HP ${esc(x.hp)}/${esc(x.maxHp)}
             </div>`
           ).join('')||'<p>No downloaded sprites yet.</p>'}
@@ -949,7 +971,7 @@
         <div class="grid">
           ${rt.roster().map(x=>
             `<div class="mini">
-              ${esc(x.icon||'◇')} #${esc(x.dex)} ${esc(x.name)}
+              ${spriteVisual(x)}#${esc(x.dex)} ${esc(x.name)}
               <br>${capd.has(x.name)
                 ?'Downloaded'
                 :sn.has(x.name)
@@ -1198,7 +1220,7 @@
       '<div id="ddApp">'+
         '<header class="top">'+
           '<b>Data Discovery</b>'+ 
-          '<span>Phase 6.0.6</span>'+ 
+          '<span>Phase 6.0.7</span>'+
         '</header>'+ 
         '<main id="stage" class="stage"></main>'+ 
         '<section id="controls" class="controls"></section>'+ 

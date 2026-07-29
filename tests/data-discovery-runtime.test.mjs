@@ -96,7 +96,7 @@ test('player runtime owns collection, party, active slot, inventory, and dex', (
   assert.equal(player.collection.find('b').hp, 18);
   assert.deepEqual(JSON.parse(JSON.stringify(player.health())), {
     owner: 'dd-player-runtime',
-    version: '1.2.1',
+    version: '1.3.0',
     collectionCount: 2,
     partyCount: 2,
     usableCount: 2,
@@ -152,6 +152,7 @@ test('player runtime refreshes authored moves without replacing saved progress',
   const runtime = browserContext();
   runtime.window.DD_CANON_ROSTER = [{
     id: 'saved', name: 'Saved Sprite', hp: 42, maxHp: 42,
+    spriteAsset: '/assets/sprites/leovolt.gif',
     moves: [
       { id: 'signal-strike', name: 'Signal Strike' },
       { id: 'mirror-feint', name: 'Mirror Feint' }
@@ -172,6 +173,7 @@ test('player runtime refreshes authored moves without replacing saved progress',
   assert.equal(saved.maxHp, 44);
   assert.equal(saved.level, 3);
   assert.equal(saved.xp, 180);
+  assert.equal(saved.spriteAsset, '/assets/sprites/leovolt.gif');
 });
 
 test('legacy battle facade remains parseable as an unloaded reference', () => {
@@ -253,6 +255,48 @@ test('battle fighter ring renders canonical HP percentage and severity color', (
   assert.match(shell, /classList\.toggle\('battleStage',state\.screen==='battle'\)/);
 });
 
+test('Arena sprite assets map to canonical Discovery species and presentation owners', () => {
+  const runtime = browserContext();
+  load(runtime, 'assets/js/dd-canon-roster.js');
+
+  const mapped = new Map(runtime.window.DD_CANON_ROSTER.map(sprite => [sprite.name, sprite.spriteAsset]));
+  assert.equal(mapped.get('Leovolt'), '/assets/sprites/leovolt.gif');
+  assert.equal(mapped.get('Crabician'), '/assets/sprites/crabician.gif');
+  assert.equal(mapped.get('Scorpyone'), '/assets/sprites/scorpyone.gif');
+  assert.equal(mapped.get('Crabizard'), null);
+
+  load(runtime, 'assets/js/dd-encounter-screen.js');
+  load(runtime, 'assets/js/dd-result-screen.js');
+
+  const encounter = runtime.window.DD_ENCOUNTER_SCREEN.renderEncounterScreen({
+    signal: {
+      name: 'Leovolt', dex: '001', rarity: 'Legendary',
+      hp: 44, maxHp: 44, stability: 6, maxStability: 6,
+      currentChance: 55, captureCap: 80,
+      spriteAsset: mapped.get('Leovolt')
+    }
+  });
+  assert.match(encounter, /<img src="http:\/\/localhost\/assets\/sprites\/leovolt\.gif" alt="Leovolt">/);
+
+  const result = runtime.window.DD_RESULT_SCREEN.renderResultScreen({
+    result: {
+      type: 'success',
+      sprite: {
+        name: 'Crabician', dex: '004', rarity: 'Rare',
+        spriteAsset: mapped.get('Crabician')
+      }
+    },
+    collection: [], party: [], items: {}
+  });
+  assert.match(result, /<img src="http:\/\/localhost\/assets\/sprites\/crabician\.gif" alt="Crabician">/);
+  assert.doesNotMatch(
+    runtime.window.DD_ENCOUNTER_SCREEN.renderEncounterScreen({
+      signal: { name: 'Remote', spriteAsset: 'https://example.com/remote.gif' }
+    }),
+    /<img/
+  );
+});
+
 test('battle controls and victory screen expose strategy and progression details', () => {
   const runtime = browserContext();
   const moveIndex = JSON.parse(fs.readFileSync(path.join(root, 'studio/databytesprites/moves.json'), 'utf8'));
@@ -304,7 +348,7 @@ test('HTML entrypoint and bootstrap imports match the runtime manifest', () => {
   assert.deepEqual(imports, manifest.modules.map(module => module.script));
   assert.equal(new Set(imports).size, imports.length);
   const shell = fs.readFileSync(path.join(root, 'assets/js/databyte-discovery-product-app-v4-shell.js'), 'utf8');
-  assert.match(shell, /<span>Phase 6\.0\.6<\/span>/);
+  assert.match(shell, /<span>Phase 6\.0\.7<\/span>/);
   assert.match(shell, /continueToDownload/);
   assert.match(shell, /Battle complete\. Confirm the Download attempt\./);
 });

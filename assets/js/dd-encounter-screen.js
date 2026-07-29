@@ -1,7 +1,7 @@
 // assets/js/dd-encounter-screen.js
 // Core Stabilization v1.0: canonical encounter presentation owner.
 (function(){
-  const VERSION='1.0.0';
+  const VERSION='1.1.0';
   const STYLE_ID='ddEncounterScreenStyle';
 
   function esc(value){
@@ -20,6 +20,20 @@
     return String(rarity||'common').toLowerCase().replace(/[^a-z0-9]+/g,'-');
   }
 
+  function safeSpriteAsset(value){
+    const raw=String(value||'').trim();
+    if(!raw)return '';
+    try{
+      const origin=location&&location.origin||'http://localhost';
+      const url=new URL(raw,origin);
+      return url.origin===origin&&url.pathname.startsWith('/assets/sprites/')
+        ?url.href
+        :'';
+    }catch(error){
+      return '';
+    }
+  }
+
   function installStyle(){
     if(document.getElementById(STYLE_ID))return;
     const style=document.createElement('style');
@@ -35,6 +49,7 @@
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait.epic{--rarity:#F472B6}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait.legendary{--rarity:#FFD700}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait.starter{--rarity:#22C55E}',
+      '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait img{width:92%;height:92%;object-fit:contain;border-radius:999px}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] h1{margin:0;color:#38BDF8;font-size:clamp(28px,8vw,42px);line-height:1;overflow-wrap:anywhere}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterMeta{color:#E0F2FE;font-size:13px}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterLore{margin:3px 0 0;max-width:34rem;color:#E2E8F0;line-height:1.4;font-size:14px}',
@@ -69,11 +84,15 @@
     const types=String(signal.type||'Signal').replace(/\s*\/\s*/g,' • ');
     const source=signal.encounterPoolLabel||'Scanner Pool';
     const lore=signal.lore||signal.description||'An unidentified DataByte signal has entered scanner range.';
+    const asset=safeSpriteAsset(signal.spriteAsset||signal.asset);
+    const portrait=asset
+      ?`<img src="${esc(asset)}" alt="${esc(signal.name||'DataByte Sprite')}">`
+      :esc(signal.icon||'◇');
 
-    return `<section class="card encounter-card" data-owner="dd-encounter-screen"><div class="encounterTop"><span>Signal Locked</span><span class="rarityBadge">${esc(rarity)}</span></div><div class="encounterCore"><div class="encounterPortrait ${esc(rarityClass(rarity))}">${esc(signal.icon||'◇')}</div><h1>${esc(signal.name||'Unknown Signal')}</h1><div class="encounterMeta">#${esc(signal.dex||'?')} • ${esc(types)}</div><p class="encounterLore">${esc(lore)}</p><p class="encounterSource">Detected in ${esc(source)}.</p></div><div><div class="encounterStats"><div class="encounterStat">Download<b>${esc(odds)}%</b></div><div class="encounterStat">HP<b>${esc(hp)}/${esc(maxHp)}</b></div><div class="encounterStat">Signal<b>${esc(stability)}/${esc(maxStability)}</b></div></div><div class="encounterMeters"><div class="meter signalMeter"><div class="meterHead"><span>Signal Stability</span><b>${esc(stability)}/${esc(maxStability)}</b></div><span class="meterTrack"><i style="width:${pct(stability,maxStability)}%"></i></span></div><div class="meter downloadMeter"><div class="meterHead"><span>Download Window</span><b>${esc(odds)}% / Cap ${esc(signal.captureCap||'?')}</b></div><span class="meterTrack"><i style="width:${pct(odds,captureCap)}%"></i></span></div></div></div></section>`;
+    return `<section class="card encounter-card" data-owner="dd-encounter-screen"><div class="encounterTop"><span>Signal Locked</span><span class="rarityBadge">${esc(rarity)}</span></div><div class="encounterCore"><div class="encounterPortrait ${esc(rarityClass(rarity))}">${portrait}</div><h1>${esc(signal.name||'Unknown Signal')}</h1><div class="encounterMeta">#${esc(signal.dex||'?')} • ${esc(types)}</div><p class="encounterLore">${esc(lore)}</p><p class="encounterSource">Detected in ${esc(source)}.</p></div><div><div class="encounterStats"><div class="encounterStat">Download<b>${esc(odds)}%</b></div><div class="encounterStat">HP<b>${esc(hp)}/${esc(maxHp)}</b></div><div class="encounterStat">Signal<b>${esc(stability)}/${esc(maxStability)}</b></div></div><div class="encounterMeters"><div class="meter signalMeter"><div class="meterHead"><span>Signal Stability</span><b>${esc(stability)}/${esc(maxStability)}</b></div><span class="meterTrack"><i style="width:${pct(stability,maxStability)}%"></i></span></div><div class="meter downloadMeter"><div class="meterHead"><span>Download Window</span><b>${esc(odds)}% / Cap ${esc(signal.captureCap||'?')}</b></div><span class="meterTrack"><i style="width:${pct(odds,captureCap)}%"></i></span></div></div></div></section>`;
   }
 
   installStyle();
-  window.DD_ENCOUNTER_SCREEN={version:VERSION,owner:'dd-encounter-screen',status:'active-screen-owner',installStyle,renderEncounterScreen};
+  window.DD_ENCOUNTER_SCREEN={version:VERSION,owner:'dd-encounter-screen',status:'active-screen-owner',installStyle,safeSpriteAsset,renderEncounterScreen};
   document.dispatchEvent(new CustomEvent('dd:encounter-screen-ready',{detail:window.DD_ENCOUNTER_SCREEN}));
 })();

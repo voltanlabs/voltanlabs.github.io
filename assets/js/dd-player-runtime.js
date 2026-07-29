@@ -5,7 +5,7 @@
   if (!location.pathname.includes('databyte-discovery')) return;
   if (window.DD_PLAYER_RUNTIME) return;
 
-  const VERSION = '1.2.1';
+  const VERSION = '1.3.0';
   const OWNER = 'dd-player-runtime';
   const MAX_PARTY = 5;
   const KEYS = Object.freeze({
@@ -101,9 +101,16 @@
       const canonicalMoves = Array.isArray(canonical.moves) ? canonical.moves : [];
       const savedMoveIds = (saved.moves || []).map(move => move && (move.id || move.name)).filter(Boolean).join('|');
       const canonicalMoveIds = canonicalMoves.map(move => move && (move.id || move.name)).filter(Boolean).join('|');
-      if (!canonicalMoveIds || canonicalMoveIds === savedMoveIds) return saved;
+      const canonicalAsset = canonical.spriteAsset || null;
+      const savedAsset = saved.spriteAsset || null;
+      const movesChanged = !!canonicalMoveIds && canonicalMoveIds !== savedMoveIds;
+      const assetChanged = canonicalAsset !== savedAsset;
+      if (!movesChanged && !assetChanged) return saved;
       updated += 1;
-      return Object.assign({}, canonical, saved, { moves: canonicalMoves });
+      return Object.assign({}, canonical, saved, {
+        moves: movesChanged ? canonicalMoves : saved.moves,
+        spriteAsset: canonicalAsset
+      });
     });
     if (updated) collectionWrite(next);
     return { ok: true, updated, collection: next };
