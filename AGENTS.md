@@ -6,7 +6,7 @@ This file governs work throughout this repository. It describes the current arch
 
 VoltanLabs is an offline-first, browser-first software studio and product repository hosted as a static GitHub Pages site. Its flagship product is **DataByteSprites: Data Discovery**. The repository also contains VoltanLabs Studio, Studio Intelligence and diagnostics, the Knowledge Engine, the Generator/Creator Suite, the Technology Vault, and public product pages.
 
-The active milestone is **Data Discovery Phase 6.0.4 Progression Loop + Runtime Recovery**, loaded by bootstrap 1.9.4 as one generated bundle containing 19 explicitly ordered browser modules. The live shell is v4.10.2. Older documents and legacy files may describe v3, v3.5, or the Phase 4 compatibility chain; do not assume that the newest-looking filename or document is active. The live HTML entry point, bootstrap registry, runtime manifest, ownership map, and exported browser globals must agree before behavior changes are merged.
+The active milestone is **Data Discovery Phase 6.0.9 Battle Stage Foundation**, loaded by bootstrap 1.9.8 as one generated bundle containing 19 explicitly ordered browser modules. The live shell is v4.10.9. Older documents and legacy files may describe v3, v3.5, or the Phase 4 compatibility chain; do not assume that the newest-looking filename or document is active. The live HTML entry point, bootstrap registry, runtime manifest, ownership map, and exported browser globals must agree before behavior changes are merged.
 
 Runtime consolidation and deterministic recovery remain the baseline for feature work. Do not hide damaged canonical data or generators behind new fallback logic.
 

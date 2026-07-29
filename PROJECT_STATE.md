@@ -3,8 +3,8 @@
 Status: active  
 Current phase: Data Discovery Phase 6.0 Progression Loop
 
-Latest runtime recovery: Data Discovery Phase 6.0.7 loads one generated runtime
-bundle from bootstrap 1.9.6 and preserves 19 ordered modules in the runtime
+Latest runtime recovery: Data Discovery Phase 6.0.9 loads one generated runtime
+bundle from bootstrap 1.9.8 and preserves 19 ordered modules in the runtime
 manifest. `dd-battle-core-runtime.js` is the active battle calculation,
 application, turn-order, retaliation, and battle-context owner. It uses one
 synchronous event-free transaction per input and returns one result to the
@@ -70,6 +70,19 @@ presentation data and are not read by battle calculation or persistence rules.
 The player owner's roster reconciliation refreshes this authored presentation
 reference on older saved collection records without replacing saved HP, XP,
 levels, stats, or other player-owned progression.
+
+Phase 6.0.8 establishes the visual foundation without adding a runtime module.
+`DD_APP_PRESENTATION_RUNTIME` now loads before the screen owners and publishes
+one immutable design-token contract plus one shared creature-portrait contract.
+Encounter, Battle, Result, Party, and Dex request safe image/fallback markup
+from that owner while retaining their screen-specific layout ownership.
+
+Phase 6.0.9 adds the first owned battle stage without changing combat logic.
+The shared presentation owner publishes the training-room background reference
+and motion timing tokens; `DD_BATTLE_SCREEN` alone composes that background,
+atmosphere, fighter placement, responsive staging, and reduced-motion behavior.
+The existing canonical HP edge rings and shell-owned attack/hit class signals
+remain intact.
 
 Phase 4.10.4 replaces the stale shell label with the current Phase 6.0.4 title
 and routes Battle Victory's Continue action directly to Download confirmation.

@@ -1,7 +1,7 @@
 // assets/js/dd-result-screen.js
 // Core Stabilization v1.0: canonical Download result presentation owner.
 (function(){
-  const VERSION='1.2.0';
+  const VERSION='1.3.0';
   const STYLE_ID='ddResultScreenStyle';
 
   function esc(value){
@@ -17,18 +17,8 @@
     return 'neutral';
   }
 
-  function safeSpriteAsset(value){
-    const raw=String(value||'').trim();
-    if(!raw)return '';
-    try{
-      const origin=location&&location.origin||'http://localhost';
-      const url=new URL(raw,origin);
-      return url.origin===origin&&url.pathname.startsWith('/assets/sprites/')
-        ?url.href
-        :'';
-    }catch(error){
-      return '';
-    }
+  function portraits(){
+    return window.DD_APP_PRESENTATION_RUNTIME&&window.DD_APP_PRESENTATION_RUNTIME.portraits;
   }
 
   function installStyle(){
@@ -42,9 +32,7 @@
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultTop{display:flex;justify-content:space-between;align-items:center;gap:10px;color:#BAE6FD;font-size:11px;letter-spacing:.15em;text-transform:uppercase}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultTop b{color:var(--result-accent)}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultCore{display:grid;place-items:center;align-content:center;gap:14px;min-height:0}',
-      '#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon{width:min(42vw,168px);height:min(42vw,168px);border-radius:999px;display:grid;place-items:center;position:relative;background:radial-gradient(circle,rgba(56,189,248,.18),rgba(15,23,42,.94) 68%);border:7px solid var(--result-accent);box-shadow:0 0 40px color-mix(in srgb,var(--result-accent) 36%,transparent);font-size:clamp(50px,15vw,82px)}',
-      '#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon:after{content:"";position:absolute;inset:12%;border-radius:999px;border:1px solid color-mix(in srgb,var(--result-accent) 48%,transparent)}',
-      '#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon img{width:92%;height:92%;object-fit:contain;border-radius:999px}',
+      '#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon{--dd-portrait-size:min(42vw,168px);--dd-rarity-color:var(--result-accent)}',
       '#ddApp .result-card[data-owner="dd-result-screen"] h1{margin:0;color:var(--result-accent);font-size:clamp(28px,8vw,42px);line-height:1.04;overflow-wrap:anywhere}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultMessage{margin:0;max-width:34rem;color:#E2E8F0;font-size:15px;line-height:1.45}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultSummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%}',
@@ -56,7 +44,7 @@
       '#ddApp .result-card[data-owner="dd-result-screen"] .rewardRow b{color:#FFD700}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .xpTrack{height:7px;border-radius:999px;background:#020617;overflow:hidden}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .xpTrack i{display:block;height:100%;background:linear-gradient(90deg,#38BDF8,#A78BFA,#FFD700)}',
-      '@media(max-height:700px){#ddApp .result-card[data-owner="dd-result-screen"]{gap:8px}#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon{width:min(29vw,116px);height:min(29vw,116px);font-size:42px}#ddApp .result-card[data-owner="dd-result-screen"] .resultMessage{font-size:13px}}'
+      '@media(max-height:700px){#ddApp .result-card[data-owner="dd-result-screen"]{gap:8px}#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon{--dd-portrait-size:min(29vw,116px)}#ddApp .result-card[data-owner="dd-result-screen"] .resultMessage{font-size:13px}}'
     ].join('');
     document.head.appendChild(style);
   }
@@ -79,10 +67,9 @@
     const title=result.title||(success?'Download Complete':type==='failure'?'Download Failed':'Result');
     const message=result.msg||result.message||(success?'The signal was added to your collection.':'The signal could not be downloaded.');
     const icon=sprite&&sprite.icon?sprite.icon:(success?'✓':type==='failure'?'!':'◇');
-    const asset=safeSpriteAsset(sprite&&(sprite.spriteAsset||sprite.asset));
-    const visual=asset
-      ?`<img src="${esc(asset)}" alt="${esc(sprite.name||'DataByte Sprite')}">`
-      :esc(icon);
+    const visual=sprite&&portraits()
+      ?portraits().renderPortrait(sprite,{size:'large',className:'resultIcon'})
+      :`<div class="dd-creature-portrait dd-portrait-large resultIcon"><span class="dd-creature-fallback" aria-hidden="true">${esc(icon)}</span></div>`;
     const status=battleVictory?'VICTORY':success?'SAVED':type==='failure'?'SIGNAL LOST':'COMPLETE';
     const next=battleVictory
       ?'Continue to open the Download confirmation, or return to the Scanner.'
@@ -100,10 +87,10 @@
       </div>`
       :'';
 
-    return `<section class="card result-card ${esc(type)}" data-owner="dd-result-screen"><div class="resultTop"><span>${battleVictory?'Battle Result':'Scanner Result'}</span><b>${esc(status)}</b></div><div class="resultCore"><div class="resultIcon">${visual}</div><h1>${esc(title)}</h1><p class="resultMessage">${esc(message)}</p>${rewardHtml}${sprite?`<p class="resultNext">${esc(sprite.name||'DataByte Sprite')} • #${esc(sprite.dex||'?')} • ${esc(sprite.rarity||'Common')}</p>`:''}</div><div><div class="resultSummary"><div class="resultStat">Collection<b>${esc(collection.length)}</b></div><div class="resultStat">Party Slots<b>${esc(party.length)}/5</b></div><div class="resultStat">ByteCoins<b>${esc(inventory.byteCoins||0)}</b></div></div><p class="resultNext">${esc(next)}</p></div></section>`;
+    return `<section class="card result-card ${esc(type)}" data-owner="dd-result-screen"><div class="resultTop"><span>${battleVictory?'Battle Result':'Scanner Result'}</span><b>${esc(status)}</b></div><div class="resultCore">${visual}<h1>${esc(title)}</h1><p class="resultMessage">${esc(message)}</p>${rewardHtml}${sprite?`<p class="resultNext">${esc(sprite.name||'DataByte Sprite')} • #${esc(sprite.dex||'?')} • ${esc(sprite.rarity||'Common')}</p>`:''}</div><div><div class="resultSummary"><div class="resultStat">Collection<b>${esc(collection.length)}</b></div><div class="resultStat">Party Slots<b>${esc(party.length)}/5</b></div><div class="resultStat">ByteCoins<b>${esc(inventory.byteCoins||0)}</b></div></div><p class="resultNext">${esc(next)}</p></div></section>`;
   }
 
   installStyle();
-  window.DD_RESULT_SCREEN={version:VERSION,owner:'dd-result-screen',status:'active-screen-owner',installStyle,safeSpriteAsset,renderResultScreen};
+  window.DD_RESULT_SCREEN={version:VERSION,owner:'dd-result-screen',status:'active-screen-owner',installStyle,renderResultScreen};
   document.dispatchEvent(new CustomEvent('dd:result-screen-ready',{detail:window.DD_RESULT_SCREEN}));
 })();

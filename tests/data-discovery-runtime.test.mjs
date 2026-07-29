@@ -230,8 +230,42 @@ test('screen registry is the single screen and control dispatch contract', () =>
   assert.match(registry.renderControls('encounter', {}), /Start Battle/);
 });
 
+test('app presentation runtime owns shared design tokens and creature portraits', () => {
+  const runtime = browserContext();
+  load(runtime, 'assets/js/dd-app-presentation-runtime.js');
+  const presentation = runtime.window.DD_APP_PRESENTATION_RUNTIME;
+
+  assert.equal(presentation.owner, 'dd-app-presentation-runtime');
+  assert.equal(presentation.version, '2.1.0');
+  assert.equal(presentation.tokens.color.accent, '#FFD700');
+  assert.equal(presentation.tokens.radius.large, '22px');
+  assert.equal(presentation.tokens.background.trainingRoom, '/assets/backgrounds/volt-training-room.png');
+  assert.equal(presentation.tokens.motion.fast, '180ms');
+  assert.match(
+    presentation.portraits.renderPortrait({
+      name: 'Leovolt', rarity: 'Legendary',
+      spriteAsset: '/assets/sprites/leovolt.gif'
+    }, { size: 'large' }),
+    /dd-creature-portrait dd-portrait-large dd-rarity-legendary/
+  );
+  assert.equal(
+    presentation.portraits.safeAsset('https://example.com/remote.gif'),
+    ''
+  );
+
+  for (const relativePath of [
+    'assets/js/dd-encounter-screen.js',
+    'assets/js/dd-result-screen.js',
+    'assets/js/databyte-discovery-product-app-v4-shell.js'
+  ]) {
+    const source = fs.readFileSync(path.join(root, relativePath), 'utf8');
+    assert.doesNotMatch(source, /function safeSpriteAsset|const safeSpriteAsset/);
+  }
+});
+
 test('battle fighter ring renders canonical HP percentage and severity color', () => {
   const runtime = browserContext();
+  load(runtime, 'assets/js/dd-app-presentation-runtime.js');
   load(runtime, 'assets/js/dd-battle-screen.js');
   const screen = runtime.window.DD_BATTLE_SCREEN;
 
@@ -245,12 +279,16 @@ test('battle fighter ring renders canonical HP percentage and severity color', (
   assert.match(fainted, /aria-label="HP 0 of 40"/);
   const statusFighter = screen.renderFighter({ name: 'Status', hp: 20, maxHp: 20, statusEffects: [{ id: 'misdirected', label: 'Misdirected', duration: 1 }] }, 'wild');
   assert.match(statusFighter, /statusChip">Misdirected 1/);
-  assert.match(screen.renderHpRing({ name: 'Fixture', hp: 10, maxHp: 10, spriteAsset: '/assets/sprites/crabician.gif' }), /<img src="http:\/\/localhost\/assets\/sprites\/crabician\.gif"/);
+  assert.match(screen.renderHpRing({ name: 'Fixture', hp: 10, maxHp: 10, spriteAsset: '/assets/sprites/crabician.gif' }), /<img class="dd-creature-visual" src="http:\/\/localhost\/assets\/sprites\/crabician\.gif"/);
   assert.doesNotMatch(screen.renderHpRing({ name: 'Remote', hp: 10, maxHp: 10, spriteAsset: 'https://example.com/remote.gif' }), /<img/);
   const source = fs.readFileSync(path.join(root, 'assets/js/dd-battle-screen.js'), 'utf8');
   assert.match(source, /width:calc\(100% - 8px\)/);
   assert.match(source, /background:radial-gradient\(circle at 50% 42%,#103258/);
   assert.match(source, /width:100%;height:100%;min-height:0/);
+  assert.match(source, /class="battleScene" data-battle-background="training-room"/);
+  assert.match(source, /var\(--dd-battle-bg-training\)/);
+  assert.match(source, /@keyframes ddLeadLunge/);
+  assert.match(source, /@keyframes ddWildLunge/);
   const shell = fs.readFileSync(path.join(root, 'assets/js/databyte-discovery-product-app-v4-shell.js'), 'utf8');
   assert.match(shell, /classList\.toggle\('battleStage',state\.screen==='battle'\)/);
 });
@@ -265,6 +303,7 @@ test('Arena sprite assets map to canonical Discovery species and presentation ow
   assert.equal(mapped.get('Scorpyone'), '/assets/sprites/scorpyone.gif');
   assert.equal(mapped.get('Crabizard'), null);
 
+  load(runtime, 'assets/js/dd-app-presentation-runtime.js');
   load(runtime, 'assets/js/dd-encounter-screen.js');
   load(runtime, 'assets/js/dd-result-screen.js');
 
@@ -276,7 +315,7 @@ test('Arena sprite assets map to canonical Discovery species and presentation ow
       spriteAsset: mapped.get('Leovolt')
     }
   });
-  assert.match(encounter, /<img src="http:\/\/localhost\/assets\/sprites\/leovolt\.gif" alt="Leovolt">/);
+  assert.match(encounter, /aria-label="Leovolt"><img class="dd-creature-visual" src="http:\/\/localhost\/assets\/sprites\/leovolt\.gif"/);
 
   const result = runtime.window.DD_RESULT_SCREEN.renderResultScreen({
     result: {
@@ -288,7 +327,7 @@ test('Arena sprite assets map to canonical Discovery species and presentation ow
     },
     collection: [], party: [], items: {}
   });
-  assert.match(result, /<img src="http:\/\/localhost\/assets\/sprites\/crabician\.gif" alt="Crabician">/);
+  assert.match(result, /aria-label="Crabician"><img class="dd-creature-visual" src="http:\/\/localhost\/assets\/sprites\/crabician\.gif"/);
   assert.doesNotMatch(
     runtime.window.DD_ENCOUNTER_SCREEN.renderEncounterScreen({
       signal: { name: 'Remote', spriteAsset: 'https://example.com/remote.gif' }
@@ -303,6 +342,7 @@ test('battle controls and victory screen expose strategy and progression details
   assert.equal(moveIndex.moves.find(move => move.id === 'mirror-feint').statusEffect.durationTurns, 2);
   assert.equal(moveIndex.moves.find(move => move.id === 'shell-clamp').statusEffect.durationTurns, 2);
   load(runtime, 'assets/js/dd-battle-controls.js');
+  load(runtime, 'assets/js/dd-app-presentation-runtime.js');
   load(runtime, 'assets/js/dd-result-screen.js');
 
   const move = runtime.window.DD_BATTLE_CONTROLS.renderMoveButton({
@@ -348,7 +388,7 @@ test('HTML entrypoint and bootstrap imports match the runtime manifest', () => {
   assert.deepEqual(imports, manifest.modules.map(module => module.script));
   assert.equal(new Set(imports).size, imports.length);
   const shell = fs.readFileSync(path.join(root, 'assets/js/databyte-discovery-product-app-v4-shell.js'), 'utf8');
-  assert.match(shell, /<span>Phase 6\.0\.7<\/span>/);
+  assert.match(shell, /<span>Phase 6\.0\.9<\/span>/);
   assert.match(shell, /continueToDownload/);
   assert.match(shell, /Battle complete\. Confirm the Download attempt\./);
 });

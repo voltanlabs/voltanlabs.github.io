@@ -1,15 +1,15 @@
 {
-  "schemaVersion": "0.16.0",
+  "schemaVersion": "0.18.0",
   "generatedBy": "VoltanLabs Studio Runtime Loader",
   "description": "Deterministic module-bootstrap manifest for Data Discovery Phase 6.0 progression, strategy, history, and save recovery.",
   "runtime": "databyte-discovery-product-app-v4-shell",
   "phase": "6.0-progression-loop",
   "entrypoint": {
     "id": "dd-app-bootstrap",
-    "script": "/assets/js/dd-app-bootstrap.js?v=bootstrap-1-9-6",
+    "script": "/assets/js/dd-app-bootstrap.js?v=bootstrap-1-9-8",
     "type": "module",
     "global": "DD_APP_BOOTSTRAP",
-    "bundle": "/assets/js/dd-runtime-bundle.js?v=progression-6-0-7"
+    "bundle": "/assets/js/dd-runtime-bundle.js?v=battle-stage-6-0-9"
   },
   "phases": [
     {
@@ -246,6 +246,22 @@
       "status": "active-presentation-owner"
     },
     {
+      "id": "dd-app-presentation-runtime",
+      "label": "App Presentation Runtime",
+      "script": "/assets/js/dd-app-presentation-runtime.js?v=battle-stage-foundation-2-1-0",
+      "phase": "product:presentation-ready",
+      "requires": [
+        "dd-player-runtime"
+      ],
+      "emits": [
+        "dd:app-presentation-runtime-ready",
+        "DD_APP_PRESENTATION_RUNTIME"
+      ],
+      "required": true,
+      "failureBehavior": "show-runtime-error",
+      "status": "active-owner"
+    },
+    {
       "id": "dd-scanner-screen",
       "label": "Scanner Screen Owner",
       "script": "/assets/js/dd-scanner-screen.js?v=recovery-4-9-1",
@@ -265,7 +281,7 @@
     {
       "id": "dd-encounter-screen",
       "label": "Encounter Screen Owner",
-      "script": "/assets/js/dd-encounter-screen.js?v=sprite-assets-1-1-0",
+      "script": "/assets/js/dd-encounter-screen.js?v=presentation-foundation-1-2-0",
       "phase": "product:screen-owners-ready",
       "requires": [
         "dd-encounter-runtime",
@@ -282,7 +298,7 @@
     {
       "id": "dd-battle-screen",
       "label": "Battle Screen Owner",
-      "script": "/assets/js/dd-battle-screen.js?v=sprite-assets-0-6-0",
+      "script": "/assets/js/dd-battle-screen.js?v=battle-stage-foundation-0-8-0",
       "phase": "product:screen-owners-ready",
       "requires": [
         "dd-battle-core-runtime",
@@ -333,7 +349,7 @@
     {
       "id": "dd-result-screen",
       "label": "Download Result Screen Owner",
-      "script": "/assets/js/dd-result-screen.js?v=sprite-assets-1-2-0",
+      "script": "/assets/js/dd-result-screen.js?v=presentation-foundation-1-3-0",
       "phase": "product:screen-owners-ready",
       "requires": [
         "dd-player-runtime"
@@ -370,7 +386,7 @@
     {
       "id": "databyte-discovery-product-app-v4-shell",
       "label": "Data Discovery v4 App Shell",
-      "script": "/assets/js/databyte-discovery-product-app-v4-shell.js?v=progression-shell-4-10-7",
+      "script": "/assets/js/databyte-discovery-product-app-v4-shell.js?v=presentation-shell-4-10-8",
       "phase": "product:app-ready",
       "requires": [
         "dd-canon-roster",
@@ -397,24 +413,6 @@
       "required": true,
       "failureBehavior": "show-runtime-error",
       "status": "active-app-shell"
-    },
-    {
-      "id": "dd-app-presentation-runtime",
-      "label": "App Presentation Runtime",
-      "script": "/assets/js/dd-app-presentation-runtime.js?v=recovery-4-9-1",
-      "phase": "product:presentation-ready",
-      "requires": [
-        "dd-player-runtime",
-        "dd-screen-registry",
-        "databyte-discovery-product-app-v4-shell"
-      ],
-      "emits": [
-        "dd:app-presentation-runtime-ready",
-        "DD_APP_PRESENTATION_RUNTIME"
-      ],
-      "required": true,
-      "failureBehavior": "show-runtime-error",
-      "status": "active-owner"
     }
   ],
   "legacyModules": [

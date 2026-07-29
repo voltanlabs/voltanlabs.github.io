@@ -1,11 +1,11 @@
-// Data Discovery v4.9: canonical app layout, overlays, and lifecycle presentation.
+// Data Discovery v4.10: canonical design tokens, creature portraits, app layout, overlays, and lifecycle presentation.
 (function () {
   'use strict';
 
   if (!location.pathname.includes('databyte-discovery')) return;
   if (window.DD_APP_PRESENTATION_RUNTIME) return;
 
-  const VERSION = '1.0.0';
+  const VERSION = '2.1.0';
   const OWNER = 'dd-app-presentation-runtime';
   const STYLE_ID = 'ddAppPresentationStyle';
   let switchOpen = false;
@@ -14,14 +14,85 @@
   const player = () => window.DD_PLAYER_RUNTIME;
   const shell = () => window.DD_PRODUCT_APP_V4_SHELL;
   const esc = value => String(value ?? '').replace(/[&<>"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[char]));
+  const TOKENS = Object.freeze({
+    color: Object.freeze({
+      canvas: '#07111F', canvasDeep: '#020617', surface: '#0F172A', surfaceRaised: '#13213A',
+      border: 'rgba(125,211,252,.22)', borderStrong: 'rgba(125,211,252,.42)',
+      text: '#F8FAFC', textMuted: '#BAE6FD', primary: '#38BDF8', primaryStrong: '#007BFF',
+      accent: '#FFD700', success: '#22C55E', warning: '#FACC15', danger: '#FB7185',
+      rare: '#A78BFA', epic: '#F472B6'
+    }),
+    radius: Object.freeze({ small: '12px', medium: '16px', large: '22px', round: '999px' }),
+    space: Object.freeze({ xs: '4px', sm: '8px', md: '12px', lg: '16px', xl: '24px' }),
+    portrait: Object.freeze({ small: '64px', medium: '116px', large: '168px' }),
+    background: Object.freeze({ trainingRoom: '/assets/backgrounds/volt-training-room.png' }),
+    motion: Object.freeze({ fast: '180ms', standard: '280ms', slow: '560ms' })
+  });
+
+  function safeAsset(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    try {
+      const origin = location && location.origin || 'http://localhost';
+      const url = new URL(raw, origin);
+      return url.origin === origin && url.pathname.startsWith('/assets/sprites/') ? url.href : '';
+    } catch {
+      return '';
+    }
+  }
+
+  function rarityClass(value) {
+    const rarity = String(value || 'common').toLowerCase();
+    if (rarity === 'legendary' || rarity === 'mythic') return 'legendary';
+    if (rarity === 'epic') return 'epic';
+    if (rarity === 'rare') return 'rare';
+    if (rarity === 'starter') return 'starter';
+    return 'common';
+  }
+
+  function renderVisual(sprite, options) {
+    const value = sprite || {};
+    const opts = options || {};
+    const asset = safeAsset(value.spriteAsset || value.asset);
+    const className = ['dd-creature-visual', opts.className || ''].filter(Boolean).join(' ');
+    return asset
+      ? '<img class="' + esc(className) + '" src="' + esc(asset) + '" alt="' + esc(opts.decorative ? '' : value.name || 'DataByte Sprite') + '"' + (opts.decorative ? ' aria-hidden="true"' : '') + '>'
+      : '<span class="' + esc(className + ' dd-creature-fallback') + '" aria-hidden="true">' + esc(value.icon || '◇') + '</span>';
+  }
+
+  function renderPortrait(sprite, options) {
+    const value = sprite || {};
+    const opts = options || {};
+    const size = ['small', 'medium', 'large'].includes(opts.size) ? opts.size : 'medium';
+    const rarity = rarityClass(opts.rarity || value.rarity);
+    const className = ['dd-creature-portrait', 'dd-portrait-' + size, 'dd-rarity-' + rarity, opts.className || ''].filter(Boolean).join(' ');
+    const label = opts.label === false ? '' : ' aria-label="' + esc(value.name || 'DataByte Sprite') + '"';
+    return '<div class="' + esc(className) + '"' + label + '>' + renderVisual(value, { decorative: opts.label !== false }) + '</div>';
+  }
+
+  const portraits = Object.freeze({ safeAsset, rarityClass, renderVisual, renderPortrait });
 
   function installStyle() {
     if ($(STYLE_ID)) return;
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = [
+      ':root{--dd-canvas:#07111F;--dd-canvas-deep:#020617;--dd-surface:#0F172A;--dd-surface-raised:#13213A;--dd-border:rgba(125,211,252,.22);--dd-border-strong:rgba(125,211,252,.42);--dd-text:#F8FAFC;--dd-text-muted:#BAE6FD;--dd-primary:#38BDF8;--dd-primary-strong:#007BFF;--dd-accent:#FFD700;--dd-success:#22C55E;--dd-warning:#FACC15;--dd-danger:#FB7185;--dd-rare:#A78BFA;--dd-epic:#F472B6;--dd-radius-sm:12px;--dd-radius-md:16px;--dd-radius-lg:22px;--dd-radius-round:999px;--dd-space-xs:4px;--dd-space-sm:8px;--dd-space-md:12px;--dd-space-lg:16px;--dd-space-xl:24px;--dd-portrait-sm:64px;--dd-portrait-md:116px;--dd-portrait-lg:168px;--dd-battle-bg-training:url("/assets/backgrounds/volt-training-room.png");--dd-motion-fast:180ms;--dd-motion-standard:280ms;--dd-motion-slow:560ms}',
       'html,body{height:100%;min-height:100%;overflow:hidden;position:fixed;inset:0;width:100%;overscroll-behavior:none;touch-action:manipulation}',
-      '#ddApp{height:100dvh;max-height:100dvh;overflow:hidden}',
+      '#ddApp{height:100dvh;max-height:100dvh;overflow:hidden;color:var(--dd-text);background:var(--dd-canvas)}',
+      '#ddApp .card,#ddApp #controls,#ddApp .top,#ddApp .nav button{border-color:var(--dd-border);background-color:color-mix(in srgb,var(--dd-canvas) 88%,transparent);border-radius:var(--dd-radius-lg)}',
+      '#ddApp h1,#ddApp h2{color:var(--dd-primary)}',
+      '#ddApp .hint,#ddApp .log{color:var(--dd-text-muted)}',
+      '#ddApp .gold{background:var(--dd-accent)!important;color:#111827!important}',
+      '.dd-creature-portrait{--dd-portrait-size:var(--dd-portrait-md);--dd-rarity-color:var(--dd-primary);width:var(--dd-portrait-size);height:var(--dd-portrait-size);border-radius:var(--dd-radius-round);display:grid;place-items:center;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 42%,var(--dd-surface-raised),var(--dd-canvas) 72%);border:6px solid var(--dd-rarity-color);box-shadow:0 0 30px color-mix(in srgb,var(--dd-rarity-color) 32%,transparent);box-sizing:border-box}',
+      '.dd-creature-portrait.dd-portrait-small{--dd-portrait-size:var(--dd-portrait-sm);border-width:3px}',
+      '.dd-creature-portrait.dd-portrait-large{--dd-portrait-size:var(--dd-portrait-lg);border-width:7px}',
+      '.dd-creature-portrait.dd-rarity-rare{--dd-rarity-color:var(--dd-rare)}',
+      '.dd-creature-portrait.dd-rarity-epic{--dd-rarity-color:var(--dd-epic)}',
+      '.dd-creature-portrait.dd-rarity-legendary{--dd-rarity-color:var(--dd-accent)}',
+      '.dd-creature-portrait.dd-rarity-starter{--dd-rarity-color:var(--dd-success)}',
+      '.dd-creature-visual{width:92%;height:92%;object-fit:contain;border-radius:var(--dd-radius-round)}',
+      '.dd-creature-fallback{display:grid;place-items:center;font-size:clamp(30px,10vw,72px);line-height:1}',
       '#ddApp .stage{min-height:0;overflow:hidden;overscroll-behavior:contain}',
       '#ddApp .stage[data-screen="scanner"],#ddApp .stage[data-screen="encounter"]{position:relative;background:radial-gradient(circle at 50% 36%,rgba(56,189,248,.12),transparent 34%),linear-gradient(rgba(56,189,248,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.08) 1px,transparent 1px);background-size:100% 100%,22px 22px,22px 22px}',
       '#ddApp .stage[data-screen="scanner"]:before,#ddApp .stage[data-screen="encounter"]:before{content:"";position:absolute;left:-15%;right:-15%;top:-10%;height:18%;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(255,215,0,.22),rgba(56,189,248,.12),transparent);filter:blur(1px);animation:ddPresentationScanSweep 4.8s linear infinite;z-index:0}',
@@ -107,7 +178,9 @@
   window.DD_APP_PRESENTATION_RUNTIME = Object.freeze({
     version: VERSION,
     owner: OWNER,
-    phase: '4.9-canonical-app-presentation',
+    phase: '6.0.9-battle-stage-foundation',
+    tokens: TOKENS,
+    portraits,
     installStyle,
     showPartySwitch,
     hidePartySwitch,

@@ -1,7 +1,7 @@
 // Data Discovery v4.10: single deterministic browser entry point.
-const VERSION = '1.9.6';
+const VERSION = '1.9.8';
 const OWNER = 'dd-app-bootstrap';
-const BUNDLE = '/assets/js/dd-runtime-bundle.js?v=progression-6-0-7';
+const BUNDLE = '/assets/js/dd-runtime-bundle.js?v=presentation-6-0-8';
 
 const modules = Object.freeze([
   '/assets/js/dd-canon-roster.js?v=sprite-assets-1-0-0',
@@ -14,15 +14,15 @@ const modules = Object.freeze([
   '/assets/js/dd-battle-core-runtime.js?v=progression-battle-1-2-0',
   '/assets/js/dd-battle-reward-runtime.js?v=progression-reward-1-1-0',
   '/assets/js/dd-battle-reward-presentation.js?v=progression-reward-ui-1-1-0',
+  '/assets/js/dd-app-presentation-runtime.js?v=battle-stage-foundation-2-1-0',
   '/assets/js/dd-scanner-screen.js?v=recovery-4-9-1',
-  '/assets/js/dd-encounter-screen.js?v=sprite-assets-1-1-0',
-  '/assets/js/dd-battle-screen.js?v=sprite-assets-0-6-0',
+  '/assets/js/dd-encounter-screen.js?v=presentation-foundation-1-2-0',
+  '/assets/js/dd-battle-screen.js?v=battle-stage-foundation-0-8-0',
   '/assets/js/dd-battle-controls.js?v=progression-moves-0-3-0',
   '/assets/js/dd-confirm-screen.js?v=recovery-4-9-1',
-  '/assets/js/dd-result-screen.js?v=sprite-assets-1-2-0',
+  '/assets/js/dd-result-screen.js?v=presentation-foundation-1-3-0',
   '/assets/js/dd-screen-registry.js?v=progression-result-routing-1-1-0',
-  '/assets/js/databyte-discovery-product-app-v4-shell.js?v=progression-shell-4-10-7',
-  '/assets/js/dd-app-presentation-runtime.js?v=recovery-4-9-1'
+  '/assets/js/databyte-discovery-product-app-v4-shell.js?v=presentation-shell-4-10-8'
 ]);
 
 const requiredGlobals = Object.freeze([
@@ -101,7 +101,7 @@ function waitForReadiness(timeoutMs) {
 window.DD_APP_BOOTSTRAP = Object.freeze({
   version: VERSION,
   owner: OWNER,
-  phase: '6.0.7-sprite-asset-integration',
+  phase: '6.0.9-battle-stage-foundation',
   bundle: BUNDLE,
   modules,
   requiredGlobals,

@@ -2918,6 +2918,200 @@
   );
 })();
 
+/* ---- assets/js/dd-app-presentation-runtime.js ---- */
+// Data Discovery v4.10: canonical design tokens, creature portraits, app layout, overlays, and lifecycle presentation.
+(function () {
+  'use strict';
+
+  if (!location.pathname.includes('databyte-discovery')) return;
+  if (window.DD_APP_PRESENTATION_RUNTIME) return;
+
+  const VERSION = '2.1.0';
+  const OWNER = 'dd-app-presentation-runtime';
+  const STYLE_ID = 'ddAppPresentationStyle';
+  let switchOpen = false;
+
+  const $ = id => document.getElementById(id);
+  const player = () => window.DD_PLAYER_RUNTIME;
+  const shell = () => window.DD_PRODUCT_APP_V4_SHELL;
+  const esc = value => String(value ?? '').replace(/[&<>"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[char]));
+  const TOKENS = Object.freeze({
+    color: Object.freeze({
+      canvas: '#07111F', canvasDeep: '#020617', surface: '#0F172A', surfaceRaised: '#13213A',
+      border: 'rgba(125,211,252,.22)', borderStrong: 'rgba(125,211,252,.42)',
+      text: '#F8FAFC', textMuted: '#BAE6FD', primary: '#38BDF8', primaryStrong: '#007BFF',
+      accent: '#FFD700', success: '#22C55E', warning: '#FACC15', danger: '#FB7185',
+      rare: '#A78BFA', epic: '#F472B6'
+    }),
+    radius: Object.freeze({ small: '12px', medium: '16px', large: '22px', round: '999px' }),
+    space: Object.freeze({ xs: '4px', sm: '8px', md: '12px', lg: '16px', xl: '24px' }),
+    portrait: Object.freeze({ small: '64px', medium: '116px', large: '168px' }),
+    background: Object.freeze({ trainingRoom: '/assets/backgrounds/volt-training-room.png' }),
+    motion: Object.freeze({ fast: '180ms', standard: '280ms', slow: '560ms' })
+  });
+
+  function safeAsset(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    try {
+      const origin = location && location.origin || 'http://localhost';
+      const url = new URL(raw, origin);
+      return url.origin === origin && url.pathname.startsWith('/assets/sprites/') ? url.href : '';
+    } catch {
+      return '';
+    }
+  }
+
+  function rarityClass(value) {
+    const rarity = String(value || 'common').toLowerCase();
+    if (rarity === 'legendary' || rarity === 'mythic') return 'legendary';
+    if (rarity === 'epic') return 'epic';
+    if (rarity === 'rare') return 'rare';
+    if (rarity === 'starter') return 'starter';
+    return 'common';
+  }
+
+  function renderVisual(sprite, options) {
+    const value = sprite || {};
+    const opts = options || {};
+    const asset = safeAsset(value.spriteAsset || value.asset);
+    const className = ['dd-creature-visual', opts.className || ''].filter(Boolean).join(' ');
+    return asset
+      ? '<img class="' + esc(className) + '" src="' + esc(asset) + '" alt="' + esc(opts.decorative ? '' : value.name || 'DataByte Sprite') + '"' + (opts.decorative ? ' aria-hidden="true"' : '') + '>'
+      : '<span class="' + esc(className + ' dd-creature-fallback') + '" aria-hidden="true">' + esc(value.icon || '◇') + '</span>';
+  }
+
+  function renderPortrait(sprite, options) {
+    const value = sprite || {};
+    const opts = options || {};
+    const size = ['small', 'medium', 'large'].includes(opts.size) ? opts.size : 'medium';
+    const rarity = rarityClass(opts.rarity || value.rarity);
+    const className = ['dd-creature-portrait', 'dd-portrait-' + size, 'dd-rarity-' + rarity, opts.className || ''].filter(Boolean).join(' ');
+    const label = opts.label === false ? '' : ' aria-label="' + esc(value.name || 'DataByte Sprite') + '"';
+    return '<div class="' + esc(className) + '"' + label + '>' + renderVisual(value, { decorative: opts.label !== false }) + '</div>';
+  }
+
+  const portraits = Object.freeze({ safeAsset, rarityClass, renderVisual, renderPortrait });
+
+  function installStyle() {
+    if ($(STYLE_ID)) return;
+    const style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = [
+      ':root{--dd-canvas:#07111F;--dd-canvas-deep:#020617;--dd-surface:#0F172A;--dd-surface-raised:#13213A;--dd-border:rgba(125,211,252,.22);--dd-border-strong:rgba(125,211,252,.42);--dd-text:#F8FAFC;--dd-text-muted:#BAE6FD;--dd-primary:#38BDF8;--dd-primary-strong:#007BFF;--dd-accent:#FFD700;--dd-success:#22C55E;--dd-warning:#FACC15;--dd-danger:#FB7185;--dd-rare:#A78BFA;--dd-epic:#F472B6;--dd-radius-sm:12px;--dd-radius-md:16px;--dd-radius-lg:22px;--dd-radius-round:999px;--dd-space-xs:4px;--dd-space-sm:8px;--dd-space-md:12px;--dd-space-lg:16px;--dd-space-xl:24px;--dd-portrait-sm:64px;--dd-portrait-md:116px;--dd-portrait-lg:168px;--dd-battle-bg-training:url("/assets/backgrounds/volt-training-room.png");--dd-motion-fast:180ms;--dd-motion-standard:280ms;--dd-motion-slow:560ms}',
+      'html,body{height:100%;min-height:100%;overflow:hidden;position:fixed;inset:0;width:100%;overscroll-behavior:none;touch-action:manipulation}',
+      '#ddApp{height:100dvh;max-height:100dvh;overflow:hidden;color:var(--dd-text);background:var(--dd-canvas)}',
+      '#ddApp .card,#ddApp #controls,#ddApp .top,#ddApp .nav button{border-color:var(--dd-border);background-color:color-mix(in srgb,var(--dd-canvas) 88%,transparent);border-radius:var(--dd-radius-lg)}',
+      '#ddApp h1,#ddApp h2{color:var(--dd-primary)}',
+      '#ddApp .hint,#ddApp .log{color:var(--dd-text-muted)}',
+      '#ddApp .gold{background:var(--dd-accent)!important;color:#111827!important}',
+      '.dd-creature-portrait{--dd-portrait-size:var(--dd-portrait-md);--dd-rarity-color:var(--dd-primary);width:var(--dd-portrait-size);height:var(--dd-portrait-size);border-radius:var(--dd-radius-round);display:grid;place-items:center;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 42%,var(--dd-surface-raised),var(--dd-canvas) 72%);border:6px solid var(--dd-rarity-color);box-shadow:0 0 30px color-mix(in srgb,var(--dd-rarity-color) 32%,transparent);box-sizing:border-box}',
+      '.dd-creature-portrait.dd-portrait-small{--dd-portrait-size:var(--dd-portrait-sm);border-width:3px}',
+      '.dd-creature-portrait.dd-portrait-large{--dd-portrait-size:var(--dd-portrait-lg);border-width:7px}',
+      '.dd-creature-portrait.dd-rarity-rare{--dd-rarity-color:var(--dd-rare)}',
+      '.dd-creature-portrait.dd-rarity-epic{--dd-rarity-color:var(--dd-epic)}',
+      '.dd-creature-portrait.dd-rarity-legendary{--dd-rarity-color:var(--dd-accent)}',
+      '.dd-creature-portrait.dd-rarity-starter{--dd-rarity-color:var(--dd-success)}',
+      '.dd-creature-visual{width:92%;height:92%;object-fit:contain;border-radius:var(--dd-radius-round)}',
+      '.dd-creature-fallback{display:grid;place-items:center;font-size:clamp(30px,10vw,72px);line-height:1}',
+      '#ddApp .stage{min-height:0;overflow:hidden;overscroll-behavior:contain}',
+      '#ddApp .stage[data-screen="scanner"],#ddApp .stage[data-screen="encounter"]{position:relative;background:radial-gradient(circle at 50% 36%,rgba(56,189,248,.12),transparent 34%),linear-gradient(rgba(56,189,248,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.08) 1px,transparent 1px);background-size:100% 100%,22px 22px,22px 22px}',
+      '#ddApp .stage[data-screen="scanner"]:before,#ddApp .stage[data-screen="encounter"]:before{content:"";position:absolute;left:-15%;right:-15%;top:-10%;height:18%;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(255,215,0,.22),rgba(56,189,248,.12),transparent);filter:blur(1px);animation:ddPresentationScanSweep 4.8s linear infinite;z-index:0}',
+      '#ddApp .stage[data-screen="scanner"]>.card,#ddApp .stage[data-screen="encounter"]>.card{position:relative;z-index:1}',
+      '#ddApp .scannerOrb:before,#ddApp .scannerOrb:after{animation:ddPresentationRingSpin 12s linear infinite}',
+      '#ddApp .scannerOrb:after{animation-direction:reverse;animation-duration:18s}',
+      '@keyframes ddPresentationScanSweep{from{transform:translateY(-30%)}to{transform:translateY(620%)}}',
+      '@keyframes ddPresentationRingSpin{to{transform:rotate(360deg)}}',
+      '@media(prefers-reduced-motion:reduce){#ddApp .stage[data-screen="scanner"]:before,#ddApp .stage[data-screen="encounter"]:before,#ddApp .scannerOrb:before,#ddApp .scannerOrb:after{animation:none!important}}',
+      '#ddApp .controls{overflow:auto;overscroll-behavior:contain}',
+      '.dd-switch-panel{position:fixed;inset:10px;z-index:1000003;background:rgba(7,17,31,.98);border:1px solid rgba(125,211,252,.28);border-radius:24px;padding:14px;color:white;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px}',
+      '.dd-switch-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.dd-switch-head b{color:#FFD700}',
+      '.dd-switch-list{overflow:auto;display:grid;gap:8px}.dd-switch-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:10px;background:rgba(15,23,42,.82)}',
+      '.dd-switch-card.active{border-color:rgba(255,215,0,.75)}.dd-switch-card.disabled{opacity:.48}.dd-switch-meta{display:grid;gap:3px;min-width:0}.dd-switch-meta strong{color:#38BDF8}.dd-switch-meta span{font-size:12px;color:#BAE6FD}',
+      '.dd-switch-card button,.dd-switch-close{border:0;border-radius:14px;padding:10px 12px;font-weight:900}.dd-switch-card button{background:#FFD700;color:#111827}.dd-switch-card button:disabled{background:#334155;color:#94A3B8}.dd-switch-close{background:#0F172A;color:white}',
+      '.dd-switch-note{font-size:12px;color:#BAE6FD;line-height:1.35}'
+    ].join('');
+    document.head.appendChild(style);
+  }
+
+  function inBattle() { return !!(shell() && shell().state && shell().state.screen === 'battle'); }
+  function members() { return player() ? player().party.members() : []; }
+  function activeSlot() { return player() ? Number(player().partySwitch.getActive() || 0) : 0; }
+  function healthy(member) { return !!(member && Number(member.hp || 0) > 0); }
+
+  function hidePartySwitch() {
+    switchOpen = false;
+    const panel = $('ddPartySwitchPanel');
+    if (panel) panel.remove();
+  }
+
+  function chooseParty(index) {
+    const runtime = player();
+    const list = members();
+    if (!runtime || !runtime.partySwitch.canSwitch(list, index)) return;
+    runtime.partySwitch.setActive(index);
+    hidePartySwitch();
+    if (shell() && shell().render) shell().render();
+  }
+
+  function showPartySwitch(required) {
+    if (!inBattle() && !required) return;
+    installStyle();
+    switchOpen = true;
+    let panel = $('ddPartySwitchPanel');
+    if (!panel) {
+      panel = document.createElement('section');
+      panel.id = 'ddPartySwitchPanel';
+      panel.className = 'dd-switch-panel';
+      ($('ddApp') || document.body).appendChild(panel);
+    }
+    const list = members();
+    const current = activeSlot();
+    panel.innerHTML = '<div class="dd-switch-head"><b>' + (required ? 'Switch Required' : 'Switch Party') + '</b><button class="dd-switch-close" ' + (required ? 'disabled' : '') + '>Close</button></div><div class="dd-switch-list">' + list.map((member, index) => {
+      const ready = healthy(member) && index !== current;
+      return '<article class="dd-switch-card ' + (index === current ? 'active ' : '') + (!healthy(member) ? 'disabled' : '') + '"><div class="dd-switch-meta"><strong>' + esc(member.name || 'Unknown') + '</strong><span>HP ' + Number(member.hp || 0) + '/' + Number(member.maxHp || member.hp || 0) + (index === current ? ' • Active' : healthy(member) ? ' • Ready' : ' • Fainted') + '</span></div><button data-switch-index="' + index + '" ' + (ready ? '' : 'disabled') + '>' + (index === current ? 'Active' : healthy(member) ? 'Switch' : 'Fainted') + '</button></article>';
+    }).join('') + '</div><p class="dd-switch-note">Choose a ready party member. Fainted sprites cannot be sent out.</p>';
+    const close = panel.querySelector('.dd-switch-close');
+    if (close) close.onclick = hidePartySwitch;
+    panel.querySelectorAll('[data-switch-index]').forEach(button => { button.onclick = () => chooseParty(Number(button.dataset.switchIndex)); });
+  }
+
+  function preventPageScroll(event) {
+    const allowed = event.target && event.target.closest && event.target.closest('.controls,.battleLog,.dd-switch-list');
+    if (!allowed) event.preventDefault();
+  }
+
+  function boot() {
+    installStyle();
+    document.addEventListener('touchmove', preventPageScroll, { passive: false });
+    document.addEventListener('click', event => {
+      const button = event.target && event.target.closest && event.target.closest('[data-action="switch"]');
+      if (!button || !inBattle()) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      showPartySwitch(false);
+    }, true);
+    document.addEventListener('dd:open-party-switch', () => showPartySwitch(false));
+    document.addEventListener('dd:party-switch-required', () => showPartySwitch(true));
+    document.addEventListener('dd:party-switch', hidePartySwitch);
+  }
+
+  window.DD_APP_PRESENTATION_RUNTIME = Object.freeze({
+    version: VERSION,
+    owner: OWNER,
+    phase: '6.0.9-battle-stage-foundation',
+    tokens: TOKENS,
+    portraits,
+    installStyle,
+    showPartySwitch,
+    hidePartySwitch,
+    isPartySwitchOpen: () => switchOpen
+  });
+  window.DD_PARTY_SWITCH_UI = Object.freeze({ show: showPartySwitch, hide: hidePartySwitch, isOpen: () => switchOpen, owner: OWNER, version: VERSION });
+  boot();
+  document.dispatchEvent(new CustomEvent('dd:app-presentation-runtime-ready', { detail: window.DD_APP_PRESENTATION_RUNTIME }));
+})();
+
 /* ---- assets/js/dd-scanner-screen.js ---- */
 // assets/js/dd-scanner-screen.js
 // Core Stabilization v1.0: canonical scanner presentation owner.
@@ -2973,7 +3167,7 @@
 // assets/js/dd-encounter-screen.js
 // Core Stabilization v1.0: canonical encounter presentation owner.
 (function(){
-  const VERSION='1.1.0';
+  const VERSION='1.2.0';
   const STYLE_ID='ddEncounterScreenStyle';
 
   function esc(value){
@@ -2988,22 +3182,8 @@
     return Math.max(0,Math.min(100,Math.round(Number(value||0)/m*100)));
   }
 
-  function rarityClass(rarity){
-    return String(rarity||'common').toLowerCase().replace(/[^a-z0-9]+/g,'-');
-  }
-
-  function safeSpriteAsset(value){
-    const raw=String(value||'').trim();
-    if(!raw)return '';
-    try{
-      const origin=location&&location.origin||'http://localhost';
-      const url=new URL(raw,origin);
-      return url.origin===origin&&url.pathname.startsWith('/assets/sprites/')
-        ?url.href
-        :'';
-    }catch(error){
-      return '';
-    }
+  function portraits(){
+    return window.DD_APP_PRESENTATION_RUNTIME&&window.DD_APP_PRESENTATION_RUNTIME.portraits;
   }
 
   function installStyle(){
@@ -3016,12 +3196,7 @@
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterTop span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#BAE6FD}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .rarityBadge{border:1px solid rgba(255,215,0,.38);border-radius:999px;padding:6px 10px;color:#FFD700!important;background:rgba(255,215,0,.08);font-weight:900;letter-spacing:.08em!important}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterCore{display:grid;place-items:center;align-content:center;text-align:center;gap:9px;min-height:0}',
-      '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait{--rarity:#38BDF8;width:min(38vw,156px);height:min(38vw,156px);border-radius:999px;display:grid;place-items:center;position:relative;background:radial-gradient(circle,rgba(56,189,248,.2),rgba(15,23,42,.94) 66%);border:7px solid var(--rarity);box-shadow:0 0 34px color-mix(in srgb,var(--rarity) 38%,transparent);font-size:clamp(48px,14vw,78px)}',
-      '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait.rare{--rarity:#A78BFA}',
-      '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait.epic{--rarity:#F472B6}',
-      '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait.legendary{--rarity:#FFD700}',
-      '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait.starter{--rarity:#22C55E}',
-      '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait img{width:92%;height:92%;object-fit:contain;border-radius:999px}',
+      '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait{--dd-portrait-size:min(38vw,156px)}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] h1{margin:0;color:#38BDF8;font-size:clamp(28px,8vw,42px);line-height:1;overflow-wrap:anywhere}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterMeta{color:#E0F2FE;font-size:13px}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterLore{margin:3px 0 0;max-width:34rem;color:#E2E8F0;line-height:1.4;font-size:14px}',
@@ -3037,7 +3212,7 @@
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .meterTrack i{display:block;height:100%;border-radius:999px}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .signalMeter i{background:linear-gradient(90deg,#38BDF8,#A78BFA,#FB7185)}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .downloadMeter i{background:linear-gradient(90deg,#FFD700,#A3E635,#22C55E)}',
-      '@media(max-height:700px){#ddApp .encounter-card[data-owner="dd-encounter-screen"]{gap:7px}#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait{width:min(27vw,112px);height:min(27vw,112px);font-size:clamp(38px,10vw,58px)}#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterLore{font-size:12px}}'
+      '@media(max-height:700px){#ddApp .encounter-card[data-owner="dd-encounter-screen"]{gap:7px}#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait{--dd-portrait-size:min(27vw,112px)}#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterLore{font-size:12px}}'
     ].join('');
     document.head.appendChild(style);
   }
@@ -3056,16 +3231,15 @@
     const types=String(signal.type||'Signal').replace(/\s*\/\s*/g,' • ');
     const source=signal.encounterPoolLabel||'Scanner Pool';
     const lore=signal.lore||signal.description||'An unidentified DataByte signal has entered scanner range.';
-    const asset=safeSpriteAsset(signal.spriteAsset||signal.asset);
-    const portrait=asset
-      ?`<img src="${esc(asset)}" alt="${esc(signal.name||'DataByte Sprite')}">`
-      :esc(signal.icon||'◇');
+    const portrait=portraits()
+      ?portraits().renderPortrait(signal,{size:'large',className:'encounterPortrait'})
+      :`<span aria-hidden="true">${esc(signal.icon||'◇')}</span>`;
 
-    return `<section class="card encounter-card" data-owner="dd-encounter-screen"><div class="encounterTop"><span>Signal Locked</span><span class="rarityBadge">${esc(rarity)}</span></div><div class="encounterCore"><div class="encounterPortrait ${esc(rarityClass(rarity))}">${portrait}</div><h1>${esc(signal.name||'Unknown Signal')}</h1><div class="encounterMeta">#${esc(signal.dex||'?')} • ${esc(types)}</div><p class="encounterLore">${esc(lore)}</p><p class="encounterSource">Detected in ${esc(source)}.</p></div><div><div class="encounterStats"><div class="encounterStat">Download<b>${esc(odds)}%</b></div><div class="encounterStat">HP<b>${esc(hp)}/${esc(maxHp)}</b></div><div class="encounterStat">Signal<b>${esc(stability)}/${esc(maxStability)}</b></div></div><div class="encounterMeters"><div class="meter signalMeter"><div class="meterHead"><span>Signal Stability</span><b>${esc(stability)}/${esc(maxStability)}</b></div><span class="meterTrack"><i style="width:${pct(stability,maxStability)}%"></i></span></div><div class="meter downloadMeter"><div class="meterHead"><span>Download Window</span><b>${esc(odds)}% / Cap ${esc(signal.captureCap||'?')}</b></div><span class="meterTrack"><i style="width:${pct(odds,captureCap)}%"></i></span></div></div></div></section>`;
+    return `<section class="card encounter-card" data-owner="dd-encounter-screen"><div class="encounterTop"><span>Signal Locked</span><span class="rarityBadge">${esc(rarity)}</span></div><div class="encounterCore">${portrait}<h1>${esc(signal.name||'Unknown Signal')}</h1><div class="encounterMeta">#${esc(signal.dex||'?')} • ${esc(types)}</div><p class="encounterLore">${esc(lore)}</p><p class="encounterSource">Detected in ${esc(source)}.</p></div><div><div class="encounterStats"><div class="encounterStat">Download<b>${esc(odds)}%</b></div><div class="encounterStat">HP<b>${esc(hp)}/${esc(maxHp)}</b></div><div class="encounterStat">Signal<b>${esc(stability)}/${esc(maxStability)}</b></div></div><div class="encounterMeters"><div class="meter signalMeter"><div class="meterHead"><span>Signal Stability</span><b>${esc(stability)}/${esc(maxStability)}</b></div><span class="meterTrack"><i style="width:${pct(stability,maxStability)}%"></i></span></div><div class="meter downloadMeter"><div class="meterHead"><span>Download Window</span><b>${esc(odds)}% / Cap ${esc(signal.captureCap||'?')}</b></div><span class="meterTrack"><i style="width:${pct(odds,captureCap)}%"></i></span></div></div></div></section>`;
   }
 
   installStyle();
-  window.DD_ENCOUNTER_SCREEN={version:VERSION,owner:'dd-encounter-screen',status:'active-screen-owner',installStyle,safeSpriteAsset,renderEncounterScreen};
+  window.DD_ENCOUNTER_SCREEN={version:VERSION,owner:'dd-encounter-screen',status:'active-screen-owner',installStyle,renderEncounterScreen};
   document.dispatchEvent(new CustomEvent('dd:encounter-screen-ready',{detail:window.DD_ENCOUNTER_SCREEN}));
 })();
 
@@ -3076,7 +3250,7 @@
 (function(){
   'use strict';
 
-  const VERSION='0.6.0';
+  const VERSION='0.8.0';
   const STYLE_ID='ddBattleScreenStyle';
 
   function esc(value){
@@ -3120,18 +3294,12 @@
     return context||{};
   }
 
+  function portraits(){
+    return window.DD_APP_PRESENTATION_RUNTIME&&window.DD_APP_PRESENTATION_RUNTIME.portraits;
+  }
+
   function safeSpriteAsset(value){
-    const raw=String(value||'').trim();
-    if(!raw)return '';
-    try{
-      const origin=location&&location.origin||'http://localhost';
-      const url=new URL(raw,origin);
-      return url.origin===origin&&url.pathname.startsWith('/assets/')
-        ?url.href
-        :'';
-    }catch(error){
-      return '';
-    }
+    return portraits()?portraits().safeAsset(value):'';
   }
 
   function installStyle(){
@@ -3140,16 +3308,21 @@
     const style=document.createElement('style');
     style.id=STYLE_ID;
     style.textContent=[
-      '#ddApp .battle-card[data-owner="dd-battle-screen"]{position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:8px;width:100%;height:100%;min-height:0;overflow:hidden}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleGrid{display:grid;grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr);gap:8px;align-items:center;align-content:center;justify-items:center;width:100%;height:100%;min-height:0}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter{text-align:center;min-width:0;width:100%;overflow:visible}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter h2{margin:8px 0 5px;color:#007BFF;font-size:clamp(20px,5.2vw,29px);line-height:1.04;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .meta{display:grid;gap:3px;justify-content:center;color:#e0f2fe;font-size:11px;line-height:1.2;min-height:28px;overflow:hidden}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"]{position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:8px;width:100%;height:100%;min-height:0;overflow:hidden;padding:8px}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleScene{position:relative;min-height:0;overflow:hidden;border:1px solid var(--dd-border);border-radius:var(--dd-radius-lg);background-image:linear-gradient(180deg,rgba(2,6,23,.08),rgba(2,6,23,.38) 64%,rgba(2,6,23,.74)),var(--dd-battle-bg-training);background-size:cover;background-position:center 58%;isolation:isolate}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleScene::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at 25% 62%,rgba(56,189,248,.18),transparent 29%),radial-gradient(circle at 75% 62%,rgba(167,139,250,.2),transparent 29%);mix-blend-mode:screen}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleGrid{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);gap:8px;align-items:end;align-content:end;justify-items:center;width:100%;height:100%;min-height:0;padding:48px clamp(6px,3vw,32px) 18px;box-sizing:border-box}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter{text-align:center;min-width:0;width:min(100%,260px);overflow:visible;transform-origin:50% 85%;filter:drop-shadow(0 12px 14px rgba(2,6,23,.54))}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="lead"]{transform:translateX(5%)}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="wild"]{transform:translateX(-5%) scale(.94)}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter h2{margin:8px 0 5px;color:var(--dd-primary);text-shadow:0 2px 8px rgba(2,6,23,.95);font-size:clamp(20px,5.2vw,29px);line-height:1.04;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .meta{display:grid;gap:3px;justify-content:center;color:var(--dd-text-muted);text-shadow:0 2px 6px rgba(2,6,23,.95);font-size:11px;line-height:1.2;min-height:28px;overflow:hidden}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .statusRow{display:flex;justify-content:center;gap:4px;min-height:17px;margin-top:4px;overflow:hidden}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .statusChip{padding:2px 6px;border-radius:999px;background:rgba(167,139,250,.18);border:1px solid rgba(167,139,250,.42);color:#DDD6FE;font-size:9px;font-weight:900;text-transform:uppercase;white-space:nowrap}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter.dd-attacking .avatar{animation:ddSpriteAttack .22s ease-out}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter.dd-hit .ring{animation:ddSpriteHit .28s ease-out}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .vs{align-self:center;text-align:center;color:#FFD700;font-weight:1000}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="lead"].dd-attacking{animation:ddLeadLunge var(--dd-motion-fast) ease-out}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="wild"].dd-attacking{animation:ddWildLunge var(--dd-motion-fast) ease-out}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter.dd-hit .ring{animation:ddSpriteHit var(--dd-motion-fast) ease-out}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .vs{align-self:end;text-align:center;color:var(--dd-accent);font-weight:1000;text-shadow:0 2px 8px rgba(2,6,23,.95);padding-bottom:84px}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .ring{width:min(25vw,116px);height:min(25vw,116px);border-radius:999px;margin:0 auto;display:grid;place-items:center;background:conic-gradient(from -90deg,var(--hp-color) 0 calc(var(--hp-pct)*1%),rgba(71,85,105,.48) calc(var(--hp-pct)*1%) 100%);border:0;position:relative;transform:none!important;box-sizing:border-box;transition:background .18s ease}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar{position:relative;width:calc(100% - 8px);height:calc(100% - 8px);border-radius:999px;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,#103258 0%,#0a2039 52%,#07111f 100%);font-size:clamp(28px,8vw,40px);line-height:1}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar img{width:88%;height:88%;object-fit:contain;border-radius:999px}',
@@ -3162,16 +3335,18 @@
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .signalBox em,#ddApp .battle-card[data-owner="dd-battle-screen"] .downloadGauge em{display:block;margin-top:5px;height:7px;border-radius:999px;background:#020617;overflow:hidden}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .signalBox i{display:block;height:100%;background:linear-gradient(90deg,#38BDF8,#A78BFA,#FB7185)}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .downloadGauge i{display:block;height:100%;background:linear-gradient(90deg,#FFD700,#A3E635,#22C55E)}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleLog{position:absolute;left:12px;right:12px;top:var(--dd-toast-top,8px);z-index:8;height:30px;max-height:30px;overflow:hidden;margin:0;padding:6px 10px;border:1px solid rgba(96,165,250,.28);border-radius:14px;background:rgba(2,6,23,.88);opacity:1;transform:none;pointer-events:none}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleLog{position:absolute;left:12px;right:12px;top:10px;z-index:8;height:30px;max-height:30px;overflow:hidden;margin:0;padding:6px 10px;border:1px solid var(--dd-border);border-radius:var(--dd-radius-md);background:rgba(2,6,23,.88);opacity:1;transform:none;pointer-events:none;box-sizing:border-box}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleLog b{display:none}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleLog ul{list-style:none;padding:0;margin:0;color:#BAE6FD;font-size:12px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleLog li{display:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleLog li:last-child{display:block}',
-      '@media(max-width:430px){#ddApp .battle-card[data-owner="dd-battle-screen"] .ring{width:min(22vw,106px);height:min(22vw,106px)}#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter h2{font-size:clamp(19px,5vw,25px)}}',
+      '@media(max-width:430px){#ddApp .battle-card[data-owner="dd-battle-screen"] .battleGrid{grid-template-columns:minmax(0,1fr) 26px minmax(0,1fr);padding:44px 4px 12px}#ddApp .battle-card[data-owner="dd-battle-screen"] .vs{padding-bottom:76px}#ddApp .battle-card[data-owner="dd-battle-screen"] .ring{width:min(22vw,106px);height:min(22vw,106px)}#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter h2{font-size:clamp(19px,5vw,25px)}}',
       '@media(max-width:350px){#ddApp .battle-card[data-owner="dd-battle-screen"] .battleMeters{grid-template-columns:minmax(0,1fr)}#ddApp .battle-card[data-owner="dd-battle-screen"] .signalBox,#ddApp .battle-card[data-owner="dd-battle-screen"] .downloadGauge{padding:6px 8px}}',
-      '@media(max-height:720px){#ddApp .battle-card[data-owner="dd-battle-screen"]{gap:6px}#ddApp .battle-card[data-owner="dd-battle-screen"] .battleMeters{gap:6px}#ddApp .battle-card[data-owner="dd-battle-screen"] .signalBox,#ddApp .battle-card[data-owner="dd-battle-screen"] .downloadGauge{padding:6px 8px}}',
-      '@keyframes ddSpriteAttack{50%{transform:scale(1.09);filter:brightness(1.35)}}',
-      '@keyframes ddSpriteHit{35%{filter:brightness(1.8) saturate(1.5);transform:scale(.94)}70%{filter:brightness(.75)}}'
+      '@media(max-height:720px){#ddApp .battle-card[data-owner="dd-battle-screen"]{gap:6px}#ddApp .battle-card[data-owner="dd-battle-screen"] .battleGrid{padding-top:42px;padding-bottom:10px}#ddApp .battle-card[data-owner="dd-battle-screen"] .battleMeters{gap:6px}#ddApp .battle-card[data-owner="dd-battle-screen"] .signalBox,#ddApp .battle-card[data-owner="dd-battle-screen"] .downloadGauge{padding:6px 8px}}',
+      '@media(prefers-reduced-motion:reduce){#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter{animation:none!important}}',
+      '@keyframes ddLeadLunge{0%,100%{transform:translateX(5%)}50%{transform:translateX(24%) scale(1.06);filter:brightness(1.3)}}',
+      '@keyframes ddWildLunge{0%,100%{transform:translateX(-5%) scale(.94)}50%{transform:translateX(-24%) scale(1.01);filter:brightness(1.3)}}',
+      '@keyframes ddSpriteHit{35%{filter:brightness(1.8) saturate(1.5);transform:translateX(-4px) scale(.94)}70%{filter:brightness(.75);transform:translateX(4px)}}'
     ].join('');
 
     document.head.appendChild(style);
@@ -3189,9 +3364,8 @@
   function renderHpRing(sprite){
     const s=normalizeSprite(sprite);
     const healthPct=pct(s.hp,s.maxHp);
-    const asset=safeSpriteAsset(s.spriteAsset||s.asset);
-    const visual=asset
-      ?`<img src="${esc(asset)}" alt="" aria-hidden="true">`
+    const visual=portraits()
+      ?portraits().renderVisual(s,{decorative:true})
       :`<span>${esc(s.icon||'◇')}</span>`;
     return `<div class="ring hp" style="--hp-pct:${healthPct};--hp-color:${hpColor(s.hp,s.maxHp)}" data-hp-percent="${healthPct}" aria-label="HP ${esc(s.hp)} of ${esc(s.maxHp)}">
       <div class="avatar">
@@ -3204,7 +3378,7 @@
   function renderFighter(sprite,side){
     const s=normalizeSprite(sprite);
     const statuses=Array.isArray(s.statusEffects)?s.statusEffects:[];
-    return `<article class="fighter ${esc(side||'')}">
+    return `<article class="fighter ${esc(side||'')}" data-side="${esc(side||'')}">
       ${renderHpRing(s)}
       <h2>${esc(s.name||'Unknown')}</h2>
       ${renderMetaLine(s)}
@@ -3281,12 +3455,14 @@
     const wild=normalizeSprite(ctx.wild||{});
 
     return `<section class="card battle-card" data-owner="dd-battle-screen">
-      <div class="battleGrid">
-        ${renderFighter(lead,'lead')}
-        <strong class="vs">VS</strong>
-        ${renderFighter(wild,'wild')}
+      <div class="battleScene" data-battle-background="training-room">
+        <div class="battleGrid">
+          ${renderFighter(lead,'lead')}
+          <strong class="vs">VS</strong>
+          ${renderFighter(wild,'wild')}
+        </div>
+        ${renderBattleToast(ctx)}
       </div>
-      ${renderBattleToast(ctx)}
       ${renderBattleMeters(ctx)}
     </section>`;
   }
@@ -3472,7 +3648,7 @@
 // assets/js/dd-result-screen.js
 // Core Stabilization v1.0: canonical Download result presentation owner.
 (function(){
-  const VERSION='1.2.0';
+  const VERSION='1.3.0';
   const STYLE_ID='ddResultScreenStyle';
 
   function esc(value){
@@ -3488,18 +3664,8 @@
     return 'neutral';
   }
 
-  function safeSpriteAsset(value){
-    const raw=String(value||'').trim();
-    if(!raw)return '';
-    try{
-      const origin=location&&location.origin||'http://localhost';
-      const url=new URL(raw,origin);
-      return url.origin===origin&&url.pathname.startsWith('/assets/sprites/')
-        ?url.href
-        :'';
-    }catch(error){
-      return '';
-    }
+  function portraits(){
+    return window.DD_APP_PRESENTATION_RUNTIME&&window.DD_APP_PRESENTATION_RUNTIME.portraits;
   }
 
   function installStyle(){
@@ -3513,9 +3679,7 @@
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultTop{display:flex;justify-content:space-between;align-items:center;gap:10px;color:#BAE6FD;font-size:11px;letter-spacing:.15em;text-transform:uppercase}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultTop b{color:var(--result-accent)}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultCore{display:grid;place-items:center;align-content:center;gap:14px;min-height:0}',
-      '#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon{width:min(42vw,168px);height:min(42vw,168px);border-radius:999px;display:grid;place-items:center;position:relative;background:radial-gradient(circle,rgba(56,189,248,.18),rgba(15,23,42,.94) 68%);border:7px solid var(--result-accent);box-shadow:0 0 40px color-mix(in srgb,var(--result-accent) 36%,transparent);font-size:clamp(50px,15vw,82px)}',
-      '#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon:after{content:"";position:absolute;inset:12%;border-radius:999px;border:1px solid color-mix(in srgb,var(--result-accent) 48%,transparent)}',
-      '#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon img{width:92%;height:92%;object-fit:contain;border-radius:999px}',
+      '#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon{--dd-portrait-size:min(42vw,168px);--dd-rarity-color:var(--result-accent)}',
       '#ddApp .result-card[data-owner="dd-result-screen"] h1{margin:0;color:var(--result-accent);font-size:clamp(28px,8vw,42px);line-height:1.04;overflow-wrap:anywhere}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultMessage{margin:0;max-width:34rem;color:#E2E8F0;font-size:15px;line-height:1.45}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultSummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%}',
@@ -3527,7 +3691,7 @@
       '#ddApp .result-card[data-owner="dd-result-screen"] .rewardRow b{color:#FFD700}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .xpTrack{height:7px;border-radius:999px;background:#020617;overflow:hidden}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .xpTrack i{display:block;height:100%;background:linear-gradient(90deg,#38BDF8,#A78BFA,#FFD700)}',
-      '@media(max-height:700px){#ddApp .result-card[data-owner="dd-result-screen"]{gap:8px}#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon{width:min(29vw,116px);height:min(29vw,116px);font-size:42px}#ddApp .result-card[data-owner="dd-result-screen"] .resultMessage{font-size:13px}}'
+      '@media(max-height:700px){#ddApp .result-card[data-owner="dd-result-screen"]{gap:8px}#ddApp .result-card[data-owner="dd-result-screen"] .resultIcon{--dd-portrait-size:min(29vw,116px)}#ddApp .result-card[data-owner="dd-result-screen"] .resultMessage{font-size:13px}}'
     ].join('');
     document.head.appendChild(style);
   }
@@ -3550,10 +3714,9 @@
     const title=result.title||(success?'Download Complete':type==='failure'?'Download Failed':'Result');
     const message=result.msg||result.message||(success?'The signal was added to your collection.':'The signal could not be downloaded.');
     const icon=sprite&&sprite.icon?sprite.icon:(success?'✓':type==='failure'?'!':'◇');
-    const asset=safeSpriteAsset(sprite&&(sprite.spriteAsset||sprite.asset));
-    const visual=asset
-      ?`<img src="${esc(asset)}" alt="${esc(sprite.name||'DataByte Sprite')}">`
-      :esc(icon);
+    const visual=sprite&&portraits()
+      ?portraits().renderPortrait(sprite,{size:'large',className:'resultIcon'})
+      :`<div class="dd-creature-portrait dd-portrait-large resultIcon"><span class="dd-creature-fallback" aria-hidden="true">${esc(icon)}</span></div>`;
     const status=battleVictory?'VICTORY':success?'SAVED':type==='failure'?'SIGNAL LOST':'COMPLETE';
     const next=battleVictory
       ?'Continue to open the Download confirmation, or return to the Scanner.'
@@ -3571,11 +3734,11 @@
       </div>`
       :'';
 
-    return `<section class="card result-card ${esc(type)}" data-owner="dd-result-screen"><div class="resultTop"><span>${battleVictory?'Battle Result':'Scanner Result'}</span><b>${esc(status)}</b></div><div class="resultCore"><div class="resultIcon">${visual}</div><h1>${esc(title)}</h1><p class="resultMessage">${esc(message)}</p>${rewardHtml}${sprite?`<p class="resultNext">${esc(sprite.name||'DataByte Sprite')} • #${esc(sprite.dex||'?')} • ${esc(sprite.rarity||'Common')}</p>`:''}</div><div><div class="resultSummary"><div class="resultStat">Collection<b>${esc(collection.length)}</b></div><div class="resultStat">Party Slots<b>${esc(party.length)}/5</b></div><div class="resultStat">ByteCoins<b>${esc(inventory.byteCoins||0)}</b></div></div><p class="resultNext">${esc(next)}</p></div></section>`;
+    return `<section class="card result-card ${esc(type)}" data-owner="dd-result-screen"><div class="resultTop"><span>${battleVictory?'Battle Result':'Scanner Result'}</span><b>${esc(status)}</b></div><div class="resultCore">${visual}<h1>${esc(title)}</h1><p class="resultMessage">${esc(message)}</p>${rewardHtml}${sprite?`<p class="resultNext">${esc(sprite.name||'DataByte Sprite')} • #${esc(sprite.dex||'?')} • ${esc(sprite.rarity||'Common')}</p>`:''}</div><div><div class="resultSummary"><div class="resultStat">Collection<b>${esc(collection.length)}</b></div><div class="resultStat">Party Slots<b>${esc(party.length)}/5</b></div><div class="resultStat">ByteCoins<b>${esc(inventory.byteCoins||0)}</b></div></div><p class="resultNext">${esc(next)}</p></div></section>`;
   }
 
   installStyle();
-  window.DD_RESULT_SCREEN={version:VERSION,owner:'dd-result-screen',status:'active-screen-owner',installStyle,safeSpriteAsset,renderResultScreen};
+  window.DD_RESULT_SCREEN={version:VERSION,owner:'dd-result-screen',status:'active-screen-owner',installStyle,renderResultScreen};
   document.dispatchEvent(new CustomEvent('dd:result-screen-ready',{detail:window.DD_RESULT_SCREEN}));
 })();
 
@@ -3682,7 +3845,7 @@
 
 /* ---- assets/js/databyte-discovery-product-app-v4-shell.js ---- */
 // assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 6.0.7 application shell for Data Discovery.
+// Phase 6.0.9 application shell for Data Discovery.
 // The shell owns boot, route state, shared context construction, runtime coordination,
 // screen registry dispatch, and routing between dedicated runtime owners.
 // Battle Core exclusively owns battle transactions, state application, faint handling,
@@ -3693,8 +3856,8 @@
 
   if(!location.pathname.includes('databyte-discovery'))return;
 
-  const VERSION='4.10.7';
-  const PRODUCT_PHASE='6.0.7';
+  const VERSION='4.10.9';
+  const PRODUCT_PHASE='6.0.9';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={
@@ -3712,24 +3875,11 @@
     '>':'&gt;',
     '"':'&quot;'
   }[ch]));
-  const safeSpriteAsset=value=>{
-    const raw=String(value||'').trim();
-    if(!raw)return '';
-    try{
-      const origin=location&&location.origin||'http://localhost';
-      const url=new URL(raw,origin);
-      return url.origin===origin&&url.pathname.startsWith('/assets/sprites/')
-        ?url.href
-        :'';
-    }catch(error){
-      return '';
-    }
-  };
+  const portraits=()=>window.DD_APP_PRESENTATION_RUNTIME&&window.DD_APP_PRESENTATION_RUNTIME.portraits;
   const spriteVisual=sprite=>{
     const value=sprite||{};
-    const asset=safeSpriteAsset(value.spriteAsset||value.asset);
-    return asset
-      ?`<img class="miniSprite" src="${esc(asset)}" alt="${esc(value.name||'DataByte Sprite')}">`
+    return portraits()
+      ?portraits().renderPortrait(value,{size:'small',className:'miniPortrait'})
       :`<span class="miniSpriteFallback" aria-hidden="true">${esc(value.icon||'◇')}</span>`;
   };
   const read=(key,fallback)=>{
@@ -3799,7 +3949,7 @@
       '#ddApp .nav button{font-size:11px;padding:9px 3px}',
       '#ddApp .stats,#ddApp .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px}',
       '#ddApp .mini{background:rgba(15,23,42,.8);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:10px}',
-      '#ddApp .miniSprite{display:block;width:64px;height:64px;margin:0 auto 7px;object-fit:contain;border-radius:16px}',
+      '#ddApp .miniPortrait{margin:0 auto 7px}',
       '#ddApp .miniSpriteFallback{display:block;margin-bottom:7px;font-size:30px;line-height:1}',
       '#ddApp .hint,#ddApp .log{color:#BAE6FD;font-size:12px;line-height:1.35}',
       '#ddApp .coin,#ddApp .scannerOrb{width:90px;height:90px;border-radius:999px;display:grid;place-items:center;margin:auto;font-size:36px}',
@@ -4903,7 +5053,7 @@
       '<div id="ddApp">'+
         '<header class="top">'+
           '<b>Data Discovery</b>'+
-          '<span>Phase 6.0.7</span>'+
+          '<span>Phase 6.0.9</span>'+
         '</header>'+
         '<main id="stage" class="stage"></main>'+
         '<section id="controls" class="controls"></section>'+
@@ -5050,125 +5200,4 @@
   document.dispatchEvent(new CustomEvent('dd:v4-shell-ready',{
     detail:window.DD_PRODUCT_APP_V4_SHELL
   }));
-})();
-
-/* ---- assets/js/dd-app-presentation-runtime.js ---- */
-// Data Discovery v4.9: canonical app layout, overlays, and lifecycle presentation.
-(function () {
-  'use strict';
-
-  if (!location.pathname.includes('databyte-discovery')) return;
-  if (window.DD_APP_PRESENTATION_RUNTIME) return;
-
-  const VERSION = '1.0.0';
-  const OWNER = 'dd-app-presentation-runtime';
-  const STYLE_ID = 'ddAppPresentationStyle';
-  let switchOpen = false;
-
-  const $ = id => document.getElementById(id);
-  const player = () => window.DD_PLAYER_RUNTIME;
-  const shell = () => window.DD_PRODUCT_APP_V4_SHELL;
-  const esc = value => String(value ?? '').replace(/[&<>"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[char]));
-
-  function installStyle() {
-    if ($(STYLE_ID)) return;
-    const style = document.createElement('style');
-    style.id = STYLE_ID;
-    style.textContent = [
-      'html,body{height:100%;min-height:100%;overflow:hidden;position:fixed;inset:0;width:100%;overscroll-behavior:none;touch-action:manipulation}',
-      '#ddApp{height:100dvh;max-height:100dvh;overflow:hidden}',
-      '#ddApp .stage{min-height:0;overflow:hidden;overscroll-behavior:contain}',
-      '#ddApp .stage[data-screen="scanner"],#ddApp .stage[data-screen="encounter"]{position:relative;background:radial-gradient(circle at 50% 36%,rgba(56,189,248,.12),transparent 34%),linear-gradient(rgba(56,189,248,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.08) 1px,transparent 1px);background-size:100% 100%,22px 22px,22px 22px}',
-      '#ddApp .stage[data-screen="scanner"]:before,#ddApp .stage[data-screen="encounter"]:before{content:"";position:absolute;left:-15%;right:-15%;top:-10%;height:18%;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(255,215,0,.22),rgba(56,189,248,.12),transparent);filter:blur(1px);animation:ddPresentationScanSweep 4.8s linear infinite;z-index:0}',
-      '#ddApp .stage[data-screen="scanner"]>.card,#ddApp .stage[data-screen="encounter"]>.card{position:relative;z-index:1}',
-      '#ddApp .scannerOrb:before,#ddApp .scannerOrb:after{animation:ddPresentationRingSpin 12s linear infinite}',
-      '#ddApp .scannerOrb:after{animation-direction:reverse;animation-duration:18s}',
-      '@keyframes ddPresentationScanSweep{from{transform:translateY(-30%)}to{transform:translateY(620%)}}',
-      '@keyframes ddPresentationRingSpin{to{transform:rotate(360deg)}}',
-      '@media(prefers-reduced-motion:reduce){#ddApp .stage[data-screen="scanner"]:before,#ddApp .stage[data-screen="encounter"]:before,#ddApp .scannerOrb:before,#ddApp .scannerOrb:after{animation:none!important}}',
-      '#ddApp .controls{overflow:auto;overscroll-behavior:contain}',
-      '.dd-switch-panel{position:fixed;inset:10px;z-index:1000003;background:rgba(7,17,31,.98);border:1px solid rgba(125,211,252,.28);border-radius:24px;padding:14px;color:white;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px}',
-      '.dd-switch-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.dd-switch-head b{color:#FFD700}',
-      '.dd-switch-list{overflow:auto;display:grid;gap:8px}.dd-switch-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:10px;background:rgba(15,23,42,.82)}',
-      '.dd-switch-card.active{border-color:rgba(255,215,0,.75)}.dd-switch-card.disabled{opacity:.48}.dd-switch-meta{display:grid;gap:3px;min-width:0}.dd-switch-meta strong{color:#38BDF8}.dd-switch-meta span{font-size:12px;color:#BAE6FD}',
-      '.dd-switch-card button,.dd-switch-close{border:0;border-radius:14px;padding:10px 12px;font-weight:900}.dd-switch-card button{background:#FFD700;color:#111827}.dd-switch-card button:disabled{background:#334155;color:#94A3B8}.dd-switch-close{background:#0F172A;color:white}',
-      '.dd-switch-note{font-size:12px;color:#BAE6FD;line-height:1.35}'
-    ].join('');
-    document.head.appendChild(style);
-  }
-
-  function inBattle() { return !!(shell() && shell().state && shell().state.screen === 'battle'); }
-  function members() { return player() ? player().party.members() : []; }
-  function activeSlot() { return player() ? Number(player().partySwitch.getActive() || 0) : 0; }
-  function healthy(member) { return !!(member && Number(member.hp || 0) > 0); }
-
-  function hidePartySwitch() {
-    switchOpen = false;
-    const panel = $('ddPartySwitchPanel');
-    if (panel) panel.remove();
-  }
-
-  function chooseParty(index) {
-    const runtime = player();
-    const list = members();
-    if (!runtime || !runtime.partySwitch.canSwitch(list, index)) return;
-    runtime.partySwitch.setActive(index);
-    hidePartySwitch();
-    if (shell() && shell().render) shell().render();
-  }
-
-  function showPartySwitch(required) {
-    if (!inBattle() && !required) return;
-    installStyle();
-    switchOpen = true;
-    let panel = $('ddPartySwitchPanel');
-    if (!panel) {
-      panel = document.createElement('section');
-      panel.id = 'ddPartySwitchPanel';
-      panel.className = 'dd-switch-panel';
-      ($('ddApp') || document.body).appendChild(panel);
-    }
-    const list = members();
-    const current = activeSlot();
-    panel.innerHTML = '<div class="dd-switch-head"><b>' + (required ? 'Switch Required' : 'Switch Party') + '</b><button class="dd-switch-close" ' + (required ? 'disabled' : '') + '>Close</button></div><div class="dd-switch-list">' + list.map((member, index) => {
-      const ready = healthy(member) && index !== current;
-      return '<article class="dd-switch-card ' + (index === current ? 'active ' : '') + (!healthy(member) ? 'disabled' : '') + '"><div class="dd-switch-meta"><strong>' + esc(member.name || 'Unknown') + '</strong><span>HP ' + Number(member.hp || 0) + '/' + Number(member.maxHp || member.hp || 0) + (index === current ? ' • Active' : healthy(member) ? ' • Ready' : ' • Fainted') + '</span></div><button data-switch-index="' + index + '" ' + (ready ? '' : 'disabled') + '>' + (index === current ? 'Active' : healthy(member) ? 'Switch' : 'Fainted') + '</button></article>';
-    }).join('') + '</div><p class="dd-switch-note">Choose a ready party member. Fainted sprites cannot be sent out.</p>';
-    const close = panel.querySelector('.dd-switch-close');
-    if (close) close.onclick = hidePartySwitch;
-    panel.querySelectorAll('[data-switch-index]').forEach(button => { button.onclick = () => chooseParty(Number(button.dataset.switchIndex)); });
-  }
-
-  function preventPageScroll(event) {
-    const allowed = event.target && event.target.closest && event.target.closest('.controls,.battleLog,.dd-switch-list');
-    if (!allowed) event.preventDefault();
-  }
-
-  function boot() {
-    installStyle();
-    document.addEventListener('touchmove', preventPageScroll, { passive: false });
-    document.addEventListener('click', event => {
-      const button = event.target && event.target.closest && event.target.closest('[data-action="switch"]');
-      if (!button || !inBattle()) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      showPartySwitch(false);
-    }, true);
-    document.addEventListener('dd:open-party-switch', () => showPartySwitch(false));
-    document.addEventListener('dd:party-switch-required', () => showPartySwitch(true));
-    document.addEventListener('dd:party-switch', hidePartySwitch);
-  }
-
-  window.DD_APP_PRESENTATION_RUNTIME = Object.freeze({
-    version: VERSION,
-    owner: OWNER,
-    phase: '4.9-canonical-app-presentation',
-    installStyle,
-    showPartySwitch,
-    hidePartySwitch,
-    isPartySwitchOpen: () => switchOpen
-  });
-  window.DD_PARTY_SWITCH_UI = Object.freeze({ show: showPartySwitch, hide: hidePartySwitch, isOpen: () => switchOpen, owner: OWNER, version: VERSION });
-  boot();
-  document.dispatchEvent(new CustomEvent('dd:app-presentation-runtime-ready', { detail: window.DD_APP_PRESENTATION_RUNTIME }));
 })();

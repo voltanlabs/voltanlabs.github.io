@@ -4,12 +4,14 @@ This document is the canonical ownership registry for the Data Discovery applica
 
 Current live phase: **6.0 Progression Loop**
 
-Current recovery revision: **6.0.7 / bootstrap 1.9.6**
+Current recovery revision: **6.0.9 / bootstrap 1.9.8**
 
-Presentation recovery target: **Phase 4.10.7 visual consolidation**. The app
-presentation runtime will coordinate shared visual effects and safe sprite
-asset loading; screen renderers remain presentation-only and gameplay owners
-remain unchanged.
+Presentation foundation: **Phase 6.0.9 / app presentation 2.1.0**. The app
+presentation runtime owns shared design tokens, safe sprite asset validation,
+reusable creature portrait markup, background references, and shared motion
+timings. `DD_BATTLE_SCREEN` owns the internal battle scene composition,
+atmosphere, fighter staging, and responsive stage layout. Screen renderers
+remain presentation-only layout owners and gameplay owners remain unchanged.
 
 ## Governance Status
 
@@ -66,7 +68,7 @@ The shell owns input locking, routing, and rendering only.
 | Battle controls | `dd-battle-controls.js` | active controls owner |
 | Download confirmation | `dd-confirm-screen.js` | active screen owner |
 | Result markup | `dd-result-screen.js` | active screen owner |
-| Battle effects, battle toast, app layout, party overlay | `dd-app-presentation-runtime.js` | active presentation owner |
+| Design tokens, creature portraits, battle effects, battle toast, app layout, party overlay | `dd-app-presentation-runtime.js` | active presentation owner |
 
 The shell builds one context snapshot and prepares screen and control markup
 before committing either DOM host. Presentation and compatibility modules may
@@ -77,10 +79,18 @@ color after every completed attack. The opaque inner circle prevents the HP
 gradient from filling behind the sprite.
 
 `dd-canon-roster.js` may assign local presentation-only `spriteAsset` references
-to canonical species. Encounter, Battle, Result, Party, and Dex render those
-assets only after same-origin `/assets/sprites/` validation and fall back to the
-species icon when no asset exists. Sprite assets never determine battle,
+to canonical species. `DD_APP_PRESENTATION_RUNTIME.portraits` exclusively owns
+same-origin `/assets/sprites/` validation, reusable image/fallback markup,
+rarity presentation classes, portrait sizing, and portrait accessibility.
+Encounter, Battle, Result, Party, and Dex consume that contract while retaining
+their internal layout ownership. Sprite assets never determine battle,
 Download, encounter, or persistence behavior.
+
+`DD_APP_PRESENTATION_RUNTIME.tokens` is the immutable JavaScript design-token
+contract. The same owner installs matching `--dd-*` CSS custom properties for
+canvas, surface, border, text, semantic colors, spacing, radii, and portrait
+sizes. Screen owners consume the variables but do not redefine the shared
+vocabulary.
 
 ## Phase 5.0 Battle Rebuild
 
