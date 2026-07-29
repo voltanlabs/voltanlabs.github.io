@@ -304,7 +304,7 @@ test('HTML entrypoint and bootstrap imports match the runtime manifest', () => {
   assert.deepEqual(imports, manifest.modules.map(module => module.script));
   assert.equal(new Set(imports).size, imports.length);
   const shell = fs.readFileSync(path.join(root, 'assets/js/databyte-discovery-product-app-v4-shell.js'), 'utf8');
-  assert.match(shell, /<span>Phase 6\.0\.4<\/span>/);
+  assert.match(shell, /<span>Phase 6\.0\.6<\/span>/);
   assert.match(shell, /continueToDownload/);
   assert.match(shell, /Battle complete\. Confirm the Download attempt\./);
 });
