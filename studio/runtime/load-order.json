@@ -6,7 +6,7 @@
   "phase": "6.0-progression-loop",
   "entrypoint": {
     "id": "dd-app-bootstrap",
-    "script": "/assets/js/dd-app-bootstrap.js?v=bootstrap-1-11-0-phase-6-3",
+    "script": "/assets/js/dd-app-bootstrap.js?v=bootstrap-1-11-0-phase-6-3-2",
     "type": "module",
     "global": "DD_APP_BOOTSTRAP",
     "bundle": "/assets/js/dd-runtime-bundle.js?v=data-line-portals-6-3-0"
