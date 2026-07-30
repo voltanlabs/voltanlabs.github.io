@@ -92,6 +92,8 @@
       '#ddApp .top{padding:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:46px;box-sizing:border-box}',
       '#ddApp .top span{color:#BAE6FD;font-size:12px}',
       '#ddApp .stage{overflow:auto;min-height:0}',
+      '#ddApp .stage:not(.battleStage){overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding-bottom:14px}',
+      '#ddApp .stage:not(.battleStage) .card{min-height:100%;}',
       '#ddApp .stage.battleStage{display:grid;overflow:hidden}',
       '#ddApp .card{padding:16px;box-sizing:border-box}',
       '#ddApp #controls{padding:10px;display:grid;gap:8px;box-sizing:border-box;min-height:0}',
@@ -1222,7 +1224,7 @@
         '<nav class="nav">'+ 
           '<button data-panel="scanner">Scan</button>'+ 
           '<button data-panel="dex">Dex</button>'+ 
-          '<button data-panel="party">Party</button>'+ 
+        '<button data-panel="party">SpriteCache</button>'+ 
           '<button data-panel="items">Items</button>'+ 
           '<button data-panel="admin">Admin</button>'+ 
         '</nav>'+ 
