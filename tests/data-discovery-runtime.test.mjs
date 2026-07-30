@@ -297,8 +297,8 @@ test('battle fighter ring renders canonical HP percentage and severity color', (
   assert.match(screen.renderHpRing({ name: 'Fixture', hp: 10, maxHp: 10, spriteAsset: '/assets/sprites/crabician.gif' }), /<img class="dd-creature-visual" src="http:\/\/localhost\/assets\/sprites\/crabician\.gif"/);
   assert.doesNotMatch(screen.renderHpRing({ name: 'Remote', hp: 10, maxHp: 10, spriteAsset: 'https://example.com/remote.gif' }), /<img/);
   const source = fs.readFileSync(path.join(root, 'assets/js/dd-battle-screen.js'), 'utf8');
-  assert.match(source, /width:calc\(100% - 8px\)/);
-  assert.match(source, /background:radial-gradient\(circle at 50% 42%,#103258/);
+  assert.match(source, /animation:ddPortalSpin 7s linear infinite/);
+  assert.match(source, /animation:ddPortalPulse 2\.4s ease-in-out infinite/);
   assert.match(source, /width:100%;height:100%;min-height:0/);
   assert.match(source, /backgrounds\(\)\.resolve\(wild\)/);
   assert.match(source, /data-battle-background="\$\{esc\(background\.id\)\}"/);
@@ -306,6 +306,7 @@ test('battle fighter ring renders canonical HP percentage and severity color', (
   assert.match(source, /@keyframes ddLeadLunge/);
   assert.match(source, /@keyframes ddWildLunge/);
   assert.match(source, /@keyframes ddSpriteIdle/);
+  assert.match(source, /@keyframes ddPortalSpin/);
   assert.match(source, /@keyframes ddSpriteFaint/);
   assert.match(screen.renderFighter({ name: 'Fainted', hp: 0, maxHp: 20 }, 'wild'), /fighter wild dd-fainted/);
   const shell = fs.readFileSync(path.join(root, 'assets/js/databyte-discovery-product-app-v4-shell.js'), 'utf8');
