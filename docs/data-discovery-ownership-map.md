@@ -164,3 +164,6 @@ the active bootstrap and must not be restored as runtime owners.
 Temporary prefix bundles, the diagnostic harness, and the retired duplicate
 battle-presentation observer are retained under
 `archive/databyte-discovery/recovery-diagnostics/`.
+### Portal and fighter staging
+
+`dd-battle-screen.js` owns the two-lane arena composition: fighters stand outside their portals, the player portal is staged on the left, and the wild portal is staged on the right. It mirrors wild creature visuals so opponents face the player. Portal grids, rim flow, emergence, and battle motion are presentation effects only; HP and battle outcomes remain runtime-owned.
