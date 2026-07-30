@@ -9,7 +9,7 @@
     "script": "/assets/js/dd-app-bootstrap.js?v=bootstrap-1-11-0",
     "type": "module",
     "global": "DD_APP_BOOTSTRAP",
-    "bundle": "/assets/js/dd-runtime-bundle.js?v=sprite-sheet-pilot-6-2-0"
+    "bundle": "/assets/js/dd-runtime-bundle.js?v=data-line-portals-6-3-0"
   },
   "phases": [
     {
@@ -248,7 +248,7 @@
     {
       "id": "dd-app-presentation-runtime",
       "label": "App Presentation Runtime",
-      "script": "/assets/js/dd-app-presentation-runtime.js?v=sprite-sheet-pilot-2-4-0",
+      "script": "/assets/js/dd-app-presentation-runtime.js?v=data-line-portals-6-3-0",
       "phase": "product:presentation-ready",
       "requires": [
         "dd-player-runtime"
@@ -298,7 +298,7 @@
     {
       "id": "dd-battle-screen",
       "label": "Battle Screen Owner",
-      "script": "/assets/js/dd-battle-screen.js?v=fighter-motion-0-9-0",
+      "script": "/assets/js/dd-battle-screen.js?v=data-line-portals-6-3-0",
       "phase": "product:screen-owners-ready",
       "requires": [
         "dd-battle-core-runtime",

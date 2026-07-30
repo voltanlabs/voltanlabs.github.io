@@ -265,7 +265,7 @@
   window.DD_APP_PRESENTATION_RUNTIME = Object.freeze({
     version: VERSION,
     owner: OWNER,
-    phase: '6.2.0-sprite-sheet-pilot',
+    phase: '6.3.0-data-line-portals',
     tokens: TOKENS,
     portraits,
     backgrounds,

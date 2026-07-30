@@ -297,7 +297,7 @@ test('battle fighter ring renders canonical HP percentage and severity color', (
   assert.match(screen.renderHpRing({ name: 'Fixture', hp: 10, maxHp: 10, spriteAsset: '/assets/sprites/crabician.gif' }), /<img class="dd-creature-visual" src="http:\/\/localhost\/assets\/sprites\/crabician\.gif"/);
   assert.doesNotMatch(screen.renderHpRing({ name: 'Remote', hp: 10, maxHp: 10, spriteAsset: 'https://example.com/remote.gif' }), /<img/);
   const source = fs.readFileSync(path.join(root, 'assets/js/dd-battle-screen.js'), 'utf8');
-  assert.match(source, /animation:ddPortalSpin 7s linear infinite/);
+  assert.match(source, /animation:ddPortalSpin 9s linear infinite/);
   assert.match(source, /animation:ddPortalPulse 2\.4s ease-in-out infinite/);
   assert.match(source, /width:100%;height:100%;min-height:0/);
   assert.match(source, /backgrounds\(\)\.resolve\(wild\)/);
@@ -417,7 +417,7 @@ test('HTML entrypoint and bootstrap imports match the runtime manifest', () => {
   assert.deepEqual(imports, manifest.modules.map(module => module.script));
   assert.equal(new Set(imports).size, imports.length);
   const shell = fs.readFileSync(path.join(root, 'assets/js/databyte-discovery-product-app-v4-shell.js'), 'utf8');
-  assert.match(shell, /<span>Phase 6\.2\.0<\/span>/);
+  assert.match(shell, /<span>Phase 6\.3\.0<\/span>/);
   assert.match(shell, /continueToDownload/);
   assert.match(shell, /Battle complete\. Confirm the Download attempt\./);
 });

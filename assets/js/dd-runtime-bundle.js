@@ -3201,7 +3201,7 @@
   window.DD_APP_PRESENTATION_RUNTIME = Object.freeze({
     version: VERSION,
     owner: OWNER,
-    phase: '6.2.0-sprite-sheet-pilot',
+    phase: '6.3.0-data-line-portals',
     tokens: TOKENS,
     portraits,
     backgrounds,
@@ -3445,10 +3445,13 @@
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter.dd-hit .ring{animation:ddSpriteHit var(--dd-motion-fast) ease-out}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter.dd-fainted{animation:ddSpriteFaint var(--dd-motion-slow) ease-in forwards;pointer-events:none}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .vs{align-self:end;text-align:center;color:var(--dd-accent);font-weight:1000;text-shadow:0 2px 8px rgba(2,6,23,.95);padding-bottom:84px}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .ring{width:min(25vw,116px);height:min(25vw,116px);border-radius:999px;margin:0 auto;display:grid;place-items:center;background:conic-gradient(from -90deg,var(--hp-color) 0 calc(var(--hp-pct)*1%),rgba(71,85,105,.48) calc(var(--hp-pct)*1%) 100%);border:0;position:relative;transform:none!important;box-sizing:border-box;transition:background .18s ease}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar{position:relative;width:calc(100% - 8px);height:calc(100% - 8px);border-radius:999px;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,#103258 0%,#0a2039 52%,#07111f 100%);font-size:clamp(28px,8vw,40px);line-height:1}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar img{width:88%;height:88%;object-fit:contain;border-radius:999px}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar b{font-size:10px;color:#BAE6FD;margin-top:-12px}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .ring{width:min(24vw,132px);height:min(38vw,206px);border-radius:50% / 42%;margin:0 auto;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 52%,rgba(14,165,233,.22),rgba(7,17,31,.92) 62%,rgba(2,6,23,.98) 100%);border:2px solid color-mix(in srgb,var(--hp-color) 72%,#38BDF8);position:relative;transform:none!important;box-sizing:border-box;transition:filter .18s ease;box-shadow:0 0 24px color-mix(in srgb,var(--hp-color) 24%,transparent),inset 0 0 28px rgba(56,189,248,.24);z-index:0}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .ring::before{content:"";position:absolute;inset:-9px;border:1px solid rgba(125,211,252,.76);border-radius:50% / 42%;background:repeating-linear-gradient(90deg,transparent 0 10px,rgba(125,211,252,.22) 11px 12px);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;padding:3px;animation:ddPortalSpin 9s linear infinite;filter:drop-shadow(0 0 8px rgba(56,189,248,.7));z-index:-1}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .ring::after{content:"";position:absolute;inset:13%;border:1px solid rgba(125,211,252,.34);border-radius:50% / 42%;box-shadow:inset 0 0 22px rgba(56,189,248,.22),0 0 18px rgba(56,189,248,.16);animation:ddPortalPulse 2.4s ease-in-out infinite;z-index:0}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar{position:relative;width:100%;height:100%;border-radius:50% / 42%;display:grid;place-items:center;background:transparent;font-size:clamp(28px,8vw,40px);line-height:1;z-index:1;overflow:visible}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar img,#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar .dd-sprite-sheet{width:125%;height:125%;object-fit:contain;border-radius:999px;filter:drop-shadow(0 10px 10px rgba(2,6,23,.72))}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar .dd-creature-fallback{font-size:clamp(48px,14vw,78px);filter:drop-shadow(0 8px 8px rgba(2,6,23,.72))}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar b{position:absolute;bottom:10px;left:50%;translate:-50% 0;font-size:10px;color:#BAE6FD;text-shadow:0 2px 6px #020617;white-space:nowrap}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleMeters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .signalBox,#ddApp .battle-card[data-owner="dd-battle-screen"] .downloadGauge{min-width:0;margin:0;padding:7px 9px;border:1px solid rgba(96,165,250,.25);border-radius:14px;background:rgba(15,23,42,.55)}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .signalBox>div,#ddApp .battle-card[data-owner="dd-battle-screen"] .downloadGauge>div{display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0;font-size:11px;line-height:1.15}',
@@ -3462,11 +3465,13 @@
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleLog ul{list-style:none;padding:0;margin:0;color:#BAE6FD;font-size:12px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleLog li{display:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleLog li:last-child{display:block}',
-      '@media(max-width:430px){#ddApp .battle-card[data-owner="dd-battle-screen"] .battleGrid{grid-template-columns:minmax(0,1fr) 26px minmax(0,1fr);padding:44px 4px 12px}#ddApp .battle-card[data-owner="dd-battle-screen"] .vs{padding-bottom:76px}#ddApp .battle-card[data-owner="dd-battle-screen"] .ring{width:min(22vw,106px);height:min(22vw,106px)}#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter h2{font-size:clamp(19px,5vw,25px)}}',
+      '@media(max-width:430px){#ddApp .battle-card[data-owner="dd-battle-screen"] .battleGrid{grid-template-columns:minmax(0,1fr) 26px minmax(0,1fr);padding:44px 4px 12px}#ddApp .battle-card[data-owner="dd-battle-screen"] .vs{padding-bottom:76px}#ddApp .battle-card[data-owner="dd-battle-screen"] .ring{width:min(28vw,116px);height:min(48vw,190px)}#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter h2{font-size:clamp(19px,5vw,25px)}}',
       '@media(max-width:350px){#ddApp .battle-card[data-owner="dd-battle-screen"] .battleMeters{grid-template-columns:minmax(0,1fr)}#ddApp .battle-card[data-owner="dd-battle-screen"] .signalBox,#ddApp .battle-card[data-owner="dd-battle-screen"] .downloadGauge{padding:6px 8px}}',
       '@media(max-height:720px){#ddApp .battle-card[data-owner="dd-battle-screen"]{gap:6px}#ddApp .battle-card[data-owner="dd-battle-screen"] .battleGrid{padding-top:42px;padding-bottom:10px}#ddApp .battle-card[data-owner="dd-battle-screen"] .battleMeters{gap:6px}#ddApp .battle-card[data-owner="dd-battle-screen"] .signalBox,#ddApp .battle-card[data-owner="dd-battle-screen"] .downloadGauge{padding:6px 8px}}',
       '@media(prefers-reduced-motion:reduce){#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter,#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar{animation:none!important}}',
       '@keyframes ddSpriteIdle{0%,100%{translate:0 0}50%{translate:0 -4px}}',
+      '@keyframes ddPortalSpin{to{rotate:360deg}}',
+      '@keyframes ddPortalPulse{0%,100%{opacity:.55;scale:.96}50%{opacity:1;scale:1.04}}',
       '@keyframes ddLeadLunge{0%,100%{transform:translateX(5%)}50%{transform:translateX(24%) scale(1.06);filter:brightness(1.3)}}',
       '@keyframes ddWildLunge{0%,100%{transform:translateX(-5%) scale(.94)}50%{transform:translateX(-24%) scale(1.01);filter:brightness(1.3)}}',
       '@keyframes ddSpriteHit{35%{filter:brightness(1.8) saturate(1.5);transform:translateX(-4px) scale(.94)}70%{filter:brightness(.75);transform:translateX(4px)}}',
@@ -3984,7 +3989,7 @@
   if(!location.pathname.includes('databyte-discovery'))return;
 
   const VERSION='4.11.0';
-  const PRODUCT_PHASE='6.2.0';
+  const PRODUCT_PHASE='6.3.0';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={
@@ -5171,7 +5176,7 @@
       '<div id="ddApp">'+
         '<header class="top">'+
           '<b>Data Discovery</b>'+
-          '<span>Phase 6.2.0</span>'+
+          '<span>Phase 6.3.0</span>'+
         '</header>'+
         '<main id="stage" class="stage"></main>'+
         '<section id="controls" class="controls"></section>'+
