@@ -448,6 +448,12 @@
     state.confirm=null;
     mark(state.signal,'Seen');
     pushLog('Signal locked from '+(state.signal.encounterPoolLabel||'scanner pool')+'.');
+    if($('ddApp')){
+      $('ddApp').classList.add('dd-discovery-running');
+      setTimeout(()=>{
+        if($('ddApp'))$('ddApp').classList.remove('dd-discovery-running');
+      },2400);
+    }
     fx('discover');
     render();
   }
