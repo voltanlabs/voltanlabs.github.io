@@ -4,9 +4,9 @@ This document is the canonical ownership registry for the Data Discovery applica
 
 Current live phase: **6.0 Progression Loop**
 
-Current recovery revision: **6.1.0 / bootstrap 1.10.0**
+Current recovery revision: **6.2.0 / bootstrap 1.11.0**
 
-Presentation foundation: **Phase 6.1.0 / app presentation 2.2.0**. The app
+Presentation foundation: **Phase 6.2.0 / app presentation 2.4.0**. The app
 presentation runtime owns shared design tokens, safe sprite asset validation,
 reusable creature portrait markup, background references, and shared motion
 timings. It also resolves a presentation-only background descriptor from
@@ -16,6 +16,14 @@ fighter staging, facing, idle/hit/faint motion, and responsive stage layout.
 `DD_ENCOUNTER_SCREEN` owns the signal-lock, silhouette, and creature-reveal
 sequence after Encounter Runtime has selected the signal. Screen renderers
 remain presentation-only layout owners and gameplay owners remain unchanged.
+
+The sprite-sheet pilot is presentation-only. `studio/tools/build-sprite-sheets.py`
+reproducibly converts the authored Leovolt and Scorpyone GIFs into 256px-cell
+PNG sheets and `assets/spritesheets/manifest.json`. Canon roster records expose
+the sheet descriptor while retaining the original `spriteAsset` fallback.
+FiscalFish uses a generated transparent PNG presentation asset while its
+canonical Torrent/Financial identity remains owned by the roster and Studio
+data bridge.
 
 ## Governance Status
 

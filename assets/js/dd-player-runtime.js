@@ -103,13 +103,17 @@
       const canonicalMoveIds = canonicalMoves.map(move => move && (move.id || move.name)).filter(Boolean).join('|');
       const canonicalAsset = canonical.spriteAsset || null;
       const savedAsset = saved.spriteAsset || null;
+      const canonicalSheet = canonical.spriteSheet || null;
+      const savedSheet = saved.spriteSheet || null;
       const movesChanged = !!canonicalMoveIds && canonicalMoveIds !== savedMoveIds;
       const assetChanged = canonicalAsset !== savedAsset;
-      if (!movesChanged && !assetChanged) return saved;
+      const sheetChanged = JSON.stringify(canonicalSheet) !== JSON.stringify(savedSheet);
+      if (!movesChanged && !assetChanged && !sheetChanged) return saved;
       updated += 1;
       return Object.assign({}, canonical, saved, {
         moves: movesChanged ? canonicalMoves : saved.moves,
-        spriteAsset: canonicalAsset
+        spriteAsset: canonicalAsset,
+        spriteSheet: canonicalSheet
       });
     });
     if (updated) collectionWrite(next);

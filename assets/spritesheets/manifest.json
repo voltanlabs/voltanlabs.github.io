@@ -1,0 +1,201 @@
+{
+  "schemaVersion": "0.1.0",
+  "generatedBy": "build-sprite-sheets.py",
+  "sprites": [
+    {
+      "id": "leovolt",
+      "source": "/assets/sprites/leovolt.gif",
+      "sheet": "/assets/spritesheets/leovolt.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "columns": 3,
+      "rows": 3,
+      "frameCount": 9,
+      "durations": [
+        400,
+        200,
+        400,
+        200,
+        400,
+        200,
+        400,
+        200,
+        600
+      ],
+      "states": {
+        "idle": [
+          0,
+          2
+        ],
+        "attack": [
+          3,
+          5
+        ],
+        "hit": [
+          6,
+          7
+        ],
+        "faint": [
+          8,
+          8
+        ]
+      }
+    },
+    {
+      "id": "scorpyone",
+      "source": "/assets/sprites/scorpyone.gif",
+      "sheet": "/assets/spritesheets/scorpyone.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "columns": 3,
+      "rows": 3,
+      "frameCount": 9,
+      "durations": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "states": {
+        "idle": [
+          0,
+          2
+        ],
+        "attack": [
+          3,
+          5
+        ],
+        "hit": [
+          6,
+          7
+        ],
+        "faint": [
+          8,
+          8
+        ]
+      }
+    },
+    {
+      "id": "fiscalfish",
+      "source": "/assets/sprites/fiscalfish.png",
+      "sheet": "/assets/spritesheets/fiscalfish.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "columns": 3,
+      "rows": 3,
+      "frameCount": 9,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        500
+      ],
+      "states": {
+        "idle": [
+          0,
+          2
+        ],
+        "attack": [
+          3,
+          5
+        ],
+        "hit": [
+          6,
+          7
+        ],
+        "faint": [
+          8,
+          8
+        ]
+      }
+    },
+    {
+      "id": "loanshark",
+      "source": "/assets/sprites/loanshark.png",
+      "sheet": "/assets/spritesheets/loanshark.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "columns": 3,
+      "rows": 3,
+      "frameCount": 9,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        500
+      ],
+      "states": {
+        "idle": [
+          0,
+          2
+        ],
+        "attack": [
+          3,
+          5
+        ],
+        "hit": [
+          6,
+          7
+        ],
+        "faint": [
+          8,
+          8
+        ]
+      }
+    },
+    {
+      "id": "afkwhale",
+      "source": "/assets/sprites/afkwhale.png",
+      "sheet": "/assets/spritesheets/afkwhale.png",
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "columns": 3,
+      "rows": 3,
+      "frameCount": 9,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        500
+      ],
+      "states": {
+        "idle": [
+          0,
+          2
+        ],
+        "attack": [
+          3,
+          5
+        ],
+        "hit": [
+          6,
+          7
+        ],
+        "faint": [
+          8,
+          8
+        ]
+      }
+    }
+  ]
+}

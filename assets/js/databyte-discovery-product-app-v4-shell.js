@@ -1,5 +1,5 @@
 // assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 6.1.0 application shell for Data Discovery.
+// Phase 6.2.0 application shell for Data Discovery.
 // The shell owns boot, route state, shared context construction, runtime coordination,
 // screen registry dispatch, and routing between dedicated runtime owners.
 // Battle Core exclusively owns battle transactions, state application, faint handling,
@@ -11,7 +11,7 @@
   if(!location.pathname.includes('databyte-discovery'))return;
 
   const VERSION='4.11.0';
-  const PRODUCT_PHASE='6.1.0';
+  const PRODUCT_PHASE='6.2.0';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={
@@ -1198,7 +1198,7 @@
       '<div id="ddApp">'+
         '<header class="top">'+
           '<b>Data Discovery</b>'+ 
-          '<span>Phase 6.1.0</span>'+
+          '<span>Phase 6.2.0</span>'+
         '</header>'+ 
         '<main id="stage" class="stage"></main>'+ 
         '<section id="controls" class="controls"></section>'+ 

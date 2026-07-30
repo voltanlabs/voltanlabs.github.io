@@ -5,7 +5,7 @@
   if (!location.pathname.includes('databyte-discovery')) return;
   if (window.DD_APP_PRESENTATION_RUNTIME) return;
 
-  const VERSION = '2.2.0';
+  const VERSION = '2.4.0';
   const OWNER = 'dd-app-presentation-runtime';
   const STYLE_ID = 'ddAppPresentationStyle';
   let switchOpen = false;
@@ -25,14 +25,19 @@
     radius: Object.freeze({ small: '12px', medium: '16px', large: '22px', round: '999px' }),
     space: Object.freeze({ xs: '4px', sm: '8px', md: '12px', lg: '16px', xl: '24px' }),
     portrait: Object.freeze({ small: '64px', medium: '116px', large: '168px' }),
-    background: Object.freeze({ trainingRoom: '/assets/backgrounds/volt-training-room.png' }),
+    background: Object.freeze({
+      trainingRoom: '/assets/backgrounds/volt-training-room.png',
+      archiveGrid: '/assets/backgrounds/volt-archive-grid.png',
+      volatileRift: '/assets/backgrounds/volt-volatile-rift.png',
+      deepSignalBay: '/assets/backgrounds/volt-deep-signal-bay.png'
+    }),
     motion: Object.freeze({ fast: '180ms', standard: '280ms', slow: '560ms' })
   });
   const BACKGROUND_REGISTRY = Object.freeze({
-    trainingRoom: Object.freeze({
-      id: 'training-room',
-      asset: TOKENS.background.trainingRoom
-    })
+    trainingRoom: Object.freeze({ id: 'training-room', asset: TOKENS.background.trainingRoom }),
+    archiveGrid: Object.freeze({ id: 'archive-grid', asset: TOKENS.background.archiveGrid }),
+    volatileRift: Object.freeze({ id: 'volatile-rift', asset: TOKENS.background.volatileRift }),
+    deepSignalBay: Object.freeze({ id: 'deep-signal-bay', asset: TOKENS.background.deepSignalBay })
   });
 
   function safeAsset(value) {
@@ -42,6 +47,18 @@
       const origin = location && location.origin || 'http://localhost';
       const url = new URL(raw, origin);
       return url.origin === origin && url.pathname.startsWith('/assets/sprites/') ? url.href : '';
+    } catch {
+      return '';
+    }
+  }
+
+  function safeSheet(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    try {
+      const origin = location && location.origin || 'http://localhost';
+      const url = new URL(raw, origin);
+      return url.origin === origin && url.pathname.startsWith('/assets/spritesheets/') ? url.href : '';
     } catch {
       return '';
     }
@@ -60,7 +77,14 @@
     const value = sprite || {};
     const opts = options || {};
     const asset = safeAsset(value.spriteAsset || value.asset);
+    const sheet = value.spriteSheet || null;
+    const sheetAsset = sheet && safeSheet(sheet.sheet);
     const className = ['dd-creature-visual', opts.className || ''].filter(Boolean).join(' ');
+    if (sheetAsset) {
+      const columns = Math.max(1, Number(sheet.columns || 1));
+      const rows = Math.max(1, Number(sheet.rows || 1));
+      return '<span class="' + esc(className + ' dd-sprite-sheet') + '" style="--dd-sheet-url:url(\'' + esc(sheetAsset) + '\');--dd-sheet-cols:' + columns + ';--dd-sheet-rows:' + rows + '" role="img" aria-label="' + esc(opts.decorative ? '' : value.name || 'DataByte Sprite') + '"></span>';
+    }
     return asset
       ? '<img class="' + esc(className) + '" src="' + esc(asset) + '" alt="' + esc(opts.decorative ? '' : value.name || 'DataByte Sprite') + '"' + (opts.decorative ? ' aria-hidden="true"' : '') + '>'
       : '<span class="' + esc(className + ' dd-creature-fallback') + '" aria-hidden="true">' + esc(value.icon || '◇') + '</span>';
@@ -76,22 +100,23 @@
     return '<div class="' + esc(className) + '"' + label + '>' + renderVisual(value, { decorative: opts.label !== false }) + '</div>';
   }
 
-  const portraits = Object.freeze({ safeAsset, rarityClass, renderVisual, renderPortrait });
+  const portraits = Object.freeze({ safeAsset, safeSheet, rarityClass, renderVisual, renderPortrait });
 
   function resolveBackground(encounter) {
     const value = encounter || {};
     const pool = String(value.encounterPool || value.encounterPoolLabel || '').toLowerCase();
-    const theme = pool.includes('archive')
-      ? 'archive'
+    const key = pool.includes('archive')
+      ? 'archiveGrid'
       : pool.includes('volatile') || pool.includes('corrupt')
-        ? 'volatile'
+        ? 'volatileRift'
         : pool.includes('fallback')
-          ? 'fallback'
-          : 'standard';
+          ? 'deepSignalBay'
+          : 'trainingRoom';
+    const selected = BACKGROUND_REGISTRY[key];
     return Object.freeze({
-      id: BACKGROUND_REGISTRY.trainingRoom.id,
-      asset: BACKGROUND_REGISTRY.trainingRoom.asset,
-      theme
+      id: selected.id,
+      asset: selected.asset,
+      theme: key === 'archiveGrid' ? 'archive' : key === 'volatileRift' ? 'volatile' : key === 'deepSignalBay' ? 'fallback' : 'standard'
     });
   }
 
@@ -152,6 +177,7 @@
       '.dd-creature-portrait.dd-rarity-legendary{--dd-rarity-color:var(--dd-accent)}',
       '.dd-creature-portrait.dd-rarity-starter{--dd-rarity-color:var(--dd-success)}',
       '.dd-creature-visual{width:92%;height:92%;object-fit:contain;border-radius:var(--dd-radius-round)}',
+      '.dd-sprite-sheet{display:block;width:92%;height:92%;background-image:var(--dd-sheet-url);background-size:calc(var(--dd-sheet-cols)*100%) calc(var(--dd-sheet-rows)*100%);background-position:0 0;background-repeat:no-repeat}',
       '.dd-creature-fallback{display:grid;place-items:center;font-size:clamp(30px,10vw,72px);line-height:1}',
       '#ddApp .stage{min-height:0;overflow:hidden;overscroll-behavior:contain}',
       '#ddApp .stage[data-screen="scanner"],#ddApp .stage[data-screen="encounter"]{position:relative;background:radial-gradient(circle at 50% 36%,rgba(56,189,248,.12),transparent 34%),linear-gradient(rgba(56,189,248,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.08) 1px,transparent 1px);background-size:100% 100%,22px 22px,22px 22px}',
@@ -239,7 +265,7 @@
   window.DD_APP_PRESENTATION_RUNTIME = Object.freeze({
     version: VERSION,
     owner: OWNER,
-    phase: '6.1.0-visual-sequences',
+    phase: '6.2.0-sprite-sheet-pilot',
     tokens: TOKENS,
     portraits,
     backgrounds,

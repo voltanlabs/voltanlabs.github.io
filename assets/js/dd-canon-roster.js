@@ -15,7 +15,17 @@
   const spriteAssets={
     Leovolt:'/assets/sprites/leovolt.gif',
     Crabician:'/assets/sprites/crabician.gif',
-    Scorpyone:'/assets/sprites/scorpyone.gif'
+    Scorpyone:'/assets/sprites/scorpyone.gif',
+    FiscalFish:'/assets/sprites/fiscalfish.png',
+    LoanShark:'/assets/sprites/loanshark.png',
+    AFKWHALE:'/assets/sprites/afkwhale.png'
+  };
+  const spriteSheets={
+    Leovolt:{sheet:'/assets/spritesheets/leovolt.png',frameWidth:256,frameHeight:256,columns:3,rows:3},
+    Scorpyone:{sheet:'/assets/spritesheets/scorpyone.png',frameWidth:256,frameHeight:256,columns:3,rows:3}
+    ,FiscalFish:{sheet:'/assets/spritesheets/fiscalfish.png',frameWidth:256,frameHeight:256,columns:3,rows:3}
+    ,LoanShark:{sheet:'/assets/spritesheets/loanshark.png',frameWidth:256,frameHeight:256,columns:3,rows:3}
+    ,AFKWHALE:{sheet:'/assets/spritesheets/afkwhale.png',frameWidth:256,frameHeight:256,columns:3,rows:3}
   };
 
   function rarity(version,alignment,name){
@@ -147,6 +157,7 @@
       type:configs.length?configs.join(' / '):'Unassigned',stage:version,version,familyId,zodiac,
       rarity:rare,icon:icon(name,configs),color:colors[primary]||colors[alignment]||colors.Unassigned,
       spriteAsset:spriteAssets[name]||null,
+      spriteSheet:spriteSheets[name]||null,
       chance:chance(rare),stability:stability(rare),lore
     };
   });

@@ -236,17 +236,26 @@ test('app presentation runtime owns shared design tokens, backgrounds, portraits
   const presentation = runtime.window.DD_APP_PRESENTATION_RUNTIME;
 
   assert.equal(presentation.owner, 'dd-app-presentation-runtime');
-  assert.equal(presentation.version, '2.2.0');
+  assert.equal(presentation.version, '2.4.0');
   assert.equal(presentation.tokens.color.accent, '#FFD700');
   assert.equal(presentation.tokens.radius.large, '22px');
   assert.equal(presentation.tokens.background.trainingRoom, '/assets/backgrounds/volt-training-room.png');
+  assert.equal(presentation.tokens.background.archiveGrid, '/assets/backgrounds/volt-archive-grid.png');
+  assert.equal(presentation.tokens.background.volatileRift, '/assets/backgrounds/volt-volatile-rift.png');
+  assert.equal(presentation.tokens.background.deepSignalBay, '/assets/backgrounds/volt-deep-signal-bay.png');
   assert.equal(presentation.tokens.motion.fast, '180ms');
   const background = presentation.backgrounds.resolve({ encounterPool: 'fallback-signal' });
-  assert.equal(background.id, 'training-room');
-  assert.equal(background.asset, '/assets/backgrounds/volt-training-room.png');
+  assert.equal(background.id, 'deep-signal-bay');
+  assert.equal(background.asset, '/assets/backgrounds/volt-deep-signal-bay.png');
   assert.equal(background.theme, 'fallback');
+  assert.equal(presentation.backgrounds.resolve({ encounterPoolLabel: 'Archive Grid' }).id, 'archive-grid');
+  assert.equal(presentation.backgrounds.resolve({ encounterPool: 'volatile-rift' }).id, 'volatile-rift');
   assert.equal(typeof presentation.effects.playTurn, 'function');
   assert.equal(typeof presentation.effects.afterRender, 'function');
+  assert.match(
+    presentation.portraits.renderVisual({ name: 'Leovolt', spriteSheet: { sheet: '/assets/spritesheets/leovolt.png', columns: 3, rows: 3 } }),
+    /dd-sprite-sheet/,
+  );
   assert.match(
     presentation.portraits.renderPortrait({
       name: 'Leovolt', rarity: 'Legendary',
@@ -313,7 +322,11 @@ test('Arena sprite assets map to canonical Discovery species and presentation ow
   assert.equal(mapped.get('Leovolt'), '/assets/sprites/leovolt.gif');
   assert.equal(mapped.get('Crabician'), '/assets/sprites/crabician.gif');
   assert.equal(mapped.get('Scorpyone'), '/assets/sprites/scorpyone.gif');
+  assert.equal(mapped.get('FiscalFish'), '/assets/sprites/fiscalfish.png');
   assert.equal(mapped.get('Crabizard'), null);
+  const sheetMap = new Map(runtime.window.DD_CANON_ROSTER.map(sprite => [sprite.name, sprite.spriteSheet && sprite.spriteSheet.sheet]));
+  assert.equal(sheetMap.get('Leovolt'), '/assets/spritesheets/leovolt.png');
+  assert.equal(sheetMap.get('Scorpyone'), '/assets/spritesheets/scorpyone.png');
 
   load(runtime, 'assets/js/dd-app-presentation-runtime.js');
   load(runtime, 'assets/js/dd-encounter-screen.js');
@@ -403,7 +416,7 @@ test('HTML entrypoint and bootstrap imports match the runtime manifest', () => {
   assert.deepEqual(imports, manifest.modules.map(module => module.script));
   assert.equal(new Set(imports).size, imports.length);
   const shell = fs.readFileSync(path.join(root, 'assets/js/databyte-discovery-product-app-v4-shell.js'), 'utf8');
-  assert.match(shell, /<span>Phase 6\.1\.0<\/span>/);
+  assert.match(shell, /<span>Phase 6\.2\.0<\/span>/);
   assert.match(shell, /continueToDownload/);
   assert.match(shell, /Battle complete\. Confirm the Download attempt\./);
 });
