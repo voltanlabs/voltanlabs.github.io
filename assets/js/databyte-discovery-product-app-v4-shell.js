@@ -1,5 +1,5 @@
 // assets/js/databyte-discovery-product-app-v4-shell.js
-// Phase 6.0.9 application shell for Data Discovery.
+// Phase 6.1.0 application shell for Data Discovery.
 // The shell owns boot, route state, shared context construction, runtime coordination,
 // screen registry dispatch, and routing between dedicated runtime owners.
 // Battle Core exclusively owns battle transactions, state application, faint handling,
@@ -10,8 +10,8 @@
 
   if(!location.pathname.includes('databyte-discovery'))return;
 
-  const VERSION='4.10.9';
-  const PRODUCT_PHASE='6.0.9';
+  const VERSION='4.11.0';
+  const PRODUCT_PHASE='6.1.0';
   const OWNER='databyte-discovery-product-app-v4-shell';
   const STYLE_ID='ddV4ShellStyle';
   const K={
@@ -507,21 +507,12 @@
     render();
   }
   function animateTurnResult(result){
-    if(!result||!Array.isArray(result.actions))return;
-    result.actions.forEach((action,index)=>{
-      const actorSelector=action.mode==='player'?'.fighter.lead':'.fighter.wild';
-      const targetSelector=action.mode==='player'?'.fighter.wild':'.fighter.lead';
-      const actor=document.querySelector(actorSelector);
-      const target=document.querySelector(targetSelector);
-      setTimeout(()=>{
-        if(actor)actor.classList.add('dd-attacking');
-        if(target&&action.hit)target.classList.add('dd-hit');
-        setTimeout(()=>{
-          if(actor)actor.classList.remove('dd-attacking');
-          if(target)target.classList.remove('dd-hit');
-        },320);
-      },index*110);
-    });
+    const presentation=window.DD_APP_PRESENTATION_RUNTIME;
+    if(
+      presentation&&
+      presentation.effects&&
+      typeof presentation.effects.playTurn==='function'
+    )presentation.effects.playTurn(result);
   }
 
   function fight(moveId){
@@ -1207,7 +1198,7 @@
       '<div id="ddApp">'+
         '<header class="top">'+
           '<b>Data Discovery</b>'+ 
-          '<span>Phase 6.0.9</span>'+
+          '<span>Phase 6.1.0</span>'+
         '</header>'+ 
         '<main id="stage" class="stage"></main>'+ 
         '<section id="controls" class="controls"></section>'+ 
@@ -1232,6 +1223,12 @@
     applyControlHost();
     bind();
     paintFx();
+    const presentation=window.DD_APP_PRESENTATION_RUNTIME;
+    if(
+      presentation&&
+      presentation.effects&&
+      typeof presentation.effects.afterRender==='function'
+    )presentation.effects.afterRender(state.fx);
   }
 
   function patchBattleHud(){

@@ -3,8 +3,8 @@
 Status: active  
 Current phase: Data Discovery Phase 6.0 Progression Loop
 
-Latest runtime recovery: Data Discovery Phase 6.0.9 loads one generated runtime
-bundle from bootstrap 1.9.8 and preserves 19 ordered modules in the runtime
+Latest runtime recovery: Data Discovery Phase 6.1.0 loads one generated runtime
+bundle from bootstrap 1.10.0 and preserves 19 ordered modules in the runtime
 manifest. `dd-battle-core-runtime.js` is the active battle calculation,
 application, turn-order, retaliation, and battle-context owner. It uses one
 synchronous event-free transaction per input and returns one result to the
@@ -83,6 +83,14 @@ and motion timing tokens; `DD_BATTLE_SCREEN` alone composes that background,
 atmosphere, fighter placement, responsive staging, and reduced-motion behavior.
 The existing canonical HP edge rings and shell-owned attack/hit class signals
 remain intact.
+
+Phase 6.1.0 completes the first visual-sequence pass without adding a runtime
+module. Presentation resolves battle backgrounds from prepared encounter
+metadata and coordinates temporary turn/reveal effects. The battle screen owns
+fighter sizing, facing, idle, attack, hit, faint, terrain composition, and
+responsive placement. The encounter screen owns the post-selection signal-lock,
+silhouette, and creature-reveal layout. Encounter selection, battle decisions,
+HP, signal, persistence, and routing remain with their existing domain owners.
 
 Phase 4.10.4 replaces the stale shell label with the current Phase 6.0.4 title
 and routes Battle Victory's Continue action directly to Download confirmation.

@@ -230,17 +230,23 @@ test('screen registry is the single screen and control dispatch contract', () =>
   assert.match(registry.renderControls('encounter', {}), /Start Battle/);
 });
 
-test('app presentation runtime owns shared design tokens and creature portraits', () => {
+test('app presentation runtime owns shared design tokens, backgrounds, portraits, and effects', () => {
   const runtime = browserContext();
   load(runtime, 'assets/js/dd-app-presentation-runtime.js');
   const presentation = runtime.window.DD_APP_PRESENTATION_RUNTIME;
 
   assert.equal(presentation.owner, 'dd-app-presentation-runtime');
-  assert.equal(presentation.version, '2.1.0');
+  assert.equal(presentation.version, '2.2.0');
   assert.equal(presentation.tokens.color.accent, '#FFD700');
   assert.equal(presentation.tokens.radius.large, '22px');
   assert.equal(presentation.tokens.background.trainingRoom, '/assets/backgrounds/volt-training-room.png');
   assert.equal(presentation.tokens.motion.fast, '180ms');
+  const background = presentation.backgrounds.resolve({ encounterPool: 'fallback-signal' });
+  assert.equal(background.id, 'training-room');
+  assert.equal(background.asset, '/assets/backgrounds/volt-training-room.png');
+  assert.equal(background.theme, 'fallback');
+  assert.equal(typeof presentation.effects.playTurn, 'function');
+  assert.equal(typeof presentation.effects.afterRender, 'function');
   assert.match(
     presentation.portraits.renderPortrait({
       name: 'Leovolt', rarity: 'Legendary',
@@ -285,12 +291,18 @@ test('battle fighter ring renders canonical HP percentage and severity color', (
   assert.match(source, /width:calc\(100% - 8px\)/);
   assert.match(source, /background:radial-gradient\(circle at 50% 42%,#103258/);
   assert.match(source, /width:100%;height:100%;min-height:0/);
-  assert.match(source, /class="battleScene" data-battle-background="training-room"/);
+  assert.match(source, /backgrounds\(\)\.resolve\(wild\)/);
+  assert.match(source, /data-battle-background="\$\{esc\(background\.id\)\}"/);
   assert.match(source, /var\(--dd-battle-bg-training\)/);
   assert.match(source, /@keyframes ddLeadLunge/);
   assert.match(source, /@keyframes ddWildLunge/);
+  assert.match(source, /@keyframes ddSpriteIdle/);
+  assert.match(source, /@keyframes ddSpriteFaint/);
+  assert.match(screen.renderFighter({ name: 'Fainted', hp: 0, maxHp: 20 }, 'wild'), /fighter wild dd-fainted/);
   const shell = fs.readFileSync(path.join(root, 'assets/js/databyte-discovery-product-app-v4-shell.js'), 'utf8');
   assert.match(shell, /classList\.toggle\('battleStage',state\.screen==='battle'\)/);
+  assert.match(shell, /presentation\.effects\.playTurn\(result\)/);
+  assert.doesNotMatch(shell, /classList\.add\('dd-attacking'\)/);
 });
 
 test('Arena sprite assets map to canonical Discovery species and presentation owners', () => {
@@ -306,6 +318,9 @@ test('Arena sprite assets map to canonical Discovery species and presentation ow
   load(runtime, 'assets/js/dd-app-presentation-runtime.js');
   load(runtime, 'assets/js/dd-encounter-screen.js');
   load(runtime, 'assets/js/dd-result-screen.js');
+  const encounterSource = fs.readFileSync(path.join(root, 'assets/js/dd-encounter-screen.js'), 'utf8');
+  assert.match(encounterSource, /ddCreatureReveal/);
+  assert.match(encounterSource, /filter:brightness\(0\) saturate\(0\)/);
 
   const encounter = runtime.window.DD_ENCOUNTER_SCREEN.renderEncounterScreen({
     signal: {
@@ -388,7 +403,7 @@ test('HTML entrypoint and bootstrap imports match the runtime manifest', () => {
   assert.deepEqual(imports, manifest.modules.map(module => module.script));
   assert.equal(new Set(imports).size, imports.length);
   const shell = fs.readFileSync(path.join(root, 'assets/js/databyte-discovery-product-app-v4-shell.js'), 'utf8');
-  assert.match(shell, /<span>Phase 6\.0\.9<\/span>/);
+  assert.match(shell, /<span>Phase 6\.1\.0<\/span>/);
   assert.match(shell, /continueToDownload/);
   assert.match(shell, /Battle complete\. Confirm the Download attempt\./);
 });

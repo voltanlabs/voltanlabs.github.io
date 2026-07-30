@@ -1,7 +1,7 @@
 // assets/js/dd-encounter-screen.js
 // Core Stabilization v1.0: canonical encounter presentation owner.
 (function(){
-  const VERSION='1.2.0';
+  const VERSION='1.3.0';
   const STYLE_ID='ddEncounterScreenStyle';
 
   function esc(value){
@@ -46,6 +46,14 @@
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .meterTrack i{display:block;height:100%;border-radius:999px}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .signalMeter i{background:linear-gradient(90deg,#38BDF8,#A78BFA,#FB7185)}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .downloadMeter i{background:linear-gradient(90deg,#FFD700,#A3E635,#22C55E)}',
+      '#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"] .encounterTop{animation:ddSignalLockLabel .42s ease-out both}',
+      '#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait{animation:ddCreatureReveal 1.05s ease-out .42s both}',
+      '#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"] .encounterCore>h1,#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"] .encounterMeta,#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"] .encounterLore,#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"] .encounterSource{animation:ddRevealText .48s ease-out 1.08s both}',
+      '#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"]>div:last-child{animation:ddRevealText .48s ease-out 1.36s both}',
+      '@keyframes ddSignalLockLabel{from{opacity:0;letter-spacing:.42em}to{opacity:1;letter-spacing:normal}}',
+      '@keyframes ddCreatureReveal{0%,24%{filter:brightness(0) saturate(0);opacity:.38;scale:.72}55%{filter:brightness(0) saturate(0);opacity:1;scale:1.04}76%{filter:brightness(2) saturate(1.4)}100%{filter:none;opacity:1;scale:1}}',
+      '@keyframes ddRevealText{from{opacity:0;translate:0 9px}to{opacity:1;translate:0 0}}',
+      '@media(prefers-reduced-motion:reduce){#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"] *{animation:none!important}}',
       '@media(max-height:700px){#ddApp .encounter-card[data-owner="dd-encounter-screen"]{gap:7px}#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait{--dd-portrait-size:min(27vw,112px)}#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterLore{font-size:12px}}'
     ].join('');
     document.head.appendChild(style);

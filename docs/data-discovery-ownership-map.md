@@ -4,13 +4,17 @@ This document is the canonical ownership registry for the Data Discovery applica
 
 Current live phase: **6.0 Progression Loop**
 
-Current recovery revision: **6.0.9 / bootstrap 1.9.8**
+Current recovery revision: **6.1.0 / bootstrap 1.10.0**
 
-Presentation foundation: **Phase 6.0.9 / app presentation 2.1.0**. The app
+Presentation foundation: **Phase 6.1.0 / app presentation 2.2.0**. The app
 presentation runtime owns shared design tokens, safe sprite asset validation,
 reusable creature portrait markup, background references, and shared motion
-timings. `DD_BATTLE_SCREEN` owns the internal battle scene composition,
-atmosphere, fighter staging, and responsive stage layout. Screen renderers
+timings. It also resolves a presentation-only background descriptor from
+prepared encounter metadata and coordinates temporary discovery/turn effect
+classes. `DD_BATTLE_SCREEN` owns internal terrain composition, atmosphere,
+fighter staging, facing, idle/hit/faint motion, and responsive stage layout.
+`DD_ENCOUNTER_SCREEN` owns the signal-lock, silhouette, and creature-reveal
+sequence after Encounter Runtime has selected the signal. Screen renderers
 remain presentation-only layout owners and gameplay owners remain unchanged.
 
 ## Governance Status

@@ -5,7 +5,7 @@
   if (!location.pathname.includes('databyte-discovery')) return;
   if (window.DD_APP_PRESENTATION_RUNTIME) return;
 
-  const VERSION = '2.1.0';
+  const VERSION = '2.2.0';
   const OWNER = 'dd-app-presentation-runtime';
   const STYLE_ID = 'ddAppPresentationStyle';
   let switchOpen = false;
@@ -27,6 +27,12 @@
     portrait: Object.freeze({ small: '64px', medium: '116px', large: '168px' }),
     background: Object.freeze({ trainingRoom: '/assets/backgrounds/volt-training-room.png' }),
     motion: Object.freeze({ fast: '180ms', standard: '280ms', slow: '560ms' })
+  });
+  const BACKGROUND_REGISTRY = Object.freeze({
+    trainingRoom: Object.freeze({
+      id: 'training-room',
+      asset: TOKENS.background.trainingRoom
+    })
   });
 
   function safeAsset(value) {
@@ -72,6 +78,60 @@
 
   const portraits = Object.freeze({ safeAsset, rarityClass, renderVisual, renderPortrait });
 
+  function resolveBackground(encounter) {
+    const value = encounter || {};
+    const pool = String(value.encounterPool || value.encounterPoolLabel || '').toLowerCase();
+    const theme = pool.includes('archive')
+      ? 'archive'
+      : pool.includes('volatile') || pool.includes('corrupt')
+        ? 'volatile'
+        : pool.includes('fallback')
+          ? 'fallback'
+          : 'standard';
+    return Object.freeze({
+      id: BACKGROUND_REGISTRY.trainingRoom.id,
+      asset: BACKGROUND_REGISTRY.trainingRoom.asset,
+      theme
+    });
+  }
+
+  const backgrounds = Object.freeze({
+    registry: BACKGROUND_REGISTRY,
+    resolve: resolveBackground
+  });
+
+  function playTurn(result) {
+    if (!result || !Array.isArray(result.actions)) return;
+    result.actions.forEach((action, index) => {
+      const actorSelector = action.mode === 'player' ? '.fighter.lead' : '.fighter.wild';
+      const targetSelector = action.mode === 'player' ? '.fighter.wild' : '.fighter.lead';
+      const delay = index * 110;
+      setTimeout(() => {
+        const actor = document.querySelector(actorSelector);
+        const target = document.querySelector(targetSelector);
+        if (actor) actor.classList.add('dd-attacking');
+        if (target && action.hit) target.classList.add('dd-hit');
+        if (target && action.fainted) target.classList.add('dd-fainted');
+        setTimeout(() => {
+          if (actor) actor.classList.remove('dd-attacking');
+          if (target) target.classList.remove('dd-hit');
+        }, 260);
+      }, delay);
+    });
+  }
+
+  function afterRender(effect) {
+    if (effect !== 'discover') return;
+    const root = $('ddApp');
+    if (!root) return;
+    root.classList.remove('dd-discovery-running');
+    void root.offsetWidth;
+    root.classList.add('dd-discovery-running');
+    setTimeout(() => root.classList.remove('dd-discovery-running'), 1900);
+  }
+
+  const effects = Object.freeze({ playTurn, afterRender });
+
   function installStyle() {
     if ($(STYLE_ID)) return;
     const style = document.createElement('style');
@@ -95,13 +155,14 @@
       '.dd-creature-fallback{display:grid;place-items:center;font-size:clamp(30px,10vw,72px);line-height:1}',
       '#ddApp .stage{min-height:0;overflow:hidden;overscroll-behavior:contain}',
       '#ddApp .stage[data-screen="scanner"],#ddApp .stage[data-screen="encounter"]{position:relative;background:radial-gradient(circle at 50% 36%,rgba(56,189,248,.12),transparent 34%),linear-gradient(rgba(56,189,248,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.08) 1px,transparent 1px);background-size:100% 100%,22px 22px,22px 22px}',
-      '#ddApp .stage[data-screen="scanner"]:before,#ddApp .stage[data-screen="encounter"]:before{content:"";position:absolute;left:-15%;right:-15%;top:-10%;height:18%;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(255,215,0,.22),rgba(56,189,248,.12),transparent);filter:blur(1px);animation:ddPresentationScanSweep 4.8s linear infinite;z-index:0}',
+      '#ddApp .stage[data-screen="scanner"]:before,#ddApp .stage[data-screen="encounter"]:before{content:"";position:absolute;left:0;right:0;top:-10%;height:18%;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(255,215,0,.22),rgba(56,189,248,.12),transparent);filter:blur(1px);animation:ddPresentationScanSweep 4.8s linear infinite;z-index:0}',
       '#ddApp .stage[data-screen="scanner"]>.card,#ddApp .stage[data-screen="encounter"]>.card{position:relative;z-index:1}',
+      '#ddApp.dd-discovery-running #controls{pointer-events:none;opacity:.58}',
       '#ddApp .scannerOrb:before,#ddApp .scannerOrb:after{animation:ddPresentationRingSpin 12s linear infinite}',
       '#ddApp .scannerOrb:after{animation-direction:reverse;animation-duration:18s}',
       '@keyframes ddPresentationScanSweep{from{transform:translateY(-30%)}to{transform:translateY(620%)}}',
       '@keyframes ddPresentationRingSpin{to{transform:rotate(360deg)}}',
-      '@media(prefers-reduced-motion:reduce){#ddApp .stage[data-screen="scanner"]:before,#ddApp .stage[data-screen="encounter"]:before,#ddApp .scannerOrb:before,#ddApp .scannerOrb:after{animation:none!important}}',
+      '@media(prefers-reduced-motion:reduce){#ddApp .stage[data-screen="scanner"]:before,#ddApp .stage[data-screen="encounter"]:before,#ddApp .scannerOrb:before,#ddApp .scannerOrb:after{animation:none!important}#ddApp.dd-discovery-running #controls{pointer-events:auto;opacity:1}}',
       '#ddApp .controls{overflow:auto;overscroll-behavior:contain}',
       '.dd-switch-panel{position:fixed;inset:10px;z-index:1000003;background:rgba(7,17,31,.98);border:1px solid rgba(125,211,252,.28);border-radius:24px;padding:14px;color:white;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px}',
       '.dd-switch-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.dd-switch-head b{color:#FFD700}',
@@ -178,9 +239,11 @@
   window.DD_APP_PRESENTATION_RUNTIME = Object.freeze({
     version: VERSION,
     owner: OWNER,
-    phase: '6.0.9-battle-stage-foundation',
+    phase: '6.1.0-visual-sequences',
     tokens: TOKENS,
     portraits,
+    backgrounds,
+    effects,
     installStyle,
     showPartySwitch,
     hidePartySwitch,

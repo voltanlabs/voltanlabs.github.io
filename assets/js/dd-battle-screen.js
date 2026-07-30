@@ -4,7 +4,7 @@
 (function(){
   'use strict';
 
-  const VERSION='0.8.0';
+  const VERSION='0.9.0';
   const STYLE_ID='ddBattleScreenStyle';
 
   function esc(value){
@@ -52,6 +52,10 @@
     return window.DD_APP_PRESENTATION_RUNTIME&&window.DD_APP_PRESENTATION_RUNTIME.portraits;
   }
 
+  function backgrounds(){
+    return window.DD_APP_PRESENTATION_RUNTIME&&window.DD_APP_PRESENTATION_RUNTIME.backgrounds;
+  }
+
   function safeSpriteAsset(value){
     return portraits()?portraits().safeAsset(value):'';
   }
@@ -63,12 +67,17 @@
     style.id=STYLE_ID;
     style.textContent=[
       '#ddApp .battle-card[data-owner="dd-battle-screen"]{position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:8px;width:100%;height:100%;min-height:0;overflow:hidden;padding:8px}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleScene{position:relative;min-height:0;overflow:hidden;border:1px solid var(--dd-border);border-radius:var(--dd-radius-lg);background-image:linear-gradient(180deg,rgba(2,6,23,.08),rgba(2,6,23,.38) 64%,rgba(2,6,23,.74)),var(--dd-battle-bg-training);background-size:cover;background-position:center 58%;isolation:isolate}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleScene{position:relative;min-height:0;overflow:hidden;border:1px solid var(--dd-border);border-radius:var(--dd-radius-lg);background-image:linear-gradient(180deg,rgba(2,6,23,.08),rgba(2,6,23,.38) 64%,rgba(2,6,23,.74)),var(--dd-battle-background,var(--dd-battle-bg-training));background-size:cover;background-position:center 58%;isolation:isolate}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleScene::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at 25% 62%,rgba(56,189,248,.18),transparent 29%),radial-gradient(circle at 75% 62%,rgba(167,139,250,.2),transparent 29%);mix-blend-mode:screen}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleScene[data-battle-theme="archive"]::before{background:radial-gradient(circle at 25% 62%,rgba(250,204,21,.2),transparent 30%),radial-gradient(circle at 75% 62%,rgba(56,189,248,.18),transparent 30%)}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleScene[data-battle-theme="volatile"]::before{background:radial-gradient(circle at 25% 62%,rgba(251,113,133,.22),transparent 31%),radial-gradient(circle at 75% 62%,rgba(167,139,250,.24),transparent 31%)}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleGrid{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);gap:8px;align-items:end;align-content:end;justify-items:center;width:100%;height:100%;min-height:0;padding:48px clamp(6px,3vw,32px) 18px;box-sizing:border-box}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter{text-align:center;min-width:0;width:min(100%,260px);overflow:visible;transform-origin:50% 85%;filter:drop-shadow(0 12px 14px rgba(2,6,23,.54))}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="lead"]{transform:translateX(5%)}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="wild"]{transform:translateX(-5%) scale(.94)}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter .avatar{animation:ddSpriteIdle 2.8s ease-in-out infinite}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="lead"] .dd-creature-visual{transform:scaleX(1)}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="wild"] .dd-creature-visual{transform:scaleX(-1)}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter h2{margin:8px 0 5px;color:var(--dd-primary);text-shadow:0 2px 8px rgba(2,6,23,.95);font-size:clamp(20px,5.2vw,29px);line-height:1.04;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .meta{display:grid;gap:3px;justify-content:center;color:var(--dd-text-muted);text-shadow:0 2px 6px rgba(2,6,23,.95);font-size:11px;line-height:1.2;min-height:28px;overflow:hidden}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .statusRow{display:flex;justify-content:center;gap:4px;min-height:17px;margin-top:4px;overflow:hidden}',
@@ -76,6 +85,7 @@
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="lead"].dd-attacking{animation:ddLeadLunge var(--dd-motion-fast) ease-out}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="wild"].dd-attacking{animation:ddWildLunge var(--dd-motion-fast) ease-out}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter.dd-hit .ring{animation:ddSpriteHit var(--dd-motion-fast) ease-out}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter.dd-fainted{animation:ddSpriteFaint var(--dd-motion-slow) ease-in forwards;pointer-events:none}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .vs{align-self:end;text-align:center;color:var(--dd-accent);font-weight:1000;text-shadow:0 2px 8px rgba(2,6,23,.95);padding-bottom:84px}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .ring{width:min(25vw,116px);height:min(25vw,116px);border-radius:999px;margin:0 auto;display:grid;place-items:center;background:conic-gradient(from -90deg,var(--hp-color) 0 calc(var(--hp-pct)*1%),rgba(71,85,105,.48) calc(var(--hp-pct)*1%) 100%);border:0;position:relative;transform:none!important;box-sizing:border-box;transition:background .18s ease}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar{position:relative;width:calc(100% - 8px);height:calc(100% - 8px);border-radius:999px;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,#103258 0%,#0a2039 52%,#07111f 100%);font-size:clamp(28px,8vw,40px);line-height:1}',
@@ -97,10 +107,12 @@
       '@media(max-width:430px){#ddApp .battle-card[data-owner="dd-battle-screen"] .battleGrid{grid-template-columns:minmax(0,1fr) 26px minmax(0,1fr);padding:44px 4px 12px}#ddApp .battle-card[data-owner="dd-battle-screen"] .vs{padding-bottom:76px}#ddApp .battle-card[data-owner="dd-battle-screen"] .ring{width:min(22vw,106px);height:min(22vw,106px)}#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter h2{font-size:clamp(19px,5vw,25px)}}',
       '@media(max-width:350px){#ddApp .battle-card[data-owner="dd-battle-screen"] .battleMeters{grid-template-columns:minmax(0,1fr)}#ddApp .battle-card[data-owner="dd-battle-screen"] .signalBox,#ddApp .battle-card[data-owner="dd-battle-screen"] .downloadGauge{padding:6px 8px}}',
       '@media(max-height:720px){#ddApp .battle-card[data-owner="dd-battle-screen"]{gap:6px}#ddApp .battle-card[data-owner="dd-battle-screen"] .battleGrid{padding-top:42px;padding-bottom:10px}#ddApp .battle-card[data-owner="dd-battle-screen"] .battleMeters{gap:6px}#ddApp .battle-card[data-owner="dd-battle-screen"] .signalBox,#ddApp .battle-card[data-owner="dd-battle-screen"] .downloadGauge{padding:6px 8px}}',
-      '@media(prefers-reduced-motion:reduce){#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter{animation:none!important}}',
+      '@media(prefers-reduced-motion:reduce){#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter,#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar{animation:none!important}}',
+      '@keyframes ddSpriteIdle{0%,100%{translate:0 0}50%{translate:0 -4px}}',
       '@keyframes ddLeadLunge{0%,100%{transform:translateX(5%)}50%{transform:translateX(24%) scale(1.06);filter:brightness(1.3)}}',
       '@keyframes ddWildLunge{0%,100%{transform:translateX(-5%) scale(.94)}50%{transform:translateX(-24%) scale(1.01);filter:brightness(1.3)}}',
-      '@keyframes ddSpriteHit{35%{filter:brightness(1.8) saturate(1.5);transform:translateX(-4px) scale(.94)}70%{filter:brightness(.75);transform:translateX(4px)}}'
+      '@keyframes ddSpriteHit{35%{filter:brightness(1.8) saturate(1.5);transform:translateX(-4px) scale(.94)}70%{filter:brightness(.75);transform:translateX(4px)}}',
+      '@keyframes ddSpriteFaint{to{opacity:0;filter:grayscale(1) brightness(.45);translate:0 28px;scale:.84}}'
     ].join('');
 
     document.head.appendChild(style);
@@ -132,7 +144,7 @@
   function renderFighter(sprite,side){
     const s=normalizeSprite(sprite);
     const statuses=Array.isArray(s.statusEffects)?s.statusEffects:[];
-    return `<article class="fighter ${esc(side||'')}" data-side="${esc(side||'')}">
+    return `<article class="fighter ${esc(side||'')}${Number(s.hp||0)<=0?' dd-fainted':''}" data-side="${esc(side||'')}">
       ${renderHpRing(s)}
       <h2>${esc(s.name||'Unknown')}</h2>
       ${renderMetaLine(s)}
@@ -207,9 +219,12 @@
     const ctx=normalizeContext(context);
     const lead=normalizeSprite(ctx.lead||{});
     const wild=normalizeSprite(ctx.wild||{});
+    const background=backgrounds()
+      ?backgrounds().resolve(wild)
+      :{id:'training-room',asset:'/assets/backgrounds/volt-training-room.png',theme:'standard'};
 
     return `<section class="card battle-card" data-owner="dd-battle-screen">
-      <div class="battleScene" data-battle-background="training-room">
+      <div class="battleScene" data-battle-background="${esc(background.id)}" data-battle-theme="${esc(background.theme)}" style="--dd-battle-background:url(&quot;${esc(background.asset)}&quot;)">
         <div class="battleGrid">
           ${renderFighter(lead,'lead')}
           <strong class="vs">VS</strong>
