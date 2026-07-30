@@ -1,7 +1,7 @@
 // Data Discovery v4.10: single deterministic browser entry point.
 const VERSION = '1.11.0';
 const OWNER = 'dd-app-bootstrap';
-const BUNDLE = '/assets/js/dd-runtime-bundle.js?v=presentation-6-3-3';
+const BUNDLE = '/assets/js/dd-runtime-bundle.js?v=presentation-6-3-4';
 
 const modules = Object.freeze([
   '/assets/js/dd-canon-roster.js?v=sprite-assets-1-0-0',
