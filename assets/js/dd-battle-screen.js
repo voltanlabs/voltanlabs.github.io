@@ -88,6 +88,8 @@
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter.dd-fainted .avatar{animation:ddSpriteFaint var(--dd-motion-slow) ease-in forwards;pointer-events:none}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .vs{align-self:end;text-align:center;color:var(--dd-accent);font-weight:1000;text-shadow:0 2px 8px rgba(2,6,23,.95);padding-bottom:84px}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .ring{width:min(42vw,220px);height:min(38vw,206px);margin:0 auto;display:grid;place-items:center;background:transparent;border:0;position:relative;transform:none!important;box-sizing:border-box;z-index:0}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .dd-portal-canvas{position:absolute;top:4px;bottom:4px;left:-22px;width:64px;height:calc(100% - 8px);border-radius:50% / 42%;background:radial-gradient(ellipse at 50% 76%,#010817,#07111f 68%,#020617);z-index:0;pointer-events:none}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="wild"] .dd-portal-canvas{left:auto;right:-22px}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .ring::before{content:"";position:absolute;top:4px;bottom:4px;left:-22px;width:64px;border-radius:50% / 42%;border:2px solid color-mix(in srgb,var(--hp-color) 72%,#38BDF8);background:radial-gradient(ellipse at 50% 76%,#010817 0 7%,rgba(2,30,60,.98) 14%,rgba(14,165,233,.46) 25%,rgba(7,17,31,.9) 67%,rgba(2,6,23,.98) 100%),repeating-radial-gradient(ellipse at 50% 76%,transparent 0 6px,rgba(125,211,252,.52) 7px 8px,transparent 9px 14px),repeating-linear-gradient(24deg,transparent 0 13px,rgba(125,211,252,.34) 14px 15px,transparent 16px 28px),repeating-linear-gradient(-24deg,transparent 0 13px,rgba(125,211,252,.3) 14px 15px,transparent 16px 28px);background-size:100% 100%,100% 100%,100% 100%,100% 100%;box-shadow:0 0 30px color-mix(in srgb,var(--hp-color) 36%,transparent),inset 0 0 34px rgba(56,189,248,.5);filter:drop-shadow(0 0 10px rgba(56,189,248,.82));animation:ddWormholeDepth 4.2s ease-in-out infinite;z-index:-1}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .ring::after{content:"";position:absolute;top:-5px;bottom:-5px;left:-27px;width:74px;border-radius:50% / 42%;background:repeating-conic-gradient(from var(--dash-angle),rgba(255,255,255,.95) 0deg 3deg,transparent 3deg 17deg);-webkit-mask:radial-gradient(closest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));mask:radial-gradient(closest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));animation:ddPortalDashFlow 3.2s linear infinite;filter:drop-shadow(0 0 6px rgba(125,211,252,.9));z-index:-1}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="wild"] .ring::before{left:auto;right:-22px}',
@@ -146,11 +148,43 @@
       ?portraits().renderVisual(s,{decorative:true})
       :`<span>${esc(s.icon||'◇')}</span>`;
     return `<div class="ring hp" style="--hp-pct:${healthPct};--hp-color:${hpColor(s.hp,s.maxHp)}" data-hp-percent="${healthPct}" aria-label="HP ${esc(s.hp)} of ${esc(s.maxHp)}">
-      <div class="avatar">
+      <canvas class="dd-portal-canvas" aria-hidden="true"></canvas><div class="avatar">
         ${visual}
         <b>${esc(s.hp)}/${esc(s.maxHp)}</b>
       </div>
     </div>`;
+  }
+
+  function hydratePortals(){
+    document.querySelectorAll('#ddApp .dd-portal-canvas:not([data-portal-ready="1"])').forEach(canvas=>{
+      canvas.dataset.portalReady='1';
+      const ctx=canvas.getContext('2d');
+      if(!ctx)return;
+      let time=0;
+      const draw=()=>{
+        if(!canvas.isConnected)return;
+        const box=canvas.getBoundingClientRect();
+        const ratio=Math.max(1,window.devicePixelRatio||1);
+        const width=Math.max(1,Math.round(box.width*ratio)),height=Math.max(1,Math.round(box.height*ratio));
+        if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height}
+        ctx.clearRect(0,0,width,height);
+        const cx=width/2,cy=height*.76,scaleX=width*.46,scaleY=height*.46;
+        ctx.lineWidth=Math.max(1,ratio*.8);ctx.strokeStyle='rgba(125,211,252,.62)';
+        for(let i=0;i<26;i++){
+          const depth=1-(((i+time*14)%26)/26); if(depth<.045)continue;
+          ctx.globalAlpha=depth*.8;ctx.beginPath();
+          for(let a=0;a<=Math.PI*2+.08;a+=.08){const twist=(1-depth)*1.5;const x=cx+Math.cos(a+twist)*scaleX*depth,y=cy+Math.sin(a+twist)*scaleY*depth;if(a===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}
+          ctx.closePath();ctx.stroke();
+        }
+        for(let j=0;j<18;j++){
+          const base=(j/18)*Math.PI*2;ctx.globalAlpha=.7;ctx.beginPath();
+          for(let d=1;d>.04;d-=.025){const twist=(1-d)*1.5+time*.18;const x=cx+Math.cos(base+twist)*scaleX*d,y=cy+Math.sin(base+twist)*scaleY*d;if(d===1)ctx.moveTo(x,y);else ctx.lineTo(x,y)}
+          ctx.stroke();
+        }
+        ctx.globalAlpha=1;time+=.015;requestAnimationFrame(draw);
+      };
+      draw();
+    });
   }
 
   function renderFighter(sprite,side){
@@ -235,6 +269,7 @@
       ?backgrounds().resolve(wild)
       :{id:'training-room',asset:'/assets/backgrounds/volt-training-room.png',theme:'standard'};
 
+    setTimeout(hydratePortals,0);
     return `<section class="card battle-card" data-owner="dd-battle-screen">
       <div class="battleScene" data-battle-background="${esc(background.id)}" data-battle-theme="${esc(background.theme)}" style="--dd-battle-background:url(&quot;${esc(background.asset)}&quot;)">
         <div class="battleGrid">
