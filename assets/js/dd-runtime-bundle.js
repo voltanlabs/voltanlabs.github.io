@@ -3526,7 +3526,9 @@
         const width=Math.max(1,Math.round(box.width*ratio)),height=Math.max(1,Math.round(box.height*ratio));
         if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height}
         ctx.clearRect(0,0,width,height);
-        const cx=width/2,cy=height*.76,scaleX=width*.46,scaleY=height*.46;
+        // Keep the outer grid geometry registered to the same center as the CSS portal aperture.
+        // The inward pull is produced by depth/twist, not by offsetting the whole canvas.
+        const cx=width/2,cy=height*.5,scaleX=width*.46,scaleY=height*.46;
         ctx.lineWidth=Math.max(1,ratio*.8);ctx.strokeStyle='rgba(125,211,252,.62)';
         for(let i=0;i<26;i++){
           const depth=1-(((i+time*2.6)%26)/26); if(depth<.045)continue;
