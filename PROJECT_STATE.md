@@ -185,3 +185,6 @@ VoltanLabs Studio
 ### Data Line portal presentation (6.3.0)
 
 Battle presentation now stages fighters outside two persistent vertical Data Line portals. The left portal belongs to the player lane and the right portal belongs to the wild lane; wild creature visuals are mirrored at the presentation boundary so opponents face inward. Portal interiors use bright radial/converging data-grid lines, while only the rim dash texture flows around the fixed oval geometry. Battle state and HP remain owned by the battle runtime; these are presentation-only effects.
+### SpriteCache party storage
+
+The Party panel is now the player-facing SpriteCache: it lists all downloaded sprites, shows active-party membership, and lets the player deploy or remove sprites. `DD_PLAYER_RUNTIME.party` remains the sole owner of collection and party persistence; the shell only renders the cache and forwards add/remove actions.

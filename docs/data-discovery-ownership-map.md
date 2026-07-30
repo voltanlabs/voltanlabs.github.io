@@ -167,3 +167,6 @@ battle-presentation observer are retained under
 ### Portal and fighter staging
 
 `dd-battle-screen.js` owns the two-lane arena composition: fighters stand outside their portals, the player portal is staged on the left, and the wild portal is staged on the right. It mirrors wild creature visuals so opponents face the player. Portal grids, rim flow, emergence, and battle motion are presentation effects only; HP and battle outcomes remain runtime-owned.
+### SpriteCache
+
+The Party navigation surface is presented as SpriteCache. It is a storage/deployment view over the canonical collection. The shell may display membership and dispatch deploy/remove actions, but it does not own party state; `dd-player-runtime.js` owns persistence, the five-slot limit, active slot, and party validity.

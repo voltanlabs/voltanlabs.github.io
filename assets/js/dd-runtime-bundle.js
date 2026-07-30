@@ -3317,8 +3317,8 @@
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .signalMeter i{background:linear-gradient(90deg,#38BDF8,#A78BFA,#FB7185)}',
       '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .downloadMeter i{background:linear-gradient(90deg,#FFD700,#A3E635,#22C55E)}',
       '#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"] .encounterTop{animation:ddSignalLockLabel .42s ease-out both}',
-      '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait{filter:brightness(0) saturate(0);opacity:.2}',
-      '#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait{animation:ddCreatureReveal 1.05s ease-out .82s both}',
+      '#ddApp .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait{filter:none;opacity:1}',
+      '#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"] .encounterPortrait{filter:brightness(0) saturate(0);opacity:.2;animation:ddCreatureReveal 1.05s ease-out .82s both}',
       '#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"] .encounterCore>h1,#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"] .encounterMeta,#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"] .encounterLore,#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"] .encounterSource{animation:ddRevealText .48s ease-out 1.08s both}',
       '#ddApp.dd-discovery-running .encounter-card[data-owner="dd-encounter-screen"]>div:last-child{animation:ddRevealText .48s ease-out 1.36s both}',
       '@keyframes ddSignalLockLabel{from{opacity:0;letter-spacing:.42em}to{opacity:1;letter-spacing:normal}}',
@@ -4088,6 +4088,11 @@
       '#ddApp .nav button{font-size:11px;padding:9px 3px}',
       '#ddApp .stats,#ddApp .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px}',
       '#ddApp .mini{background:rgba(15,23,42,.8);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:10px}',
+      '#ddApp .sprite-cache-grid{align-items:stretch}',
+      '#ddApp .sprite-cache-entry{display:grid;gap:5px;align-content:start;text-align:center}',
+      '#ddApp .sprite-cache-entry b{color:#F8FAFC}',
+      '#ddApp .sprite-cache-entry span{color:#BAE6FD;font-size:11px}',
+      '#ddApp .sprite-cache-entry button{margin-top:auto;padding:8px 6px;border:1px solid rgba(56,189,248,.35);background:rgba(14,165,233,.18);font-size:11px}',
       '#ddApp .miniPortrait{margin:0 auto 7px}',
       '#ddApp .miniSpriteFallback{display:block;margin-bottom:7px;font-size:30px;line-height:1}',
       '#ddApp .hint,#ddApp .log{color:#BAE6FD;font-size:12px;line-height:1.35}',
@@ -4895,23 +4900,19 @@
         <p>DD_RESULT_SCREEN is not available.</p>
       </section>`,
     party:ctx=>{
-      const members=rt.party()
-        ?rt.party().members()
-        :fillParty()
-          .map(id=>collection().find(s=>s.id===id))
-          .filter(Boolean);
-      return `<section class="card">
-        <h2>Party</h2>
+      const members=rt.party()?rt.party().members():fillParty().map(id=>collection().find(s=>s.id===id)).filter(Boolean);
+      const memberIds=new Set(members.map(x=>x.id));
+      const cache=collection();
+      return `<section class="card sprite-cache-card">
+        <h2>SpriteCache</h2>
         <p class="hint">
-          Runtime: ${rt.player()?'DD_PLAYER_RUNTIME':'fallback local storage'}
+          Downloaded sprites: ${cache.length} • Active party: ${members.length}/5
         </p>
-        <div class="grid">
-          ${members.map(x=>
-            `<div class="mini">
-              ${spriteVisual(x)}${esc(x.name)}
-              <br>HP ${esc(x.hp)}/${esc(x.maxHp)}
-            </div>`
-          ).join('')||'<p>No downloaded sprites yet.</p>'}
+        <div class="grid sprite-cache-grid">
+          ${cache.map(x=>`<div class="mini sprite-cache-entry">
+              ${spriteVisual(x)}<b>${esc(x.name)}</b><br><span>HP ${esc(x.hp)}/${esc(x.maxHp)}</span><br>
+              <button data-cache-action="${memberIds.has(x.id)?'remove':'add'}" data-sprite-id="${esc(x.id)}">${memberIds.has(x.id)?'Remove':'Deploy'}</button>
+            </div>`).join('')||'<p>No downloaded sprites yet.</p>'}
         </div>
       </section>`;
     },
@@ -5178,6 +5179,16 @@
     });
     document.querySelectorAll('[data-panel]').forEach(btn=>{
       btn.onclick=()=>panel(btn.dataset.panel);
+    });
+    document.querySelectorAll('[data-cache-action]').forEach(btn=>{
+      btn.onclick=()=>{
+        const id=btn.dataset.spriteId;
+        const sprite=collection().find(item=>item&&item.id===id);
+        if(!sprite||!rt.party())return;
+        if(btn.dataset.cacheAction==='add')rt.party().add(sprite);
+        else rt.party().remove(id);
+        panel('party');
+      };
     });
 
     applyTurnLock();
