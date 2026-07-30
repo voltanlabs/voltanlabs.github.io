@@ -298,7 +298,7 @@ test('battle fighter ring renders canonical HP percentage and severity color', (
   assert.doesNotMatch(screen.renderHpRing({ name: 'Remote', hp: 10, maxHp: 10, spriteAsset: 'https://example.com/remote.gif' }), /<img/);
   const source = fs.readFileSync(path.join(root, 'assets/js/dd-battle-screen.js'), 'utf8');
   assert.match(source, /animation:ddPortalSpin 9s linear infinite/);
-  assert.match(source, /animation:ddPortalPulse 2\.4s ease-in-out infinite/);
+  assert.match(source, /background-size:100% 100%,12px 12px,12px 12px/);
   assert.match(source, /width:100%;height:100%;min-height:0/);
   assert.match(source, /backgrounds\(\)\.resolve\(wild\)/);
   assert.match(source, /data-battle-background="\$\{esc\(background\.id\)\}"/);
