@@ -170,19 +170,20 @@
         // Keep the outer grid geometry registered to the same center as the CSS portal aperture.
         // The inward pull is produced by depth/twist, not by offsetting the whole canvas.
         const cx=width/2,cy=height*.5,scaleX=width*.46,scaleY=height*.46;
+        const spin=time*(Math.PI*2/3.2);
         ctx.lineWidth=Math.max(1,ratio*.8);ctx.strokeStyle='rgba(125,211,252,.62)';
         for(let i=0;i<26;i++){
           const depth=1-(((i+time*2.6)%26)/26); if(depth<.045)continue;
           ctx.globalAlpha=depth*.8;ctx.beginPath();
-          for(let a=0;a<=Math.PI*2+.08;a+=.08){const twist=(1-depth)*1.5;const x=cx+Math.cos(a+twist)*scaleX*depth,y=cy+Math.sin(a+twist)*scaleY*depth;if(a===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}
+          for(let a=0;a<=Math.PI*2+.08;a+=.08){const twist=(1-depth)*1.5+spin;const x=cx+Math.cos(a+twist)*scaleX*depth,y=cy+Math.sin(a+twist)*scaleY*depth;if(a===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}
           ctx.closePath();ctx.stroke();
         }
         for(let j=0;j<18;j++){
           const base=(j/18)*Math.PI*2;ctx.globalAlpha=.7;ctx.beginPath();
-          for(let d=1;d>.04;d-=.025){const twist=(1-d)*1.5+time*.05;const x=cx+Math.cos(base+twist)*scaleX*d,y=cy+Math.sin(base+twist)*scaleY*d;if(d===1)ctx.moveTo(x,y);else ctx.lineTo(x,y)}
+          for(let d=1;d>.04;d-=.025){const twist=(1-d)*1.5+spin;const x=cx+Math.cos(base+twist)*scaleX*d,y=cy+Math.sin(base+twist)*scaleY*d;if(d===1)ctx.moveTo(x,y);else ctx.lineTo(x,y)}
           ctx.stroke();
         }
-        ctx.globalAlpha=1;time+=.015;setTimeout(()=>requestAnimationFrame(draw),24);
+        ctx.globalAlpha=1;time+=.024;setTimeout(()=>requestAnimationFrame(draw),24);
       };
       draw();
     });
