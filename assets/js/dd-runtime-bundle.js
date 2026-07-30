@@ -3402,6 +3402,15 @@
     return '#FB7185';
   }
 
+  function rarityColor(value){
+    const rarity=String(value||'common').toLowerCase();
+    if(rarity==='legendary'||rarity==='mythic')return '#FFD700';
+    if(rarity==='epic')return '#F472B6';
+    if(rarity==='rare')return '#A78BFA';
+    if(rarity==='uncommon'||rarity==='starter')return '#22C55E';
+    return '#38BDF8';
+  }
+
   function normalizeSprite(sprite){
     const s=Object.assign({},sprite||{});
     s.maxHp=Number(s.maxHp||s.hp||44);
@@ -3459,7 +3468,7 @@
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .dd-portal-canvas{position:absolute;top:-5px;bottom:-5px;left:-5px;width:82px;height:calc(100% + 10px);border-radius:50% / 42%;background:radial-gradient(ellipse at 50% 76%,#010817,#07111f 68%,#020617);z-index:0;pointer-events:none}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="wild"] .dd-portal-canvas{left:auto;right:-5px}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .ring::before{content:"";position:absolute;top:4px;bottom:4px;left:0;width:72px;border-radius:50% / 42%;border:2px solid color-mix(in srgb,var(--hp-color) 72%,#38BDF8);background:transparent;box-shadow:0 0 24px color-mix(in srgb,var(--hp-color) 28%,transparent);z-index:1}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .ring::after{content:"";position:absolute;top:-5px;bottom:-5px;left:-5px;width:82px;border-radius:50% / 42%;background:repeating-conic-gradient(from var(--dash-angle),rgba(255,255,255,.95) 0deg 3deg,transparent 3deg 17deg);-webkit-mask:radial-gradient(closest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));mask:radial-gradient(closest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));animation:ddPortalDashFlow 3.2s linear infinite;filter:drop-shadow(0 0 6px rgba(125,211,252,.9));z-index:1}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .ring::after{content:"";position:absolute;top:-5px;bottom:-5px;left:-5px;width:82px;border-radius:50% / 42%;background:repeating-conic-gradient(from var(--dash-angle),color-mix(in srgb,var(--rarity-color) 92%,white) 0deg 3deg,transparent 3deg 17deg);-webkit-mask:radial-gradient(closest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));mask:radial-gradient(closest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));animation:ddPortalDashFlow 3.2s linear infinite;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--rarity-color) 82%,transparent));z-index:1}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="wild"] .ring::before{left:auto;right:0}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="wild"] .ring::after{left:auto;right:-5px}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .avatar{position:relative;width:72%;height:100%;display:grid;place-items:center;background:transparent;font-size:clamp(28px,8vw,40px);line-height:1;z-index:2;overflow:visible}',
@@ -3514,7 +3523,7 @@
     const visual=portraits()
       ?portraits().renderVisual(s,{decorative:true})
       :`<span>${esc(s.icon||'◇')}</span>`;
-    return `<div class="ring hp" style="--hp-pct:${healthPct};--hp-color:${hpColor(s.hp,s.maxHp)}" data-hp-percent="${healthPct}" aria-label="HP ${esc(s.hp)} of ${esc(s.maxHp)}">
+    return `<div class="ring hp" style="--hp-pct:${healthPct};--hp-color:${hpColor(s.hp,s.maxHp)};--rarity-color:${rarityColor(s.rarity)}" data-hp-percent="${healthPct}" aria-label="HP ${esc(s.hp)} of ${esc(s.maxHp)}">
       <canvas class="dd-portal-canvas" aria-hidden="true"></canvas><div class="avatar">
         ${visual}
         <b>${esc(s.hp)}/${esc(s.maxHp)}</b>
@@ -3539,6 +3548,13 @@
         // The inward pull is produced by depth/twist, not by offsetting the whole canvas.
         const cx=width/2,cy=height*.5,scaleX=width*.46,scaleY=height*.46;
         const spin=time*(Math.PI*2/3.2);
+        const depthGradient=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(width,height)*.62);
+        depthGradient.addColorStop(0,'#01030b');
+        depthGradient.addColorStop(.48,'#061426');
+        depthGradient.addColorStop(.82,'rgba(9,40,70,.72)');
+        depthGradient.addColorStop(1,'rgba(56,189,248,.2)');
+        ctx.fillStyle=depthGradient;
+        ctx.fillRect(0,0,width,height);
         ctx.lineWidth=Math.max(1,ratio*.8);ctx.strokeStyle='rgba(125,211,252,.62)';
         for(let i=0;i<26;i++){
           const depth=1-(((i+time*2.6)%26)/26); if(depth<.045)continue;
