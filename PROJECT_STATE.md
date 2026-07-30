@@ -1,9 +1,9 @@
 # VoltanLabs Project State
 
 Status: active  
-Current phase: Data Discovery Phase 6.0 Progression Loop
+Current phase: Data Discovery Phase 6.3.0 Portal Battle Presentation
 
-Latest runtime recovery: Data Discovery Phase 6.2.0 loads one generated runtime
+Latest runtime recovery: Data Discovery Phase 6.3.0 loads one generated runtime
 bundle from bootstrap 1.11.0 and preserves 19 ordered modules in the runtime
 manifest. `dd-battle-core-runtime.js` is the active battle calculation,
 application, turn-order, retaliation, and battle-context owner. It uses one
@@ -103,6 +103,16 @@ deterministic sheet generator preserves the authored GIF frames, emits 256px
 cells and a manifest, and the presentation portrait contract can render the
 sheet as a safe first-frame visual. Existing GIF assets remain the canonical
 fallback until state-specific frame playback is enabled for the battle stage.
+
+Phase 6.3.0 establishes the portal battle presentation contract. The battle
+screen owns a single canvas aperture behind the sprite, a synchronized 3.2
+second portal rim, a center-darkening depth gradient, and rarity-colored rim
+accents. The HP arc is a separate outer presentation layer and does not own
+combat state. Mobile rules inset and scale the complete portal assembly so the
+wild-side portal remains inside the battle card; HP labels move above the
+portal at narrow widths. Background resolution remains presentation-owned and
+uses encounter metadata with deterministic type/species fallbacks when a pool
+is absent.
 
 FiscalFish now has a generated transparent presentation asset at
 `assets/sprites/fiscalfish.png`. It is a Torrent/Financial fish-family sprite

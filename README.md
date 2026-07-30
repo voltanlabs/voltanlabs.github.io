@@ -6,9 +6,9 @@ The project uses modular runtimes, explicit ownership contracts, searchable know
 
 ## Current Focus
 
-**Data Discovery Phase 6.0.4: Progression Loop + Runtime Recovery**
+**Data Discovery Phase 6.3.0: Portal Battle Presentation + Mobile Recovery**
 
-The current release consolidates the live game into one generated 19-module browser bundle. A deterministic battle core owns each complete turn, the player runtime owns all persistent player domains, and the reward runtime owns XP, levels, stat growth, ByteCoins, Version Upgrade tiers, and battle history. The next priority is authored upgrade content and ceremony presentation without reopening those ownership boundaries.
+The current release consolidates the live game into one generated 19-module browser bundle. A deterministic battle core owns each complete turn, the player runtime owns all persistent player domains, and the reward runtime owns XP, levels, stat growth, ByteCoins, Version Upgrade tiers, and battle history. The presentation layer now owns synchronized portal canvas/rim effects, depth shading, rarity accents, responsive mobile framing, and deterministic stage-background selection without reopening gameplay ownership boundaries.
 
 ## Recovery Milestone
 

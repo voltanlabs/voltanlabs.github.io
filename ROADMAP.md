@@ -1,6 +1,6 @@
 # VoltanLabs Roadmap
 
-Current focus: **Data Discovery Phase 6.0.4 Progression Loop + Presentation Recovery**.
+Current focus: **Data Discovery Phase 6.3.0 Portal Battle Presentation + Mobile Recovery**.
 
 See `PROJECT_STATE.md`, `README.md`, `docs/data-discovery-ownership-map.md`,
 `docs/databyte-runtime-load-order.md`, and `docs/studio-reference.md` for the
@@ -63,6 +63,19 @@ calculate them.
    - Validate corrupt, older, missing, and partially migrated saves.
 
 ## Presentation Recovery Path
+
+### Phase 6.3.0 delivered
+
+- Portal canvas, depth gradient, rim animation, rarity accents, and HP arc are
+  separate presentation layers owned by `dd-battle-screen.js`.
+- The canvas and rim share one aperture geometry and the canvas rotation is
+  synchronized to the 3.2-second outer-ring cycle.
+- Mobile breakpoints scale and inset the complete portal assembly; HP labels
+  move above the ring and sprites remain in front of the portal.
+- Stage backgrounds resolve from encounter pools, then deterministic type or
+  species fallbacks, without changing gameplay ownership.
+
+### Next visual recovery work
 
 The next visual milestone consolidates presentation behavior without merging
 gameplay owners:
