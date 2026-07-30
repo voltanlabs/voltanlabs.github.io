@@ -82,8 +82,7 @@
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleScene[data-battle-theme="volatile"]::before{background:radial-gradient(circle at 25% 62%,rgba(251,113,133,.22),transparent 31%),radial-gradient(circle at 75% 62%,rgba(167,139,250,.24),transparent 31%)}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .battleGrid{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);gap:8px;align-items:end;align-content:end;justify-items:center;width:100%;height:100%;min-height:0;padding:48px clamp(6px,3vw,32px) 18px;box-sizing:border-box}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter{text-align:center;min-width:0;width:min(100%,260px);overflow:visible;transform-origin:50% 85%;filter:drop-shadow(0 12px 14px rgba(2,6,23,.54))}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="lead"]{transform:translateX(5%)}',
-      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="wild"]{transform:translateX(-5%)}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="lead"],#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="wild"]{transform:none}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter .avatar{animation:ddSpriteIdle 2.8s ease-in-out infinite}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="lead"] .dd-creature-visual{transform:scaleX(1)!important}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="wild"] .dd-creature-visual{transform:scaleX(-1)!important}',
@@ -132,8 +131,8 @@
       '@property --dash-angle{syntax:"<angle>";inherits:false;initial-value:0deg}',
       '@keyframes ddPortalDashFlow{from{--dash-angle:0deg}to{--dash-angle:360deg}}',
       '@keyframes ddPortalPulse{0%,100%{opacity:.55;scale:.96}50%{opacity:1;scale:1.04}}',
-      '@keyframes ddLeadLunge{0%,100%{transform:translateX(5%)}50%{transform:translateX(24%) scale(1.06);filter:brightness(1.3)}}',
-      '@keyframes ddWildLunge{0%,100%{transform:translateX(-5%) scale(.94)}50%{transform:translateX(-24%) scale(1.01);filter:brightness(1.3)}}',
+      '@keyframes ddLeadLunge{0%,100%{transform:none}50%{transform:translateX(18%) scale(1.04);filter:brightness(1.3)}}',
+      '@keyframes ddWildLunge{0%,100%{transform:none}50%{transform:translateX(-18%) scale(1.04);filter:brightness(1.3)}}',
       '@keyframes ddSpriteHit{35%{filter:brightness(1.8) saturate(1.5);transform:translateX(-4px) scale(.94)}70%{filter:brightness(.75);transform:translateX(4px)}}',
       '@keyframes ddSpriteFaint{to{opacity:0;filter:grayscale(1) brightness(.45);translate:0 28px;scale:.84}}'
     ].join('');
