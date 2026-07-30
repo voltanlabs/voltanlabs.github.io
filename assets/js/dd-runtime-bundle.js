@@ -3041,13 +3041,22 @@
   function resolveBackground(encounter) {
     const value = encounter || {};
     const pool = String(value.encounterPool || value.encounterPoolLabel || '').toLowerCase();
+    const signalType = String(value.type || value.element || value.affinity || '').toLowerCase();
+    const identity = Number(value.id || value.dexNo || value.number || 0);
+    const fallbackKey = signalType.includes('torrent') || signalType.includes('water') || signalType.includes('aether')
+      ? 'deepSignalBay'
+      : signalType.includes('alloy') || signalType.includes('metal') || signalType.includes('spectral')
+        ? 'archiveGrid'
+        : signalType.includes('corrupt') || signalType.includes('volatile') || signalType.includes('glitch')
+          ? 'volatileRift'
+          : ['trainingRoom', 'archiveGrid', 'volatileRift', 'deepSignalBay'][Math.abs(identity) % 4];
     const key = pool.includes('archive')
       ? 'archiveGrid'
       : pool.includes('volatile') || pool.includes('corrupt')
         ? 'volatileRift'
         : pool.includes('fallback')
           ? 'deepSignalBay'
-          : 'trainingRoom';
+          : fallbackKey;
     const selected = BACKGROUND_REGISTRY[key];
     return Object.freeze({
       id: selected.id,
