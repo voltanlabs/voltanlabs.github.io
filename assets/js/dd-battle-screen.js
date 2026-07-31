@@ -87,6 +87,7 @@
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="lead"] .dd-creature-visual{transform:scaleX(1)!important}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter[data-side="wild"] .dd-creature-visual{transform:scaleX(-1)!important}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter h2{margin:8px 0 5px;color:var(--dd-primary);text-shadow:0 2px 8px rgba(2,6,23,.95);font-size:clamp(20px,5.2vw,29px);line-height:1.04;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}',
+      '#ddApp .battle-card[data-owner="dd-battle-screen"] .fighter.long-name h2{font-size:clamp(15px,4vw,22px);letter-spacing:-.02em}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .meta{display:grid;gap:3px;justify-content:center;color:var(--dd-text-muted);text-shadow:0 2px 6px rgba(2,6,23,.95);font-size:11px;line-height:1.2;min-height:28px;overflow:hidden}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .statusRow{display:flex;justify-content:center;gap:4px;min-height:17px;margin-top:4px;overflow:hidden}',
       '#ddApp .battle-card[data-owner="dd-battle-screen"] .statusChip{padding:2px 6px;border-radius:999px;background:rgba(167,139,250,.18);border:1px solid rgba(167,139,250,.42);color:#DDD6FE;font-size:9px;font-weight:900;text-transform:uppercase;white-space:nowrap}',
@@ -208,7 +209,8 @@
   function renderFighter(sprite,side){
     const s=normalizeSprite(sprite);
     const statuses=Array.isArray(s.statusEffects)?s.statusEffects:[];
-    return `<article class="fighter ${esc(side||'')}${Number(s.hp||0)<=0?' dd-fainted':''}" data-side="${esc(side||'')}">
+    const longName=String(s.name||'').trim().length>12;
+    return `<article class="fighter ${esc(side||'')}${longName?' long-name':''}${Number(s.hp||0)<=0?' dd-fainted':''}" data-side="${esc(side||'')}">
       ${renderHpRing(s)}
       <h2>${esc(s.name||'Unknown')}</h2>
       ${renderMetaLine(s)}
