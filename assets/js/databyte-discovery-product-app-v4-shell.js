@@ -458,14 +458,16 @@
     state.confirm=null;
     mark(state.signal,'Seen');
     pushLog('Signal locked from '+(state.signal.encounterPoolLabel||'scanner pool')+'.');
-    if($('ddApp')){
-      $('ddApp').classList.add('dd-discovery-running');
-      setTimeout(()=>{
-        if($('ddApp'))$('ddApp').classList.remove('dd-discovery-running');
-      },2400);
-    }
     fx('discover');
     render();
+    requestAnimationFrame(()=>{
+      const root=$('ddApp');
+      if(!root)return;
+      root.classList.remove('dd-discovery-running');
+      void root.offsetWidth;
+      root.classList.add('dd-discovery-running');
+      setTimeout(()=>root.classList.remove('dd-discovery-running'),2800);
+    });
   }
 
   function randomCode(){
@@ -773,6 +775,7 @@
   function fail(title,msg,sprite,shouldRender){
     state.result={
       type:'failure',
+      reason:title==='Signal Disappeared'?'signal-collapsed':undefined,
       title,
       msg,
       sprite,

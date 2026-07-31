@@ -3880,6 +3880,7 @@
       '#ddApp .result-card[data-owner="dd-result-screen"]{--result-accent:#38BDF8;height:100%;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:14px;overflow:hidden;text-align:center}',
       '#ddApp .result-card[data-owner="dd-result-screen"].success{--result-accent:#22C55E;border-color:rgba(34,197,94,.55)}',
       '#ddApp .result-card[data-owner="dd-result-screen"].failure{--result-accent:#FB7185;border-color:rgba(251,113,133,.55)}',
+      '#ddApp .result-card[data-owner="dd-result-screen"].knockout .resultIcon{filter:grayscale(1) brightness(.5);opacity:.55}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultTop{display:flex;justify-content:space-between;align-items:center;gap:10px;color:#BAE6FD;font-size:11px;letter-spacing:.15em;text-transform:uppercase}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultTop b{color:var(--result-accent)}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultCore{display:grid;place-items:center;align-content:center;gap:14px;min-height:0}',
@@ -3938,7 +3939,7 @@
       </div>`
       :'';
 
-    return `<section class="card result-card ${esc(type)}" data-owner="dd-result-screen"><div class="resultTop"><span>${battleVictory?'Battle Result':'Scanner Result'}</span><b>${esc(status)}</b></div><div class="resultCore">${visual}<h1>${esc(title)}</h1><p class="resultMessage">${esc(message)}</p>${rewardHtml}${sprite?`<p class="resultNext">${esc(sprite.name||'DataByte Sprite')} • #${esc(sprite.dex||'?')} • ${esc(sprite.rarity||'Common')}</p>`:''}</div><div><div class="resultSummary"><div class="resultStat">Collection<b>${esc(collection.length)}</b></div><div class="resultStat">Party Slots<b>${esc(party.length)}/5</b></div><div class="resultStat">ByteCoins<b>${esc(inventory.byteCoins||0)}</b></div></div><p class="resultNext">${esc(next)}</p></div></section>`;
+    return `<section class="card result-card ${esc(type)}${result.reason==='signal-collapsed'?' knockout':''}" data-owner="dd-result-screen"><div class="resultTop"><span>${battleVictory?'Battle Result':'Scanner Result'}</span><b>${esc(status)}</b></div><div class="resultCore">${visual}<h1>${esc(title)}</h1><p class="resultMessage">${esc(message)}</p>${rewardHtml}${sprite?`<p class="resultNext">${esc(sprite.name||'DataByte Sprite')} • #${esc(sprite.dex||'?')} • ${esc(sprite.rarity||'Common')}</p>`:''}</div><div><div class="resultSummary"><div class="resultStat">Collection<b>${esc(collection.length)}</b></div><div class="resultStat">Party Slots<b>${esc(party.length)}/5</b></div><div class="resultStat">ByteCoins<b>${esc(inventory.byteCoins||0)}</b></div></div><p class="resultNext">${esc(next)}</p></div></section>`;
   }
 
   installStyle();
@@ -4508,14 +4509,16 @@
     state.confirm=null;
     mark(state.signal,'Seen');
     pushLog('Signal locked from '+(state.signal.encounterPoolLabel||'scanner pool')+'.');
-    if($('ddApp')){
-      $('ddApp').classList.add('dd-discovery-running');
-      setTimeout(()=>{
-        if($('ddApp'))$('ddApp').classList.remove('dd-discovery-running');
-      },2400);
-    }
     fx('discover');
     render();
+    requestAnimationFrame(()=>{
+      const root=$('ddApp');
+      if(!root)return;
+      root.classList.remove('dd-discovery-running');
+      void root.offsetWidth;
+      root.classList.add('dd-discovery-running');
+      setTimeout(()=>root.classList.remove('dd-discovery-running'),2800);
+    });
   }
 
   function randomCode(){
@@ -4823,6 +4826,7 @@
   function fail(title,msg,sprite,shouldRender){
     state.result={
       type:'failure',
+      reason:title==='Signal Disappeared'?'signal-collapsed':undefined,
       title,
       msg,
       sprite,
