@@ -3243,7 +3243,7 @@
     const style=document.createElement('style');
     style.id=STYLE_ID;
     style.textContent=[
-      '#ddApp .scanner-card[data-owner="dd-scanner-screen"]{height:100%;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:14px;align-items:center;text-align:center;overflow:hidden}',
+      '#ddApp .scanner-card[data-owner="dd-scanner-screen"]{height:100%;min-height:0;box-sizing:border-box;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:14px;align-items:center;text-align:center;overflow:hidden}',
       '#ddApp .scanner-card[data-owner="dd-scanner-screen"] .scannerStatus{display:flex;justify-content:space-between;align-items:center;gap:10px;color:#BAE6FD;font-size:12px}',
       '#ddApp .scanner-card[data-owner="dd-scanner-screen"] .scannerStatus b{color:#FFD700}',
       '#ddApp .scanner-card[data-owner="dd-scanner-screen"] .scannerCore{display:grid;place-items:center;align-content:center;gap:14px;min-height:0}',
@@ -4142,6 +4142,7 @@
       '#ddApp .top span{color:#BAE6FD;font-size:12px}',
       '#ddApp .stage{overflow:auto;min-height:0}',
       '#ddApp .stage:not(.battleStage){overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding-bottom:14px}',
+      '#ddApp .stage[data-screen="scanner"]{overflow:hidden;padding-bottom:0}',
       '#ddApp .stage:not(.battleStage) .card{min-height:100%;}',
       '#ddApp .stage.battleStage{display:grid;overflow:hidden}',
       '#ddApp .card{padding:16px;box-sizing:border-box}',

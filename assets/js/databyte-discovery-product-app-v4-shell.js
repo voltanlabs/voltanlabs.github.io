@@ -93,6 +93,7 @@
       '#ddApp .top span{color:#BAE6FD;font-size:12px}',
       '#ddApp .stage{overflow:auto;min-height:0}',
       '#ddApp .stage:not(.battleStage){overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding-bottom:14px}',
+      '#ddApp .stage[data-screen="scanner"]{overflow:hidden;padding-bottom:0}',
       '#ddApp .stage:not(.battleStage) .card{min-height:100%;}',
       '#ddApp .stage.battleStage{display:grid;overflow:hidden}',
       '#ddApp .card{padding:16px;box-sizing:border-box}',
