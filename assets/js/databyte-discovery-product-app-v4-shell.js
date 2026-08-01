@@ -742,6 +742,7 @@
         '. Signal weakened to '+
         failed.stabilityAfter+'/'+wild.maxStability+
         '. Download now '+failed.chanceAfter+'%.',
+      chanceAfter:failed.chanceAfter,
       sprite:state.signal,
       canContinue:true
     };
@@ -1078,7 +1079,7 @@
       <button id="battleStart">Back to Battle</button>`,
     result:ctx=>
       ctx.result&&ctx.result.canContinue
-        ?`<button id="continueBattle" class="gold">${ctx.result.reason==='battle-victory'?'Continue to Download':'Continue Battle'}</button>
+        ?`<button id="continueBattle" class="gold">${ctx.result.reason==='battle-victory'?'Continue to Download':ctx.result.type==='failure'?'Try Download Again':'Continue Battle'}</button>
           <button id="back">Return to Scanner</button>`
         :`<button id="back" class="gold">Return to Scanner</button>`,
     party:panelReturnControls,

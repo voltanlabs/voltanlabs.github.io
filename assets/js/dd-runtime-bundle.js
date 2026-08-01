@@ -3880,6 +3880,7 @@
       '#ddApp .result-card[data-owner="dd-result-screen"]{--result-accent:#38BDF8;height:100%;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:14px;overflow:hidden;text-align:center}',
       '#ddApp .result-card[data-owner="dd-result-screen"].success{--result-accent:#22C55E;border-color:rgba(34,197,94,.55)}',
       '#ddApp .result-card[data-owner="dd-result-screen"].failure{--result-accent:#FB7185;border-color:rgba(251,113,133,.55)}',
+      '#ddApp .result-card[data-owner="dd-result-screen"].failure .resultIcon{--dd-rarity-color:#FB7185}',
       '#ddApp .result-card[data-owner="dd-result-screen"].knockout .resultIcon{filter:grayscale(1) brightness(.5);opacity:.55}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultTop{display:flex;justify-content:space-between;align-items:center;gap:10px;color:#BAE6FD;font-size:11px;letter-spacing:.15em;text-transform:uppercase}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultTop b{color:var(--result-accent)}',
@@ -3891,6 +3892,8 @@
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultStat{padding:10px 6px;border:1px solid rgba(125,211,252,.18);border-radius:14px;background:rgba(15,23,42,.62);color:#BAE6FD;font-size:11px}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultStat b{display:block;margin-top:3px;color:white;font-size:16px}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .resultNext{margin:0;color:#BAE6FD;font-size:12px;line-height:1.35}',
+      '#ddApp .result-card[data-owner="dd-result-screen"] .captureStatus{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0;color:#CBD5E1;font-size:12px}',
+      '#ddApp .result-card[data-owner="dd-result-screen"] .captureStatus b{color:var(--result-accent)}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .rewardPanel{display:grid;gap:7px;width:min(100%,430px);padding:10px;border:1px solid rgba(255,215,0,.3);border-radius:14px;background:rgba(15,23,42,.72);box-sizing:border-box}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .rewardRow{display:flex;justify-content:space-between;gap:12px;color:#BAE6FD;font-size:12px;font-weight:800}',
       '#ddApp .result-card[data-owner="dd-result-screen"] .rewardRow b{color:#FFD700}',
@@ -3927,7 +3930,12 @@
       ?'Continue to open the Download confirmation, or return to the Scanner.'
       :success
         ?'The downloaded sprite is now available in your collection and party systems.'
-        :'Return to the Scanner and search for another signal.';
+        :result.canContinue
+          ?'The signal is still in range. Return to Battle to try the Download again.'
+          :'Return to the Scanner and search for another signal.';
+    const captureStatus=!success&&!battleVictory&&sprite
+      ?`<p class="captureStatus"><span>Signal stability <b>${esc(sprite.stability==null?'—':sprite.stability+'/'+(sprite.maxStability||'?'))}</b></span>${result.chanceAfter!=null?`<span>Next chance <b>${esc(result.chanceAfter)}%</b></span>`:''}</p>`
+      :'';
     const rewardHtml=battleVictory&&rewardResult.ok
       ?`<div class="rewardPanel">
         <div class="rewardRow"><span>Battle XP</span><b>+${esc(reward.xp||0)}</b></div>
@@ -3939,7 +3947,7 @@
       </div>`
       :'';
 
-    return `<section class="card result-card ${esc(type)}${result.reason==='signal-collapsed'?' knockout':''}" data-owner="dd-result-screen"><div class="resultTop"><span>${battleVictory?'Battle Result':'Scanner Result'}</span><b>${esc(status)}</b></div><div class="resultCore">${visual}<h1>${esc(title)}</h1><p class="resultMessage">${esc(message)}</p>${rewardHtml}${sprite?`<p class="resultNext">${esc(sprite.name||'DataByte Sprite')} • #${esc(sprite.dex||'?')} • ${esc(sprite.rarity||'Common')}</p>`:''}</div><div><div class="resultSummary"><div class="resultStat">Collection<b>${esc(collection.length)}</b></div><div class="resultStat">Party Slots<b>${esc(party.length)}/5</b></div><div class="resultStat">ByteCoins<b>${esc(inventory.byteCoins||0)}</b></div></div><p class="resultNext">${esc(next)}</p></div></section>`;
+    return `<section class="card result-card ${esc(type)}${result.reason==='signal-collapsed'?' knockout':''}" data-owner="dd-result-screen"><div class="resultTop"><span>${battleVictory?'Battle Result':'Scanner Result'}</span><b>${esc(status)}</b></div><div class="resultCore">${visual}<h1>${esc(title)}</h1><p class="resultMessage">${esc(message)}</p>${captureStatus}${rewardHtml}${sprite?`<p class="resultNext">${esc(sprite.name||'DataByte Sprite')} • #${esc(sprite.dex||'?')} • ${esc(sprite.rarity||'Common')}</p>`:''}</div><div><div class="resultSummary"><div class="resultStat">Collection<b>${esc(collection.length)}</b></div><div class="resultStat">Party Slots<b>${esc(party.length)}/5</b></div><div class="resultStat">ByteCoins<b>${esc(inventory.byteCoins||0)}</b></div></div><p class="resultNext">${esc(next)}</p></div></section>`;
   }
 
   installStyle();
@@ -4793,6 +4801,7 @@
         '. Signal weakened to '+
         failed.stabilityAfter+'/'+wild.maxStability+
         '. Download now '+failed.chanceAfter+'%.',
+      chanceAfter:failed.chanceAfter,
       sprite:state.signal,
       canContinue:true
     };
@@ -5129,7 +5138,7 @@
       <button id="battleStart">Back to Battle</button>`,
     result:ctx=>
       ctx.result&&ctx.result.canContinue
-        ?`<button id="continueBattle" class="gold">${ctx.result.reason==='battle-victory'?'Continue to Download':'Continue Battle'}</button>
+        ?`<button id="continueBattle" class="gold">${ctx.result.reason==='battle-victory'?'Continue to Download':ctx.result.type==='failure'?'Try Download Again':'Continue Battle'}</button>
           <button id="back">Return to Scanner</button>`
         :`<button id="back" class="gold">Return to Scanner</button>`,
     party:panelReturnControls,
