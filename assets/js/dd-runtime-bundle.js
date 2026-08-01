@@ -3931,7 +3931,7 @@
       :success
         ?'The downloaded sprite is now available in your collection and party systems.'
         :result.canContinue
-          ?'The signal is still in range. Return to Battle to try the Download again.'
+          ?'The signal is still in range. Try the Download again from this screen.'
           :'Return to the Scanner and search for another signal.';
     const captureStatus=!success&&!battleVictory&&sprite
       ?`<p class="captureStatus"><span>Signal stability <b>${esc(sprite.stability==null?'—':sprite.stability+'/'+(sprite.maxStability||'?'))}</b></span>${result.chanceAfter!=null?`<span>Next chance <b>${esc(result.chanceAfter)}%</b></span>`:''}</p>`
@@ -4863,6 +4863,11 @@
     state.returnScreen=null;
     if(continueToDownload){
       pushLog('Battle complete. Confirm the Download attempt.');
+      captureAsk();
+      return;
+    }
+    if(state.result&&state.result.type==='failure'&&state.signal){
+      pushLog('Download failed. Try the Download again.');
       captureAsk();
       return;
     }

@@ -807,6 +807,11 @@
       captureAsk();
       return;
     }
+    if(state.result&&state.result.type==='failure'&&state.signal){
+      pushLog('Download failed. Try the Download again.');
+      captureAsk();
+      return;
+    }
     state.screen='battle';
     pushLog('Battle resumed.');
     fx('battle');
