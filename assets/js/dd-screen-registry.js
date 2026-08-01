@@ -59,7 +59,7 @@
     }
     if (name === 'result') {
       return ctx.result && ctx.result.canContinue
-        ? '<button id="continueBattle" class="gold">' + (ctx.result.reason === 'battle-victory' ? 'Continue to Download' : 'Continue Battle') + '</button><button id="back">Return to Scanner</button>'
+        ? '<button id="continueBattle" class="gold">' + (ctx.result.reason === 'battle-victory' ? 'Continue to Download' : ctx.result.type === 'failure' ? 'Try Download Again' : 'Continue Battle') + '</button><button id="back">Return to Scanner</button>'
         : '<button id="back" class="gold">Return to Scanner</button>';
     }
     return null;
