@@ -10,6 +10,7 @@
   <main id="app">
     <header class="topbar"><div><span class="eyebrow">VOLTANLABS // DATA DISCOVERY</span><h1>DataByte Discovery</h1></div><span class="status"><i></i> LOCAL SIMULATION</span></header>
     <section id="scannerView" class="scanner-view" aria-label="Signal scanner"><span class="eyebrow">SCANNER // FIELD SIGNAL</span><h2>Search the surrounding signal field</h2><p id="scannerStatus">No active signal locked. Start a scan to discover a DataByte.</p><button id="scanBtn" class="scan-button">START SCAN</button><div class="scan-bar"><span id="scanProgress"></span></div></section>
+    <section id="encounterView" class="encounter-panel hidden" aria-label="Discovered DataByte"><span class="eyebrow">SIGNAL LOCKED // ENCOUNTER</span><h2>Scorpyone</h2><p>A wild signal has entered the field.</p><div class="encounter-stats"><span>TYPE <b>Wild Signal</b></span><span>RARITY <b>Uncommon</b></span><span>HP <b>100</b></span></div><div class="encounter-actions"><button id="captureBtn" class="ghost">LAUNCH DATABYTECOIN</button><button id="battleBtn" class="scan-button">BATTLE SIGNAL</button></div></section>
     <section id="arenaView" class="arena-shell hidden" aria-label="Three dimensional battle arena">
       <canvas id="battleCanvas"></canvas>
       <div class="arena-grid"></div><div class="scanline"></div>
@@ -23,5 +24,6 @@
   </main>
   <script src="./data/runtime-data.js"></script>
   <script type="module" src="./main.js"></script>
+  <script src="./encounter.js"></script>
 </body>
 </html>
