@@ -1,4 +1,4 @@
-# Three Battle
+# Data Discovery — Three.js
 
 Standalone Three.js battle product for VoltanLabs. This product is intentionally isolated from the existing DataByteSprites runtime. It uses the vendored Three.js module and existing creature sprite art, while owning its own scene, battle state, controls, and presentation.
 
