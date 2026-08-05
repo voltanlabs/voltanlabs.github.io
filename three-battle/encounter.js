@@ -4,7 +4,7 @@
   if(!arena||!encounter)return;
   const observer=new MutationObserver(()=>{
     if(!arena.classList.contains('hidden')&&!encounter.dataset.seen){
-      arena.classList.add('hidden'); encounter.classList.remove('hidden'); encounter.dataset.seen='true';
+      arena.classList.add('hidden'); document.getElementById('controlView')?.classList.add('hidden'); encounter.classList.remove('hidden'); encounter.dataset.seen='true';
     }
   });
   observer.observe(arena,{attributes:true,attributeFilter:['class']});
