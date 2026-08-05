@@ -1,4 +1,4 @@
-const data=window.THREE_BATTLE_DATA||{moves:[],species:[]}; const ps=data.species[0]||{name:'Leovolt',sprite:'leovolt.png',color:0x45d8ff}; const es=data.species[1]||{name:'Scorpyone',sprite:'scorpyone.png',color:0xff6689}; const creatures={player:{...ps,sprite:'../data/sprites/'+ps.sprite,hp:100,maxHp:100},enemy:{...es,sprite:'../data/sprites/'+es.sprite,hp:100,maxHp:100}};
+const data=window.THREE_BATTLE_DATA||{moves:[],species:[]}; const ps=data.species[0]||{name:'Leovolt',sprite:'leovolt.png',color:0x45d8ff}; const es=data.species[1]||{name:'Scorpyone',sprite:'scorpyone.png',color:0xff6689}; const creatures={player:{...ps,sprite:'./data/sprites/'+ps.sprite,hp:100,maxHp:100},enemy:{...es,sprite:'./data/sprites/'+es.sprite,hp:100,maxHp:100}};
 const moves=data.moves.map(m=>({name:m.name,power:m.power,accuracy:m.accuracy,downloadEffect:m.downloadEffect,copy:m.description}));
 const $=id=>document.getElementById(id); let state;
 let scene,camera,renderer,playerMesh,enemyMesh,clock={getElapsedTime:()=>Date.now()/1000},pulse=0;
