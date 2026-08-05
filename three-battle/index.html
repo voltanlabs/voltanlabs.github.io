@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>VoltanLabs // Three Battle</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main id="app">
+    <header class="topbar"><div><span class="eyebrow">VOLTANLABS // THREE BATTLE</span><h1>DataByte Arena</h1></div><span class="status"><i></i> LOCAL SIMULATION</span></header>
+    <section id="scannerView" class="scanner-view" aria-label="Signal scanner"><span class="eyebrow">SCANNER // FIELD SIGNAL</span><h2>Search the surrounding signal field</h2><p id="scannerStatus">No active signal locked. Start a scan to discover a DataByte.</p><button id="scanBtn" class="scan-button">START SCAN</button><div class="scan-bar"><span id="scanProgress"></span></div></section>
+    <section id="arenaView" class="arena-shell hidden" aria-label="Three dimensional battle arena">
+      <canvas id="battleCanvas"></canvas>
+      <div class="arena-grid"></div><div class="scanline"></div>
+      <div class="fighter-card player-card"><span class="tag">YOUR DATABYTE</span><strong id="playerName">LEOVOLT</strong><div class="meter"><span id="playerHp"></span></div><small id="playerHpText">100 / 100 HP</small></div>
+      <div class="fighter-card enemy-card"><span class="tag">WILD SIGNAL</span><strong id="enemyName">SCORPYONE</strong><div class="meter danger"><span id="enemyHp"></span></div><small id="enemyHpText">100 / 100 HP</small></div>
+      <div class="turn-pill" id="turnText">YOUR TURN</div>
+      <div class="log" id="battleLog" aria-live="polite">A wild Scorpyone entered the arena.</div>
+    </section>
+    <section id="controlView" class="control-panel hidden"><div class="panel-heading"><div><span class="eyebrow">COMMAND DECK</span><h2>Choose an action</h2></div><button id="resetBtn" class="ghost">RESET BATTLE</button></div><div id="actions" class="actions"><button class="action" data-move="0"><b>Volt Lash</b><span>Fast electric strike · 18 DMG</span></button><button class="action" data-move="1"><b>Signal Surge</b><span>High-voltage data burst · 25 DMG</span></button><button class="action" data-move="2"><b>Stabilize</b><span>Restore your signal · +20 HP</span></button></div></section>
+    <footer>Three.js presentation layer · standalone prototype · original DataByte battle remains unchanged</footer>
+  </main>
+  <script src="./data/runtime-data.js"></script>
+  <script src="./main.js"></script>
+</body>
+</html>

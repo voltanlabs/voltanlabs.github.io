@@ -1,0 +1,120 @@
+DATABYTE SPRITES: Data Sprite Creatures appear from electronic devices, signals, data(etc.)
+*Controllers of sprites are known as ADMINS
+*Version Upgrade - a sprites ability to upgrade their code and become a new sprite(Evolve)
+	Versions: kilobytes, megabytes, gigabytes, terabytes, storred in bytecoins
+*Kilobytes are base form(RawData) *Megabytes are their 2nd form *Gigabyte is their 3rd *Terabyte (is reserved for a better idea later)
+
+*Sprites have different configurations(types)they include; Alignment: (stained, pristine, null) configs; mystic, voltricity,  acoustic, torrent, thermal, organic, malware, analog, quantum, financial, temporal, spam, cryo, alloy, spectral, cipher, neural, celestial, aether, seismic
+
+*DATABYTELIGHTCODE is the language of the sprites 
+
+1. Leovolt  (Voltricity)(Pristine*)"Lion Cub. Has Blue electric fur with circuit lines also a lightning bolt at the end of his tail"
+
+2. Leothor (Voltricity)(Pristine*)"An      adolescent Lion with blue electic fur with circuit lines with a tail with a lightning bolt end"
+
+3. Leozues (Voltricity)(Pristine)"A full grown lion with blue electric fur and energy charged main with a larger lightning bolt on its tail"
+ 
+(Alignment Forms)
+LeoRust(Alloy) (Stained*)
+LeoWreck(Alloy) (Stained*)
+LeoRuin(Alloy) (Stained*)
+LeoNot (Spectral) (Null*)
+LeoNill (Spectral) (Null*)
+LeoNone (Spectral) (Null*)
+
+4. Crabician (Mystic)(Null*)"An apprentice mage crab"
+
+5. Crabizard (Mystic)(Null*)"A full fledged wizard crab"
+
+6. Crabzaster (Mystic)(Null*)"A Sorcerer Supreme master crab"
+
+7. Scorpyone(Alloy)(Stained*)
+     *Symbiotic Arachnid Sprite: A one eyed orange robotic stained configuration scorpion
+
+8. Scorpytwo(Alloy)(Stained*, Pristine*)
+     *Symbiotic Arachnid Sprite: A robotic stained scorpion & unstained spider duo
+9. Scorpyus (Alloy)(Stained*, Pristine*)
+     *Symiotic Arachnid Sprite: A robotic combined form of the unstained and stained duo scorpion and spider
+10. Kindlekid(Thermal)
+      *Reactive Ignition RAM Sprite: a fiery goat kid with random access to memory.
+11. GaseousGoat(Thermal, Seismic)
+       *Reactive Ignition RAM Sprite: a gracious   goat made from flame and earth
+12. ReactorRam(Thermal, Seismic)
+       *Reactive Ignition RAM Sprite: the gas and fire has reached fusion reaction The Ram is active 
+13. SwimPig (Torrent)
+14. DiveSwine (Torrent)
+15. PorkFloat (Torrent)
+16. CoinCalf(Financial)
+      *Golden Bovine Sprite: a golden calf coin. born as a coin to form into a cash cow when enough money is collected. 
+17. Cash Cow(Financial, Seismic)
+      *Golden Bovine Sprite: The Golden Cash Cow. Known to give the Coin Calfs from its pockets to those in need.
+18. BankerBull (Financial, Seismic)
+      *Golden Bovine Sprite: After so much gold is aquired BankerBull is born. 
+19. Crowupt
+20. Crowuption
+21. Crowtastrophe
+22. DoughDawg (Financial)
+      *Prize Puppy Sprite:
+23. MoneyMutt (Financial)
+       *Prize Puppy Sprite:
+24. HundredHound (Financial)
+       *Prize Puppy Sprite:
+25. Primateicore
+26. Primateican
+27. Primateicon
+28. Clockadile
+29. Aligatorithm
+30. Technogatorus
+31. Fiscalfish: (Torrent)
+      *Financial Flow Sprite: Green with patterns,       reminisce of the paper money of the past. A group of these fish is known as a bank. *
+32. LoanShark (Torrent, Financial)
+       *Financial Flow Sprite: 
+33. AFKWHALE (Torrent, Financial)
+       *Financial Flow Sprite:
+34. PrankCaller (Spam)
+35. Keyboardwarrior (
+36. Troll (Spam, Malware)
+37. Landline
+38. Octocable
+39. Fiberoptopus
+40. CassetteKid
+41. Diskdaddy
+42. Technoblin
+43. Technomoly
+44. Technareality
+45. Glitchwyrm
+46. Screensavior
+47. Monitorman
+48. Displaydevil
+49. Mirrormaster
+50. Compressaur
+51. Pixelpigeon
+52. Binarybear
+53. Proxentity
+54. Proxsentience
+55. Gem-N-Eye
+56. 6.ela (Earth Logic Algorithm)
+57. PixelPup
+58. WireframeWolf
+59. Lupinfinity
+60. Centaurcher(Organic)
+61. Quiver&Colt (Organic)
+62. Kernel:ColtQuiver(Organic)
+63. Aquobit (Aether)
+64. Aquomid (Aether, Torrent)
+65. Aquomeade (Aether, Torrent)
+66. Nullbot
+
+Zodiac:  
+(Aires) KindleKid - GaseousGoat -ReactorRam
+(Taurus ♉) CoinCalf- CashCow - BankerBull
+(Gemini ♊) Gem-N-Eye
+(Cancer ♋) Crabician - Crabizard - Crabzaster
+(Leo ♌) Leovolt - Leothor - Leozeus
+(Virgo ♍) 6.ela(Earth Logic Algorithm)
+(Libra ♎) PixelPup - WireframeWolf -Lupinfinity
+(Scorpio ♏) Scorpyone - Scorpytwo -Scorpyus
+(Sagittarius ♐) Centaurcher - Quiver&Colt - Kernel:ColtQuiver
+(Capricorn ♑)Clockadile - Aligatorithm - Technogatorus
+(Aquarius ♒) AquoBit - AquoMid - AquoMead 
+(Pisces ♓) FiscalFish - LoanShark - AFKWHALE 
