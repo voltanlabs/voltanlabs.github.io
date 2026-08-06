@@ -9,6 +9,7 @@
   function party(){try{return JSON.parse(localStorage.getItem(PARTY_KEY)||'[]')}catch{return[]}}
   function starter(){return localStorage.getItem('vl_three_battle_starter')||''}
   function setStarter(id){localStorage.setItem('vl_three_battle_starter',id);window.dispatchEvent(new CustomEvent('databyte:starter-updated',{detail:{id}}));}
+  function setLead(id){if(party().some(item=>item.id===id))setStarter(id)}
   function capture(sprite){const items=party();if(!items.some(item=>item.id===sprite.id)){items.push({id:sprite.id,name:sprite.name,sprite:sprite.sprite});localStorage.setItem(PARTY_KEY,JSON.stringify(items))}window.dispatchEvent(new CustomEvent('databyte:party-updated'));return items}
-  window.DataByteSession={roster,createEncounter,party,capture,starter,setStarter};
+  window.DataByteSession={roster,createEncounter,party,capture,starter,setStarter,setLead};
 })();
