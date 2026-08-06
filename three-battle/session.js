@@ -1,5 +1,5 @@
 (function(){
-  const PARTY_KEY='vl_three_battle_party',REPO_KEY='vl_three_battle_repository',SEEN_KEY='vl_three_battle_seen';
+  const PARTY_KEY='vl_three_battle_party',SLOTS_KEY='vl_three_battle_slots',REPO_KEY='vl_three_battle_repository',SEEN_KEY='vl_three_battle_seen';
   function roster(){return (window.THREE_BATTLE_DATA?.species||[]).filter(s=>s.id!=='placeholder');}
   function seen(){try{return JSON.parse(localStorage.getItem(SEEN_KEY)||'[]')}catch{return[]}}
   function markSeen(sprite){const items=seen();if(!items.includes(sprite.id)){items.push(sprite.id);localStorage.setItem(SEEN_KEY,JSON.stringify(items));window.dispatchEvent(new CustomEvent('databyte:dex-updated'))}}
@@ -9,6 +9,8 @@
     const selected=list[Math.floor(Math.random()*Math.max(1,list.length))]||{id:'scorpyone',name:'Scorpyone',sprite:'scorpyone.png',color:0xff6689};markSeen(selected);return selected;
   }
   function party(){try{return JSON.parse(localStorage.getItem(PARTY_KEY)||'[]')}catch{return[]}}
+  function slots(){try{let s=JSON.parse(localStorage.getItem(SLOTS_KEY)||'null');if(Array.isArray(s))return Array.from({length:5},(_,i)=>s[i]||null);const migrated=Array.from({length:5},(_,i)=>party()[i]||null);localStorage.setItem(SLOTS_KEY,JSON.stringify(migrated));return migrated}catch{return Array(5).fill(null)}}
+  function assignSlot(index,id){const s=slots(),r=repository(),ri=r.findIndex(x=>x.id===id);if(ri<0)return false;const old=s[index];s[index]=r.splice(ri,1)[0];if(old)r.push(old);localStorage.setItem(SLOTS_KEY,JSON.stringify(s));localStorage.setItem(PARTY_KEY,JSON.stringify(s.filter(Boolean)));localStorage.setItem(REPO_KEY,JSON.stringify(r));setStarter(s[0]?.id||'');window.dispatchEvent(new CustomEvent('databyte:party-updated'));return true}
   function repository(){try{return JSON.parse(localStorage.getItem(REPO_KEY)||'[]')}catch{return[]}}
   function starter(){return localStorage.getItem('vl_three_battle_starter')||''}
   function setStarter(id){localStorage.setItem('vl_three_battle_starter',id);const items=party();if(id&&!items.some(item=>item.id===id)){const source=roster().find(item=>item.id===id)||{id,name:id,sprite:'placeholder.png'};if(items.length<5){items.unshift({id:source.id,name:source.name,sprite:'./data/sprites/'+(source.sprite||'placeholder.png')});localStorage.setItem(PARTY_KEY,JSON.stringify(items))}}window.dispatchEvent(new CustomEvent('databyte:starter-updated',{detail:{id}}));window.dispatchEvent(new CustomEvent('databyte:party-updated'))}
@@ -17,5 +19,5 @@
   function store(id){const items=party(),index=items.findIndex(item=>item.id===id);if(index<0)return false;const [item]=items.splice(index,1),repo=repository();repo.push(item);localStorage.setItem(PARTY_KEY,JSON.stringify(items));localStorage.setItem(REPO_KEY,JSON.stringify(repo));if(starter()===id)setStarter(items[0]?.id||'');window.dispatchEvent(new CustomEvent('databyte:party-updated'));return true}
   function swap(a,b){const items=party(),repo=repository(),ai=items.findIndex(x=>x.id===a),bi=items.findIndex(x=>x.id===b),ar=repo.findIndex(x=>x.id===a),br=repo.findIndex(x=>x.id===b);if(ai>=0&&bi>=0)[items[ai],items[bi]]=[items[bi],items[ai]];else if(ai>=0&&br>=0)[items[ai],repo[br]]=[repo[br],items[ai]];else if(ar>=0&&bi>=0)[repo[ar],items[bi]]=[items[bi],repo[ar]];else return false;localStorage.setItem(PARTY_KEY,JSON.stringify(items));localStorage.setItem(REPO_KEY,JSON.stringify(repo));setStarter(items[0]?.id||'');window.dispatchEvent(new CustomEvent('databyte:party-updated'));return true}
   function capture(sprite){const items=party(),stored={id:sprite.id,name:sprite.name,sprite:sprite.sprite};if(items.some(item=>item.id===sprite.id)||repository().some(item=>item.id===sprite.id))return {ok:false,reason:'already-captured',items};if(items.length>=5){const repo=repository();repo.push(stored);localStorage.setItem(REPO_KEY,JSON.stringify(repo));window.dispatchEvent(new CustomEvent('databyte:party-updated'));return {ok:true,location:'repository',items,repository:repo}}items.push(stored);localStorage.setItem(PARTY_KEY,JSON.stringify(items));window.dispatchEvent(new CustomEvent('databyte:party-updated'));return {ok:true,location:'party',items}}
-  window.DataByteSession={roster,createEncounter,party,repository,capture,starter,setStarter,setLead,deploy,store,swap,seen,markSeen};
+  window.DataByteSession={roster,createEncounter,party,slots,repository,assignSlot,capture,starter,setStarter,setLead,deploy,store,swap,seen,markSeen};
 })();
