@@ -1,0 +1,1 @@
+(function(){function render(){const s=window.DataByteSession;if(!s)return;document.getElementById('dexSeenCount').textContent=s.seen().length;document.getElementById('dexCapturedCount').textContent=s.party().length}window.addEventListener('databyte:dex-updated',render);window.addEventListener('databyte:party-updated',render);render()})();
