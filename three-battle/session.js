@@ -1,5 +1,5 @@
 (function(){
-  const PARTY_KEY='vl_three_battle_party',SEEN_KEY='vl_three_battle_seen';
+  const PARTY_KEY='vl_three_battle_party',REPO_KEY='vl_three_battle_repository',SEEN_KEY='vl_three_battle_seen';
   function roster(){return (window.THREE_BATTLE_DATA?.species||[]).filter(s=>s.id!=='placeholder');}
   function seen(){try{return JSON.parse(localStorage.getItem(SEEN_KEY)||'[]')}catch{return[]}}
   function markSeen(sprite){const items=seen();if(!items.includes(sprite.id)){items.push(sprite.id);localStorage.setItem(SEEN_KEY,JSON.stringify(items));window.dispatchEvent(new CustomEvent('databyte:dex-updated'))}}
@@ -9,9 +9,10 @@
     const selected=list[Math.floor(Math.random()*Math.max(1,list.length))]||{id:'scorpyone',name:'Scorpyone',sprite:'scorpyone.png',color:0xff6689};markSeen(selected);return selected;
   }
   function party(){try{return JSON.parse(localStorage.getItem(PARTY_KEY)||'[]')}catch{return[]}}
+  function repository(){try{return JSON.parse(localStorage.getItem(REPO_KEY)||'[]')}catch{return[]}}
   function starter(){return localStorage.getItem('vl_three_battle_starter')||''}
   function setStarter(id){localStorage.setItem('vl_three_battle_starter',id);window.dispatchEvent(new CustomEvent('databyte:starter-updated',{detail:{id}}));}
-  function setLead(id){if(party().some(item=>item.id===id))setStarter(id)}
-  function capture(sprite){const items=party();if(items.some(item=>item.id===sprite.id))return {ok:false,reason:'already-captured',items};if(items.length>=3)return {ok:false,reason:'party-full',items};items.push({id:sprite.id,name:sprite.name,sprite:sprite.sprite});localStorage.setItem(PARTY_KEY,JSON.stringify(items));window.dispatchEvent(new CustomEvent('databyte:party-updated'));return {ok:true,items}}
-  window.DataByteSession={roster,createEncounter,party,capture,starter,setStarter,setLead,seen,markSeen};
+  function setLead(id){if(party().some(item=>item.id===id)||repository().some(item=>item.id===id))setStarter(id)}
+  function capture(sprite){const items=party(),stored={id:sprite.id,name:sprite.name,sprite:sprite.sprite};if(items.some(item=>item.id===sprite.id)||repository().some(item=>item.id===sprite.id))return {ok:false,reason:'already-captured',items};if(items.length>=5){const repo=repository();repo.push(stored);localStorage.setItem(REPO_KEY,JSON.stringify(repo));window.dispatchEvent(new CustomEvent('databyte:party-updated'));return {ok:true,location:'repository',items,repository:repo}}items.push(stored);localStorage.setItem(PARTY_KEY,JSON.stringify(items));window.dispatchEvent(new CustomEvent('databyte:party-updated'));return {ok:true,location:'party',items}}
+  window.DataByteSession={roster,createEncounter,party,repository,capture,starter,setStarter,setLead,seen,markSeen};
 })();
