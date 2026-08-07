@@ -1,0 +1,1 @@
+(function(){const button=document.getElementById('switchBtn');if(!button)return;button.addEventListener('click',()=>{const slots=window.DataByteSession.slots().filter(Boolean),active=window.DataByteSession.starter(),index=slots.findIndex(s=>s.id===active),next=slots[(index+1)%slots.length];if(next)window.DataByteSession.setStarter(next.id)})})();
