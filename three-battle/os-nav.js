@@ -4,7 +4,7 @@
 
   const nav = document.createElement('nav');
   nav.className = 'os-nav';
-  nav.innerHTML = '<button data-os="scanner">⌖<small>SCAN</small></button><button data-os="party">◈<small>PARTY</small></button><button data-os="dex">▣<small>DEX</small></button><button data-os="mission">★<small>MISSIONS</small></button>';
+  nav.innerHTML = '<button data-os="scanner">⌖<small>SCAN</small></button><button data-os="party">◈<small>PARTY</small></button><button data-os="dex">▣<small>DEX</small></button><button data-os="items">◈<small>ITEMS</small></button><button data-os="mission">★<small>MISSIONS</small></button>';
   document.body.appendChild(nav);
 
   const modal = document.createElement('div');
