@@ -1,6 +1,6 @@
 (function () {
   const KEY = 'vl_three_battle_inventory';
-  const defaults = { patch: 3 };
+  const defaults = { patch: 3, boost: 2, repair: 1 };
   function read() { try { return { ...defaults, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { return { ...defaults }; } }
   function save(value) { localStorage.setItem(KEY, JSON.stringify(value)); render(); return value; }
   function count(id = 'patch') { return Math.max(0, Number(read()[id] || 0)); }
@@ -22,7 +22,8 @@
       if (!use()) { window.DataByteBattle.message('No Signal Patches remaining.'); return; }
       window.DataByteBattle.healPlayer(25);
     });
-    panel.appendChild(button); render();
+    panel.appendChild(button);
+    [['boostBtn','SIGNAL BOOST ×','boost'],['repairBtn','REPAIR PULSE ×','repair']].forEach(([id,label,item])=>{const extra=document.createElement('button');extra.id=id;extra.className='ghost';extra.type='button';extra.addEventListener('click',()=>{if(!window.DataByteBattle?.[item])return;if(!use(item)){window.DataByteBattle.message(`No ${label.trim()}s remaining.`);return}window.DataByteBattle[item]();});panel.appendChild(extra)}); render();
   }
   window.DataByteInventory = { read, count, add, use, render };
   window.addEventListener('DOMContentLoaded', install);
