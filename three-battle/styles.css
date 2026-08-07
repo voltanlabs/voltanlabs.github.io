@@ -29,6 +29,7 @@
 #rewardHistory{margin-top:12px;padding-top:10px;border-top:1px solid #245271}#rewardHistory p{margin:5px 0;color:var(--muted);font-size:11px}#rewardHistory p strong{color:var(--gold)}
 .map-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}.map-grid button{display:grid;gap:4px}.map-grid small{color:var(--muted)}
 .discovery-code-row{display:flex;gap:6px;margin-top:10px}.discovery-code{min-width:0;flex:1;border:1px solid #35627a;border-radius:9px;padding:10px;background:#061321;color:#e8f9ff;text-transform:uppercase}.discovery-code-row .ghost{font-size:10px;padding:8px}
+.switch-list{display:grid;gap:8px;margin:16px 0}.switch-list button{display:flex;justify-content:space-between}.switch-list small{color:var(--muted)}
 .progression-status{font-size:10px;color:var(--gold);letter-spacing:.08em;white-space:nowrap}
 @media(max-width:650px){
   .actions{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-top:8px}
