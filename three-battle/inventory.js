@@ -9,6 +9,8 @@
   function render() {
     const button = document.getElementById('itemBtn');
     if (button) button.textContent = `SIGNAL PATCH ×${count()}`;
+    const boost = document.getElementById('boostBtn'); if (boost) boost.textContent = `SIGNAL BOOST ×${count('boost')}`;
+    const repair = document.getElementById('repairBtn'); if (repair) repair.textContent = `REPAIR PULSE ×${count('repair')}`;
     const mission = document.getElementById('missionProgress');
     if (mission && window.DataByteProgression) mission.textContent = `${window.DataByteProgression.snapshot().rank} · ${window.DataByteProgression.xp()} XP · Signal Patches: ${count()}`;
   }
