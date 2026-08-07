@@ -20,6 +20,7 @@
 .party-panel,.dex-panel{display:none}
 .os-modal .party-panel,.os-modal .dex-panel{display:block}
 .starter-active .os-nav,.starter-active .topbar,.starter-active footer{display:none}
+.capture-modal{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:18px;background:#020711cc;backdrop-filter:blur(8px)}.capture-modal.is-open{display:grid}.capture-card{width:min(420px,100%);padding:26px 20px;border:1px solid #50d9ff;border-radius:20px;background:#071a2a;box-shadow:0 18px 70px #000b;text-align:center}.capture-card h2{margin:8px 0;color:var(--gold)}.capture-card p{color:#9bb8c8}.capture-active canvas{animation:capturePulse .65s ease-in-out}@keyframes capturePulse{50%{filter:brightness(1.8) saturate(1.5);transform:scale(.98)}}
 .progression-status{font-size:10px;color:var(--gold);letter-spacing:.08em;white-space:nowrap}
 @media(max-width:650px){
   .actions{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-top:8px}
