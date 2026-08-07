@@ -26,6 +26,7 @@
 #dexRecords{display:grid;gap:8px}.dex-record{display:grid;grid-template-columns:48px 1fr;gap:10px;align-items:center;padding:10px;border:1px solid #245271;border-radius:12px;background:#0a1e30}.dex-record img{width:48px;height:48px;object-fit:contain}.dex-record strong{display:block}.dex-record small{display:block;color:var(--gold);font-size:10px;letter-spacing:.08em}.dex-record p{margin:4px 0 0;color:var(--muted);font-size:11px}.dex-record.unknown{opacity:.65;filter:saturate(.25)}
 .region-list{display:grid;gap:8px;margin:16px 0}.region-list button{width:100%}
 #eventCard{margin-top:12px;padding:12px;border:1px solid #ffd16666;border-radius:12px;background:#211b0c;color:#dff7ff}#eventCard strong{display:block;color:var(--gold);margin:4px 0}#eventCard p{margin:0;color:var(--muted);font-size:11px}
+#rewardHistory{margin-top:12px;padding-top:10px;border-top:1px solid #245271}#rewardHistory p{margin:5px 0;color:var(--muted);font-size:11px}#rewardHistory p strong{color:var(--gold)}
 .progression-status{font-size:10px;color:var(--gold);letter-spacing:.08em;white-space:nowrap}
 @media(max-width:650px){
   .actions{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-top:8px}
