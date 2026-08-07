@@ -1,8 +1,9 @@
 (function(){
-  const PARTY_KEY='vl_three_battle_party',SLOTS_KEY='vl_three_battle_slots',REPO_KEY='vl_three_battle_repository',SEEN_KEY='vl_three_battle_seen';
+  const PARTY_KEY='vl_three_battle_party',SLOTS_KEY='vl_three_battle_slots',REPO_KEY='vl_three_battle_repository',SEEN_KEY='vl_three_battle_seen',DEX_KEY='vl_three_battle_dex';
   function roster(){return (window.THREE_BATTLE_DATA?.species||[]).filter(s=>s.id!=='placeholder');}
   function seen(){try{return JSON.parse(localStorage.getItem(SEEN_KEY)||'[]')}catch{return[]}}
-  function markSeen(sprite){const items=seen();if(!items.includes(sprite.id)){items.push(sprite.id);localStorage.setItem(SEEN_KEY,JSON.stringify(items));window.dispatchEvent(new CustomEvent('databyte:dex-updated'))}}
+  function dex(){try{return JSON.parse(localStorage.getItem(DEX_KEY)||'[]')}catch{return[]}}
+  function markSeen(sprite){const items=seen();if(!items.includes(sprite.id)){items.push(sprite.id);localStorage.setItem(SEEN_KEY,JSON.stringify(items));const records=dex();records.push({id:sprite.id,name:sprite.name,firstSeen:new Date().toISOString(),captured:false});localStorage.setItem(DEX_KEY,JSON.stringify(records));window.dispatchEvent(new CustomEvent('databyte:dex-updated'))}}
   function createEncounter(playerId, currentId){
     const pool=roster().filter(s=>s.id!==playerId && s.id!==currentId);
     const list=pool.length?pool:roster().filter(s=>s.id!==playerId);
@@ -22,5 +23,5 @@
   function store(id){const items=party(),index=items.findIndex(item=>item.id===id);if(index<0)return false;const [item]=items.splice(index,1),repo=repository();repo.push(item);localStorage.setItem(PARTY_KEY,JSON.stringify(items));localStorage.setItem(REPO_KEY,JSON.stringify(repo));if(starter()===id)setStarter(items[0]?.id||'');window.dispatchEvent(new CustomEvent('databyte:party-updated'));return true}
   function swap(a,b){const items=party(),repo=repository(),ai=items.findIndex(x=>x.id===a),bi=items.findIndex(x=>x.id===b),ar=repo.findIndex(x=>x.id===a),br=repo.findIndex(x=>x.id===b);if(ai>=0&&bi>=0)[items[ai],items[bi]]=[items[bi],items[ai]];else if(ai>=0&&br>=0)[items[ai],repo[br]]=[repo[br],items[ai]];else if(ar>=0&&bi>=0)[repo[ar],items[bi]]=[items[bi],repo[ar]];else return false;localStorage.setItem(PARTY_KEY,JSON.stringify(items));localStorage.setItem(REPO_KEY,JSON.stringify(repo));setStarter(items[0]?.id||'');window.dispatchEvent(new CustomEvent('databyte:party-updated'));return true}
   function capture(sprite){const items=party(),stored={id:sprite.id,name:sprite.name,sprite:sprite.sprite};if(items.some(item=>item.id===sprite.id)||repository().some(item=>item.id===sprite.id))return {ok:false,reason:'already-captured',items};if(items.length>=5){const repo=repository();repo.push(stored);localStorage.setItem(REPO_KEY,JSON.stringify(repo));window.dispatchEvent(new CustomEvent('databyte:party-updated'));return {ok:true,location:'repository',items,repository:repo}}items.push(stored);localStorage.setItem(PARTY_KEY,JSON.stringify(items));window.dispatchEvent(new CustomEvent('databyte:party-updated'));return {ok:true,location:'party',items}}
-  window.DataByteSession={roster,createEncounter,party,slots,repository,assignSlot,storeSlot,swapSlots,capture,attemptCapture,starter,setStarter,setLead,deploy,store,swap,seen,markSeen};
+  window.DataByteSession={roster,createEncounter,party,slots,repository,assignSlot,storeSlot,swapSlots,capture,attemptCapture,starter,setStarter,setLead,deploy,store,swap,seen,dex,markSeen};
 })();
