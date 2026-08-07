@@ -8,11 +8,12 @@
   function use(id = 'patch') { const next = read(); if (!next[id]) return false; next[id] -= 1; save(next, true); return true; }
   function render() {
     const list = document.getElementById('itemsList'); if (!list) return;
-    list.innerHTML = [['patch', 'REPAIR PATCH', 'Restore 25 HP'], ['boost', 'SIGNAL BOOST', 'Increase capture pressure'], ['repair', 'REPAIR PULSE', 'Restore 35 HP']].map(([id, name, copy]) => `<button class="ghost" data-item-id="${id}"><span><strong>${name}</strong><small>${copy}</small></span><b>×${count(id)}</b></button>`).join('');
+    const coins = window.DataByteSession?.coins?.() ?? 0;
+    list.innerHTML = `<div class="coin-balance"><span><strong>DATABYTECOINS</strong><small>Capture currency</small></span><b>◈ ${coins}</b></div>` + [['patch', 'REPAIR PATCH', 'Restore 25 HP'], ['boost', 'SIGNAL BOOST', 'Increase capture pressure'], ['repair', 'REPAIR PULSE', 'Restore 35 HP']].map(([id, name, copy]) => `<button class="ghost" data-item-id="${id}"><span><strong>${name}</strong><small>${copy}</small></span><b>×${count(id)}</b></button>`).join('');
     list.querySelectorAll('[data-item-id]').forEach(button => button.onclick = () => { const id = button.dataset.itemId; const action = id === 'patch' ? 'healPlayer' : id; if (document.getElementById('arenaView')?.classList.contains('hidden') || !window.DataByteBattle?.[action]) return; if (!use(id)) { window.DataByteBattle.message(`No ${button.querySelector('strong').textContent} items remaining.`); return; } window.DataByteBattle[action](id === 'patch' ? 25 : undefined); });
     const mission = document.getElementById('missionProgress'); if (mission && window.DataByteProgression) mission.textContent = `${window.DataByteProgression.snapshot().rank} · ${window.DataByteProgression.xp()} XP · Signal Boosts: ${count('boost')} · Repair Pulses: ${count('repair')}`;
   }
   function install() { if (document.getElementById('itemsList')) render(); }
   window.DataByteInventory = { read, count, add, use, render };
-  install(); window.addEventListener('DOMContentLoaded', install); window.addEventListener('databyte:progression-updated', render);
+  install(); window.addEventListener('DOMContentLoaded', install); window.addEventListener('databyte:progression-updated', render); window.addEventListener('databyte:coins-updated', render); window.addEventListener('databyte:dex-updated', render); window.addEventListener('databyte:mission-rewarded', render);
 })();
