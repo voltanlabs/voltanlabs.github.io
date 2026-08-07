@@ -11,7 +11,7 @@
   }
   function install() {
     const scanner = document.getElementById('scannerView'); if (!scanner || document.getElementById('discoveryCode')) return;
-    const row = document.createElement('div'); row.className = 'discovery-code-row'; row.innerHTML = '<input id="discoveryCode" class="discovery-code" placeholder="VL-SIGNAL7" maxlength="12" aria-label="Discovery code"><button id="discoverCodeBtn" class="ghost" type="button">DISCOVER CODE</button>'; scanner.appendChild(row); document.getElementById('discoverCodeBtn').onclick = discover;
+    const row = document.createElement('div'); row.className = 'discovery-code-row'; row.innerHTML = '<input id="discoveryCode" class="discovery-code" placeholder="VL-SIGNAL7" maxlength="12" aria-label="Discovery code"><button id="discoverCodeBtn" class="ghost" type="button">DISCOVER CODE</button>'; (scanner.querySelector('#scannerTools') || scanner).appendChild(row); document.getElementById('discoverCodeBtn').onclick = discover;
   }
   window.DataByteDiscoveryCodes = { read, discover };
   install(); window.addEventListener('DOMContentLoaded', install);

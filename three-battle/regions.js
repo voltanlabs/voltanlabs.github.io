@@ -11,7 +11,7 @@
     modal.querySelectorAll('[data-region]').forEach(button => button.addEventListener('click', () => { localStorage.setItem(KEY, button.dataset.region); modal.classList.remove('is-open'); render(); window.dispatchEvent(new CustomEvent('databyte:region-updated', { detail: current() })); }));
     modal.querySelector('[data-region-close]').onclick = () => modal.classList.remove('is-open');
   }
-  function install() { const scanner = document.getElementById('scannerView'); if (!scanner || document.getElementById('regionBtn')) return; const button = document.createElement('button'); button.id = 'regionBtn'; button.className = 'ghost'; button.type = 'button'; button.onclick = open; scanner.appendChild(button); render(); }
+  function install() { const scanner = document.getElementById('scannerView'); if (!scanner || document.getElementById('regionBtn')) return; const button = document.createElement('button'); button.id = 'regionBtn'; button.className = 'ghost'; button.type = 'button'; button.onclick = open; (scanner.querySelector('#scannerTools') || scanner).appendChild(button); render(); }
   window.DataByteRegions = { regions, current, open, render };
   window.addEventListener('DOMContentLoaded', install);
 })();

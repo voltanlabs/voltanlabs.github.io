@@ -10,7 +10,7 @@
     modal.querySelectorAll('[data-map-region]').forEach(button => button.addEventListener('click', () => { localStorage.setItem('vl_three_battle_region', button.dataset.mapRegion); modal.classList.remove('is-open'); window.DataByteRegions?.render?.(); window.dispatchEvent(new CustomEvent('databyte:region-updated', { detail: window.DataByteRegions?.current?.() })); }));
     modal.querySelector('[data-map-close]').onclick = () => modal.classList.remove('is-open');
   }
-  function install() { const scanner = document.getElementById('scannerView'); if (!scanner || document.getElementById('mapBtn')) return; const button = document.createElement('button'); button.id = 'mapBtn'; button.className = 'ghost'; button.type = 'button'; button.textContent = 'WORLD MAP'; button.onclick = open; scanner.appendChild(button); }
+  function install() { const scanner = document.getElementById('scannerView'); if (!scanner || document.getElementById('mapBtn')) return; const button = document.createElement('button'); button.id = 'mapBtn'; button.className = 'ghost'; button.type = 'button'; button.textContent = 'WORLD MAP'; button.onclick = open; (scanner.querySelector('#scannerTools') || scanner).appendChild(button); }
   window.DataByteWorldMap = { open, unlocks };
   install(); window.addEventListener('DOMContentLoaded', install); window.addEventListener('databyte:dex-updated', install);
 })();
