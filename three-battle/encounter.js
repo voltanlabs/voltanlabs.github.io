@@ -4,7 +4,7 @@
   if(!arena||!encounter)return;
   const observer=new MutationObserver(()=>{
     if(!arena.classList.contains('hidden')&&!encounter.dataset.seen){
-      const name=document.getElementById('enemyName')?.textContent||'Wild Signal'; encounter.querySelector('h2').textContent=name; encounter.querySelector('p').textContent='A wild signal has entered the field.';
+      const name=document.getElementById('enemyName')?.textContent||'Wild Signal'; encounter.querySelector('h2').textContent=name; const enemy=window.DataByteSession?.roster().find(item=>item.name.toUpperCase()===name.toUpperCase()); encounter.querySelector('p').textContent=`A wild signal has entered the field. ${enemy?.rarity||'Common'} signal · Scan code ${window.DataByteSession?.scanCode?.()||'VL-SIGNAL'}.`;
       arena.classList.add('hidden'); document.getElementById('controlView')?.classList.add('hidden'); encounter.classList.remove('hidden'); encounter.dataset.seen='true';
     }
   });
