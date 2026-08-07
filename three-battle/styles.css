@@ -20,6 +20,7 @@
 .party-panel,.dex-panel{display:none}
 .os-modal .party-panel,.os-modal .dex-panel{display:block}
 .starter-active .os-nav,.starter-active .topbar,.starter-active footer{display:none}
+.progression-status{font-size:10px;color:var(--gold);letter-spacing:.08em;white-space:nowrap}
 @media(max-width:650px){
   .actions{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-top:8px}
   .action{min-width:0;min-height:46px;height:46px;padding:6px 4px;display:grid;place-items:center;text-align:center}
