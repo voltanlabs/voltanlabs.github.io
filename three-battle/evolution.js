@@ -8,7 +8,7 @@
       const active = window.DataByteSession?.starter?.();
       const result = active ? window.DataByteSession.evolve?.(active) : null;
       const message = document.getElementById('missionProgress');
-      if (message) message.textContent = result?.ok ? `${result.from} upgraded to ${result.to}.` : 'No Version Upgrade is available for the lead yet.';
+      if (message) message.textContent = result?.ok ? `${result.from} upgraded to ${result.to}.` : result?.reason === 'requires-xp' ? `Earn ${result.required - result.xp} more XP before upgrading.` : 'No Version Upgrade is available for the lead yet.';
       if (result?.ok) button.textContent = 'VERSION UP COMPLETE';
     });
     view.querySelector('div')?.appendChild(button);
