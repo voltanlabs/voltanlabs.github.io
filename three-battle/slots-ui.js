@@ -38,10 +38,11 @@
     };
   }
 
-  function openInfo(item, location) {
+  function openInfo(item, location, slotIndex = null) {
     const modal = ensureModal();
     const detail = spriteDetails(item, location);
     const canUpgrade = ['leovolt', 'leothor', 'kindlekid', 'coincalf', 'crabician', 'scorpyone'].includes(detail.id);
+    const isLead = location === 'party' && slotIndex === 0;
     modal.innerHTML = `<div class="capture-card party-info-card">
       <button class="party-info-close ghost" data-party-close type="button">CLOSE</button>
       <span class="eyebrow">${detail.location === 'party' ? 'ACTIVE PARTY SIGNAL' : 'SPRITE REPOSITORY'}</span>
@@ -55,7 +56,7 @@
         <span>VERSION <b>${detail.version}</b></span>
       </div>
       <div class="party-info-actions">
-        ${detail.location === 'party' ? `<button class="ghost" data-party-lead type="button">${session().starter() === detail.id ? 'CURRENT LEAD' : 'SET AS LEAD'}</button>` : ''}
+        ${detail.location === 'party' ? `<button class="ghost" data-party-lead type="button">${session().starter() === detail.id ? 'CURRENT LEAD' : 'SET AS LEAD'}</button><button class="ghost" data-party-store type="button" ${isLead ? 'disabled' : ''}>${isLead ? 'LEAD CANNOT BE STORED' : 'SEND TO REPOSITORY'}</button>` : '<button class="scan-button" data-party-deploy type="button">SEND TO TEAM</button>'}
         ${canUpgrade ? '<button class="scan-button" data-party-upgrade type="button">VERSION UP</button>' : ''}
       </div>
     </div>`;
@@ -66,6 +67,22 @@
       const index = slots.findIndex(entry => entry?.id === detail.id);
       if (index > 0) session().swapSlots(0, index);
       else session().setLead(detail.id);
+      closeModal();
+      render();
+    });
+    modal.querySelector('[data-party-store]')?.addEventListener('click', () => {
+      if (isLead || slotIndex === null) return;
+      session().storeSlot(slotIndex);
+      closeModal();
+      render();
+    });
+    modal.querySelector('[data-party-deploy]')?.addEventListener('click', () => {
+      const emptyIndex = session().slots().findIndex(entry => !entry);
+      if (emptyIndex < 0) {
+        modal.querySelector('.party-info-actions').insertAdjacentHTML('afterend', '<p class="party-info-message">Your team is full. Use Switch DataBytes to replace a team slot.</p>');
+        return;
+      }
+      session().assignSlot(emptyIndex, detail.id);
       closeModal();
       render();
     });
@@ -143,7 +160,7 @@
       const item = isRepo ? repo.find(entry => `repo-${entry.id}` === key) : slots[index];
       const target = key === 'repo-empty' ? { kind: 'repo-empty', key } : isRepo ? { kind: 'repo', id: item?.id, key } : { kind: 'slot', index, key };
       if (switchMode && (target.kind === 'slot' || target.kind === 'repo' || target.kind === 'repo-empty')) swapSelection(target);
-      else if (item) openInfo(item, isRepo ? 'repository' : 'party');
+      else if (item) openInfo(item, isRepo ? 'repository' : 'party', isRepo ? null : index);
     });
   }
 
