@@ -62,7 +62,10 @@
     modal.classList.add('is-open');
     modal.querySelector('[data-party-close]').onclick = closeModal;
     modal.querySelector('[data-party-lead]')?.addEventListener('click', () => {
-      session().setLead(detail.id);
+      const slots = session().slots();
+      const index = slots.findIndex(entry => entry?.id === detail.id);
+      if (index > 0) session().swapSlots(0, index);
+      else session().setLead(detail.id);
       closeModal();
       render();
     });
