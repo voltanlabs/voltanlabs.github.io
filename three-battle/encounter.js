@@ -12,7 +12,8 @@
     document.getElementById('encounterRarity').textContent=enemy.rarity||'Common';
     document.getElementById('encounterAlignment').textContent=enemy.alignment||'Unknown';
     document.getElementById('encounterHp').textContent='100';
-    document.getElementById('encounterDetail').textContent=enemy.description||enemy.lore||'Signal record pending.';
+    const battleState=window.DataByteBattle?.getState?.(),chance=window.DataByteBattle?.captureChance?.()??45;
+    document.getElementById('encounterDetail').textContent=`${enemy.description||enemy.lore||'Signal record pending.'} Capture window ${chance}% · Signal stability ${battleState?.stability??100}%.`;
     const image=document.getElementById('enemyPreviewSprite');
     const owned=(window.DataByteSession?.party?.()||[]).concat(window.DataByteSession?.repository?.()||[]).some(item=>item.id===enemy.id);
     const hasSprite=enemy.sprite&&enemy.sprite!=='placeholder.png';
