@@ -14,7 +14,7 @@
   function createEncounter(playerId, currentId){
     const pool=roster().filter(s=>s.id!==playerId && s.id!==currentId);
     const list=pool.length?pool:roster().filter(s=>s.id!==playerId);
-    const base=list[Math.floor(Math.random()*Math.max(1,list.length))]||{id:'scorpyone',name:'Scorpyone',sprite:'scorpyone.png',color:0xff6689};const selected={...base,rarity:rarity(),scanCode:scanCode()};markSeen(selected);return selected;
+    const base=list[Math.floor(Math.random()*Math.max(1,list.length))]||{id:'scorpyone',name:'Scorpyone',sprite:'scorpyone.png',color:0xff6689};return {...base,rarity:rarity(),scanCode:scanCode()};
   }
   function party(){try{return JSON.parse(localStorage.getItem(PARTY_KEY)||'[]')}catch{return[]}}
   function slots(){try{let s=JSON.parse(localStorage.getItem(SLOTS_KEY)||'null');const legacy=party();if(!Array.isArray(s))s=Array(5).fill(null);for(let i=0;i<5;i++)if(!s[i]&&legacy[i])s[i]=legacy[i];localStorage.setItem(SLOTS_KEY,JSON.stringify(Array.from({length:5},(_,i)=>s[i]||null)));return Array.from({length:5},(_,i)=>s[i]||null)}catch{return Array(5).fill(null)}}
