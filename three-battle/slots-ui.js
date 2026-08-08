@@ -25,7 +25,7 @@
     const source = roster.find(entry => entry.id === item.id) || item;
     const hp = Number(item.hp ?? 100);
     const maxHp = Number(item.maxHp ?? 100);
-    const version = Number(item.version || source.version || 1);
+    const version = item.version || source.version || 1;
     return {
       ...source,
       ...item,
