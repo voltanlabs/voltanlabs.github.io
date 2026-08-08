@@ -30,7 +30,7 @@
     const state = snapshot();
     const target = document.getElementById('progressionStatus');
     if (target) target.textContent = `${state.rank} · ${state.xp} XP`;
-    const mission = document.getElementById('missionProgress');
+    const mission = document.getElementById('progressionSummary');
     if (mission) mission.textContent = `${state.rank} · ${state.xp} XP · ${state.nextXp === state.xp ? 'Max rank reached.' : `${state.nextXp - state.xp} XP to next rank.`}`;
     window.dispatchEvent(new CustomEvent('databyte:progression-updated', { detail: state }));
   }
