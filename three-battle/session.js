@@ -39,3 +39,22 @@
   function resetSave(){[PARTY_KEY,SLOTS_KEY,REPO_KEY,SEEN_KEY,DEX_KEY,COIN_KEY,MISSION_KEY,'vl_three_battle_starter','vl_three_battle_inventory','vl_three_battle_xp','vl_three_battle_items_used'].forEach(key=>localStorage.removeItem(key));return true}
   window.DataByteSession={roster,createEncounter,party,slots,repository,assignSlot,storeSlot,swapSlots,capture,attemptCapture,starter,setStarter,setLead,deploy,store,swap,seen,dex,markSeen,markCaptured,coins,addCoins,spendCoin,updateHp,recoverAll,scanCode,mission,exportSave,importSave,resetSave,evolve:evolveFixed};
 })();
+(function(){
+  const s=window.DataByteSession;
+  if(!s||s.capture.__slotAware)return;
+  const original=s.capture;
+  const captureWithSlots=function(sprite){
+    const slots=s.slots(),repo=s.repository();
+    if(slots.some(item=>item?.id===sprite.id)||repo.some(item=>item?.id===sprite.id))return {ok:false,reason:'already-captured',items:s.party()};
+    const stored={...sprite,id:sprite.id,name:sprite.name,sprite:sprite.sprite,hp:Math.max(0,Number(sprite.hp??100)),maxHp:Number(sprite.maxHp??100)};
+    const empty=slots.findIndex(item=>!item);
+    if(empty<0)return original(sprite);
+    slots[empty]=stored;
+    localStorage.setItem('vl_three_battle_slots',JSON.stringify(slots));
+    localStorage.setItem('vl_three_battle_party',JSON.stringify(slots.filter(Boolean)));
+    window.dispatchEvent(new CustomEvent('databyte:party-updated'));
+    return {ok:true,location:'party',items:slots.filter(Boolean)};
+  };
+  captureWithSlots.__slotAware=true;
+  s.capture=captureWithSlots;
+})();
