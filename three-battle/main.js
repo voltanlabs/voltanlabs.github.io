@@ -26,3 +26,29 @@ function act(move){if(state.busy||state.over)return;state.busy=true;if(move.name
 function reset(){const next=session.createEncounter(creatures.player.id,creatures.enemy.id);Object.assign(creatures.enemy,{...next,name:/pending/i.test(next.name||'')?'Unknown Signal':next.name,sprite:'./data/sprites/'+next.sprite,hp:100,maxHp:100});if(scene&&enemyMesh){scene.remove(enemyMesh);enemyMesh=makeFighter(creatures.enemy,3);scene.add(enemyMesh);resize()}$('enemyName').textContent=creatures.enemy.name.toUpperCase();$('playerName').textContent=creatures.player.name.toUpperCase();creatures.player.hp=currentPlayerHp();const outcome=$('battleOutcome');if(outcome)outcome.classList.add('hidden');state={busy:false,over:false,guarding:false,status:null,capturePressure:0,stability:100,message:`A wild ${creatures.enemy.name} entered the arena.`};render()}
 function beginScan(){reset();scannerView.classList.add('is-scanning');const button=scanBtn;const progress=scanProgress;button.disabled=true;let value=0;const timer=setInterval(()=>{value+=20;progress.style.width=value+'%';scannerStatus.textContent=value<100?'Scanning signal layer '+value+'%':'Signal locked: discovery ready.';if(value>=100){clearInterval(timer);scannerStatus.textContent='Signal locked. Opening discovery record...';setTimeout(()=>{scannerView.classList.remove('is-scanning');scannerView.classList.add('hidden');arenaView.classList.add('hidden');controlView.classList.add('hidden');encounterView.classList.remove('hidden');encounterView.dataset.seen='true';window.dispatchEvent(new CustomEvent('databyte:encounter-ready'))},900)}},180)} function start(){window.addEventListener('databyte:party-updated',()=>{const lead=session.party().find(p=>p.id===session.starter());if(lead){playerName.textContent=lead.name.toUpperCase();if(scene&&playerMesh){scene.remove(playerMesh);const source=data.species.find(s=>s.id===lead.id)||lead;playerMesh=makeFighter({...source,sprite:lead.sprite},-3);scene.add(playerMesh);resize()}}});$('scanBtn').addEventListener('click',beginScan);try{setup3D()}catch(error){console.warn('Three.js presentation unavailable; continuing with DOM battle UI.',error)}$('actions').innerHTML=moves.map((m,i)=>`<button class="action" data-move="${i}"><b>${m.name}</b><span>${m.copy} · ${m.power<0?'+'+(-m.power)+' HP':m.power+' DMG'}</span></button>`).join('');$('actions').addEventListener('click',e=>{const b=e.target.closest('.action');if(b)act(moves[Number(b.dataset.move)])});$('resetBtn').addEventListener('click',reset);renderDex();reset()}
 start(); window.DataByteBattle.capture=saveParty; window.DataByteBattle.showCapturePrompt=()=>showOutcome('discovery');
+
+function grantBattleReward(kind){
+  if(!state||state.rewardGranted)return;
+  state.rewardGranted=true;
+  const captured=kind==='captured';
+  const xp=captured?50:25;
+  window.DataByteProgression?.addXp?.(xp);
+  window.DataByteRewardHistory?.record?.(captured?'Captured reward':'Victory reward');
+}
+
+const rewardObserver=new MutationObserver(()=>{
+  const modal=$('captureModal');
+  if(!modal||!modal.classList.contains('is-open'))return;
+  const text=modal.textContent||'';
+  if(/SIGNAL LOCKED|SIGNAL DESTABILIZED/.test(text)){state.rewardGranted=false;return}
+  if(/SIGNAL STORED/.test(text)&&!state.rewardGranted){
+    grantBattleReward('captured');
+    modal.innerHTML=`<div class="capture-card"><span class="eyebrow">BATTLE REWARDS</span><h2>${creatures.enemy.name} captured</h2><p>+50 XP · Signal added to your ${session.party().length>=5?'repository':'party'}.</p><button class="scan-button" data-capture-close>CONTINUE SCANNING</button></div>`;
+    modal.querySelector('[data-capture-close]')?.addEventListener('click',returnToScanner);
+  }else if(/CAPTURE FAILED/.test(text)&&session.coins?.()<1&&!state.rewardGranted){
+    grantBattleReward('victory');
+    modal.innerHTML=`<div class="capture-card"><span class="eyebrow">BATTLE REWARDS</span><h2>Signal secured</h2><p>+25 XP · No DataByteCoins remain, so this signal cannot be captured.</p><button class="scan-button" data-capture-close>CONTINUE SCANNING</button></div>`;
+    modal.querySelector('[data-capture-close]')?.addEventListener('click',returnToScanner);
+  }
+});
+rewardObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
