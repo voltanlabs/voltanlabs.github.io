@@ -24,7 +24,7 @@
       <div class="turn-pill" id="turnText">YOUR TURN</div>
       <div class="log" id="battleLog" aria-live="polite">A wild Scorpyone entered the arena.</div>
     </section>
-    <section id="controlView" class="control-panel hidden"><div class="panel-heading"><div><span class="eyebrow">COMMAND DECK</span><h2>Choose an action</h2></div><button id="switchBtn" class="ghost">SWITCH DATABYTE</button><button id="resetBtn" class="ghost">RESET BATTLE</button></div><div id="actions" class="actions"><button class="action" data-move="0"><b>Volt Lash</b><span>Fast electric strike · 18 DMG</span></button><button class="action" data-move="1"><b>Signal Surge</b><span>High-voltage data burst · 25 DMG</span></button><button class="action" data-move="2"><b>Stabilize</b><span>Restore your signal · +20 HP</span></button></div><div id="battleOutcome" class="battle-outcome hidden"></div></section>
+      <section id="controlView" class="control-panel hidden"><div class="panel-heading"><div><span class="eyebrow">COMMAND DECK</span><h2>Choose an action</h2></div><button id="switchBtn" class="ghost">SWITCH DATABYTE</button><button id="captureBattleBtn" class="ghost">CAPTURE SIGNAL</button><button id="resetBtn" hidden aria-hidden="true"></button></div><div id="actions" class="actions"><button class="action" data-move="0"><b>Volt Lash</b><span>Fast electric strike · 18 DMG</span></button><button class="action" data-move="1"><b>Signal Surge</b><span>High-voltage data burst · 25 DMG</span></button><button class="action" data-move="2"><b>Stabilize</b><span>Restore your signal · +20 HP</span></button></div><div id="battleOutcome" class="battle-outcome hidden"></div></section>
     <section id="partyView" class="party-panel"><div><span class="eyebrow">DATABYTE PARTY // STORAGE</span><h2>Your captured signals</h2></div><div id="partyList" class="party-list"><span class="party-empty">No captured DataBytes yet.</span></div></section>
     <section id="dexView" class="dex-panel"><span class="eyebrow">DATABYTEDex // DISCOVERY LOG</span><h2><span id="dexSeenCount">0</span> signals discovered</h2><p><span id="dexCapturedCount">0</span> captured in party storage.</p></section>
     <section id="missionView" class="dex-panel"><span class="eyebrow">SCAN MISSIONS // PROGRESSION</span><h2>Signal Survey</h2><p id="missionProgress">Discover 3 signals to complete your first survey.</p></section>
@@ -41,6 +41,7 @@
   <script src="./environment.js?v=signal-environments"></script>
   <script src="./combat-effects.js?v=combat-motion"></script>
   <script src="./feedback.js?v=feedback-1"></script>
+  <script src="./capture-control.js?v=live-capture-1"></script>
   <script src="./missions.js?v=mission-chain"></script>
   <script type="module" src="./main.js?v=release-features-1"></script>
   <script src="./encounter.js?v=rarity-window-1"></script>

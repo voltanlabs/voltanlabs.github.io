@@ -1,0 +1,1 @@
+(function () { window.addEventListener('DOMContentLoaded', () => document.getElementById('captureBattleBtn')?.addEventListener('click', () => { if (!window.DataByteBattle?.getState?.().busy && !window.DataByteBattle?.getState?.().over) window.DataByteBattle.showCapturePrompt('battle'); })); })();
