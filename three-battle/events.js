@@ -7,7 +7,8 @@
     if (!view) return;
     let card = document.getElementById('eventCard');
     if (!card) { card = document.createElement('div'); card.id = 'eventCard'; view.appendChild(card); }
-    const event = current(); card.innerHTML = `<span class="eyebrow">LIVE SIGNAL EVENT</span><strong>${event.name}</strong><p>${event.copy} Reward: ${event.reward} DataByteCoins.</p>`;
+    const event = current(), claimed=localStorage.getItem(KEY)===event.name; card.innerHTML = `<span class="eyebrow">LIVE SIGNAL EVENT</span><strong>${event.name}</strong><p>${event.copy} Reward: ${event.reward} DataByteCoins.</p>${claimed?'<b>CLAIMED</b>':'<button class="ghost" id="claimEventBtn">CLAIM EVENT REWARD</button>'}`;
+    card.querySelector('#claimEventBtn')?.addEventListener('click', reward);
   }
   function reward() {
     const event = current();
@@ -16,5 +17,4 @@
   }
   window.DataByteEvents = { events, current, render };
   window.addEventListener('DOMContentLoaded', render);
-  window.addEventListener('databyte:dex-updated', reward);
 })();
