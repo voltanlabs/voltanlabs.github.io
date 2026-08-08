@@ -48,7 +48,14 @@
     if(slots.some(item=>item?.id===sprite.id)||repo.some(item=>item?.id===sprite.id))return {ok:false,reason:'already-captured',items:s.party()};
     const stored={...sprite,id:sprite.id,name:sprite.name,sprite:sprite.sprite,hp:Math.max(0,Number(sprite.hp??100)),maxHp:Number(sprite.maxHp??100)};
     const empty=slots.findIndex(item=>!item);
-    if(empty<0)return original(sprite);
+    if(empty<0){
+      const nextRepo=[...repo,stored];
+      localStorage.setItem('vl_three_battle_slots',JSON.stringify(slots));
+      localStorage.setItem('vl_three_battle_party',JSON.stringify(slots.filter(Boolean)));
+      localStorage.setItem('vl_three_battle_repository',JSON.stringify(nextRepo));
+      window.dispatchEvent(new CustomEvent('databyte:party-updated'));
+      return {ok:true,location:'repository',items:slots.filter(Boolean),repository:nextRepo};
+    }
     slots[empty]=stored;
     localStorage.setItem('vl_three_battle_slots',JSON.stringify(slots));
     localStorage.setItem('vl_three_battle_party',JSON.stringify(slots.filter(Boolean)));
