@@ -19,7 +19,7 @@
   addVersionBadge(); window.addEventListener('DOMContentLoaded', addVersionBadge);
   if (!('serviceWorker' in navigator)) return;
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js?v=release-0.1.1').catch(function (error) {
+    navigator.serviceWorker.register('./sw.js?v=release-0.1.2').catch(function (error) {
       console.warn('DataByte offline shell unavailable.', error);
     });
   });
