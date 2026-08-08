@@ -1,4 +1,4 @@
-const CACHE = 'databyte-three-release-5';
+const CACHE = 'databyte-three-release-6';
 const CORE = [
   './', './index.html', './styles.css', './manifest.json',
  './main.js?v=no-coins-capture-2', './recovery.js?v=hp-recovery-1', './pwa.js?v=release-0.1.3', './vendor/three.module.js', './vendor/three.core.js', './data/runtime-data.js', './data/species.json', './data/moves.json', './session.js?v=capture-slots-5', './save-tools.js?v=save-safety-1',
