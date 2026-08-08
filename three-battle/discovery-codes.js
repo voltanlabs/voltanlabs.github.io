@@ -7,6 +7,7 @@
     const value = input?.value.trim().toUpperCase() || '';
     if (!/^VL-[A-Z0-9]{4,12}$/.test(value)) { if (status) status.textContent = 'Enter a valid code like VL-SIGNAL7.'; return; }
     const codes = read(); if (!codes.includes(value)) { codes.push(value); localStorage.setItem(KEY, JSON.stringify(codes)); }
+    localStorage.setItem('vl_three_battle_pending_code', value);
     if (status) status.textContent = `Code ${value} accepted. Start a scan to lock the signal.`;
   }
   function install() {
