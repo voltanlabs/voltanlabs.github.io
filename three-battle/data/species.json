@@ -1,7 +1,7 @@
 {
   "schemaVersion": "0.3.0",
   "generatedBy": "VoltanLabs Studio DataByteSprites Species Reconstructor",
-  "description": "Canonical DataByteSprites species metadata reconstructed from the active 71-species roster. Unknown Studio metadata remains explicitly pending rather than inferred.",
+  "description": "Canonical DataByteSprites species metadata reconstructed from the active 72-species roster. Unknown Studio metadata remains explicitly pending rather than inferred.",
   "sourceOfTruth": {
     "playableRoster": "/assets/js/dd-canon-roster.js",
     "moveReferences": "/studio/databytesprites/moves.json"
@@ -1651,16 +1651,18 @@
       "name": "KeyboardWarrior",
       "status": "canon-roster",
       "alignment": "Unassigned",
-      "configurations": [],
+      "configurations": [
+        "Spam"
+      ],
       "primaryConfiguration": null,
       "secondaryConfiguration": null,
-      "configurationStatus": "pending",
+      "configurationStatus": "assigned",
       "version": "Kilobyte",
       "familyId": "keyboardwarrior-family",
       "zodiac": null,
       "rarity": "Common",
-      "lore": "Internet argument sprite; configurations pending.",
-      "description": "Internet argument sprite; configurations pending.",
+      "lore": "Spam configuration internet argument sprite.",
+      "description": "A Spam configuration sprite born from endless online arguments.",
       "runtime": {
         "icon": "◇",
         "color": "#38BDF8",
@@ -1669,7 +1671,7 @@
       },
       "metadataStatus": {
         "alignment": "pending",
-        "configurations": "pending",
+        "configurations": "assigned",
         "battleStats": "pending",
         "discovery": "pending",
         "download": "pending",
@@ -1741,16 +1743,18 @@
       "name": "Landline",
       "status": "canon-roster",
       "alignment": "Unassigned",
-      "configurations": [],
+      "configurations": [
+        "Analog"
+      ],
       "primaryConfiguration": null,
       "secondaryConfiguration": null,
-      "configurationStatus": "pending",
+      "configurationStatus": "assigned",
       "version": "Kilobyte",
       "familyId": "cable-family",
       "zodiac": null,
       "rarity": "Common",
-      "lore": "Cable communication line base form.",
-      "description": "Cable communication line base form.",
+      "lore": "Analog cable communication line base form.",
+      "description": "An Analog communication line sprite from the earliest connected signals.",
       "runtime": {
         "icon": "◇",
         "color": "#38BDF8",
@@ -1759,7 +1763,7 @@
       },
       "metadataStatus": {
         "alignment": "pending",
-        "configurations": "pending",
+        "configurations": "assigned",
         "battleStats": "pending",
         "discovery": "pending",
         "download": "pending",
@@ -1786,16 +1790,18 @@
       "name": "Octocable",
       "status": "canon-roster",
       "alignment": "Unassigned",
-      "configurations": [],
+      "configurations": [
+        "Analog"
+      ],
       "primaryConfiguration": null,
       "secondaryConfiguration": null,
-      "configurationStatus": "pending",
+      "configurationStatus": "assigned",
       "version": "Megabyte",
       "familyId": "cable-family",
       "zodiac": null,
       "rarity": "Rare",
-      "lore": "Cable cephalopod Version Upgrade.",
-      "description": "Cable cephalopod Version Upgrade.",
+      "lore": "Analog cable cephalopod Version Upgrade.",
+      "description": "An Analog cable cephalopod Version Upgrade with eight signal limbs.",
       "runtime": {
         "icon": "◇",
         "color": "#38BDF8",
@@ -1804,7 +1810,7 @@
       },
       "metadataStatus": {
         "alignment": "pending",
-        "configurations": "pending",
+        "configurations": "assigned",
         "battleStats": "pending",
         "discovery": "pending",
         "download": "pending",
@@ -1831,16 +1837,18 @@
       "name": "Fiberoptopus",
       "status": "canon-roster",
       "alignment": "Unassigned",
-      "configurations": [],
+      "configurations": [
+        "Analog"
+      ],
       "primaryConfiguration": null,
       "secondaryConfiguration": null,
-      "configurationStatus": "pending",
+      "configurationStatus": "assigned",
       "version": "Gigabyte",
       "familyId": "cable-family",
       "zodiac": null,
       "rarity": "Epic",
-      "lore": "Fiber-optic octopus final form.",
-      "description": "Fiber-optic octopus final form.",
+      "lore": "Analog fiber-optic octopus final form.",
+      "description": "The final Analog cable form, carrying light-speed signals through every tentacle.",
       "runtime": {
         "icon": "🐙",
         "color": "#38BDF8",
@@ -1849,7 +1857,7 @@
       },
       "metadataStatus": {
         "alignment": "pending",
-        "configurations": "pending",
+        "configurations": "assigned",
         "battleStats": "pending",
         "discovery": "pending",
         "download": "pending",
@@ -1876,16 +1884,18 @@
       "name": "CassetteKid",
       "status": "canon-roster",
       "alignment": "Unassigned",
-      "configurations": [],
+      "configurations": [
+        "Analog"
+      ],
       "primaryConfiguration": null,
       "secondaryConfiguration": null,
-      "configurationStatus": "pending",
+      "configurationStatus": "assigned",
       "version": "Kilobyte",
       "familyId": "retro-family",
       "zodiac": null,
       "rarity": "Common",
-      "lore": "Analog cassette sprite; exact configurations pending.",
-      "description": "Analog cassette sprite; exact configurations pending.",
+      "lore": "Analog cassette sprite.",
+      "description": "A warm Analog cassette sprite carrying loops of recorded signal memory.",
       "runtime": {
         "icon": "📼",
         "color": "#38BDF8",
@@ -1894,7 +1904,7 @@
       },
       "metadataStatus": {
         "alignment": "pending",
-        "configurations": "pending",
+        "configurations": "assigned",
         "battleStats": "pending",
         "discovery": "pending",
         "download": "pending",
@@ -1921,16 +1931,18 @@
       "name": "DiskDaddy",
       "status": "canon-roster",
       "alignment": "Unassigned",
-      "configurations": [],
+      "configurations": [
+        "Analog"
+      ],
       "primaryConfiguration": null,
       "secondaryConfiguration": null,
-      "configurationStatus": "pending",
+      "configurationStatus": "assigned",
       "version": "Megabyte",
       "familyId": "retro-family",
       "zodiac": null,
       "rarity": "Rare",
-      "lore": "Disk-based Version Upgrade; exact configurations pending.",
-      "description": "Disk-based Version Upgrade; exact configurations pending.",
+      "lore": "Analog disk-based Version Upgrade.",
+      "description": "An Analog disk-based Version Upgrade with dense archival storage.",
       "runtime": {
         "icon": "💾",
         "color": "#38BDF8",
@@ -1939,7 +1951,7 @@
       },
       "metadataStatus": {
         "alignment": "pending",
-        "configurations": "pending",
+        "configurations": "assigned",
         "battleStats": "pending",
         "discovery": "pending",
         "download": "pending",
@@ -3205,8 +3217,8 @@
       "familyId": "leo-family",
       "zodiac": "Leo",
       "rarity": "Rare",
-      "lore": "Null Spectral lion-family base species.",
-      "description": "Null Spectral lion-family base species.",
+      "lore": "Null Spectral lion-family base species; undead-data Leo cub.",
+      "description": "A spooky nullified-data lion cub formed from dead signal code.",
       "runtime": {
         "icon": "🦁",
         "color": "#C084FC",
@@ -3312,6 +3324,52 @@
         "configurations": "assigned",
         "battleStats": "pending",
         "discovery": "pending",
+        "download": "pending",
+        "assetRefs": "pending",
+        "dexRefs": "pending"
+      },
+      "battleStats": null,
+      "discovery": null,
+      "capture": null,
+      "assetRefs": [],
+      "dexRefs": [],
+      "dependencies": [
+        "/assets/js/dd-canon-roster.js"
+      ],
+      "source": {
+        "path": "/assets/js/dd-canon-roster.js",
+        "authority": "playable-roster"
+      },
+      "schemaVersion": "0.3.0"
+    }
+    },
+    {
+      "id": "wifly",
+      "dex": "072",
+      "name": "WiFly",
+      "status": "canon-roster",
+      "alignment": "Unassigned",
+      "configurations": [],
+      "primaryConfiguration": null,
+      "secondaryConfiguration": null,
+      "configurationStatus": "pending",
+      "version": "Kilobyte",
+      "familyId": "wifly-family",
+      "zodiac": null,
+      "rarity": "Common",
+      "lore": "Newly documented wireless signal sprite; configuration pending.",
+      "description": "A wireless signal sprite that rides invisible connections through the air.",
+      "runtime": {
+        "icon": "◇",
+        "color": "#38BDF8",
+        "captureChance": 88,
+        "stability": 3
+      },
+      "metadataStatus": {
+        "alignment": "pending",
+        "configurations": "pending",
+        "battleStats": "pending",
+        "discovery": "assigned",
         "download": "pending",
         "assetRefs": "pending",
         "dexRefs": "pending"
