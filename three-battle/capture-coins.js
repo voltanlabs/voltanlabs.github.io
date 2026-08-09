@@ -1,4 +1,19 @@
 (function () {
+  let spendLocked = false;
+  function guardSpendCoin() {
+    const session = window.DataByteSession;
+    if (!session?.spendCoin || session.spendCoin.__singleAttempt) return;
+    const original = session.spendCoin;
+    const guarded = function () {
+      if (spendLocked) return false;
+      spendLocked = true;
+      const result = original.apply(this, arguments);
+      window.setTimeout(() => { spendLocked = false; }, 0);
+      return result;
+    };
+    guarded.__singleAttempt = true;
+    session.spendCoin = guarded;
+  }
   function sync() {
     const modal = document.getElementById('captureModal');
     const card = modal?.querySelector('.capture-card');
@@ -15,6 +30,7 @@
     }
   }
   function install() {
+    guardSpendCoin();
     const modal = document.getElementById('captureModal');
     if (!modal || modal.dataset.coinSync) return;
     modal.dataset.coinSync = 'true';
@@ -24,4 +40,11 @@
   }
   window.addEventListener('DOMContentLoaded', install);
   window.setInterval(install, 250);
+  document.addEventListener('click', event => {
+    const button = event.target.closest?.('#captureWinBtn, #captureRetryBtn');
+    if (!button) return;
+    if (button.dataset.submitted === 'true') { event.preventDefault(); return; }
+    button.dataset.submitted = 'true';
+    button.disabled = true;
+  }, true);
 })();
