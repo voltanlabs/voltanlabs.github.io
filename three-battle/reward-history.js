@@ -1,12 +1,13 @@
 (function () {
   const KEY = 'vl_three_battle_reward_history';
   function read() { return window.DataByteSession?.profileGet?.(KEY, []) || []; }
-  function record(text) {
+  function record(text, xpOverride) {
     const history = read();
     const name = document.getElementById('enemyName')?.textContent?.trim() || 'Unknown Signal';
     const captured = /captured/i.test(text), coins = captured ? 1 : 0;
     if (coins) window.DataByteSession?.addCoins?.(coins);
-    const entry = { name, result: captured ? 'Captured' : 'Victory', xp: captured ? 50 : 25, coins, at: new Date().toISOString() };
+    const xp = Number.isFinite(Number(xpOverride)) ? Number(xpOverride) : (window.DataByteBattleRewards?.xpForEnemy?.(window.DataByteBattle?.getState?.(), captured ? 'captured' : 'defeat') ?? (captured ? 50 : 25));
+    const entry = { name, result: captured ? 'Captured' : 'Victory', xp, coins, at: new Date().toISOString() };
     history.unshift(entry); window.DataByteSession?.profileSet?.(KEY, history.slice(0, 20)); render();
   }
   function render() {
