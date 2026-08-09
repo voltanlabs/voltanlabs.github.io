@@ -13,7 +13,8 @@
     if (!state || state.__defeatRewardGranted || !/Victory!/i.test(state.message || '')) return;
     state.__defeatRewardGranted = true;
     const session = window.DataByteSession;
-    const lead = session?.starter?.();
+    const party = session?.party?.() || [];
+    const lead = party.find(item => item.id === session?.starter?.())?.id || party[0]?.id;
     const xp = xpForEnemy(state, 'defeat');
     window.DataByteProgression?.addXp?.(xp);
     if (lead) session?.addSpriteXp?.(lead, xp);
