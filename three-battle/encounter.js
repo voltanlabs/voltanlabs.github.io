@@ -7,7 +7,7 @@
     const enemy=window.DataByteSession?.roster().find(item=>item.name.toUpperCase()===name.toUpperCase());
     if(!enemy)return;
     encounter.querySelector('h2').textContent=enemy.name;
-    encounter.querySelector('p').textContent=`A wild signal has entered the field. ${enemy.rarity||'Common'} signal · Scan code ${window.DataByteSession?.scanCode?.()||'VL-SIGNAL'}.`;
+    encounter.querySelector('p').textContent=`A wild signal has entered the field. ${enemy.rarity||'Common'} signal · Scan code ${window.__threeBattleEncounterCode||'VL-SIGNAL'}.`;
     document.getElementById('encounterType').textContent=enemy.configurations?.[0]||enemy.alignment||'Wild Signal';
     document.getElementById('encounterRarity').textContent=enemy.rarity||'Common';
     document.getElementById('encounterAlignment').textContent=enemy.alignment||'Unknown';
