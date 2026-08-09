@@ -1,5 +1,5 @@
 (function () {
-  const VERSION = '0.1.1';
+  const VERSION = '0.1.2';
   function addVersionBadge() {
     const topbar = document.querySelector('.topbar');
     if (!topbar || document.getElementById('appVersion')) return;
@@ -19,7 +19,7 @@
   addVersionBadge(); window.addEventListener('DOMContentLoaded', addVersionBadge);
   if (!('serviceWorker' in navigator)) return;
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js?v=release-0.1.3').catch(function (error) {
+    navigator.serviceWorker.register('./sw.js?v=release-0.1.4').catch(function (error) {
       console.warn('DataByte offline shell unavailable.', error);
     });
   });
