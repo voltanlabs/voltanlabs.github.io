@@ -11,7 +11,7 @@
     if (!session || session.createEncounter.__regionAware) return;
     const original = session.createEncounter;
     const wrapped = function (playerId, currentId) {
-      const region = localStorage.getItem('vl_three_battle_region') || 'grove';
+      const region = window.DataByteSession?.profileGet?.('vl_three_battle_region', 'grove') || 'grove';
       if (region === 'bay') return { ...original(playerId, currentId), rarity: rarity(region), region };
       for (let attempt = 0; attempt < 12; attempt += 1) {
         const encounter = original(playerId, currentId);

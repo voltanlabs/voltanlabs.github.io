@@ -1,13 +1,13 @@
 (function () {
   const KEY = 'vl_three_battle_discovery_codes';
-  function read() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } }
+  function read() { return window.DataByteSession?.profileGet?.(KEY, []) || []; }
   function discover() {
     const input = document.getElementById('discoveryCode');
     const status = document.getElementById('scannerStatus');
     const value = input?.value.trim().toUpperCase() || '';
     if (!/^VL-[A-Z0-9]{4,12}$/.test(value)) { if (status) status.textContent = 'Enter a valid code like VL-SIGNAL7.'; return; }
-    const codes = read(); if (!codes.includes(value)) { codes.push(value); localStorage.setItem(KEY, JSON.stringify(codes)); }
-    localStorage.setItem('vl_three_battle_pending_code', value);
+    const codes = read(); if (!codes.includes(value)) { codes.push(value); window.DataByteSession?.profileSet?.(KEY, codes); }
+    window.DataByteSession?.profileSet?.('vl_three_battle_pending_code', value);
     if (status) status.textContent = `Code ${value} accepted. Start a scan to lock the signal.`;
   }
   function install() {

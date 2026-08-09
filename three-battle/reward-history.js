@@ -1,13 +1,13 @@
 (function () {
   const KEY = 'vl_three_battle_reward_history';
-  function read() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } }
+  function read() { return window.DataByteSession?.profileGet?.(KEY, []) || []; }
   function record(text) {
     const history = read();
     const name = document.getElementById('enemyName')?.textContent?.trim() || 'Unknown Signal';
     const captured = /captured/i.test(text), coins = captured ? 1 : 0;
     if (coins) window.DataByteSession?.addCoins?.(coins);
     const entry = { name, result: captured ? 'Captured' : 'Victory', xp: captured ? 50 : 25, coins, at: new Date().toISOString() };
-    history.unshift(entry); localStorage.setItem(KEY, JSON.stringify(history.slice(0, 20))); render();
+    history.unshift(entry); window.DataByteSession?.profileSet?.(KEY, history.slice(0, 20)); render();
   }
   function render() {
     const panel = document.getElementById('missionView'); if (!panel) return;

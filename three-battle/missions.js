@@ -3,12 +3,12 @@
   const goals = [
     { id: 'survey', label: 'Signal Survey', copy: 'Discover 3 signals.', target: 3, reward: 2, value: () => window.DataByteSession?.seen?.().length || 0 },
     { id: 'capture', label: 'Download Authorization', copy: 'Capture 2 DataBytes.', target: 2, reward: 3, value: () => (window.DataByteSession?.party?.().length || 0) + (window.DataByteSession?.repository?.().length || 0) },
-    { id: 'items', label: 'Field Technician', copy: 'Use 1 field item.', target: 1, reward: 2, value: () => Number(localStorage.getItem('vl_three_battle_items_used') || 0) },
+    { id: 'items', label: 'Field Technician', copy: 'Use 1 field item.', target: 1, reward: 2, value: () => Number(window.DataByteSession?.profileGet?.('vl_three_battle_items_used', 0) || 0) },
     { id: 'rank', label: 'Field Scout', copy: 'Earn 100 XP.', target: 100, reward: 3, value: () => window.DataByteProgression?.xp?.() || 0 },
     { id: 'roster', label: 'Roster Expansion', copy: 'Build a team or repository of 3 DataBytes.', target: 3, reward: 4, value: () => (window.DataByteSession?.party?.().length || 0) + (window.DataByteSession?.repository?.().length || 0) }
   ];
-  function read() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } }
-  function write(value) { localStorage.setItem(KEY, JSON.stringify(value)); }
+  function read() { return window.DataByteSession?.profileGet?.(KEY, {}) || {}; }
+  function write(value) { window.DataByteSession?.profileSet?.(KEY, value); }
   function render() {
     const panel = document.getElementById('missionView'), text = document.getElementById('missionProgress');
     if (!panel || !text) return;

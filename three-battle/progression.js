@@ -8,7 +8,7 @@
     { name: 'Volt Master', xp: 900 }
   ];
 
-  function xp() { return Math.max(0, Number(localStorage.getItem(XP_KEY) || 0)); }
+  function xp() { return Math.max(0, Number(window.DataByteSession?.profileGet?.(XP_KEY, 0) || 0)); }
   function rank(value = xp()) {
     let current = RANKS[0];
     RANKS.forEach(entry => { if (value >= entry.xp) current = entry; });
@@ -16,7 +16,7 @@
   }
   function addXp(amount) {
     const next = xp() + Math.max(0, Number(amount) || 0);
-    localStorage.setItem(XP_KEY, String(next));
+    window.DataByteSession?.profileSet?.(XP_KEY, next);
     render();
     return next;
   }

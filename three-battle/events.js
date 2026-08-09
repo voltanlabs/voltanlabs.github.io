@@ -7,13 +7,13 @@
     if (!view) return;
     let card = document.getElementById('eventCard');
     if (!card) { card = document.createElement('div'); card.id = 'eventCard'; view.appendChild(card); }
-    const event = current(), claimed=localStorage.getItem(KEY)===event.name; card.innerHTML = `<span class="eyebrow">LIVE SIGNAL EVENT</span><strong>${event.name}</strong><p>${event.copy} Reward: ${event.reward} DataByteCoins.</p>${claimed?'<b>CLAIMED</b>':'<button class="ghost" id="claimEventBtn">CLAIM EVENT REWARD</button>'}`;
+    const event = current(), claimed=window.DataByteSession?.profileGet?.(KEY, '')===event.name; card.innerHTML = `<span class="eyebrow">LIVE SIGNAL EVENT</span><strong>${event.name}</strong><p>${event.copy} Reward: ${event.reward} DataByteCoins.</p>${claimed?'<b>CLAIMED</b>':'<button class="ghost" id="claimEventBtn">CLAIM EVENT REWARD</button>'}`;
     card.querySelector('#claimEventBtn')?.addEventListener('click', reward);
   }
   function reward() {
     const event = current();
-    if (localStorage.getItem(KEY) === event.name) return;
-    localStorage.setItem(KEY, event.name); window.DataByteSession?.addCoins?.(event.reward); render();
+    if (window.DataByteSession?.profileGet?.(KEY, '') === event.name) return;
+    window.DataByteSession?.profileSet?.(KEY, event.name); window.DataByteSession?.addCoins?.(event.reward); render();
   }
   window.DataByteEvents = { events, current, render };
   window.addEventListener('DOMContentLoaded', render);
