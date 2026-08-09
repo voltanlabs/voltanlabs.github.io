@@ -4,8 +4,7 @@
   function profileGet(name,fallback=null){try{const raw=localStorage.getItem(profileKey(name));return raw===null?fallback:JSON.parse(raw)}catch{return fallback}}
   function profileSet(name,value){localStorage.setItem(profileKey(name),JSON.stringify(value));return value}
   function profileRemove(name){localStorage.removeItem(profileKey(name))}
-  const SPRITE_LEVELS=[0,100,250,500,900];
-  function spriteProgress(item){const xp=Math.max(0,Number(item?.xp)||0);let level=1;for(const threshold of SPRITE_LEVELS)if(xp>=threshold)level=SPRITE_LEVELS.indexOf(threshold)+1;return {xp,level,nextXp:SPRITE_LEVELS[level]??null}}
+  function spriteProgress(item){const xp=Math.max(0,Number(item?.xp)||0),level=Math.min(100,Math.floor(xp/100)+1);return {xp,level,nextXp:level<100?level*100:null}}
   function addSpriteXp(id,amount){const gain=Math.max(0,Number(amount)||0);if(!gain)return {ok:false,reason:'invalid-xp'};const collections=[party(),repository()];const item=collections.flat().find(entry=>entry?.id===id);if(!item)return {ok:false,reason:'not-found'};const before=spriteProgress(item);item.xp=before.xp+gain;item.level=spriteProgress(item).level;localStorage.setItem(PARTY_KEY,JSON.stringify(collections[0]));localStorage.setItem(REPO_KEY,JSON.stringify(collections[1]));window.dispatchEvent(new CustomEvent('databyte:party-updated',{detail:{id,xp:item.xp,level:item.level}}));return {ok:true,id,xp:item.xp,level:item.level,previousLevel:before.level,leveledUp:item.level>before.level}}
   function mission(){return profileGet(MISSION_KEY,{survey:0,rewarded:false})}
   function coins(){const value=Number(localStorage.getItem(COIN_KEY));if(!Number.isFinite(value)){localStorage.setItem(COIN_KEY,'3');return 3}return value}
