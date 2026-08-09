@@ -26,6 +26,7 @@
     const hp = Number(item.hp ?? 100);
     const maxHp = Number(item.maxHp ?? 100);
     const version = item.version || source.version || 1;
+    const progress = session()?.spriteProgress?.(item) || { xp: 0, level: 1, nextXp: 100 };
     return {
       ...source,
       ...item,
@@ -33,6 +34,9 @@
       hp,
       maxHp,
       version,
+      xp: progress.xp,
+      level: progress.level,
+      nextXp: progress.nextXp,
       sprite: item.sprite || `./data/sprites/${source.sprite || 'placeholder.png'}`,
       description: source.description || source.lore || 'Signal record pending.'
     };
@@ -54,6 +58,8 @@
         <span>TYPE <b>${detail.type || detail.configuration || 'Unassigned'}</b></span>
         <span>ALIGNMENT <b>${detail.alignment || 'Unassigned'}</b></span>
         <span>VERSION <b>${detail.version}</b></span>
+        <span>LEVEL <b>${detail.level}</b></span>
+        <span>EXPERIENCE <b>${detail.xp}${detail.nextXp === null ? ' XP · MAX' : ` / ${detail.nextXp} XP`}</b></span>
       </div>
       <div class="party-info-actions">
         ${detail.location === 'party' ? `<button class="ghost" data-party-lead type="button">${session().starter() === detail.id ? 'CURRENT LEAD' : 'SET AS LEAD'}</button><button class="ghost" data-party-store type="button" ${isLead ? 'disabled' : ''}>${isLead ? 'LEAD CANNOT BE STORED' : 'SEND TO REPOSITORY'}</button>` : '<button class="scan-button" data-party-deploy type="button">SEND TO TEAM</button>'}
@@ -137,7 +143,7 @@
     const isSelected = selected?.key === key;
     const lead = location === 'party' && index === 0;
     return `<button class="party-card ${lead ? 'is-lead' : ''} ${isSelected ? 'is-selected' : ''}" data-party-key="${key}" type="button">
-      <img src="${item.sprite}" alt="${item.name}"><span><b>${item.name}</b><small>${lead ? 'LEAD · ' : ''}${location === 'party' ? `SLOT ${index + 1}` : 'STORED SIGNAL'}</small></span>
+      <img src="${item.sprite}" alt="${item.name}"><span><b>${item.name}</b><small>${lead ? 'LEAD · ' : ''}LV ${session()?.spriteProgress?.(item)?.level || item.level || 1} · ${location === 'party' ? `SLOT ${index + 1}` : 'STORED SIGNAL'}</small></span>
     </button>`;
   }
 
