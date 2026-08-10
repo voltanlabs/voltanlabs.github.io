@@ -49,7 +49,7 @@
   function openInfo(item, location, slotIndex = null) {
     const modal = ensureModal();
     const detail = spriteDetails(item, location);
-    const canUpgrade = Boolean(session().evolutionPreview?.(detail.id)?.next);
+    const canUpgrade = Boolean(session().evolutionPreview?.(detail.uid || detail.id)?.next);
     const isLead = location === 'party' && slotIndex === 0;
     const isFainted = detail.hp <= 0;
     modal.innerHTML = `<div class="capture-card party-info-card">
@@ -67,7 +67,7 @@
         <span>EXPERIENCE <b>${detail.xp}${detail.nextXp === null ? ' XP · MAX' : ` / ${detail.nextXp} XP`}</b></span>
       </div>
       <div class="party-info-actions">
-        ${detail.location === 'party' ? `<button class="ghost" data-party-lead type="button" ${isFainted ? 'disabled' : ''}>${isFainted ? 'FAINTED CANNOT LEAD' : session().starter() === detail.id ? 'CURRENT LEAD' : 'SET AS LEAD'}</button><button class="ghost" data-party-store type="button" ${isLead ? 'disabled' : ''}>${isLead ? 'LEAD CANNOT BE STORED' : 'SEND TO REPOSITORY'}</button>` : '<button class="scan-button" data-party-deploy type="button">SEND TO TEAM</button>'}
+        ${detail.location === 'party' ? `<button class="ghost" data-party-lead type="button" ${isFainted ? 'disabled' : ''}>${isFainted ? 'FAINTED CANNOT LEAD' : session().starter() === (detail.uid || detail.id) ? 'CURRENT LEAD' : 'SET AS LEAD'}</button><button class="ghost" data-party-store type="button" ${isLead ? 'disabled' : ''}>${isLead ? 'LEAD CANNOT BE STORED' : 'SEND TO REPOSITORY'}</button>` : '<button class="scan-button" data-party-deploy type="button">SEND TO TEAM</button>'}
         ${canUpgrade ? '<button class="scan-button" data-party-upgrade type="button">UPGRADE</button>' : ''}
       </div>
     </div>`;
@@ -77,7 +77,7 @@
       const slots = session().slots();
       const index = slots.findIndex(entry => entry?.id === detail.id);
       if (index > 0) session().swapSlots(0, index);
-      else session().setLead(detail.id);
+      else session().setLead(detail.uid || detail.id);
       closeModal();
       render();
     });
@@ -101,7 +101,7 @@
   }
 
   function openUpgrade(detail, location) {
-    const plan = session().evolutionPreview?.(detail.id);
+    const plan = session().evolutionPreview?.(detail.uid || detail.id);
     if (!plan?.next) return;
     let modal = document.getElementById('upgradeModal');
     if (!modal) { modal = document.createElement('div'); modal.id = 'upgradeModal'; modal.className = 'capture-modal'; document.body.appendChild(modal); }
@@ -111,11 +111,11 @@
     modal.classList.add('is-open');
     modal.querySelectorAll('[data-upgrade-close]').forEach(button => button.onclick = () => modal.classList.remove('is-open'));
     modal.querySelector('[data-upgrade-confirm]')?.addEventListener('click', () => {
-      const result = session().evolve?.(detail.id);
+      const result = session().evolve?.(detail.uid || detail.id);
       if (!result?.ok) return;
       modal.querySelector('.upgrade-card')?.classList.add('is-upgrading');
       modal.querySelector('[data-upgrade-confirm]').disabled = true;
-      setTimeout(() => { modal.classList.remove('is-open'); render(); const upgraded = (session().party?.()||[]).concat(session().repository?.()||[]).find(item => item.id === result.to); if (upgraded) openInfo(upgraded, location); }, 1350);
+      setTimeout(() => { modal.classList.remove('is-open'); render(); const upgraded = (session().party?.()||[]).concat(session().repository?.()||[]).find(item => (item.uid || item.id) === result.to); if (upgraded) openInfo(upgraded, location); }, 1350);
     });
   }
 
@@ -149,7 +149,7 @@
   }
 
   function card(item, location, index) {
-    const key = location === 'party' ? `slot-${index}` : `repo-${item.id}`;
+    const key = location === 'party' ? `slot-${index}` : `repo-${item.uid || item.id}`;
     const isSelected = selected?.key === key;
     const lead = location === 'party' && index === 0;
     return `<button class="party-card ${lead ? 'is-lead' : ''} ${isSelected ? 'is-selected' : ''}" data-party-key="${key}" type="button">
@@ -173,8 +173,8 @@
       const key = button.dataset.partyKey;
       const isRepo = key.startsWith('repo-') && key !== 'repo-empty';
       const index = isRepo ? null : Number(key.slice(5));
-      const item = isRepo ? repo.find(entry => `repo-${entry.id}` === key) : slots[index];
-      const target = key === 'repo-empty' ? { kind: 'repo-empty', key } : isRepo ? { kind: 'repo', id: item?.id, key } : { kind: 'slot', index, key };
+      const item = isRepo ? repo.find(entry => `repo-${entry.uid || entry.id}` === key) : slots[index];
+      const target = key === 'repo-empty' ? { kind: 'repo-empty', key } : isRepo ? { kind: 'repo', id: item?.uid || item?.id, key } : { kind: 'slot', index, key };
       if (switchMode && (target.kind === 'slot' || target.kind === 'repo' || target.kind === 'repo-empty')) swapSelection(target);
       else if (item) openInfo(item, isRepo ? 'repository' : 'party', isRepo ? null : index);
     });

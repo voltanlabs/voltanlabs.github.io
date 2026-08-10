@@ -5,10 +5,10 @@
   const mergedSlots = function () {
     const party = session.party?.() || [];
     const slots = originalSlots();
-    const byId = new Map(party.filter(Boolean).map(item => [item.id, item]));
+    const byId = new Map(party.filter(Boolean).map(item => [item.uid || item.id, item]));
     let changed = false;
     const merged = slots.map(item => {
-      const latest = item && byId.get(item.id);
+      const latest = item && byId.get(item.uid || item.id);
       if (!latest) return item;
       const next = { ...item, ...latest };
       if (JSON.stringify(next) !== JSON.stringify(item)) changed = true;
