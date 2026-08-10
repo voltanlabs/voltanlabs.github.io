@@ -3,8 +3,8 @@
   if (!session?.slots || session.slots.__freshPartyMerge) return;
   const originalSlots = session.slots;
   const mergedSlots = function () {
-    const slots = originalSlots();
     const party = session.party?.() || [];
+    const slots = originalSlots();
     const byId = new Map(party.filter(Boolean).map(item => [item.id, item]));
     let changed = false;
     const merged = slots.map(item => {

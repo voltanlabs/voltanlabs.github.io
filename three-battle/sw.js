@@ -1,6 +1,6 @@
 const CACHE = 'databyte-three-release-10';
 const CORE = [
-  './storage-sync.js?v=party-xp-merge-1',
+  './storage-sync.js?v=party-xp-merge-2',
   './main.js?v=capture-xp-1',
  './', './index.html', './styles.css', './manifest.json', './move-catalog.js?v=move-catalog-60-1', './move-effects.js?v=move-effects-2', './reward-flow.js?v=reward-flow-1',
  './main.js?v=reward-levels-1', './recovery.js?v=hp-recovery-1', './encounter-code.js?v=code-identity-1', './stability-normalizer.js?v=stability-floor-1', './encounter-levels.js?v=admin-signal-level-1', './battle-levels.js?v=admin-signal-level-2', './battle-rewards.js?v=scaled-enemy-xp-1', './profile-normalizer.js?v=profile-normalizer-1', './pwa.js?v=release-0.1.4', './vendor/three.module.js', './vendor/three.core.js', './data/runtime-data.js', './data/species.json', './data/moves.json', './session.js?v=profile-session-1', './save-tools.js?v=save-safety-1',
