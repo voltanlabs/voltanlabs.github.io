@@ -1,5 +1,5 @@
 (function () {
-  const unlocks = { grove: 0, rift: 2, cavern: 4, bay: 6 };
+  const unlocks = Object.fromEntries((window.DataByteRegions?.regions || []).map(region => [region.id, region.needed]));
   function open() {
     const regions = window.DataByteRegions?.regions || [];
     let modal = document.getElementById('worldMapModal');

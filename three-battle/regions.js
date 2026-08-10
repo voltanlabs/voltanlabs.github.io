@@ -1,18 +1,23 @@
 (function () {
-  const regions = [{ id: 'grove', name: 'Pristine Grove', environment: 'forest', needed: 0 }, { id: 'rift', name: 'Stained Rift', environment: 'rift', needed: 3 }, { id: 'cavern', name: 'Null Cavern', environment: 'cave', needed: 5 }, { id: 'bay', name: 'Signal Bay', environment: 'bay', needed: 8 }];
+  const regions = [
+    { id: 'grove', name: 'Pristine Grove', environment: 'forest', needed: 0 },
+    { id: 'rift', name: 'Stained Rift', environment: 'rift', needed: 3 },
+    { id: 'cavern', name: 'Null Cavern', environment: 'cave', needed: 5 },
+    { id: 'bay', name: 'Signal Bay', environment: 'bay', needed: 8 }
+  ];
   const KEY = 'vl_three_battle_region';
-  function current() { return regions.find(region => region.id === window.DataByteSession?.profileGet?.(KEY, 'grove')) || regions[0]; }
-  function render() { const button = document.getElementById('regionBtn'); if (button) button.textContent = `REGION · ${current().name}`; }
-  function open() {
-    let modal = document.getElementById('regionModal');
-    if (!modal) { modal = document.createElement('div'); modal.id = 'regionModal'; modal.className = 'capture-modal'; document.body.appendChild(modal); }
-    const seen=window.DataByteSession?.seen?.().length||0;
-    modal.innerHTML = `<div class="capture-card"><span class="eyebrow">SIGNAL REGIONS</span><h2>Choose a field</h2><div class="region-list">${regions.map(region => { const locked=seen<region.needed; return `<button class="ghost" data-region="${region.id}" ${locked?'disabled':''}>${locked?'🔒 ':''}${region.name}<small>${locked?`Discover ${region.needed-seen} more signals`:'Available'}</small></button>`; }).join('')}</div><button class="ghost" data-region-close>CLOSE</button></div>`;
-    modal.classList.add('is-open');
-    modal.querySelectorAll('[data-region]').forEach(button => button.addEventListener('click', () => { window.DataByteSession?.profileSet?.(KEY, button.dataset.region); modal.classList.remove('is-open'); render(); window.dispatchEvent(new CustomEvent('databyte:region-updated', { detail: current() })); }));
-    modal.querySelector('[data-region-close]').onclick = () => modal.classList.remove('is-open');
+  function current() {
+    return regions.find(region => region.id === window.DataByteSession?.profileGet?.(KEY, 'grove')) || regions[0];
   }
-  function install() { const scanner = document.getElementById('scannerView'); if (!scanner || document.getElementById('regionBtn')) return; const button = document.createElement('button'); button.id = 'regionBtn'; button.className = 'ghost'; button.type = 'button'; button.onclick = open; (scanner.querySelector('#scannerTools') || scanner).appendChild(button); render(); }
-  window.DataByteRegions = { regions, current, open, render };
+  function render() {
+    const button = document.getElementById('mapBtn');
+    if (button) button.textContent = `WORLD MAP · ${current().name}`;
+  }
+  // Region selection belongs to the world map. Keep this compatibility bridge
+  // for older callers without creating a second region picker.
+  function open() { window.DataByteWorldMap?.open?.(); }
+  function install() { render(); }
+  window.DataByteRegions = { regions, current, open, render, speciesByRegion: {} };
   window.addEventListener('DOMContentLoaded', install);
+  window.addEventListener('databyte:region-updated', render);
 })();
