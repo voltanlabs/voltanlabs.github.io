@@ -23,7 +23,18 @@
   const repository = () => read(REPO_KEY, 'repo');
   const slots = () => {
     let list; try { list = JSON.parse(localStorage.getItem(SLOTS_KEY) || 'null'); } catch { list = null; }
-    if (!Array.isArray(list)) list = party();
+    const legacy = party();
+    if (!Array.isArray(list)) list = legacy;
+    else {
+      const present = new Set(list.filter(Boolean).map(item => uid(item)));
+      for (const item of legacy) {
+        if (present.has(uid(item))) continue;
+        const open = list.findIndex(entry => !entry);
+        if (open < 0) break;
+        list[open] = item;
+        present.add(uid(item));
+      }
+    }
     list = Array.from({ length: 5 }, (_, index) => list[index] || null);
     const normalized = list.map((item, index) => item ? { ...item, uid: item.uid || `${item.id || 'databyte'}-slot-${index + 1}`, stats: item.stats || statsFor(item) } : null);
     localStorage.setItem(SLOTS_KEY, JSON.stringify(normalized));
