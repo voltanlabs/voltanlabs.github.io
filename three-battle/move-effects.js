@@ -23,9 +23,8 @@
     window.DataByteBattle.message?.(`${effect.id} applied.`);
   }
   function renderStatuses() {
-    const target = document.getElementById('battleStatus');
     const state = window.DataByteBattle?.getState?.();
-    if (!target || !state) return;
+    if (!state) return;
     if (wasBusy && !state.busy) {
       for (const key of ['playerStatus', 'enemyStatus']) {
         if (!state[key]) continue;
@@ -38,9 +37,10 @@
       }
     }
     wasBusy = Boolean(state.busy);
-    const statuses = [state.playerStatus && `YOU: ${state.playerStatus.id} · ${state.playerStatus.duration}`, state.enemyStatus && `WILD: ${state.enemyStatus.id} · ${state.enemyStatus.duration}`].filter(Boolean);
-    target.innerHTML = statuses.map(status => `<span>${status}</span>`).join('');
-    target.classList.toggle('has-status', statuses.length > 0);
+    const player = document.getElementById('playerStatus');
+    const enemy = document.getElementById('enemyStatus');
+    if (player) player.innerHTML = state.playerStatus ? `<span>${state.playerStatus.id} · ${state.playerStatus.duration}</span>` : '';
+    if (enemy) enemy.innerHTML = state.enemyStatus ? `<span>${state.enemyStatus.id} · ${state.enemyStatus.duration}</span>` : '';
   }
   document.addEventListener('click', event => {
     const button = event.target.closest?.('#actions .action');

@@ -26,7 +26,8 @@
       creatures.player.hp = Math.max(0, pending.playerHp - damage);
       if (move.statusEffect && Math.random() * 100 < Number(move.statusEffect.chance ?? 100)) state.playerStatus = { id: move.statusEffect.id, duration: Number(move.statusEffect.durationTurns) || 1 };
       state.stability = Math.min(100, Math.max(0, Number(pending.stability || state.stability || 0) + (Number(move.stabilityEffect) || 0)));
-      state.message = `${creatures.enemy.name} used ${move.name} for ${damage} damage.`;
+      state.over = creatures.player.hp <= 0;
+      state.message = state.over ? 'Your DataByte lost signal.' : `${creatures.enemy.name} used ${move.name} for ${damage} damage.`;
       battle.message?.(state.message);
     }
     previousBusy = Boolean(state.busy);
