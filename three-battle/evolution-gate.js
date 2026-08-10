@@ -2,7 +2,7 @@
   const session=window.DataByteSession;
   if(!session)return;
   const chains={};
-  [['leovolt','leothor','leozues'],['crabician','crabizard','crabzaster'],['kindlekid','gaseousgoat','reactorram'],['coincalf','cashcow','bankerbull'],['scorpyone','scorpytwo','scorpyus']].forEach(chain=>chain.forEach(id=>{chains[id]=chain}));
+  (window.DataByteProgressionData?.chains||[['leovolt','leothor','leozues'],['crabician','crabizard','crabzaster'],['kindlekid','gaseousgoat','reactorram'],['coincalf','cash-cow','bankerbull'],['scorpyone','scorpytwo','scorpyus']]).forEach(chain=>chain.forEach(id=>{chains[id]=chain}));
   function preview(id){
     const item=[...(session.party?.()||[]),...(session.repository?.()||[])].find(entry=>session.identity?.(entry)===id||entry?.id===id);
     const speciesId=item?.id||id,chain=chains[speciesId],from=chain?.indexOf(speciesId)??-1;
@@ -18,7 +18,7 @@
     const active=session.party?.()||[],stored=session.repository?.()||[],target=[...active,...stored].find(entry=>session.identity?.(entry)===id||entry?.id===id),wasLead=session.starter?.()===session.identity?.(target);
     for(const list of [active,stored]){
       const targetEntry=list.find(entry=>session.identity?.(entry)===id||entry?.id===id);
-      if(targetEntry){targetEntry.id=plan.next.id;targetEntry.name=plan.next.name;targetEntry.sprite='./data/sprites/'+(plan.next.sprite||'placeholder.png');targetEntry.upgrade=plan.from+2;targetEntry.version=plan.from+2}
+      if(targetEntry){targetEntry.id=plan.next.id;targetEntry.name=plan.next.name;targetEntry.sprite='./data/sprites/'+(plan.next.sprite||'placeholder.png');targetEntry.upgrade=plan.from+2;targetEntry.version=plan.from+2;targetEntry.stats=session.createInstanceStats?.({...targetEntry,...plan.next,uid:targetEntry.uid,version:plan.from+2})||targetEntry.stats;targetEntry.statsVersion=2}
     }
     localStorage.setItem('vl_three_battle_party',JSON.stringify(active));
     localStorage.setItem('vl_three_battle_repository',JSON.stringify(stored));
