@@ -1,5 +1,6 @@
 const CACHE = 'databyte-three-release-10';
 const CORE = [
+  './recovery.js?v=hp-recovery-2',
   './inventory.js?v=profile-inventory-2',
   './storage-sync.js?v=party-xp-merge-2', './enemy-ai.js?v=enemy-ai-2', './battle-guards.js?v=fainted-capture-1',
   './main.js?v=fainted-result-2',
