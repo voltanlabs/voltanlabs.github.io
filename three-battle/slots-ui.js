@@ -37,6 +37,7 @@
       xp: progress.xp,
       level: progress.level,
       nextXp: progress.nextXp,
+      stats: item.stats || source.stats || {},
       sprite: item.sprite || `./data/sprites/${source.sprite || 'placeholder.png'}`,
       description: source.description || source.lore || 'Signal record pending.'
     };
@@ -55,7 +56,7 @@
     modal.innerHTML = `<div class="capture-card party-info-card">
       <button class="party-info-close ghost" data-party-close type="button">CLOSE</button>
       <span class="eyebrow">${detail.location === 'party' ? 'ACTIVE PARTY SIGNAL' : 'SPRITE REPOSITORY'}</span>
-      <img class="party-info-sprite" src="${detail.sprite}" alt="${detail.name}">
+      <div class="party-visual-row"><img class="party-info-sprite" src="${detail.sprite}" alt="${detail.name}"><div class="party-combat-stats"><span>ATTACK <b>${detail.stats?.attack ?? '—'}</b></span><span>DEFENSE <b>${detail.stats?.defense ?? '—'}</b></span><span>SPEED <b>${detail.stats?.speed ?? '—'}</b></span><span>CRIT <b>${detail.stats?.crit ?? '—'}%</b></span></div></div>
       <h2>${detail.name}</h2>
       <p>${detail.description}</p>
       <div class="party-info-stats">
