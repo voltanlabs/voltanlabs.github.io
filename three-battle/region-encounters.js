@@ -12,7 +12,7 @@
     Spam: 'rift', Technoblin: 'rift'
   };
   const regionOrder = ['grove', 'rift', 'cavern', 'bay'];
-  const stageWeights = { 1: 45, 2: 35, 3: 20 };
+  const stageWeights = { 1: 25, 2: 40, 3: 35 };
   let regionBySpecies = {};
   let pools = {};
   function rarity(region) {
