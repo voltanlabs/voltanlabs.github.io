@@ -63,6 +63,7 @@
   "species": [
     {
       "id": "leovolt",
+      "sprite": "leovolt.png",
       "dex": "001",
       "name": "Leovolt",
       "status": "canon-roster",
@@ -110,6 +111,7 @@
     },
     {
       "id": "leothor",
+      "sprite": "leothor.png",
       "dex": "002",
       "name": "Leothor",
       "status": "canon-roster",
@@ -157,6 +159,7 @@
     },
     {
       "id": "leozues",
+      "sprite": "leozues.png",
       "dex": "003",
       "name": "Leozues",
       "status": "canon-roster",
@@ -204,6 +207,7 @@
     },
     {
       "id": "crabician",
+      "sprite": "crabician.png",
       "dex": "004",
       "name": "Crabician",
       "status": "canon-roster",
@@ -251,6 +255,7 @@
     },
     {
       "id": "crabizard",
+      "sprite": "crabizard.png",
       "dex": "005",
       "name": "Crabizard",
       "status": "canon-roster",
@@ -298,6 +303,7 @@
     },
     {
       "id": "crabzaster",
+      "sprite": "crabzaster.png",
       "dex": "006",
       "name": "Crabzaster",
       "status": "canon-roster",
@@ -345,6 +351,7 @@
     },
     {
       "id": "scorpyone",
+      "sprite": "scorpyone.png",
       "dex": "007",
       "name": "Scorpyone",
       "status": "canon-roster",
@@ -392,6 +399,7 @@
     },
     {
       "id": "scorpytwo",
+      "sprite": "scorpytwo.png",
       "dex": "008",
       "name": "Scorpytwo",
       "status": "canon-roster",
@@ -439,6 +447,7 @@
     },
     {
       "id": "scorpyus",
+      "sprite": "scorpyus.png",
       "dex": "009",
       "name": "Scorpyus",
       "status": "canon-roster",
@@ -486,6 +495,7 @@
     },
     {
       "id": "kindlekid",
+      "sprite": "kindlekid.png",
       "dex": "010",
       "name": "KindleKid",
       "status": "canon-roster",
@@ -533,6 +543,7 @@
     },
     {
       "id": "gaseousgoat",
+      "sprite": "gaseousgoat.png",
       "dex": "011",
       "name": "GaseousGoat",
       "status": "canon-roster",
@@ -581,6 +592,7 @@
     },
     {
       "id": "reactorram",
+      "sprite": "reactorram.png",
       "dex": "012",
       "name": "ReactorRam",
       "status": "canon-roster",
@@ -629,6 +641,7 @@
     },
     {
       "id": "swimpig",
+      "sprite": "swimpig.png",
       "dex": "013",
       "name": "SwimPig",
       "status": "canon-roster",
@@ -676,6 +689,7 @@
     },
     {
       "id": "diveswine",
+      "sprite": "diveswine.png",
       "dex": "014",
       "name": "DiveSwine",
       "status": "canon-roster",
@@ -723,6 +737,7 @@
     },
     {
       "id": "porkfloat",
+      "sprite": "porkfloat.png",
       "dex": "015",
       "name": "PorkFloat",
       "status": "canon-roster",
@@ -770,6 +785,7 @@
     },
     {
       "id": "coincalf",
+      "sprite": "coincalf.png",
       "dex": "016",
       "name": "CoinCalf",
       "status": "canon-roster",
@@ -817,6 +833,7 @@
     },
     {
       "id": "cash-cow",
+      "sprite": "cash-cow.png",
       "dex": "017",
       "name": "Cash Cow",
       "status": "canon-roster",
@@ -865,6 +882,7 @@
     },
     {
       "id": "bankerbull",
+      "sprite": "bankerbull.png",
       "dex": "018",
       "name": "BankerBull",
       "status": "canon-roster",
@@ -913,6 +931,7 @@
     },
     {
       "id": "crowupt",
+      "sprite": "crowupt.png",
       "dex": "019",
       "name": "Crowupt",
       "status": "canon-roster",
@@ -958,6 +977,7 @@
     },
     {
       "id": "crowuption",
+      "sprite": "crowuption.png",
       "dex": "020",
       "name": "Crowuption",
       "status": "canon-roster",
@@ -1003,6 +1023,7 @@
     },
     {
       "id": "crowtastrophe",
+      "sprite": "crowtastrophe.png",
       "dex": "021",
       "name": "Crowtastrophe",
       "status": "canon-roster",
@@ -1048,6 +1069,7 @@
     },
     {
       "id": "doughdawg",
+      "sprite": "doughdawg.png",
       "dex": "022",
       "name": "DoughDawg",
       "status": "canon-roster",
@@ -1095,6 +1117,7 @@
     },
     {
       "id": "moneymutt",
+      "sprite": "moneymutt.png",
       "dex": "023",
       "name": "MoneyMutt",
       "status": "canon-roster",
@@ -1142,6 +1165,7 @@
     },
     {
       "id": "hundredhound",
+      "sprite": "hundredhound.png",
       "dex": "024",
       "name": "HundredHound",
       "status": "canon-roster",
@@ -1189,6 +1213,7 @@
     },
     {
       "id": "primateicore",
+      "sprite": "primateicore.png",
       "dex": "025",
       "name": "Primateicore",
       "status": "canon-roster",
@@ -1234,6 +1259,7 @@
     },
     {
       "id": "primateican",
+      "sprite": "primateican.png",
       "dex": "026",
       "name": "Primateican",
       "status": "canon-roster",
@@ -1279,6 +1305,7 @@
     },
     {
       "id": "primateicon",
+      "sprite": "primateicon.png",
       "dex": "027",
       "name": "Primateicon",
       "status": "canon-roster",
@@ -1324,6 +1351,7 @@
     },
     {
       "id": "clockadile",
+      "sprite": "clockadile.png",
       "dex": "028",
       "name": "Clockadile",
       "status": "canon-roster",
@@ -1369,6 +1397,7 @@
     },
     {
       "id": "aligatorithm",
+      "sprite": "aligatorithm.png",
       "dex": "029",
       "name": "Aligatorithm",
       "status": "canon-roster",
@@ -1414,6 +1443,7 @@
     },
     {
       "id": "technogatorus",
+      "sprite": "technogatorus.png",
       "dex": "030",
       "name": "Technogatorus",
       "status": "canon-roster",
@@ -1459,6 +1489,7 @@
     },
     {
       "id": "fiscalfish",
+      "sprite": "fiscalfish.png",
       "dex": "031",
       "name": "FiscalFish",
       "status": "canon-roster",
@@ -1506,6 +1537,7 @@
     },
     {
       "id": "loanshark",
+      "sprite": "loanshark.png",
       "dex": "032",
       "name": "LoanShark",
       "status": "canon-roster",
@@ -1554,6 +1586,7 @@
     },
     {
       "id": "afkwhale",
+      "sprite": "afkwhale.png",
       "dex": "033",
       "name": "AFKWHALE",
       "status": "canon-roster",
@@ -1602,6 +1635,7 @@
     },
     {
       "id": "prankcaller",
+      "sprite": "prankcaller.png",
       "dex": "034",
       "name": "PrankCaller",
       "status": "canon-roster",
@@ -1647,6 +1681,7 @@
     },
     {
       "id": "keyboardwarrior",
+      "sprite": "keyboardwarrior.png",
       "dex": "035",
       "name": "KeyboardWarrior",
       "status": "canon-roster",
@@ -1694,6 +1729,7 @@
     },
     {
       "id": "troll",
+      "sprite": "troll.png",
       "dex": "036",
       "name": "Troll",
       "status": "canon-roster",
@@ -1739,6 +1775,7 @@
     },
     {
       "id": "landline",
+      "sprite": "landline.png",
       "dex": "037",
       "name": "Landline",
       "status": "canon-roster",
@@ -1786,6 +1823,7 @@
     },
     {
       "id": "octocable",
+      "sprite": "octocable.png",
       "dex": "038",
       "name": "Octocable",
       "status": "canon-roster",
@@ -1833,6 +1871,7 @@
     },
     {
       "id": "fiberoptopus",
+      "sprite": "fiberoptopus.png",
       "dex": "039",
       "name": "Fiberoptopus",
       "status": "canon-roster",
@@ -1880,6 +1919,7 @@
     },
     {
       "id": "cassettekid",
+      "sprite": "cassettekid.png",
       "dex": "040",
       "name": "CassetteKid",
       "status": "canon-roster",
@@ -1927,6 +1967,7 @@
     },
     {
       "id": "diskdaddy",
+      "sprite": "diskdaddy.png",
       "dex": "041",
       "name": "DiskDaddy",
       "status": "canon-roster",
@@ -1974,6 +2015,7 @@
     },
     {
       "id": "technoblin",
+      "sprite": "technoblin.png",
       "dex": "042",
       "name": "Technoblin",
       "status": "canon-roster",
@@ -2019,6 +2061,7 @@
     },
     {
       "id": "technomoly",
+      "sprite": "technomoly.png",
       "dex": "043",
       "name": "Technomoly",
       "status": "canon-roster",
@@ -2064,6 +2107,7 @@
     },
     {
       "id": "technareality",
+      "sprite": "technareality.png",
       "dex": "044",
       "name": "Technareality",
       "status": "canon-roster",
@@ -2109,6 +2153,7 @@
     },
     {
       "id": "glitchwyrm",
+      "sprite": "glitchwyrm.png",
       "dex": "045",
       "name": "Glitchwyrm",
       "status": "canon-roster",
@@ -2154,6 +2199,7 @@
     },
     {
       "id": "screensavior",
+      "sprite": "screensavior.png",
       "dex": "046",
       "name": "Screensavior",
       "status": "canon-roster",
@@ -2199,6 +2245,7 @@
     },
     {
       "id": "monitorman",
+      "sprite": "monitorman.png",
       "dex": "047",
       "name": "Monitorman",
       "status": "canon-roster",
@@ -2244,6 +2291,7 @@
     },
     {
       "id": "displaydevil",
+      "sprite": "displaydevil.png",
       "dex": "048",
       "name": "Displaydevil",
       "status": "canon-roster",
@@ -2289,6 +2337,7 @@
     },
     {
       "id": "mirrormaster",
+      "sprite": "mirrormaster.png",
       "dex": "049",
       "name": "Mirrormaster",
       "status": "canon-roster",
@@ -2334,6 +2383,7 @@
     },
     {
       "id": "compressaur",
+      "sprite": "compressaur.png",
       "dex": "050",
       "name": "Compressaur",
       "status": "canon-roster",
@@ -2379,6 +2429,7 @@
     },
     {
       "id": "pixelpigeon",
+      "sprite": "pixelpigeon.png",
       "dex": "051",
       "name": "Pixelpigeon",
       "status": "canon-roster",
@@ -2424,6 +2475,7 @@
     },
     {
       "id": "binarybear",
+      "sprite": "binarybear.png",
       "dex": "052",
       "name": "Binarybear",
       "status": "canon-roster",
@@ -2469,6 +2521,7 @@
     },
     {
       "id": "proxentity",
+      "sprite": "proxentity.png",
       "dex": "053",
       "name": "Proxentity",
       "status": "canon-roster",
@@ -2514,6 +2567,7 @@
     },
     {
       "id": "proxsentience",
+      "sprite": "proxsentience.png",
       "dex": "054",
       "name": "Proxsentience",
       "status": "canon-roster",
@@ -2559,6 +2613,7 @@
     },
     {
       "id": "gem-n-eye",
+      "sprite": "gem-n-eye.png",
       "dex": "055",
       "name": "Gem-N-Eye",
       "status": "canon-roster",
@@ -2604,6 +2659,7 @@
     },
     {
       "id": "6-ela",
+      "sprite": "6-ela.png",
       "dex": "056",
       "name": "6.ela",
       "status": "canon-roster",
@@ -2649,6 +2705,7 @@
     },
     {
       "id": "pixelpup",
+      "sprite": "pixelpup.png",
       "dex": "057",
       "name": "PixelPup",
       "status": "canon-roster",
@@ -2694,6 +2751,7 @@
     },
     {
       "id": "wireframewolf",
+      "sprite": "wireframewolf.png",
       "dex": "058",
       "name": "WireframeWolf",
       "status": "canon-roster",
@@ -2739,6 +2797,7 @@
     },
     {
       "id": "lupinfinity",
+      "sprite": "lupinfinity.png",
       "dex": "059",
       "name": "Lupinfinity",
       "status": "canon-roster",
@@ -2784,6 +2843,7 @@
     },
     {
       "id": "centaurcher",
+      "sprite": "centaurcher.png",
       "dex": "060",
       "name": "Centaurcher",
       "status": "canon-roster",
@@ -2829,6 +2889,7 @@
     },
     {
       "id": "quiverandcolt",
+      "sprite": "quiverandcolt.png",
       "dex": "061",
       "name": "Quiver&Colt",
       "status": "canon-roster",
@@ -2874,6 +2935,7 @@
     },
     {
       "id": "kernel-coltquiver",
+      "sprite": "kernel-coltquiver.png",
       "dex": "062",
       "name": "Kernel:ColtQuiver",
       "status": "canon-roster",
@@ -2919,6 +2981,7 @@
     },
     {
       "id": "aquobit",
+      "sprite": "aquobit.png",
       "dex": "063",
       "name": "AquoBit",
       "status": "canon-roster",
@@ -2966,6 +3029,7 @@
     },
     {
       "id": "aquomid",
+      "sprite": "aquomid.png",
       "dex": "064",
       "name": "AquoMid",
       "status": "canon-roster",
@@ -3014,6 +3078,7 @@
     },
     {
       "id": "aquomead",
+      "sprite": "aquomead.png",
       "dex": "065",
       "name": "AquoMead",
       "status": "canon-roster",
@@ -3062,6 +3127,7 @@
     },
     {
       "id": "leorust",
+      "sprite": "leorust.png",
       "dex": "066",
       "name": "LeoRust",
       "status": "canon-roster",
@@ -3109,6 +3175,7 @@
     },
     {
       "id": "leowreck",
+      "sprite": "leowreck.png",
       "dex": "067",
       "name": "LeoWreck",
       "status": "canon-roster",
@@ -3156,6 +3223,7 @@
     },
     {
       "id": "leoruin",
+      "sprite": "leoruin.png",
       "dex": "068",
       "name": "LeoRuin",
       "status": "canon-roster",
@@ -3203,6 +3271,7 @@
     },
     {
       "id": "leonot",
+      "sprite": "leonot.png",
       "dex": "069",
       "name": "LeoNot",
       "status": "canon-roster",
@@ -3250,6 +3319,7 @@
     },
     {
       "id": "leonill",
+      "sprite": "leonill.png",
       "dex": "070",
       "name": "LeoNill",
       "status": "canon-roster",
@@ -3297,6 +3367,7 @@
     },
     {
       "id": "leonone",
+      "sprite": "leonone.png",
       "dex": "071",
       "name": "LeoNone",
       "status": "canon-roster",
@@ -3344,6 +3415,7 @@
     },
     {
       "id": "wifly",
+      "sprite": "wifly.png",
       "dex": "072",
       "name": "WiFly",
       "status": "canon-roster",
