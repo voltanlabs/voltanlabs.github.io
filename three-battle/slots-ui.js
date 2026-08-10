@@ -25,7 +25,7 @@
     const source = roster.find(entry => entry.id === item.id) || item;
     const hp = Number(item.hp ?? 100);
     const maxHp = Number(item.maxHp ?? 100);
-    const version = item.version || source.version || 1;
+    const upgrade = item.upgrade || item.version || source.upgrade || source.version || 1;
     const progress = session()?.spriteProgress?.(item) || { xp: 0, level: 1, nextXp: 100 };
     return {
       ...source,
@@ -33,7 +33,7 @@
       location,
       hp,
       maxHp,
-      version,
+      upgrade,
       xp: progress.xp,
       level: progress.level,
       nextXp: progress.nextXp,
@@ -49,7 +49,7 @@
   function openInfo(item, location, slotIndex = null) {
     const modal = ensureModal();
     const detail = spriteDetails(item, location);
-    const canUpgrade = ['leovolt', 'leothor', 'kindlekid', 'coincalf', 'crabician', 'scorpyone'].includes(detail.id);
+    const canUpgrade = Boolean(session().evolutionPreview?.(detail.id)?.next);
     const isLead = location === 'party' && slotIndex === 0;
     modal.innerHTML = `<div class="capture-card party-info-card">
       <button class="party-info-close ghost" data-party-close type="button">CLOSE</button>
@@ -61,13 +61,13 @@
         <span>HP <b>${detail.hp} / ${detail.maxHp}</b></span>
         <span>TYPE <b>${detail.type || detail.configuration || 'Unassigned'}</b></span>
         <span>ALIGNMENT <b>${detail.alignment || 'Unassigned'}</b></span>
-        <span>VERSION <b>${detail.version}</b></span>
+        <span>UPGRADE <b>${detail.upgrade}</b></span>
         <span>LEVEL <b>${detail.level}</b></span>
         <span>EXPERIENCE <b>${detail.xp}${detail.nextXp === null ? ' XP · MAX' : ` / ${detail.nextXp} XP`}</b></span>
       </div>
       <div class="party-info-actions">
         ${detail.location === 'party' ? `<button class="ghost" data-party-lead type="button">${session().starter() === detail.id ? 'CURRENT LEAD' : 'SET AS LEAD'}</button><button class="ghost" data-party-store type="button" ${isLead ? 'disabled' : ''}>${isLead ? 'LEAD CANNOT BE STORED' : 'SEND TO REPOSITORY'}</button>` : '<button class="scan-button" data-party-deploy type="button">SEND TO TEAM</button>'}
-        ${canUpgrade ? '<button class="scan-button" data-party-upgrade type="button">VERSION UP</button>' : ''}
+        ${canUpgrade ? '<button class="scan-button" data-party-upgrade type="button">UPGRADE</button>' : ''}
       </div>
     </div>`;
     modal.classList.add('is-open');
@@ -96,20 +96,25 @@
       closeModal();
       render();
     });
-    modal.querySelector('[data-party-upgrade]')?.addEventListener('click', () => {
+    modal.querySelector('[data-party-upgrade]')?.addEventListener('click', () => openUpgrade(detail, location));
+  }
+
+  function openUpgrade(detail, location) {
+    const plan = session().evolutionPreview?.(detail.id);
+    if (!plan?.next) return;
+    let modal = document.getElementById('upgradeModal');
+    if (!modal) { modal = document.createElement('div'); modal.id = 'upgradeModal'; modal.className = 'capture-modal'; document.body.appendChild(modal); }
+    const nextSprite = `./data/sprites/${plan.next.sprite || 'placeholder.png'}`;
+    const ready = plan.ok;
+    modal.innerHTML = `<div class="capture-card upgrade-card"><button class="party-info-close ghost" data-upgrade-close type="button">CLOSE</button><span class="eyebrow">DATABYTE UPGRADE // READY</span><div class="upgrade-stage"><img class="upgrade-old-sprite" src="${detail.sprite}" alt="${detail.name}"><div class="upgrade-particle-field" aria-hidden="true">${Array.from({length:28},(_,i)=>`<i style="--i:${i}"></i>`).join('')}</div><img class="upgrade-new-sprite" src="${nextSprite}" alt="${plan.next.name}"></div><h2>${detail.name} <span>→</span> ${plan.next.name}</h2><p>${ready?`Upgrade ${detail.name} to its next form?`:`Earn ${Math.max(0,plan.required-plan.xp)} more XP before this upgrade is ready.`}</p><div class="outcome-actions"><button class="ghost" data-upgrade-close type="button">CANCEL</button>${ready?'<button class="scan-button" data-upgrade-confirm type="button">CONFIRM UPGRADE</button>':''}</div></div>`;
+    modal.classList.add('is-open');
+    modal.querySelectorAll('[data-upgrade-close]').forEach(button => button.onclick = () => modal.classList.remove('is-open'));
+    modal.querySelector('[data-upgrade-confirm]')?.addEventListener('click', () => {
       const result = session().evolve?.(detail.id);
-      const message = result?.ok
-        ? `${result.from} upgraded to ${result.to}.`
-        : result?.reason === 'requires-xp'
-          ? `Earn ${result.required - result.xp} more XP before upgrading.`
-          : result?.reason === 'max-version'
-            ? 'This DataByte is already at its highest known version.'
-            : 'No Version Upgrade is available for this DataByte yet.';
-      modal.querySelector('.party-info-actions').insertAdjacentHTML('afterend', `<p class="party-info-message">${message}</p>`);
-      if (result?.ok) {
-        render();
-        setTimeout(() => openInfo({ ...detail, id: result.to }, location), 0);
-      }
+      if (!result?.ok) return;
+      modal.querySelector('.upgrade-card')?.classList.add('is-upgrading');
+      modal.querySelector('[data-upgrade-confirm]').disabled = true;
+      setTimeout(() => { modal.classList.remove('is-open'); render(); const upgraded = (session().party?.()||[]).concat(session().repository?.()||[]).find(item => item.id === result.to); if (upgraded) openInfo(upgraded, location); }, 1350);
     });
   }
 
