@@ -24,7 +24,11 @@
       const guarded = state.guarding;
       const damage = guarded ? Math.max(1, Math.round(targetDamage * 0.45)) : targetDamage;
       creatures.player.hp = Math.max(0, pending.playerHp - damage);
-      if (move.statusEffect && Math.random() * 100 < Number(move.statusEffect.chance ?? 100)) state.playerStatus = { id: move.statusEffect.id, duration: Number(move.statusEffect.durationTurns) || 1 };
+      if (move.statusEffect && Math.random() * 100 < Number(move.statusEffect.chance ?? 100)) {
+        const target = move.statusEffect.target === 'self' ? 'enemyStatus' : 'playerStatus';
+        state[target] = { id: move.statusEffect.id, duration: Number(move.statusEffect.durationTurns) || 1 };
+        if (target === 'enemyStatus' && move.statusEffect.id === 'guarded') state.enemyGuarding = true;
+      }
       state.stability = Math.min(100, Math.max(0, Number(pending.stability || state.stability || 0) + (Number(move.stabilityEffect) || 0)));
       state.over = creatures.player.hp <= 0;
       state.message = state.over ? 'Your DataByte lost signal.' : `${creatures.enemy.name} used ${move.name} for ${damage} damage.`;

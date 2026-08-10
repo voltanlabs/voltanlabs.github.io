@@ -21,7 +21,7 @@
     accuracy: Math.max(82, 98 - index * 2),
     stabilityEffect: index === 5 ? 4 : -1,
     downloadEffect: 3 + (index % 5),
-    statusEffect: index === 5 ? { id: 'guarded', chance: 100, durationTurns: 1, target: 'self' } : { id: effects[index % effects.length], chance: 15 + (index * 5), durationTurns: 2, target: 'enemy' },
+    statusEffect: index === 5 ? { id: 'guarded', chance: 100, durationTurns: 1, target: 'self' } : { id: effects[index % effects.length], chance: 15 + (index * 5), durationTurns: 2, target: effects[index % effects.length] === 'charged' ? 'self' : 'enemy' },
     alignmentInteractions: { Pristine: index % 3, Stained: (index + 1) % 3, Null: (index + 2) % 3 },
     learnVersion: index < 2 ? 'Kilobyte' : index < 6 ? 'Megabyte' : 'Gigabyte',
     tags: [configuration.toLowerCase(), index === 5 ? 'support' : 'signature'],
