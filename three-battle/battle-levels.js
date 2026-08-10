@@ -2,7 +2,8 @@
   function sync() {
     const session = window.DataByteSession;
     if (!session) return;
-    const lead = session.party?.().find(item => item.id === session.starter?.());
+    const active = session.starter?.();
+    const lead = session.party?.().find(item => (item.uid || item.id) === active || item.id === active);
     const player = document.getElementById('playerLevel');
     const progress = session.spriteProgress?.(lead) || { xp: 0, level: lead?.level || 1, nextXp: 100 };
     if (player) player.textContent = `LV ${progress.level}`;

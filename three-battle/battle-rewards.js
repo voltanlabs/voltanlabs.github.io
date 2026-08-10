@@ -14,13 +14,14 @@
     state.__defeatRewardGranted = true;
     const session = window.DataByteSession;
     const party = session?.party?.() || [];
-    const lead = party.find(item => item.id === session?.starter?.())?.id || party[0]?.id;
+    const active = session?.starter?.();
+    const lead = party.find(item => (item.uid || item.id) === active || item.id === active) || party[0];
     const xp = xpForEnemy(state, 'defeat');
     window.DataByteProgression?.addXp?.(xp);
-    if (lead) session?.addSpriteXp?.(lead, xp);
+    if (lead) session?.addSpriteXp?.(lead.uid || lead.id, xp);
     session?.addCoins?.(1);
     window.DataByteRewardHistory?.record?.('Victory reward');
-    window.dispatchEvent(new CustomEvent('databyte:defeat-rewarded', { detail: { id: lead, xp, coins: 1 } }));
+    window.dispatchEvent(new CustomEvent('databyte:defeat-rewarded', { detail: { id: lead?.uid || lead?.id, xp, coins: 1 } }));
   }
   function poll() { awardDefeat(window.DataByteBattle?.getState?.()); }
   window.setInterval(poll, 100);

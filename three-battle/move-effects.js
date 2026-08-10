@@ -1,7 +1,8 @@
 (function () {
   let wasBusy = false;
   function moveForIndex(index) {
-    const player = window.DataByteSession?.party?.().find(item => item.id === window.DataByteSession?.starter?.());
+    const active = window.DataByteSession?.starter?.();
+    const player = window.DataByteSession?.party?.().find(item => (item.uid || item.id) === active || item.id === active);
     const species = window.DataByteSession?.roster?.().find(item => item.id === player?.id) || player || {};
     const moves = window.THREE_BATTLE_MOVE_FOR_SPECIES?.(player?.id, species) || window.THREE_BATTLE_DATA?.moves || [];
     return moves[index];
