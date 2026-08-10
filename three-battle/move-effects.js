@@ -1,4 +1,5 @@
 (function () {
+  let wasBusy = false;
   function moveForIndex(index) {
     const player = window.DataByteSession?.party?.().find(item => item.id === window.DataByteSession?.starter?.());
     const species = window.DataByteSession?.roster?.().find(item => item.id === player?.id) || player || {};
@@ -10,6 +11,8 @@
     if (!state || state.over || !move) return;
     const stability = Number(move.stabilityEffect) || 0;
     if (stability) state.stability = Math.min(100, Math.max(0, Number(state.stability || 0) + stability));
+    const download = Number(move.downloadEffect) || 0;
+    if (download) state.capturePressure = Math.min(45, Math.max(0, Number(state.capturePressure || 0) + download));
     const effect = move.statusEffect;
     if (!effect || Math.random() * 100 >= Number(effect.chance ?? 100)) return;
     const target = effect.target === 'self' ? 'playerStatus' : 'enemyStatus';
@@ -23,6 +26,18 @@
     const target = document.getElementById('battleStatus');
     const state = window.DataByteBattle?.getState?.();
     if (!target || !state) return;
+    if (wasBusy && !state.busy) {
+      for (const key of ['playerStatus', 'enemyStatus']) {
+        if (!state[key]) continue;
+        state[key].duration -= 1;
+        if (state[key].duration <= 0) {
+          if (key === 'playerStatus' && state[key].id === 'guarded') state.guarding = false;
+          if (key === 'enemyStatus' && state[key].id === 'glitched') state.status = null;
+          delete state[key];
+        }
+      }
+    }
+    wasBusy = Boolean(state.busy);
     const statuses = [state.playerStatus && `YOU: ${state.playerStatus.id} · ${state.playerStatus.duration}`, state.enemyStatus && `WILD: ${state.enemyStatus.id} · ${state.enemyStatus.duration}`].filter(Boolean);
     target.innerHTML = statuses.map(status => `<span>${status}</span>`).join('');
     target.classList.toggle('has-status', statuses.length > 0);
