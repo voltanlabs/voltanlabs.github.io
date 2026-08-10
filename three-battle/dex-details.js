@@ -11,8 +11,9 @@
     host.innerHTML = data.filter(item => item.id !== 'placeholder').map(item => {
       const isSeen = seen.has(item.id), isCaptured = captured.has(item.id);
       const status = isCaptured ? 'CAPTURED' : isSeen ? 'SEEN' : 'UNKNOWN';
-      const sprite = item.sprite && item.sprite !== 'placeholder.png' ? `./data/sprites/${item.sprite}` : './data/sprites/placeholder.png';
-      return `<article class="dex-record ${status.toLowerCase()}"><img src="${sprite}" alt=""><div><strong>#${item.dex || '???'} ${isSeen ? item.name : 'Unknown Signal'}</strong><small>${status} · ${item.rarity || 'Common'} · ${item.alignment || 'Unassigned'}</small><p>${isSeen ? (item.lore || item.description || 'Signal record pending.') : 'Scan this signal to reveal its record.'}</p></div></article>`;
+      const sprite = isSeen && item.sprite && item.sprite !== 'placeholder.png' ? `./data/sprites/${item.sprite}` : './data/sprites/placeholder.png';
+      const loading = isSeen ? 'lazy' : 'eager';
+      return `<article class="dex-record ${status.toLowerCase()}"><img src="${sprite}" loading="${loading}" decoding="async" fetchpriority="low" alt=""><div><strong>#${item.dex || '???'} ${isSeen ? item.name : 'Unknown Signal'}</strong><small>${status} · ${item.rarity || 'Common'} · ${item.alignment || 'Unassigned'}</small><p>${isSeen ? (item.lore || item.description || 'Signal record pending.') : 'Scan this signal to reveal its record.'}</p></div></article>`;
     }).join('');
   }
   window.addEventListener('DOMContentLoaded', render);
