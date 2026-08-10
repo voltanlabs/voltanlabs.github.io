@@ -13,7 +13,7 @@
     const stability = Number(move.stabilityEffect) || 0;
     if (stability) state.stability = Math.min(100, Math.max(0, Number(state.stability || 0) + stability));
     const download = Number(move.downloadEffect) || 0;
-    if (download) state.capturePressure = Math.min(45, Math.max(0, Number(state.capturePressure || 0) + download));
+    if (download) state.capturePressure = Math.min(35, Math.max(0, Number(state.capturePressure || 0) + download));
     const effect = move.statusEffect;
     if (!effect || Math.random() * 100 >= Number(effect.chance ?? 100)) return;
     const target = effect.target === 'self' ? 'playerStatus' : 'enemyStatus';
