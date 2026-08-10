@@ -17,7 +17,11 @@
     const effect = move.statusEffect;
     if (!effect || Math.random() * 100 >= Number(effect.chance ?? 100)) return;
     const target = effect.target === 'self' ? 'playerStatus' : 'enemyStatus';
-    state[target] = { id: effect.id, duration: Number(effect.durationTurns) || 1 };
+    const list = Array.isArray(state[target]) ? state[target] : (state[target] ? [state[target]] : []);
+    const existing = list.find(status => status.id === effect.id);
+    if (existing) existing.duration = Number(effect.durationTurns) || 1;
+    else list.push({ id: effect.id, duration: Number(effect.durationTurns) || 1 });
+    state[target] = list;
     if (effect.id === 'guarded' && effect.target === 'self') state.guarding = true;
     if (effect.id === 'glitched' && effect.target !== 'self') state.status = 'Glitched';
     if (effect.id === 'drained' && effect.target !== 'self') state.stability = Math.max(0, Number(state.stability || 0) - 5);
@@ -28,22 +32,23 @@
     if (!state) return;
     if (wasBusy && !state.busy) {
       for (const key of ['playerStatus', 'enemyStatus']) {
-        if (!state[key]) continue;
-        state[key].duration -= 1;
-        if (state[key].duration <= 0) {
-          if (key === 'playerStatus' && state[key].id === 'guarded') state.guarding = false;
-          if (key === 'enemyStatus' && state[key].id === 'guarded') state.enemyGuarding = false;
-          if (key === 'playerStatus' && state[key].id === 'glitched') state.status = null;
-          if (key === 'enemyStatus' && state[key].id === 'glitched') state.status = null;
-          delete state[key];
+        const list = Array.isArray(state[key]) ? state[key] : (state[key] ? [state[key]] : []);
+        list.forEach(status => { status.duration -= 1; });
+        state[key] = list.filter(status => status.duration > 0);
+        if (!state[key].some(status => status.id === 'guarded')) {
+          if (key === 'playerStatus') state.guarding = false;
+          if (key === 'enemyStatus') state.enemyGuarding = false;
         }
+        if (!state[key].some(status => status.id === 'glitched')) state.status = null;
       }
     }
     wasBusy = Boolean(state.busy);
     const player = document.getElementById('playerStatus');
     const enemy = document.getElementById('enemyStatus');
-    if (player) player.innerHTML = state.playerStatus ? `<span>${state.playerStatus.id} · ${state.playerStatus.duration}</span>` : '';
-    if (enemy) enemy.innerHTML = state.enemyStatus ? `<span>${state.enemyStatus.id} · ${state.enemyStatus.duration}</span>` : '';
+    const positive = new Set(['charged', 'guarded']);
+    const badges = value => (Array.isArray(value) ? value : value ? [value] : []).map(status => `<span class="status-${positive.has(status.id) ? 'positive' : 'negative'}">${status.id} · ${status.duration}</span>`).join('');
+    if (player) player.innerHTML = badges(state.playerStatus);
+    if (enemy) enemy.innerHTML = badges(state.enemyStatus);
   }
   document.addEventListener('click', event => {
     const button = event.target.closest?.('#actions .action');
