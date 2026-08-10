@@ -67,7 +67,7 @@
         <span>EXPERIENCE <b>${detail.xp}${detail.nextXp === null ? ' XP · MAX' : ` / ${detail.nextXp} XP`}</b></span>
       </div>
       <div class="party-info-actions">
-        ${detail.location === 'party' ? `<button class="ghost" data-party-lead type="button" ${isFainted ? 'disabled' : ''}>${isFainted ? 'FAINTED CANNOT LEAD' : session().starter() === (detail.uid || detail.id) ? 'CURRENT LEAD' : 'SET AS LEAD'}</button><button class="ghost" data-party-store type="button" ${isLead ? 'disabled' : ''}>${isLead ? 'LEAD CANNOT BE STORED' : 'SEND TO REPOSITORY'}</button>` : '<button class="scan-button" data-party-deploy type="button">SEND TO TEAM</button>'}
+        ${detail.location === 'party' ? `<button class="ghost" data-party-lead type="button" ${isFainted ? 'disabled' : ''}>${isFainted ? 'FAINTED CANNOT LEAD' : session().starter() === (detail.uid || detail.id) ? 'CURRENT LEAD' : 'SET AS LEAD'}</button><button class="ghost" data-party-store type="button" ${isLead ? 'disabled' : ''}>${isLead ? 'LEAD CANNOT BE STORED' : 'SEND TO REPOSITORY'}</button>` : '<button class="scan-button" data-party-deploy type="button">SEND TO TEAM</button>'}<button class="ghost danger-action" data-party-delete type="button">DELETE</button>
         ${canUpgrade ? '<button class="scan-button" data-party-upgrade type="button">UPGRADE</button>' : ''}
       </div>
     </div>`;
@@ -86,6 +86,10 @@
       session().storeSlot(slotIndex);
       closeModal();
       render();
+    });
+    modal.querySelector('[data-party-delete]')?.addEventListener('click', () => {
+      if (!window.confirm(`Delete ${detail.name} permanently?`)) return;
+      if (session().deleteInstance?.(detail.uid || detail.id)) { closeModal(); render(); }
     });
     modal.querySelector('[data-party-deploy]')?.addEventListener('click', () => {
       const emptyIndex = session().slots().findIndex(entry => !entry);
