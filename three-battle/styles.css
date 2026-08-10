@@ -57,3 +57,4 @@
 .xp-meter{height:4px;margin-top:7px;border:1px solid #23617c;border-radius:9px;background:#071019;overflow:hidden;box-shadow:0 0 8px #50d9ff33}.xp-meter span{display:block;height:100%;width:0;background:linear-gradient(90deg,#50d9ff,#b78cff);box-shadow:0 0 10px #50d9ff;transition:width .45s ease}
 .fighter-status{display:flex;min-height:18px;margin-top:5px}.fighter-status span{padding:3px 6px;border:1px solid #50d9ff88;border-radius:99px;background:#061321dd;color:#9ed5e8;font-size:9px;letter-spacing:.04em;white-space:nowrap;box-shadow:0 0 10px #50d9ff22}.enemy-card .fighter-status{justify-content:flex-end}
 .fighter-card .fighter-status{position:absolute;top:100%;margin-top:6px;min-height:18px;z-index:3}.player-card .fighter-status{left:0}.enemy-card .fighter-status{right:0;justify-content:flex-end}
+.starter-panel{}#battleResetBtn{display:none!important}

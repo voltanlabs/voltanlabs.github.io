@@ -1,5 +1,6 @@
 const CACHE = 'databyte-three-release-11';
 const CORE = [
+  './party-handoff.js?v=preserve-hp-handoff-1',
   './starter.js?v=starter-preview-1',
   './', './index.html', './styles.css', './manifest.json',
   './data/runtime-data.js', './data/species.json', './data/moves.json',
