@@ -51,6 +51,7 @@
     const detail = spriteDetails(item, location);
     const canUpgrade = Boolean(session().evolutionPreview?.(detail.id)?.next);
     const isLead = location === 'party' && slotIndex === 0;
+    const isFainted = detail.hp <= 0;
     modal.innerHTML = `<div class="capture-card party-info-card">
       <button class="party-info-close ghost" data-party-close type="button">CLOSE</button>
       <span class="eyebrow">${detail.location === 'party' ? 'ACTIVE PARTY SIGNAL' : 'SPRITE REPOSITORY'}</span>
@@ -66,7 +67,7 @@
         <span>EXPERIENCE <b>${detail.xp}${detail.nextXp === null ? ' XP · MAX' : ` / ${detail.nextXp} XP`}</b></span>
       </div>
       <div class="party-info-actions">
-        ${detail.location === 'party' ? `<button class="ghost" data-party-lead type="button">${session().starter() === detail.id ? 'CURRENT LEAD' : 'SET AS LEAD'}</button><button class="ghost" data-party-store type="button" ${isLead ? 'disabled' : ''}>${isLead ? 'LEAD CANNOT BE STORED' : 'SEND TO REPOSITORY'}</button>` : '<button class="scan-button" data-party-deploy type="button">SEND TO TEAM</button>'}
+        ${detail.location === 'party' ? `<button class="ghost" data-party-lead type="button" ${isFainted ? 'disabled' : ''}>${isFainted ? 'FAINTED CANNOT LEAD' : session().starter() === detail.id ? 'CURRENT LEAD' : 'SET AS LEAD'}</button><button class="ghost" data-party-store type="button" ${isLead ? 'disabled' : ''}>${isLead ? 'LEAD CANNOT BE STORED' : 'SEND TO REPOSITORY'}</button>` : '<button class="scan-button" data-party-deploy type="button">SEND TO TEAM</button>'}
         ${canUpgrade ? '<button class="scan-button" data-party-upgrade type="button">UPGRADE</button>' : ''}
       </div>
     </div>`;

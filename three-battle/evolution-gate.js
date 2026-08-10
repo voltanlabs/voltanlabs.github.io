@@ -1,7 +1,8 @@
 (function(){
   const session=window.DataByteSession;
   if(!session)return;
-  const chains={leovolt:['leovolt','leothor','leozues'],crabician:['crabician','crabizard','crabzaster'],kindlekid:['kindlekid','gaseousgoat','reactorram'],coincalf:['coincalf','cashcow','bankerbull'],scorpyone:['scorpyone','scorpytwo','scorpyus']};
+  const chains={};
+  [['leovolt','leothor','leozues'],['crabician','crabizard','crabzaster'],['kindlekid','gaseousgoat','reactorram'],['coincalf','cashcow','bankerbull'],['scorpyone','scorpytwo','scorpyus']].forEach(chain=>chain.forEach(id=>{chains[id]=chain}));
   function preview(id){
     const chain=chains[id],from=chain?.indexOf(id)??-1;
     const item=[...(session.party?.()||[]),...(session.repository?.()||[])].find(entry=>entry?.id===id);
