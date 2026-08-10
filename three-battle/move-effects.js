@@ -32,6 +32,7 @@
         state[key].duration -= 1;
         if (state[key].duration <= 0) {
           if (key === 'playerStatus' && state[key].id === 'guarded') state.guarding = false;
+          if (key === 'playerStatus' && state[key].id === 'glitched') state.status = null;
           if (key === 'enemyStatus' && state[key].id === 'glitched') state.status = null;
           delete state[key];
         }
