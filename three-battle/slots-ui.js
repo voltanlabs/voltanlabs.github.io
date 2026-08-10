@@ -41,6 +41,10 @@
       description: source.description || source.lore || 'Signal record pending.'
     };
   }
+  function spriteUrl(item) {
+    const source = (session()?.roster?.() || []).find(entry => entry.id === item?.id) || item || {};
+    return item?.sprite || `./data/sprites/${source.sprite || 'placeholder.png'}`;
+  }
 
   function openInfo(item, location, slotIndex = null) {
     const modal = ensureModal();
@@ -143,7 +147,7 @@
     const isSelected = selected?.key === key;
     const lead = location === 'party' && index === 0;
     return `<button class="party-card ${lead ? 'is-lead' : ''} ${isSelected ? 'is-selected' : ''}" data-party-key="${key}" type="button">
-      <img src="${item.sprite}" alt="${item.name}"><span><b>${item.name}</b><small>${lead ? 'LEAD · ' : ''}LV ${session()?.spriteProgress?.(item)?.level || item.level || 1} · ${location === 'party' ? `SLOT ${index + 1}` : 'STORED SIGNAL'}</small></span>
+      <img src="${spriteUrl(item)}" alt="${item.name}"><span><b>${item.name}</b><small>${lead ? 'LEAD · ' : ''}LV ${session()?.spriteProgress?.(item)?.level || item.level || 1} · ${location === 'party' ? `SLOT ${index + 1}` : 'STORED SIGNAL'}</small></span>
     </button>`;
   }
 
