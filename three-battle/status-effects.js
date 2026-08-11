@@ -20,8 +20,8 @@
     const config = definition(effect.id), list = Array.isArray(state[key]) ? state[key] : (state[key] ? [state[key]] : []);
     const existing = list.find(status => status.id === effect.id);
     const duration = Number(effect.durationTurns || effect.duration) || config.duration;
-    if (existing) { existing.duration = duration; existing.stacks = Math.min(config.maxStacks, Math.max(1, Number(existing.stacks || 1) + 1)); }
-    else list.push({ id: effect.id, duration, stacks: 1 });
+    if (existing) { existing.duration = duration; existing.stacks = Math.min(config.maxStacks, Math.max(1, Number(existing.stacks || 1) + 1)); existing.skipTick = true; }
+    else list.push({ id: effect.id, duration, stacks: 1, skipTick: true });
     state[key] = list;
     return list.find(status => status.id === effect.id);
   }

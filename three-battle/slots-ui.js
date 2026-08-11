@@ -76,7 +76,7 @@
     modal.querySelector('[data-party-close]').onclick = closeModal;
     modal.querySelector('[data-party-lead]')?.addEventListener('click', () => {
       const slots = session().slots();
-      const index = slots.findIndex(entry => entry?.id === detail.id);
+      const index = slots.findIndex(entry => entry && (entry.uid || entry.id) === (detail.uid || detail.id));
       if (index > 0) session().swapSlots(0, index);
       else session().setLead(detail.uid || detail.id);
       closeModal();

@@ -7,7 +7,13 @@
     Torrent: ['Wave Crash', 'Foam Frenzy', 'Undertow Rush', 'Rain Relay', 'Brine Burst', 'Tidal Guard', 'Flood Gate', 'Current Coil'],
     Financial: ['Coin Toss', 'Market Crash', 'Bull Run', 'Compound Strike', 'Dividend Drain', 'Ledger Lock', 'Asset Shield', 'Vault Break'],
     Aether: ['Cloud Thread', 'Signal Bloom', 'Skyline Pulse', 'Aether Drift', 'Beacon Burst', 'Horizon Link', 'Aurora Sweep', 'Zenith Ray'],
-    Spectral: ['Phantom Feint', 'Ghost Packet', 'Echo Slice', 'Prism Shift', 'Haunt Loop', 'Mirror Maze', 'Wisp Lance', 'Veil Break']
+    Spectral: ['Phantom Feint', 'Ghost Packet', 'Echo Slice', 'Prism Shift', 'Haunt Loop', 'Mirror Maze', 'Wisp Lance', 'Veil Break'],
+    Acoustic: ['Echo Burst', 'Chorus Crash', 'Resonance Wave', 'Feedback Roar', 'Harmonic Link', 'Sonic Ward', 'Overtone Break', 'Final Cadence'],
+    Organic: ['Vine Lash', 'Verdant Rush', 'Thorn Volley', 'Pack Rally', 'Root Lock', 'Bark Guard', 'Canopy Crash', 'Wild Kernel'],
+    Analog: ['Dial Strike', 'Rotary Rush', 'Needle Drop', 'Tape Loop', 'Phase Knob', 'Soft Reset', 'Signal Drift', 'Master Clock'],
+    Seismic: ['Fault Line', 'Quake Rush', 'Tremor Bite', 'Rift Crash', 'Aftershock', 'Stone Guard', 'Core Break', 'Tectonic Roar'],
+    Spam: ['Packet Flood', 'Junk Burst', 'Buffer Crash', 'Thread Swarm', 'Overflow', 'Cache Guard', 'Viral Loop', 'System Flood'],
+    Cipher: ['Code Lash', 'Key Burst', 'Hash Crash', 'Lock Thread', 'Decode Drain', 'Cipher Guard', 'Root Access', 'Master Key']
   };
   const configurations = Object.keys(names);
   const effects = ['charged', 'bound', 'glitched', 'guarded', 'focused', 'drained'];
@@ -28,7 +34,7 @@
     description: `${name} channels ${configuration} through the surrounding signal field.`,
     learnedBy: ['*'],
     version: '0.3.0'
-  }))).slice(0, 60);
+  })));
   const catalog = [...(window.THREE_BATTLE_DATA?.moves || []), ...(window.THREE_BATTLE_AUTHORED_MOVES || []), ...extras];
   function movesForSpecies(id, species = {}) {
     const config = species.primaryConfiguration || species.configuration || species.configurations?.[0] || 'Aether';
