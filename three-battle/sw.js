@@ -5,7 +5,7 @@ const CORE = [
   './', './index.html', './styles.css', './manifest.json',
   './data/runtime-data.js', './data/species.json', './data/moves.json',
   './vendor/three.module.js', './vendor/three.core.js',
-  './move-catalog.js?v=move-catalog-60-1', './move-effects.js?v=move-effects-6', './enemy-ai.js?v=enemy-ai-2', './battle-guards.js?v=fainted-capture-1',
+  './status-effects.js?v=status-runtime-1', './authored-moves.js?v=authored-family-moves-1', './move-catalog.js?v=move-catalog-60-1', './move-effects.js?v=move-effects-6', './enemy-ai.js?v=enemy-ai-2', './battle-guards.js?v=fainted-capture-1',
   './reward-flow.js?v=reward-flow-1', './roster-loader.js?v=roster-v2', './session.js?v=profile-session-1', './species-progression.js?v=species-stages-1', './instance-storage.js?v=unique-databyte-instances-2', './evolution-gate.js?v=sprite-xp-evolution-2', './storage-sync.js?v=party-xp-merge-2', './profile-normalizer.js?v=profile-normalizer-1',
   './progression.js?v=profile-progression-1', './inventory.js?v=profile-inventory-2', './capture-pressure.js?v=pressure-loop-2', './environment.js?v=signal-environments', './combat-effects.js?v=combat-motion-2',
   './feedback.js?v=feedback-1', './capture-control.js?v=live-capture-2', './capture-coins.js?v=capture-balance-1', './encounter-code.js?v=code-identity-1', './stability-normalizer.js?v=stability-floor-1', './encounter-levels.js?v=admin-signal-level-1', './battle-levels.js?v=admin-signal-level-2', './battle-rewards.js?v=scaled-enemy-xp-1',

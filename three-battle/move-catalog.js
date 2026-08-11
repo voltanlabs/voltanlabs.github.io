@@ -29,12 +29,14 @@
     learnedBy: ['*'],
     version: '0.3.0'
   }))).slice(0, 60);
-  const catalog = [...(window.THREE_BATTLE_DATA?.moves || []), ...extras];
+  const catalog = [...(window.THREE_BATTLE_DATA?.moves || []), ...(window.THREE_BATTLE_AUTHORED_MOVES || []), ...extras];
   function movesForSpecies(id, species = {}) {
-    const config = species.primaryConfiguration || species.configuration || 'Aether';
+    const config = species.primaryConfiguration || species.configuration || species.configurations?.[0] || 'Aether';
     const pool = extras.filter(move => move.configuration === config);
-    const existing = (window.THREE_BATTLE_DATA?.moves || []).filter(move => move.learnedBy?.includes?.(id));
-    return [window.THREE_BATTLE_DATA?.moves?.find(move => move.id === 'signal-strike') || catalog[0], ...(existing.length ? existing : pool).slice(0, 3)];
+    const basic = window.THREE_BATTLE_DATA?.moves?.find(move => move.id === 'signal-strike') || catalog[0];
+    const existing = (window.THREE_BATTLE_DATA?.moves || []).filter(move => move.id !== 'signal-strike' && move.learnedBy?.includes?.(id));
+    const authored = (window.THREE_BATTLE_AUTHORED_MOVES || []).filter(move => move.learnedBy?.includes?.(id) || (move.learnedBy?.includes?.('*') && move.configuration === config));
+    return [basic, ...(existing.length ? existing : authored.length ? authored : pool).slice(0, 3)];
   }
   window.THREE_BATTLE_MOVE_CATALOG = catalog;
   window.THREE_BATTLE_MOVE_FOR_SPECIES = movesForSpecies;

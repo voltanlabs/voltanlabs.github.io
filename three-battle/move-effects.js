@@ -17,11 +17,8 @@
     const effect = move.statusEffect;
     if (!effect || Math.random() * 100 >= Number(effect.chance ?? 100)) return;
     const target = effect.target === 'self' ? 'playerStatus' : 'enemyStatus';
-    const list = Array.isArray(state[target]) ? state[target] : (state[target] ? [state[target]] : []);
-    const existing = list.find(status => status.id === effect.id);
-    if (existing) existing.duration = Number(effect.durationTurns) || 1;
-    else list.push({ id: effect.id, duration: Number(effect.durationTurns) || 1 });
-    state[target] = list;
+    if (window.DataByteStatusRuntime?.apply) window.DataByteStatusRuntime.apply(state, target, effect);
+    else state[target] = [{ id: effect.id, duration: Number(effect.durationTurns) || 1, stacks: 1 }];
     if (effect.id === 'guarded' && effect.target === 'self') state.guarding = true;
     if (effect.id === 'glitched' && effect.target !== 'self') state.status = 'Glitched';
     if (effect.id === 'drained' && effect.target !== 'self') state.stability = Math.max(0, Number(state.stability || 0) - 5);
@@ -33,6 +30,10 @@
     if (wasBusy && !state.busy) {
       for (const key of ['playerStatus', 'enemyStatus']) {
         const list = Array.isArray(state[key]) ? state[key] : (state[key] ? [state[key]] : []);
+        const creature = key === 'playerStatus' ? window.DataByteBattle?.creatures?.player : window.DataByteBattle?.creatures?.enemy;
+        const damage = window.DataByteStatusRuntime?.tick?.(state, key, creature) || 0;
+        if (damage && key === 'playerStatus') window.DataByteSession?.updateHp?.(creature.id, creature.hp);
+        if (damage) state.message = `${creature.name} suffered ${damage} status damage.`;
         list.forEach(status => { status.duration -= 1; });
         state[key] = list.filter(status => status.duration > 0);
         if (!state[key].some(status => status.id === 'guarded')) {
@@ -45,8 +46,8 @@
     wasBusy = Boolean(state.busy);
     const player = document.getElementById('playerStatus');
     const enemy = document.getElementById('enemyStatus');
-    const positive = new Set(['charged', 'guarded']);
-    const badges = value => (Array.isArray(value) ? value : value ? [value] : []).map(status => `<span class="status-${positive.has(status.id) ? 'positive' : 'negative'}">${status.id} · ${status.duration}</span>`).join('');
+    const positive = new Set(['charged', 'guarded', 'boost', 'shield']);
+    const badges = value => (Array.isArray(value) ? value : value ? [value] : []).map(status => `<span class="status-${positive.has(status.id) ? 'positive' : 'negative'}">${status.id}${Number(status.stacks) > 1 ? ` ×${status.stacks}` : ''} · ${status.duration}</span>`).join('');
     if (player) player.innerHTML = badges(state.playerStatus);
     if (enemy) enemy.innerHTML = badges(state.enemyStatus);
   }

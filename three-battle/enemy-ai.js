@@ -26,11 +26,8 @@
       creatures.player.hp = Math.max(0, pending.playerHp - damage);
       if (move.statusEffect && Math.random() * 100 < Number(move.statusEffect.chance ?? 100)) {
         const target = move.statusEffect.target === 'self' ? 'enemyStatus' : 'playerStatus';
-        const list = Array.isArray(state[target]) ? state[target] : (state[target] ? [state[target]] : []);
-        const existing = list.find(status => status.id === move.statusEffect.id);
-        if (existing) existing.duration = Number(move.statusEffect.durationTurns) || 1;
-        else list.push({ id: move.statusEffect.id, duration: Number(move.statusEffect.durationTurns) || 1 });
-        state[target] = list;
+        if (window.DataByteStatusRuntime?.apply) window.DataByteStatusRuntime.apply(state, target, move.statusEffect);
+        else state[target] = [{ id: move.statusEffect.id, duration: Number(move.statusEffect.durationTurns) || 1, stacks: 1 }];
         if (target === 'enemyStatus' && move.statusEffect.id === 'guarded') state.enemyGuarding = true;
       }
       state.stability = Math.min(100, Math.max(0, Number(pending.stability || state.stability || 0) + (Number(move.stabilityEffect) || 0)));
