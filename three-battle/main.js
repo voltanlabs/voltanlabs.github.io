@@ -63,3 +63,5 @@ function canonicalSwitchTurn(){if(!state||state.busy||state.over)return false;cl
 render=()=>renderBattleView({state,creatures,getElement:$});reset=canonicalReset;window.DataByteBattle.switchTurn=canonicalSwitchTurn;canonicalReset();
 function guardZeroHpScan(event){if(currentPlayerHp()>0)return;event.preventDefault();event.stopImmediatePropagation();$('scannerStatus').textContent='Your active DataByte has no signal. Use SIGNAL REBOOT or wait for recovery before scanning.';$('scanBtn').disabled=false}
 $('scanBtn')?.addEventListener('click',guardZeroHpScan,true);
+renderMoves=()=>{moves=resolveMoves(creatures.player.id);$('actions').innerHTML=moves.map((m,i)=>`<button class="action" data-move="${i}"><b>${m.name}</b><span>${m.copy} · ${m.power<0?'+'+(-m.power)+' HP':m.power+' DMG'} · ACC ${Math.round(Number(m.accuracy??100))}%</span></button>`).join('')};
+renderMoves();
