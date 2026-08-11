@@ -1,4 +1,4 @@
-const CACHE = 'databyte-three-release-20';
+const CACHE = 'databyte-three-release-21';
 const CORE = [
   './party-handoff.js?v=preserve-hp-handoff-1',
   './starter.js?v=starter-preview-1',
