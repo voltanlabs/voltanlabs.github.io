@@ -10,7 +10,7 @@
     return outcome === 'captured' ? 15 + Math.floor(level * 0.75) : defeat;
   }
   function awardDefeat(state) {
-    if (!state || state.__defeatRewardGranted || !/Victory!/i.test(state.message || '')) return;
+    if (!state || state.__defeatRewardGranted || state.outcome !== 'victory') return;
     state.__defeatRewardGranted = true;
     const session = window.DataByteSession;
     const party = session?.party?.() || [];

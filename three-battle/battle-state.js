@@ -4,6 +4,7 @@ export function createBattleState({ maxStability = 100, message = '' } = {}) {
     busy: false,
     over: false,
     resultShown: false,
+    outcome: null,
     rewardGranted: false,
     guarding: false,
     enemyGuarding: false,
