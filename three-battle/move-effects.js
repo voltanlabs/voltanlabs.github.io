@@ -15,6 +15,7 @@
     if (effect.id === 'guarded' && effect.target === 'self') state.guarding = true;
     if (effect.id === 'glitched' && effect.target !== 'self') state.status = 'Glitched';
     if (effect.id === 'drained' && effect.target !== 'self') state.stability = Math.max(0, Number(state.stability || 0) - 5);
+    state.lastEffectApplied = effect.id;
     state.message = `${state.message || ''} ${effect.id} applied.`.trim();
   }
   function renderStatuses() {
