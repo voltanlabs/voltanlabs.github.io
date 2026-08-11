@@ -98,7 +98,7 @@
         modal.querySelector('.party-info-actions').insertAdjacentHTML('afterend', '<p class="party-info-message">Your team is full. Use Switch DataBytes to replace a team slot.</p>');
         return;
       }
-      session().assignSlot(emptyIndex, detail.id);
+      session().assignSlot(emptyIndex, detail.uid || detail.id);
       closeModal();
       render();
     });

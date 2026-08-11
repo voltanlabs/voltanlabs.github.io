@@ -22,7 +22,7 @@
     }
     localStorage.setItem('vl_three_battle_party',JSON.stringify(active));
     localStorage.setItem('vl_three_battle_repository',JSON.stringify(stored));
-    if(wasLead)localStorage.setItem('vl_three_battle_starter',plan.next.id);
+    if(wasLead)localStorage.setItem('vl_three_battle_starter',target?.uid||target?.id||plan.next.id);
     const upgraded=[...active,...stored].find(entry=>entry?.id===plan.next.id&&entry?.uid===target?.uid)||[...active,...stored].find(entry=>entry?.id===plan.next.id);
     if(wasLead)window.dispatchEvent(new CustomEvent('databyte:starter-updated',{detail:{id:upgraded?.id,uid:upgraded?.uid}}));
     window.dispatchEvent(new CustomEvent('databyte:evolved',{detail:{from:id,to:plan.next.id}}));
