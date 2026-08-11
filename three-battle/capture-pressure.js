@@ -8,8 +8,6 @@
       const state = window.DataByteBattle?.getState?.();
       if (state && !state.over) {
         state.capturePressure = Math.min(35, (state.capturePressure || 0) + 4);
-        const log = document.getElementById('battleLog');
-        if (log && !/capture pressure/i.test(log.textContent || '')) log.textContent += ` Capture pressure: ${state.capturePressure}%.`;
       }
     });
   }
