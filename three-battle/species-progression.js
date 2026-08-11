@@ -17,7 +17,10 @@
     ['centaurcher', 'quiverandcolt', 'kernel-coltquiver'],
     ['aquobit', 'aquomid', 'aquomead'],
     ['leorust', 'leowreck', 'leoruin'],
-    ['leonot', 'leonill', 'leonone']
+    ['leonot', 'leonill', 'leonone'],
+    ['cranurse', 'cradocter', 'crasurgen'],
+    ['cralyric', 'crachorus', 'crasymphony'],
+    ['scorpbegin', 'scorprocess', 'scorpyend']
   ];
   const stageBySpecies = {};
   chains.forEach(chain => chain.forEach((id, index) => { stageBySpecies[id] = index + 1; }));
