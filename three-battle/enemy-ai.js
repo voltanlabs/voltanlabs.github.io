@@ -13,6 +13,7 @@
   }
   function tick() {
     const battle = window.DataByteBattle;
+    if (battle?.canonicalLoop) return;
     const state = battle?.getState?.();
     const creatures = battle?.creatures;
     if (!state || !creatures) return;
