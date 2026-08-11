@@ -1,4 +1,4 @@
-const CACHE = 'databyte-three-release-21';
+const CACHE = 'databyte-three-release-22';
 const CORE = [
   './party-handoff.js?v=preserve-hp-handoff-1',
   './starter.js?v=starter-preview-1',
@@ -19,9 +19,14 @@ self.addEventListener('activate', event => {
 });
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-  event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+  const networkFirst = event.request.destination === 'document' || event.request.destination === 'script' || event.request.url.includes('/main.js');
+  event.respondWith((networkFirst ? fetch(event.request).then(response => {
     const copy = response.clone();
     caches.open(CACHE).then(cache => cache.put(event.request, copy));
     return response;
-  }).catch(() => caches.match('./index.html'))));
+  }).catch(() => caches.match(event.request)) : caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+    const copy = response.clone();
+    caches.open(CACHE).then(cache => cache.put(event.request, copy));
+    return response;
+  }))).catch(() => caches.match('./index.html')));
 });
