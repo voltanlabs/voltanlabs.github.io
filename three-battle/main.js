@@ -70,3 +70,11 @@ function guardZeroHpScan(event){if(currentPlayerHp()>0)return;event.preventDefau
 $('scanBtn')?.addEventListener('click',guardZeroHpScan,true);
 renderMoves=()=>{moves=resolveMoves(creatures.player.id);$('actions').innerHTML=moves.map((m,i)=>`<button class="action" data-move="${i}"><b>${m.name}</b><span>${m.copy} · ${m.power<0?'+'+(-m.power)+' HP':m.power+' DMG'} · ACC ${Math.round(playerMoveAccuracy(m))}%</span></button>`).join('')};
 renderMoves();
+window.addEventListener('databyte:party-updated',()=>{
+  const active=session?.starter?.();
+  const next=session?.party?.().find(item=>(item.uid||item.id)===active||item.id===active);
+  if(!next)return;
+  Object.assign(creatures.player,next,{hp:Math.max(0,Math.min(Number(next.maxHp??100),Number(next.hp??100))),maxHp:Number(next.maxHp??100)});
+  renderMoves();
+  if(state)render();
+});

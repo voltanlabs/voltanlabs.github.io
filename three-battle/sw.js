@@ -1,4 +1,4 @@
-const CACHE = 'databyte-three-release-78';
+const CACHE = 'databyte-three-release-79';
 const CORE = [
   './party-handoff.js?v=preserve-hp-handoff-1',
   './starter.js?v=starter-preview-1',
@@ -9,7 +9,7 @@ const CORE = [
   './reward-flow.js?v=reward-flow-1', './roster-loader.js?v=roster-v3', './session.js?v=profile-session-1', './species-progression.js?v=wild-form-gates-1', './instance-storage.js?v=save-normalization-1', './evolution-gate.js?v=upgrade-result-1', './storage-sync.js?v=party-xp-merge-2', './profile-normalizer.js?v=profile-normalizer-1',
   './progression.js?v=progression-balance-1', './inventory.js?v=battle-item-turns-1', './capture-pressure.js?v=pressure-loop-3', './environment.js?v=signal-environments', './combat-effects.js?v=combat-motion-3', './move-info.js?v=long-press-info-3',
   './feedback.js?v=feedback-1', './capture-control.js?v=live-capture-2', './capture-coins.js?v=capture-balance-1', './encounter-code.js?v=code-identity-1', './stability-normalizer.js?v=stability-floor-1', './encounter-levels.js?v=admin-signal-level-1', './battle-levels.js?v=admin-signal-level-2', './battle-rewards.js?v=reward-xp-stages-1',
-  './missions.js?v=profile-missions-1', './recovery.js?v=signal-reboot-2', './encounter.js?v=discovery-sprite-path-1', './dex-ui.js?v=collection-count-1', './dex-details.js?v=dex-records', './regions.js?v=region-level-gates-1', './region-encounters.js?v=pristine-grove-pool-1', './events.js?v=profile-events-1', './reward-history.js?v=reward-xp-stages-1', './world-map.js?v=region-level-gates-1', './discovery-codes.js?v=profile-discovery-codes-1', './starter.js?v=paint-gate', './slots-ui.js?v=instance-deploy-3', './switch-ui.js?v=switch-instance-4', './os-nav.js?v=items-popup', './save-tools.js?v=save-safety-1', './pwa.js?v=release-0.1.13', './main.js?v=region-scan-handoff-1'
+  './missions.js?v=profile-missions-1', './recovery.js?v=signal-reboot-3', './encounter.js?v=discovery-sprite-path-1', './dex-ui.js?v=collection-count-1', './dex-details.js?v=dex-records', './regions.js?v=region-level-gates-1', './region-encounters.js?v=pristine-grove-pool-1', './events.js?v=profile-events-1', './reward-history.js?v=reward-xp-stages-1', './world-map.js?v=region-level-gates-1', './discovery-codes.js?v=profile-discovery-codes-1', './starter.js?v=paint-gate', './slots-ui.js?v=instance-deploy-3', './switch-ui.js?v=switch-instance-4', './os-nav.js?v=items-popup', './save-tools.js?v=save-safety-1', './pwa.js?v=release-0.1.13', './main.js?v=party-recovery-sync-1'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
