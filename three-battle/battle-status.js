@@ -14,8 +14,10 @@ export function stacks(state, key, id) {
 }
 
 export function multiplier(state, key, id, field) {
+  const active = list(state, key).find(status => status.id === id);
+  if (!active) return 1;
   const value = Number(window.DataByteStatusRuntime?.definition?.(id)?.[field]);
-  return Number.isFinite(value) && value > 0 ? Math.pow(value, stacks(state, key, id)) : 1;
+  return Number.isFinite(value) && value > 0 ? Math.pow(value, Math.max(1, Number(active.stacks) || 1)) : 1;
 }
 
 export function consume(state, key, id) {
