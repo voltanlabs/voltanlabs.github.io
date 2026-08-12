@@ -78,3 +78,5 @@
 .particle-orbit i:nth-child(4n){background:#d9ffff;box-shadow:0 0 8px #d9ffff,0 0 16px #50d9ff}
 @keyframes particle-orbit-spin{from{transform:rotateX(var(--orbit-tilt)) rotateY(0deg) rotateZ(0deg)}to{transform:rotateX(var(--orbit-tilt)) rotateY(360deg) rotateZ(360deg)}}
 @keyframes particle-flicker{0%,100%{opacity:.25;filter:blur(.2px);scale:.65}50%{opacity:1;filter:blur(0);scale:1.35}}
+.particle-orbit{animation:none!important;transform-style:preserve-3d}
+.particle-orbit i{animation:none!important;transform-origin:center;will-change:transform,opacity;backface-visibility:hidden}
