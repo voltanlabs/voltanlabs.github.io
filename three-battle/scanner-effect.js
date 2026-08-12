@@ -17,15 +17,39 @@ function buildScannerField() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setClearColor(0x000000, 0);
 
-  const core = new THREE.Mesh(
-    new THREE.SphereGeometry(0.78, 32, 24),
-    new THREE.MeshBasicMaterial({ color: 0x173650, transparent: true, opacity: 0.9 })
-  );
-  scene.add(core);
+  const coreCount = 1100;
+  const corePositions = new Float32Array(coreCount * 3);
+  const coreColors = new Float32Array(coreCount * 3);
+  const coreParticlesData = [];
+  const darkBlue = new THREE.Color(0x061b3f);
+  const electricBlue = new THREE.Color(0x43d9ff);
+  for (let i = 0; i < coreCount; i += 1) {
+    const phi = Math.acos(1 - 2 * Math.random());
+    const theta = Math.random() * Math.PI * 2;
+    const radius = 0.58 + Math.random() * 0.24;
+    coreParticlesData.push({ phi, theta, radius, phase: Math.random() * Math.PI * 2 });
+    const color = darkBlue.clone().lerp(electricBlue, Math.random() * Math.random());
+    coreColors[i * 3] = color.r;
+    coreColors[i * 3 + 1] = color.g;
+    coreColors[i * 3 + 2] = color.b;
+  }
+  const coreGeometry = new THREE.BufferGeometry();
+  coreGeometry.setAttribute('position', new THREE.BufferAttribute(corePositions, 3));
+  coreGeometry.setAttribute('color', new THREE.BufferAttribute(coreColors, 3));
+  const coreParticles = new THREE.Points(coreGeometry, new THREE.PointsMaterial({
+    size: 0.035,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.9,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    sizeAttenuation: true
+  }));
+  scene.add(coreParticles);
 
   const rings = [
     { tilt: [1.04, 0.62, -0.78], radius: 1.42, thickness: 0.13, speed: 0.48, wobble: 0.08, color: 0x50d9ff },
-    { tilt: [1.78, -0.74, 0.92], radius: 1.58, thickness: 0.16, speed: -0.36, wobble: 0.06, color: 0xffd166 },
+    { tilt: [1.42, -0.48, 0.58], radius: 1.58, thickness: 0.16, speed: -0.36, wobble: 0.06, color: 0xffd166 },
     { tilt: [0.68, 1.12, 1.18], radius: 1.32, thickness: 0.1, speed: 0.27, wobble: 0.1, color: 0xc084fc }
   ];
   const systems = [];
@@ -97,7 +121,17 @@ function buildScannerField() {
       });
       position.needsUpdate = true;
     });
-    core.scale.setScalar(0.96 + Math.sin(elapsed * 1.8) * 0.035);
+    const corePosition = coreGeometry.getAttribute('position');
+    coreParticlesData.forEach((particle, index) => {
+      const pulse = particle.radius + Math.sin(elapsed * 1.7 + particle.phase) * 0.018;
+      const offset = index * 3;
+      corePosition.array[offset] = Math.sin(particle.phi) * Math.cos(particle.theta + elapsed * 0.08) * pulse;
+      corePosition.array[offset + 1] = Math.cos(particle.phi) * pulse;
+      corePosition.array[offset + 2] = Math.sin(particle.phi) * Math.sin(particle.theta + elapsed * 0.08) * pulse;
+    });
+    corePosition.needsUpdate = true;
+    coreParticles.rotation.y = elapsed * 0.12;
+    coreParticles.rotation.x = Math.sin(elapsed * 0.3) * 0.08;
     renderer.render(scene, camera);
     window.requestAnimationFrame(animate);
   }
