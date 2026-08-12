@@ -1,5 +1,5 @@
 (function () {
-  const VERSION = '0.1.4';
+  const VERSION = '0.1.5';
   function addVersionBadge() {
     const topbar = document.querySelector('.topbar');
     if (!topbar || document.getElementById('appVersion')) return;
@@ -19,7 +19,16 @@
   addVersionBadge(); window.addEventListener('DOMContentLoaded', addVersionBadge);
   if (!('serviceWorker' in navigator)) return;
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js?v=release-0.1.7').catch(function (error) {
+    const hadController = Boolean(navigator.serviceWorker.controller);
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (!hadController || refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+    navigator.serviceWorker.register('./sw.js?v=release-0.1.5').then(function (registration) {
+      registration.update();
+    }).catch(function (error) {
       console.warn('DataByte offline shell unavailable.', error);
     });
   });
