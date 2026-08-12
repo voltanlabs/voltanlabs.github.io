@@ -4,10 +4,13 @@
   }
   function xpForEnemy(state, outcome = 'defeat') {
     const level = encounterLevel(state);
-    // The level curve is quadratic, so rewards stay deliberately sub-linear.
-    // Higher-level signals pay more, but late-game levels still take grinding.
-    const defeat = 10 + Math.floor(level * 0.5);
-    return outcome === 'captured' ? 15 + Math.floor(level * 0.75) : defeat;
+    const enemy = state?.enemy || window.DataByteBattle?.creatures?.enemy || {};
+    const rarityMultiplier = { Common: 1, Uncommon: 1.15, Rare: 1.35, Epic: 1.6, Legendary: 1.9, Mythic: 2.2 }[enemy.rarity] || 1;
+    const stage = window.DataByteProgressionData?.stageFor?.(enemy) || Number(enemy.evolutionStage) || 1;
+    const stageMultiplier = [1, 1.2, 1.45][Math.max(0, Math.min(2, stage - 1))] || 1;
+    const base = 18 + Math.floor(level * 1.5);
+    const outcomeMultiplier = outcome === 'captured' ? 1.35 : 1;
+    return Math.max(12, Math.round(base * rarityMultiplier * stageMultiplier * outcomeMultiplier));
   }
   function awardDefeat(state) {
     if (!state || state.__defeatRewardGranted || state.outcome !== 'victory') return;
@@ -23,7 +26,5 @@
     window.DataByteRewardHistory?.record?.('Victory reward');
     window.dispatchEvent(new CustomEvent('databyte:defeat-rewarded', { detail: { id: lead?.uid || lead?.id, xp, coins: 1 } }));
   }
-  function poll() { awardDefeat(window.DataByteBattle?.getState?.()); }
-  window.setInterval(poll, 100);
   window.DataByteBattleRewards = { awardDefeat, xpForEnemy };
 })();

@@ -37,6 +37,10 @@
   }
   function evolutionLevelFor(id, from) { return evolutionLevels[familyTiming(id)]?.[from] || evolutionLevels.standard[from]; }
   function evolutionXpFor(id, from) { const level = evolutionLevelFor(id, from); return 50 * (level - 1) * level; }
+  function chainFor(itemOrId) {
+    const id = typeof itemOrId === 'string' ? itemOrId : itemOrId?.id;
+    return chains.find(chain => chain.includes(id)) || null;
+  }
   function stageFor(item) {
     if (Number(item?.version) >= 1) return Math.min(3, Number(item.version));
     return stageBySpecies[item?.id] || 1;
@@ -47,5 +51,14 @@
     while (level < 100 && value >= 50 * level * (level + 1)) level += 1;
     return level;
   }
-  window.DataByteProgressionData = { chains, stageBySpecies, stageFor, adminLevel, timingByFamily, evolutionLevels, familyTiming, evolutionLevelFor, evolutionXpFor };
+  function wildMinAdminLevel(item) {
+    const chain = chainFor(item);
+    const stage = stageFor(item);
+    if (!chain || stage <= 1) return 1;
+    return evolutionLevelFor(chain[0], stage - 2) || 1;
+  }
+  function wildEligible(item, profileXp) {
+    return adminLevel(profileXp) >= wildMinAdminLevel(item);
+  }
+  window.DataByteProgressionData = { chains, stageBySpecies, stageFor, adminLevel, timingByFamily, evolutionLevels, familyTiming, evolutionLevelFor, evolutionXpFor, chainFor, wildMinAdminLevel, wildEligible };
 })();

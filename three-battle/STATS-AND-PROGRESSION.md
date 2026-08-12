@@ -46,3 +46,27 @@ The XP values are calculated from the level curve: `50 × (level - 1) × level`.
 ## Healing and battle
 
 Healing is capped by the instance's current `maxHp`, not a universal 100 HP value. Battle damage reads the instance's attack, defense, speed, and fixed crit chance. Evolution and storage preserve the instance's rolls through its unique ID.
+
+## Wild-form unlocks
+
+Player profile XP controls which evolved forms can appear as wild signals. Individual DataByte XP controls whether an owned instance may evolve; these are separate progression tracks.
+
+- Base forms are available from the start.
+- Second forms unlock in the same family timing band as their first evolution: Early level 22, Standard level 30, Late level 40, and Endgame level 50.
+- Third forms unlock at the family’s second-evolution threshold: Early level 50, Standard level 65, Late level 78, and Endgame level 88.
+- Once unlocked, encounter weighting remains stage-based: base 50, second form 30, and third form 20.
+
+## Wild encounter levels and rewards
+
+Wild signals use the active region's level band rather than always spawning at level 1. Each encounter rolls independently across the full band.
+
+| Region | Wild level band |
+| --- | ---: |
+| Pristine Grove | 1–15 |
+| Stained Rift | 10–35 |
+| Null Cavern | 25–60 |
+| Signal Bay | 45–85 |
+
+Victory XP scales with encounter level, rarity, and evolution stage. Capturing successfully adds a capture bonus. A battle pays exactly one outcome reward: an uncaptured victory pays victory XP and one coin; a successful capture pays the capture reward instead. Player defeat pays nothing.
+
+Capture difficulty increases modestly with enemy level and evolution stage, while lower HP, capture pressure, and reduced stability continue to improve the chance.

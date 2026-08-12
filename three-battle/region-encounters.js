@@ -12,6 +12,12 @@
     Spam: 'rift', Technoblin: 'rift'
   };
   const regionOrder = ['grove', 'rift', 'cavern', 'bay'];
+  const levelBands = {
+    grove: [1, 15],
+    rift: [10, 35],
+    cavern: [25, 60],
+    bay: [45, 85]
+  };
   const stageWeights = { 1: 50, 2: 30, 3: 20 };
   let regionBySpecies = {};
   let pools = {};
@@ -21,6 +27,10 @@
       if ((roll -= weight) < 0) return name;
     }
     return 'Common';
+  }
+  function encounterLevel(region, adminLevel) {
+    const [minimum, maximum] = levelBands[region] || levelBands.grove;
+    return minimum + Math.floor(Math.random() * (maximum - minimum + 1));
   }
   function assignRegion(sprite) {
     if (sprite.alignment === 'Pristine') return 'grove';
@@ -44,11 +54,9 @@
   }
   function pickEncounter(region, adminLevel, playerId, currentId) {
     const eligible = (pools[region] || []).filter(sprite => sprite.id !== playerId && sprite.id !== currentId);
-    const unlocked = eligible.filter(sprite => {
-      const stage = window.DataByteProgressionData?.stageFor?.(sprite) || 1;
-      return stage === 1 || (stage === 2 && adminLevel >= 3) || (stage === 3 && adminLevel >= 5);
-    });
-    const available = unlocked.length ? unlocked : eligible;
+    const unlocked = eligible.filter(sprite => window.DataByteProgressionData?.wildEligible?.(sprite, window.DataByteProgression?.xp?.() || 0) ?? ((window.DataByteProgressionData?.stageFor?.(sprite) || 1) === 1));
+    const available = unlocked.length ? unlocked : eligible.filter(sprite => (window.DataByteProgressionData?.stageFor?.(sprite) || 1) === 1);
+    if (!available.length) return null;
     const weighted = available.map(sprite => ({ sprite, weight: stageWeights[window.DataByteProgressionData?.stageFor?.(sprite) || 1] || 1 }));
     const total = weighted.reduce((sum, entry) => sum + entry.weight, 0);
     let roll = Math.random() * total;
@@ -64,15 +72,19 @@
       if (!pools[region]?.length) buildPools();
       const base = original(playerId, currentId);
       const adminLevel = window.DataByteProgressionData?.adminLevel?.(window.DataByteProgression?.xp?.() || 0) || window.__threeBattleAdminLevel || 1;
-      const selected = pickEncounter(region, adminLevel, playerId, currentId);
-      if (!selected) return { ...base, region, rarity: rarity(region) };
+      const selected = pickEncounter(region, adminLevel, playerId, currentId) ||
+        (window.DataByteSession?.roster?.() || []).find(sprite => sprite.id !== playerId && sprite.id !== currentId &&
+          (window.DataByteProgressionData?.stageFor?.(sprite) || 1) === 1);
+      const level = encounterLevel(region, adminLevel);
+      window.__threeBattleEncounterLevel = level;
+      if (!selected) return { ...base, region, rarity: rarity(region), level };
       return {
         ...base,
         ...selected,
         rarity: selected.rarity || rarity(region),
         region,
         evolutionStage: window.DataByteProgressionData?.stageFor?.(selected) || 1,
-        level: base.level,
+        level,
         scanCode: base.scanCode
       };
     };

@@ -37,13 +37,4 @@
 
   window.DataByteProgression = { xp, rank, addXp, snapshot, render };
   window.addEventListener('DOMContentLoaded', render);
-  const outcome = document.getElementById('battleOutcome');
-  if (outcome && window.MutationObserver) {
-    new MutationObserver(() => {
-      const text = outcome.textContent || '';
-      if (!/captured|victory/i.test(text) || outcome.dataset.xpAwarded) return;
-      outcome.dataset.xpAwarded = '1';
-      addXp(/captured/i.test(text) ? 50 : 25);
-    }).observe(outcome, { childList: true, subtree: true, characterData: true });
-  }
 })();
