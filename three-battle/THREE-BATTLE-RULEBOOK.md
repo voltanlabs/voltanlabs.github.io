@@ -113,6 +113,7 @@ Regions are selected through the World Map and live inside the map system.
 - A region requires both its unique discovery count and the active lead level.
 - The map shows which requirement is still missing.
 - Region alignment/configuration rules determine which species belong to each region.
+- Pristine Grove also includes the curated clean/stable families KindleKid, CoinCalf, Clockadile, Gem-N-Eye, PixelPup, and AquoBit because their lore fits a stable discovery environment even when their configuration would otherwise map elsewhere.
 - Base forms have the highest stage weighting: base 50, second form 30, third form 20, subject to wild-form profile XP gates.
 - The player profile’s admin/progression XP gates when evolved forms can appear in the wild.
 - Individual DataByte XP gates owned-instance evolution; these are separate systems.

@@ -12,6 +12,9 @@
     Spam: 'rift', Technoblin: 'rift'
   };
   const regionOrder = ['grove', 'rift', 'cavern', 'bay'];
+  // Curated clean/stable signals that belong in Pristine Grove even when their
+  // configuration is normally associated with another region.
+  const pristineSpecies = new Set(['kindlekid', 'coincalf', 'clockadile', 'gem-n-eye', 'pixelpup', 'aquobit']);
   const levelBands = {
     grove: [1, 15],
     rift: [10, 35],
@@ -33,6 +36,7 @@
     return minimum + Math.floor(Math.random() * (maximum - minimum + 1));
   }
   function assignRegion(sprite) {
+    if (pristineSpecies.has(sprite.id)) return 'grove';
     if (sprite.alignment === 'Pristine') return 'grove';
     if (sprite.alignment === 'Stained') return 'rift';
     if (sprite.alignment === 'Null') return 'cavern';
