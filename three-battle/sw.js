@@ -1,11 +1,11 @@
-const CACHE = 'databyte-three-release-44';
+const CACHE = 'databyte-three-release-45';
 const CORE = [
   './party-handoff.js?v=preserve-hp-handoff-1',
   './starter.js?v=starter-preview-1',
-  './', './index.html', './styles.css', './manifest.json',
+  './', './index.html', './styles.css', './status-tooltips.css?v=status-tooltips-1', './manifest.json',
   './data/runtime-data.js', './data/species.json', './data/moves.json',
   './vendor/three.module.js', './vendor/three.core.js', './battle-rules.js', './battle-state.js', './battle-status.js', './battle-render.js',
-  './status-effects.js?v=status-runtime-2', './authored-moves.js?v=authored-family-moves-1', './move-catalog.js?v=move-catalog-62', './move-effects.js?v=move-effects-8', './battle-ai.js', './battle-guards.js?v=fainted-capture-1',
+  './status-effects.js?v=status-runtime-2', './authored-moves.js?v=authored-family-moves-1', './move-catalog.js?v=move-catalog-62', './move-effects.js?v=move-effects-9', './battle-ai.js', './battle-guards.js?v=fainted-capture-1',
   './reward-flow.js?v=reward-flow-1', './roster-loader.js?v=roster-v3', './session.js?v=profile-session-1', './species-progression.js?v=species-stages-1', './instance-storage.js?v=unique-databyte-instances-2', './evolution-gate.js?v=instance-evolution-3', './storage-sync.js?v=party-xp-merge-2', './profile-normalizer.js?v=profile-normalizer-1',
   './progression.js?v=profile-progression-1', './inventory.js?v=profile-inventory-2', './capture-pressure.js?v=pressure-loop-3', './environment.js?v=signal-environments', './combat-effects.js?v=combat-motion-3', './move-info.js?v=long-press-info-3',
   './feedback.js?v=feedback-1', './capture-control.js?v=live-capture-2', './capture-coins.js?v=capture-balance-1', './encounter-code.js?v=code-identity-1', './stability-normalizer.js?v=stability-floor-1', './encounter-levels.js?v=admin-signal-level-1', './battle-levels.js?v=admin-signal-level-2', './battle-rewards.js?v=explicit-outcome-2',

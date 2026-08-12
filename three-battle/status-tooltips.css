@@ -1,0 +1,5 @@
+.fighter-status span{position:relative;cursor:help;outline:none}
+.fighter-status span:focus-visible{border-color:var(--gold);box-shadow:0 0 0 2px #ffd16666}
+.fighter-status span::after{content:attr(data-status-tip);position:absolute;left:0;top:calc(100% + 8px);z-index:20;width:190px;padding:8px 10px;border:1px solid #3b7190;border-radius:8px;background:#071321f5;color:#dff7ff;font-size:10px;line-height:1.35;letter-spacing:0;white-space:normal;text-align:left;opacity:0;pointer-events:none;transform:translateY(-3px);transition:opacity .15s ease,transform .15s ease}
+.fighter-status span:hover::after,.fighter-status span:focus-visible::after{opacity:1;transform:translateY(0)}
+.enemy-card .fighter-status span::after{left:auto;right:0}
