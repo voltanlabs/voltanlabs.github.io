@@ -21,7 +21,7 @@
   function closePicker(){document.getElementById('healPicker')?.remove()}
   function openPicker(itemId,amount,label){
     const session=window.DataByteSession;
-    const targets=[...(session?.party?.()||[]),...(session?.repository?.()||[])].filter(item=>item&&Number(item.hp??100)<100);
+    const targets=[...(session?.party?.()||[]),...(session?.repository?.()||[])].filter(item=>item&&Number(item.hp??100)<Number(item.maxHp??100));
     if(!targets.length){window.DataByteInventory?.render?.();return}
     const modal=document.createElement('div');modal.id='healPicker';modal.className='capture-modal is-open';
     modal.innerHTML=`<div class="capture-card"><span class="eyebrow">ITEM CACHE // TARGET</span><h2>${label}</h2><p>Choose a DataByte to restore.</p><div class="outcome-actions">${targets.map(item=>`<button class="ghost" data-heal-target="${item.uid||item.id}"><span>${item.name}</span><small>${Math.max(0,Number(item.hp??100))} / ${item.maxHp??100} HP</small></button>`).join('')}</div><button class="ghost" data-heal-cancel>CANCEL</button></div>`;

@@ -27,7 +27,7 @@
         item.recoveryRounds=Number(item.recoveryRounds||0)+1;
         if(item.recoveryRounds>=2){item.hp=25;item.recoveryRounds=0;recovered+=25;changed=true}
       }else{
-        const next=Math.min(100,hp+tick);
+        const next=Math.min(Number(item.maxHp??100),hp+tick);
         if(next!==hp){item.hp=next;recovered+=next-hp;changed=true}
         if(item.recoveryRounds){item.recoveryRounds=0;changed=true}
       }

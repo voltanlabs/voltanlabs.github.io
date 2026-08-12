@@ -18,7 +18,7 @@
     const active=session.party?.()||[],stored=session.repository?.()||[],target=[...active,...stored].find(entry=>session.identity?.(entry)===id||entry?.id===id),wasLead=session.starter?.()===session.identity?.(target);
     for(const list of [active,stored]){
       const targetEntry=list.find(entry=>session.identity?.(entry)===id||entry?.id===id);
-      if(targetEntry){targetEntry.id=plan.next.id;targetEntry.name=plan.next.name;targetEntry.sprite='./data/sprites/'+(plan.next.sprite||'placeholder.png');targetEntry.upgrade=plan.from+2;targetEntry.version=plan.from+2;targetEntry.stats=session.createInstanceStats?.({...targetEntry,...plan.next,uid:targetEntry.uid,version:plan.from+2})||targetEntry.stats;targetEntry.statsVersion=2}
+      if(targetEntry){const hpRatio=Number(targetEntry.maxHp)>0?Math.max(0,Number(targetEntry.hp||0)/Number(targetEntry.maxHp)):1;targetEntry.id=plan.next.id;targetEntry.name=plan.next.name;targetEntry.sprite='./data/sprites/'+(plan.next.sprite||'placeholder.png');targetEntry.upgrade=plan.from+2;targetEntry.version=plan.from+2;Object.assign(targetEntry,session.refreshInstance?.({...targetEntry,...plan.next,uid:targetEntry.uid,version:plan.from+2})||{});targetEntry.hp=Math.round(targetEntry.maxHp*hpRatio);targetEntry.statsVersion=3}
     }
     localStorage.setItem('vl_three_battle_party',JSON.stringify(active));
     localStorage.setItem('vl_three_battle_repository',JSON.stringify(stored));
