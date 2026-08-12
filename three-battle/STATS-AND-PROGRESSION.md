@@ -4,10 +4,10 @@
 
 Every captured DataByte is an individual instance with its own unique ID.
 
-- Capture HP is randomly rolled from 60–100 at level 1.
-- Capture HP is the instance's starting max HP and is never rerolled.
+- A base HP roll from 60–100 is generated with the wild instance. Its level-adjusted max HP is retained when caught and the base roll is never rerolled.
 - Current HP carries over from the signal at capture; a defeated signal is captured at 0 HP and must be recovered before it can lead a battle.
-- Critical chance is randomly rolled from 0–50% at capture.
+- Wild level, level-appropriate XP, attack, defense, speed, stat rolls, and critical chance all carry into the caught instance unchanged.
+- Critical chance is randomly rolled from 0–50% when the wild instance is generated and never increases with level.
 - Critical chance never increases from leveling or evolution.
 - Attack, defense, and speed use the species configuration plus an individual variation roll.
 
