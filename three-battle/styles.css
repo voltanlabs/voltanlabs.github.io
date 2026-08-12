@@ -80,3 +80,5 @@
 @keyframes particle-flicker{0%,100%{opacity:.25;filter:blur(.2px);scale:.65}50%{opacity:1;filter:blur(0);scale:1.35}}
 .particle-orbit{animation:none!important;transform-style:preserve-3d}
 .particle-orbit i{animation:none!important;transform-origin:center;will-change:transform,opacity;backface-visibility:hidden}
+.scanner-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:4;pointer-events:none}
+.scanner-portal{overflow:visible}
