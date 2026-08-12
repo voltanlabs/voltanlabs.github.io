@@ -11,23 +11,15 @@ Every captured DataByte is an individual instance with its own unique ID.
 - Critical chance never increases from leveling or evolution.
 - Attack, defense, and speed use the species configuration plus an individual variation roll.
 
-## Form caps
+## HP progression
 
-Each evolution stage has its own HP ceiling:
-
-| Form | HP cap |
-| --- | ---: |
-| Base form | 100 |
-| Second form | 200 |
-| Third form | 300 |
-
-The instance's max HP grows from its capture roll toward its current form cap as it levels. It never exceeds that cap.
+Owned instances have no hard max-HP cap. Each instance starts with a 60–100 capture HP roll, gains 0.85 HP per level after level 1, and gains a flat +50 max HP bonus per evolution. Current HP remains percentage-based during progression and evolution.
 
 ## Level growth
 
 Sprite level uses the existing XP curve and is capped at level 100.
 
-- Max HP grows progressively toward the current form cap, with higher levels reaching the cap more reliably.
+- Max HP uses `capture HP + round((level - 1) × 0.85) + ((form stage - 1) × 50)`.
 - Attack, defense, and speed each gain 0.85 points per level, rounded for display and battle.
 - Evolution adds a stage bonus to attack, defense, and speed while preserving the instance's original variation.
 - Wild encounter stat generation uses a temporary 160-point ceiling before capture. Owned instances have no 160-point ceiling: leveling and evolution may raise attack, defense, and speed above 160.

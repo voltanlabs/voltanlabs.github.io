@@ -60,15 +60,13 @@ This is the working rulebook for the standalone `three-battle` game. It is the s
 
 ## 5. HP rules
 
-| Form | Max HP cap |
-|---|---:|
-| Base | 100 |
-| Second | 200 |
-| Third | 300 |
-
+- There is no hard max-HP cap for owned instances.
 - Each instance receives a capture HP roll from 60–100.
-- Max HP grows from its capture roll toward the current form’s cap as level increases.
-- Max HP never exceeds the current form cap.
+- Level growth adds `0.85 HP per level` after level 1, rounded to the nearest whole HP.
+- Each form upgrade adds a flat `+50 max HP` bonus.
+- The controlled formula is: `capture HP + round((level - 1) × 0.85) + ((form stage - 1) × 50)`.
+- This creates approximate level-100 bands of 144–184 HP for base forms, 194–234 HP for second forms, and 244–284 HP for third forms.
+- These are progression bands, not hard ceilings; the individual capture roll and future rule changes may move the final value outside a displayed example band.
 - Leveling and upgrading preserve the current HP ratio; they do not grant a free full heal.
 - Current HP can change through battle damage, healing items, status effects, and explicit Signal Reboot.
 
@@ -91,7 +89,7 @@ This is the working rulebook for the standalone `three-battle` game. It is the s
 - A second form may upgrade to its third form when its family threshold is reached.
 - XP is not spent when upgrading; the instance keeps its cumulative XP.
 - UID, crit, stat-roll variation, HP ratio, and individual identity are preserved.
-- Species ID, name, sprite, form/version, stage bonus, and HP cap change to the next form.
+- Species ID, name, sprite, form/version, stage bonus, and form HP bonus change to the next form.
 - Evolution timing varies by family:
 
 | Timing family | First upgrade | Second upgrade |
