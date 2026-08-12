@@ -8,4 +8,4 @@ Open `index.html` through a local static server (for example VS Code Live Server
 
 `session.js` is the single owner of the Three.js profile boundary. Inventory, progression, missions, regions, events, discovery codes, reward history, party slots, repository, HP, Dex records, and coins use the `DataByteSession` API and the `vl_three_battle_*` namespace. `resetSave()` clears every key in that namespace without touching the original DataByteSprites game.
 
-The inactive legacy handlers are kept in `archive/three-battle-inactive/` for reference only; they are not loaded by `index.html`.
+The retired non-canonical enemy loop has been removed. The page uses the canonical battle loop in `main.js` with the imported `battle-ai.js`, `battle-rules.js`, `battle-state.js`, and `battle-render.js` modules.
