@@ -48,6 +48,16 @@ The XP values are calculated from the level curve: `50 × (level - 1) × level`.
 
 Healing is capped by the instance's current `maxHp`, not a universal 100 HP value. Battle damage reads the instance's attack, defense, speed, and fixed crit chance. Evolution and storage preserve the instance's rolls through its unique ID.
 
+### Canonical battle rules
+
+- Player and wild DataBytes both use their authored species/family move sets. Both sides use move accuracy, attack, defense, level, crit, alignment interactions, buffs, debuffs, damage-over-time effects, and stacking limits.
+- Level advantage uses `clamp(1.03 ^ (attacker level - defender level), 0.45, 2.10)`. A five-level gap remains competitive, while a very low-level DataByte cannot reliably overpower a signal dozens of levels above it.
+- Turns are locked from command selection through the enemy response. Repeated clicks cannot add attacks.
+- Switching and using a battle item consume the player's action and allow an enemy response. Healing items immediately persist the restored HP to the unique instance.
+- A fainted active DataByte must be replaced by a different healthy party instance. If none remain, the battle returns to the scanner and recovery must use Signal Reboot; battle defeat never grants a free full heal.
+- Scanning does not passively heal or revive stored instances. HP changes only through battle effects, healing items, progression growth that preserves the current HP ratio, or an explicit Signal Reboot.
+- A newly generated wild instance always enters at full current HP. Capture preserves its encountered level, level-appropriate XP, max HP, current HP, stats, crit, and stat rolls.
+
 ## Wild-form unlocks
 
 Player profile XP controls which evolved forms can appear as wild signals. Individual DataByte XP controls whether an owned instance may evolve; these are separate progression tracks.

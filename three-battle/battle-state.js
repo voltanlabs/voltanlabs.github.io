@@ -22,5 +22,6 @@ export function clearPlayerBattleEffects(state) {
   if (!state) return state;
   state.playerStatus = [];
   state.guarding = false;
+  state.status = null;
   return state;
 }
