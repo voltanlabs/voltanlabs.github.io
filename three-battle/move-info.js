@@ -30,7 +30,7 @@
     if (!actions) return;
     actions.addEventListener('pointerdown', event => {
       const button = event.target.closest('.action');
-      if (!button || event.pointerType !== 'touch') return;
+      if (!button) return;
       pressedButton = button;
       timer = window.setTimeout(() => {
         if (pressedButton !== button) return;
