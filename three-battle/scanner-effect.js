@@ -24,9 +24,9 @@ function buildScannerField() {
   scene.add(core);
 
   const rings = [
-    { tilt: [1.16, 0.12, -0.14], radius: 1.42, thickness: 0.13, speed: 0.48, color: 0x50d9ff },
-    { tilt: [1.94, 0.32, 0.08], radius: 1.58, thickness: 0.16, speed: -0.36, color: 0xffd166 },
-    { tilt: [1.42, -0.55, 0.38], radius: 1.32, thickness: 0.1, speed: 0.27, color: 0xc084fc }
+    { tilt: [1.04, 0.62, -0.78], radius: 1.42, thickness: 0.13, speed: 0.48, wobble: 0.08, color: 0x50d9ff },
+    { tilt: [1.78, -0.74, 0.92], radius: 1.58, thickness: 0.16, speed: -0.36, wobble: 0.06, color: 0xffd166 },
+    { tilt: [0.68, 1.12, 1.18], radius: 1.32, thickness: 0.1, speed: 0.27, wobble: 0.1, color: 0xc084fc }
   ];
   const systems = [];
   rings.forEach((ring, ringIndex) => {
@@ -62,7 +62,7 @@ function buildScannerField() {
     const points = new THREE.Points(geometry, material);
     points.rotation.set(...ring.tilt);
     scene.add(points);
-    systems.push({ geometry, particles });
+    systems.push({ geometry, particles, points, ring });
   });
 
   function resize() {
@@ -76,7 +76,10 @@ function buildScannerField() {
   const clock = new THREE.Clock();
   function animate() {
     const elapsed = clock.getElapsedTime();
-    systems.forEach(({ geometry, particles }) => {
+    systems.forEach(({ geometry, particles, points, ring }, ringIndex) => {
+      points.rotation.x = ring.tilt[0] + Math.sin(elapsed * 0.42 + ringIndex) * ring.wobble;
+      points.rotation.y = ring.tilt[1] + Math.cos(elapsed * 0.35 + ringIndex) * ring.wobble * 0.75;
+      points.rotation.z = ring.tilt[2] + Math.sin(elapsed * 0.5 + ringIndex * 1.7) * ring.wobble * 1.5;
       const position = geometry.getAttribute('position');
       particles.forEach((particle, index) => {
         const angle = particle.angle + elapsed * particle.speed;
