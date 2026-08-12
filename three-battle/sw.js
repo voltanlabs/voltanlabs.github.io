@@ -1,8 +1,8 @@
-const CACHE = 'databyte-three-release-47';
+const CACHE = 'databyte-three-release-48';
 const CORE = [
   './party-handoff.js?v=preserve-hp-handoff-1',
   './starter.js?v=starter-preview-1',
-  './', './index.html', './styles.css', './scanner-effect.js?v=particle-portal-1', './status-tooltips.css?v=status-tooltips-1', './manifest.json',
+  './', './index.html', './styles.css', './scanner-effect.js?v=particle-portal-2', './status-tooltips.css?v=status-tooltips-1', './manifest.json',
   './data/runtime-data.js', './data/species.json', './data/moves.json',
   './vendor/three.module.js', './vendor/three.core.js', './battle-rules.js', './battle-state.js', './battle-status.js', './battle-render.js',
   './status-effects.js?v=status-runtime-2', './authored-moves.js?v=authored-family-moves-1', './move-catalog.js?v=move-catalog-62', './move-effects.js?v=move-effects-9', './battle-ai.js', './battle-guards.js?v=fainted-capture-1',
