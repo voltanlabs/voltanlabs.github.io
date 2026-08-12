@@ -3,6 +3,7 @@ import * as THREE from './vendor/three.module.js';
 function buildScannerField() {
   const portal = document.querySelector('.scanner-portal');
   if (!portal || portal.querySelector('canvas.scanner-canvas')) return;
+  const scannerView = document.querySelector('.scanner-view');
 
   portal.querySelectorAll('.portal-core, :scope > i, :scope > b').forEach((node) => node.remove());
   const canvas = document.createElement('canvas');
@@ -36,7 +37,7 @@ function buildScannerField() {
   const coreGeometry = new THREE.BufferGeometry();
   coreGeometry.setAttribute('position', new THREE.BufferAttribute(corePositions, 3));
   coreGeometry.setAttribute('color', new THREE.BufferAttribute(coreColors, 3));
-  const coreParticles = new THREE.Points(coreGeometry, new THREE.PointsMaterial({
+  const coreMaterial = new THREE.PointsMaterial({
     size: 0.035,
     vertexColors: true,
     transparent: true,
@@ -44,17 +45,19 @@ function buildScannerField() {
     depthWrite: false,
     blending: THREE.AdditiveBlending,
     sizeAttenuation: true
-  }));
+  });
+  const coreParticles = new THREE.Points(coreGeometry, coreMaterial);
+  const coreGridMaterial = new THREE.MeshBasicMaterial({
+    color: 0x168dcc,
+    transparent: true,
+    opacity: 0.42,
+    wireframe: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
   const coreGrid = new THREE.Mesh(
     new THREE.SphereGeometry(0.76, 20, 12),
-    new THREE.MeshBasicMaterial({
-      color: 0x168dcc,
-      transparent: true,
-      opacity: 0.42,
-      wireframe: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending
-    })
+    coreGridMaterial
   );
   scene.add(coreParticles, coreGrid);
 
@@ -104,7 +107,7 @@ function buildScannerField() {
     orbit.rotation.set(...ring.tilt);
     orbit.add(orbitLine, points);
     scene.add(orbit);
-    systems.push({ geometry, particles, orbit, ring });
+    systems.push({ geometry, particles, orbit, ring, material, orbitLine });
   });
 
   function resize() {
@@ -118,13 +121,19 @@ function buildScannerField() {
   const clock = new THREE.Clock();
   function animate() {
     const elapsed = clock.getElapsedTime();
-    systems.forEach(({ geometry, particles, orbit, ring }, ringIndex) => {
+    const scanning = Boolean(scannerView?.classList.contains('is-scanning'));
+    const scanScale = scanning ? 1 + Math.sin(elapsed * 4.2) * 0.12 : 1;
+    systems.forEach(({ geometry, particles, orbit, ring, material, orbitLine }, ringIndex) => {
+      material.opacity = scanning ? 0.76 + Math.max(0, Math.sin(elapsed * 8.5 + ringIndex)) * 0.34 : 0.82;
+      material.size = (ringIndex === 1 ? 0.045 : 0.038) * (scanning ? 1.18 : 1);
+      orbitLine.material.opacity = scanning ? 0.25 + Math.max(0, Math.sin(elapsed * 8.5 + ringIndex)) * 0.5 : 0.34;
+      orbit.scale.setScalar(scanScale);
       orbit.rotation.x = ring.tilt[0] + Math.sin(elapsed * 0.42 + ringIndex) * ring.wobble;
       orbit.rotation.y = ring.tilt[1] + Math.cos(elapsed * 0.35 + ringIndex) * ring.wobble * 0.75;
       orbit.rotation.z = ring.tilt[2] + Math.sin(elapsed * 0.5 + ringIndex * 1.7) * ring.wobble * 1.5;
       const position = geometry.getAttribute('position');
       particles.forEach((particle, index) => {
-        const angle = particle.angle + elapsed * particle.speed;
+        const angle = particle.angle + elapsed * particle.speed * (scanning ? 3.1 : 1);
         const offset = index * 3;
         position.array[offset] = Math.cos(angle) * particle.radius;
         position.array[offset + 1] = particle.y + Math.sin(elapsed * 1.4 + particle.phase) * 0.035;
@@ -134,7 +143,7 @@ function buildScannerField() {
     });
     const corePosition = coreGeometry.getAttribute('position');
     coreParticlesData.forEach((particle, index) => {
-      const pulse = particle.radius + Math.sin(elapsed * 1.7 + particle.phase) * 0.018;
+      const pulse = particle.radius + Math.sin(elapsed * (scanning ? 5.2 : 1.7) + particle.phase) * (scanning ? 0.045 : 0.018);
       const offset = index * 3;
       corePosition.array[offset] = Math.sin(particle.phi) * Math.cos(particle.theta + elapsed * 0.08) * pulse;
       corePosition.array[offset + 1] = Math.cos(particle.phi) * pulse;
@@ -144,7 +153,10 @@ function buildScannerField() {
     coreParticles.rotation.y = elapsed * 0.12;
     coreParticles.rotation.x = Math.sin(elapsed * 0.3) * 0.08;
     coreGrid.rotation.copy(coreParticles.rotation);
-    coreGrid.scale.setScalar(0.98 + Math.sin(elapsed * 1.7) * 0.025);
+    const corePulse = scanning ? 1 + Math.sin(elapsed * 4.2) * 0.12 : 0.98 + Math.sin(elapsed * 1.7) * 0.025;
+    coreGrid.scale.setScalar(corePulse);
+    coreMaterial.opacity = scanning ? 0.72 + Math.max(0, Math.sin(elapsed * 8.5)) * 0.28 : 0.9;
+    coreGridMaterial.opacity = scanning ? 0.35 + Math.max(0, Math.sin(elapsed * 8.5)) * 0.48 : 0.42;
     renderer.render(scene, camera);
     window.requestAnimationFrame(animate);
   }
