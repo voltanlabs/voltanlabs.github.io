@@ -13,7 +13,8 @@
     Analog: ['Dial Strike', 'Rotary Rush', 'Needle Drop', 'Tape Loop', 'Phase Knob', 'Soft Reset', 'Signal Drift', 'Master Clock'],
     Seismic: ['Fault Line', 'Quake Rush', 'Tremor Bite', 'Rift Crash', 'Aftershock', 'Stone Guard', 'Core Break', 'Tectonic Roar'],
     Spam: ['Packet Flood', 'Junk Burst', 'Buffer Crash', 'Thread Swarm', 'Overflow', 'Cache Guard', 'Viral Loop', 'System Flood'],
-    Cipher: ['Code Lash', 'Key Burst', 'Hash Crash', 'Lock Thread', 'Decode Drain', 'Cipher Guard', 'Root Access', 'Master Key']
+    Cipher: ['Code Lash', 'Key Burst', 'Hash Crash', 'Lock Thread', 'Decode Drain', 'Cipher Guard', 'Root Access', 'Master Key'],
+    Unassigned: ['Signal Pulse', 'Buffer Tap', 'Data Drift', 'Packet Guard', 'Cache Burst', 'Open Channel', 'Sync Break', 'Core Ping']
   };
   const configurations = Object.keys(names);
   const effects = ['charged', 'bound', 'glitched', 'guarded', 'focused', 'drained'];
@@ -37,12 +38,14 @@
   })));
   const catalog = [...(window.THREE_BATTLE_DATA?.moves || []), ...(window.THREE_BATTLE_AUTHORED_MOVES || []), ...extras];
   function movesForSpecies(id, species = {}) {
-    const config = species.primaryConfiguration || species.configuration || species.configurations?.[0] || 'Aether';
+    const config = species.primaryConfiguration || species.configuration || species.configurations?.[0] || 'Unassigned';
     const pool = extras.filter(move => move.configuration === config);
     const basic = window.THREE_BATTLE_DATA?.moves?.find(move => move.id === 'signal-strike') || catalog[0];
     const existing = (window.THREE_BATTLE_DATA?.moves || []).filter(move => move.id !== 'signal-strike' && move.learnedBy?.includes?.(id));
     const authored = (window.THREE_BATTLE_AUTHORED_MOVES || []).filter(move => move.learnedBy?.includes?.(id) || (move.learnedBy?.includes?.('*') && move.configuration === config));
-    return [basic, ...(existing.length ? existing : authored.length ? authored : pool).slice(0, 3)];
+    const selected = [], seen = new Set(), seenNames = new Set();
+    [...existing, ...authored, ...pool].forEach(move => { const name = String(move?.name || '').trim().toLowerCase(); if (move && !seen.has(move.id) && !seenNames.has(name) && selected.length < 3) { seen.add(move.id); seenNames.add(name); selected.push(move); } });
+    return [basic, ...selected];
   }
   window.THREE_BATTLE_MOVE_CATALOG = catalog;
   window.THREE_BATTLE_MOVE_FOR_SPECIES = movesForSpecies;
