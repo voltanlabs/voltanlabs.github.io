@@ -67,7 +67,13 @@ Wild signals use the active region's level band rather than always spawning at l
 | Null Cavern | 25–60 |
 | Signal Bay | 45–85 |
 
-Victory XP scales with encounter level, rarity, and evolution stage. Capturing successfully adds a capture bonus. A battle pays exactly one outcome reward: an uncaptured victory pays victory XP and one coin; a successful capture pays the capture reward instead. Player defeat pays nothing.
+Victory XP scales with encounter level, rarity, and evolution stage. The reward is staged so a failed capture never erases earned progress:
+
+1. When the enemy is defeated, base battle XP is immediately awarded to the player profile and active DataByte. The victory also grants one DataByteCoin and one randomized field item.
+2. If capture succeeds, an additional capture bonus equal to 25% of base battle XP (minimum 5 XP) is awarded to the same profile and active DataByte.
+3. If capture fails, only the base battle XP remains. Capture does not award a second copy of base XP, coin, or item.
+
+Each stage is guarded by its own state flag, so repeated callbacks or opening the reward screen cannot duplicate rewards. Player defeat pays nothing.
 
 Capture difficulty increases modestly with enemy level and evolution stage, while lower HP, capture pressure, and reduced stability continue to improve the chance.
 
