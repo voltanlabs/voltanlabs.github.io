@@ -2,6 +2,12 @@
   const arena=document.getElementById('arenaView');
   const encounter=document.getElementById('encounterView');
   if(!arena||!encounter)return;
+  function spriteUrl(value){
+    const sprite=String(value||'').trim();
+    if(!sprite||/(^|\/)placeholder\.png(?:[?#].*)?$/i.test(sprite))return './data/sprites/placeholder.png';
+    if(/^(?:\.\.\/|\.\/|\/|https?:\/\/|data:|blob:)/i.test(sprite))return sprite;
+    return `./data/sprites/${sprite}`;
+  }
   function renderDiscovery(){
     const name=document.getElementById('enemyName')?.textContent||'Wild Signal';
     const battleEnemy=window.DataByteBattle?.creatures?.enemy;
@@ -17,8 +23,9 @@
     document.getElementById('encounterDetail').textContent=`${enemy.description||enemy.lore||'Signal record pending.'} Capture window ${chance}% · Signal stability ${battleState?.stability??100}%.`;
     const image=document.getElementById('enemyPreviewSprite');
     const owned=(window.DataByteSession?.party?.()||[]).concat(window.DataByteSession?.repository?.()||[]).some(item=>item.id===enemy.id);
-    const hasSprite=enemy.sprite&&enemy.sprite!=='placeholder.png';
-    image.src=hasSprite?`./data/sprites/${enemy.sprite}`:'./data/sprites/placeholder.png';
+    const hasSprite=Boolean(enemy.sprite)&&!/(^|\/)placeholder\.png(?:[?#].*)?$/i.test(String(enemy.sprite));
+    image.src=spriteUrl(enemy.sprite);
+    image.onerror=()=>{image.onerror=null;image.src='./data/sprites/placeholder.png';image.classList.add('is-placeholder')};
     image.alt=owned?enemy.name:'Unscanned DataByte';
     image.classList.toggle('is-pixelated',!owned);
     image.classList.toggle('is-placeholder',!hasSprite);
