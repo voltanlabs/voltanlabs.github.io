@@ -2,13 +2,13 @@
   const session=window.DataByteSession;
   if(!session)return;
   const chains={};
-  (window.DataByteProgressionData?.chains||[['leovolt','leothor','leozues'],['crabician','crabizard','crabzaster'],['kindlekid','gaseousgoat','reactorram'],['coincalf','cash-cow','bankerbull'],['scorpyone','scorpytwo','scorpyus']]).forEach(chain=>chain.forEach(id=>{chains[id]=chain}));
+  (window.DataByteProgressionData?.chains||[]).forEach(chain=>chain.forEach(id=>{chains[id]=chain}));
   function preview(id){
     const item=[...(session.party?.()||[]),...(session.repository?.()||[])].find(entry=>session.identity?.(entry)===id||entry?.id===id);
     const speciesId=item?.id||id,chain=chains[speciesId],from=chain?.indexOf(speciesId)??-1;
     const progress=session.spriteProgress?.(item)||{xp:0,level:1};
     if(!chain||from<0||from>=chain.length-1)return {ok:false,reason:!chain?'no-evolution-data':'max-version',id,xp:progress.xp};
-    const required=[100,250][from]??0,nextId=chain[from+1],source=(session.roster?.()||[]).find(entry=>entry.id===nextId)||{id:nextId,name:nextId,sprite:'placeholder.png'};
+    const required=window.DataByteProgressionData?.evolutionXpFor?.(chain[0],from)??([100,250][from]??0),nextId=chain[from+1],source=(session.roster?.()||[]).find(entry=>entry.id===nextId)||{id:nextId,name:nextId,sprite:'placeholder.png'};
     return {ok:progress.xp>=required,id,from,nextId,current:item,next:source,xp:progress.xp,required};
   }
   session.evolutionPreview=preview;

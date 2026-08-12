@@ -24,6 +24,19 @@
   ];
   const stageBySpecies = {};
   chains.forEach(chain => chain.forEach((id, index) => { stageBySpecies[id] = index + 1; }));
+  const timingByFamily = {
+    early: new Set(['kindlekid', 'coincalf', 'pixelpup', 'aquobit', 'clockadile', 'fiscalfish']),
+    standard: new Set(['leovolt', 'crabician', 'scorpyone', 'crowupt', 'doughdawg', 'landline', 'technoblin', 'leorust', 'leonot', 'cranurse', 'cralyric', 'scorpbegin']),
+    late: new Set(['swimpig', 'primateicore', 'centaurcher']),
+    endgame: new Set(['gem-n-eye'])
+  };
+  const evolutionLevels = { early: [22, 50], standard: [30, 65], late: [40, 78], endgame: [50, 88] };
+  function familyTiming(id) {
+    const match = Object.entries(timingByFamily).find(([, ids]) => ids.has(id));
+    return match?.[0] || 'standard';
+  }
+  function evolutionLevelFor(id, from) { return evolutionLevels[familyTiming(id)]?.[from] || evolutionLevels.standard[from]; }
+  function evolutionXpFor(id, from) { const level = evolutionLevelFor(id, from); return 50 * (level - 1) * level; }
   function stageFor(item) {
     if (Number(item?.version) >= 1) return Math.min(3, Number(item.version));
     return stageBySpecies[item?.id] || 1;
@@ -34,5 +47,5 @@
     while (level < 100 && value >= 50 * level * (level + 1)) level += 1;
     return level;
   }
-  window.DataByteProgressionData = { chains, stageBySpecies, stageFor, adminLevel };
+  window.DataByteProgressionData = { chains, stageBySpecies, stageFor, adminLevel, timingByFamily, evolutionLevels, familyTiming, evolutionLevelFor, evolutionXpFor };
 })();
