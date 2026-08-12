@@ -1,5 +1,4 @@
 (function () {
-  let wasBusy = false;
   function apply(move, actor = 'player') {
     const state = window.DataByteBattle?.getState?.();
     if (!state || state.over || !move) return;
@@ -23,45 +22,41 @@
     state.effectSequence = Number(state.effectSequence || 0) + 1;
     return { applied: true, id: effect.id, target };
   }
+  function tickTurnEnd(key) {
+    const state = window.DataByteBattle?.getState?.();
+    if (!state || state.over) return { damage: 0, defeated: false };
+    const list = Array.isArray(state[key]) ? state[key] : (state[key] ? [state[key]] : []);
+    const creature = key === 'playerStatus' ? window.DataByteBattle?.creatures?.player : window.DataByteBattle?.creatures?.enemy;
+    const kept = [];
+    let damage = 0;
+    list.forEach(status => {
+      damage += window.DataByteStatusRuntime?.tick?.({ [key]: [status] }, key, creature) || 0;
+      status.duration -= 1;
+      if (status.duration > 0) kept.push(status);
+    });
+    if (damage && key === 'playerStatus') {
+      const player = window.DataByteBattle?.creatures?.player;
+      const record = window.DataByteSession?.party?.().find(item => (item.uid || item.id) === window.DataByteSession?.starter?.() || item.id === player?.id);
+      window.DataByteSession?.updateHp?.(record?.uid || record?.id, creature.hp);
+    }
+    if (damage) state.message = `${creature.name} suffered ${damage} ${list.filter(status => (window.DataByteStatusRuntime?.definition?.(status.id)?.tickDamage || 0) > 0).map(status => status.id).join(' and ')} damage.`;
+    state[key] = kept;
+    if (!state[key].some(status => status.id === 'guarded')) {
+      if (key === 'playerStatus') state.guarding = false;
+      if (key === 'enemyStatus') state.enemyGuarding = false;
+    }
+    if (!state[key].some(status => status.id === 'glitched')) state.status = null;
+    const defeated = creature?.hp <= 0;
+    if (defeated) key === 'playerStatus' ? window.DataByteBattle?.playerFainted?.() : window.DataByteBattle?.enemyFainted?.();
+    return { damage, defeated };
+  }
   function renderStatuses() {
     const state = window.DataByteBattle?.getState?.();
     if (!state) return;
-    if (wasBusy && !state.busy && !state.over) {
-      for (const key of ['playerStatus', 'enemyStatus']) {
-        const list = Array.isArray(state[key]) ? state[key] : (state[key] ? [state[key]] : []);
-        const creature = key === 'playerStatus' ? window.DataByteBattle?.creatures?.player : window.DataByteBattle?.creatures?.enemy;
-        const kept = [];
-        let damage = 0;
-        list.forEach(status => {
-          if (status.skipTick) { status.skipTick = false; kept.push(status); return; }
-          damage += window.DataByteStatusRuntime?.tick?.({ [key]: [status] }, key, creature) || 0;
-          status.duration -= 1;
-          if (status.duration > 0) kept.push(status);
-        });
-        if (damage && key === 'playerStatus') {
-          const player = window.DataByteBattle?.creatures?.player;
-          const record = window.DataByteSession?.party?.().find(item => (item.uid || item.id) === window.DataByteSession?.starter?.() || item.id === player?.id);
-          window.DataByteSession?.updateHp?.(record?.uid || record?.id, creature.hp);
-        }
-        if (damage) state.statusTickMessages = [...(state.statusTickMessages || []), `${creature.name} suffered ${damage} ${list.filter(status => (window.DataByteStatusRuntime?.definition?.(status.id)?.tickDamage || 0) > 0).map(status => status.id).join(' and ')} damage.`];
-        state[key] = kept;
-        if (creature?.hp <= 0) {
-          if (key === 'playerStatus') window.DataByteBattle?.playerFainted?.();
-          else window.DataByteBattle?.enemyFainted?.();
-        }
-        if (!state[key].some(status => status.id === 'guarded')) {
-          if (key === 'playerStatus') state.guarding = false;
-          if (key === 'enemyStatus') state.enemyGuarding = false;
-        }
-        if (!state[key].some(status => status.id === 'glitched')) state.status = null;
-      }
-    }
     if (state.lastEffectApplied && state.lastEffectRendered !== state.effectSequence) {
       state.message = `${state.message} ${effectText(state.lastEffectApplied)}.`;
       state.lastEffectRendered = state.effectSequence;
     }
-    if (state.statusTickMessages?.length) { state.message = state.statusTickMessages.join(' '); state.statusTickMessages = []; }
-    wasBusy = Boolean(state.busy);
     const player = document.getElementById('playerStatus');
     const enemy = document.getElementById('enemyStatus');
     const positive = new Set(['charged', 'guarded', 'boost', 'shield']);
@@ -72,5 +67,5 @@
   }
   window.setInterval(renderStatuses, 150);
   const effectText = id => ({ burn: 'Burn applied', corruption: 'Corruption applied', infected: 'Infected applied', shock: 'Shock applied', misdirected: 'Misdirection applied', bound: 'Bound applied', charged: 'Charge applied', guarded: 'Guard applied', boost: 'Boost applied', glitched: 'Glitch applied', focused: 'Focus applied', drained: 'Drain applied', freeze: 'Freeze applied', shield: 'Shield applied' }[id] || `${id} applied`);
-  window.DataByteMoveEffects = { apply, effectText };
+  window.DataByteMoveEffects = { apply, effectText, tickTurnEnd };
 })();
