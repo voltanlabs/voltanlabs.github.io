@@ -52,6 +52,7 @@ Healing is capped by the instance's current `maxHp`, not a universal 100 HP valu
 
 - Player and wild DataBytes both use their authored species/family move sets. Both sides use move accuracy, attack, defense, level, crit, alignment interactions, buffs, debuffs, damage-over-time effects, and stacking limits.
 - Level advantage uses `clamp(1.03 ^ (attacker level - defender level), 0.45, 2.10)`. A five-level gap remains competitive, while a very low-level DataByte cannot reliably overpower a signal dozens of levels above it.
+- Base damage uses `move power × 0.65 × sqrt(attack / defense)` before level, alignment, status, guard, and crit modifiers. The square-root stat ratio preserves configuration strengths without allowing one mismatched stat pair to create routine one-hit knockouts.
 - Turns are locked from command selection through the enemy response. Repeated clicks cannot add attacks.
 - Switching and using a battle item consume the player's action and allow an enemy response. Healing items immediately persist the restored HP to the unique instance.
 - A fainted active DataByte must be replaced by a different healthy party instance. If none remain, the battle returns to the scanner and recovery must use Signal Reboot; battle defeat never grants a free full heal.
