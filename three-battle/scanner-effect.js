@@ -60,9 +60,16 @@ function buildScannerField() {
       sizeAttenuation: true
     });
     const points = new THREE.Points(geometry, material);
-    points.rotation.set(...ring.tilt);
-    scene.add(points);
-    systems.push({ geometry, particles, points, ring });
+    const orbitLine = new THREE.Mesh(
+      new THREE.TorusGeometry(ring.radius, 0.012, 6, 180),
+      new THREE.MeshBasicMaterial({ color: ring.color, transparent: true, opacity: 0.34, depthWrite: false, blending: THREE.AdditiveBlending })
+    );
+    orbitLine.rotation.x = Math.PI / 2;
+    const orbit = new THREE.Group();
+    orbit.rotation.set(...ring.tilt);
+    orbit.add(orbitLine, points);
+    scene.add(orbit);
+    systems.push({ geometry, particles, orbit, ring });
   });
 
   function resize() {
@@ -76,10 +83,10 @@ function buildScannerField() {
   const clock = new THREE.Clock();
   function animate() {
     const elapsed = clock.getElapsedTime();
-    systems.forEach(({ geometry, particles, points, ring }, ringIndex) => {
-      points.rotation.x = ring.tilt[0] + Math.sin(elapsed * 0.42 + ringIndex) * ring.wobble;
-      points.rotation.y = ring.tilt[1] + Math.cos(elapsed * 0.35 + ringIndex) * ring.wobble * 0.75;
-      points.rotation.z = ring.tilt[2] + Math.sin(elapsed * 0.5 + ringIndex * 1.7) * ring.wobble * 1.5;
+    systems.forEach(({ geometry, particles, orbit, ring }, ringIndex) => {
+      orbit.rotation.x = ring.tilt[0] + Math.sin(elapsed * 0.42 + ringIndex) * ring.wobble;
+      orbit.rotation.y = ring.tilt[1] + Math.cos(elapsed * 0.35 + ringIndex) * ring.wobble * 0.75;
+      orbit.rotation.z = ring.tilt[2] + Math.sin(elapsed * 0.5 + ringIndex * 1.7) * ring.wobble * 1.5;
       const position = geometry.getAttribute('position');
       particles.forEach((particle, index) => {
         const angle = particle.angle + elapsed * particle.speed;
