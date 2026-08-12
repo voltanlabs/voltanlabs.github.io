@@ -20,12 +20,17 @@ export function enemyProfile(alignment) {
   return ENEMY_PROFILES[alignment] || ENEMY_PROFILES.Unassigned;
 }
 
-export function playerDamage({ move, attack = 60, attackMultiplier = 1, incomingMultiplier = 1, critical = false }) {
-  const multiplier = alignmentMultiplier(move.element, move.defenderAlignment);
-  return Math.max(1, Math.round(Number(move.power || 0) * multiplier * Math.max(1, attack) / 60 * attackMultiplier * incomingMultiplier * (critical ? 1.5 : 1)));
+function levelMultiplier(attackerLevel = 1, defenderLevel = 1) {
+  const gap = Math.max(-40, Math.min(40, Number(attackerLevel || 1) - Number(defenderLevel || 1)));
+  return Math.max(0.65, Math.min(1.35, 1 + gap * 0.015));
 }
 
-export function enemyDamage({ raw, attack = 60, defense = 60, incomingMultiplier = 1, attackMultiplier = 1, guarding = false, leak = 0 }) {
+export function playerDamage({ move, attack = 60, defense = 60, attackerLevel = 1, defenderLevel = 1, attackMultiplier = 1, incomingMultiplier = 1, critical = false }) {
+  const multiplier = alignmentMultiplier(move.element, move.defenderAlignment);
+  return Math.max(1, Math.round(Number(move.power || 0) * multiplier * Math.max(1, attack) / Math.max(1, defense) * levelMultiplier(attackerLevel, defenderLevel) * attackMultiplier * incomingMultiplier * (critical ? 1.5 : 1)));
+}
+
+export function enemyDamage({ raw, attack = 60, defense = 60, attackerLevel = 1, defenderLevel = 1, incomingMultiplier = 1, attackMultiplier = 1, guarding = false, leak = 0 }) {
   const guardMultiplier = guarding ? 0.45 : 1;
-  return Math.max(1, Math.round((Number(raw) + Number(leak)) * Math.max(1, attack) / Math.max(1, defense) * guardMultiplier * incomingMultiplier * attackMultiplier));
+  return Math.max(1, Math.round((Number(raw) + Number(leak)) * Math.max(1, attack) / Math.max(1, defense) * levelMultiplier(attackerLevel, defenderLevel) * guardMultiplier * incomingMultiplier * attackMultiplier));
 }

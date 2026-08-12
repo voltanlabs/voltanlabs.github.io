@@ -26,8 +26,8 @@ The instance's max HP grows from its capture roll toward its current form cap as
 
 Sprite level uses the existing XP curve and is capped at level 100.
 
-- Max HP grows gradually toward the current form cap.
-- Attack, defense, and speed each gain 0.4 points per level, rounded for display and battle.
+- Max HP grows progressively toward the current form cap, with higher levels reaching the cap more reliably.
+- Attack, defense, and speed each gain 0.85 points per level, rounded for display and battle.
 - Evolution adds a stage bonus to attack, defense, and speed while preserving the instance's original variation.
 - Current HP is preserved as a percentage when leveling or evolving, preventing free healing.
 
@@ -70,3 +70,5 @@ Wild signals use the active region's level band rather than always spawning at l
 Victory XP scales with encounter level, rarity, and evolution stage. Capturing successfully adds a capture bonus. A battle pays exactly one outcome reward: an uncaptured victory pays victory XP and one coin; a successful capture pays the capture reward instead. Player defeat pays nothing.
 
 Capture difficulty increases modestly with enemy level and evolution stage, while lower HP, capture pressure, and reduced stability continue to improve the chance.
+
+Battle damage now uses both combatants' defense and a bounded level-gap modifier. Higher-level signals therefore hit harder and resist lower-level attacks, while equal-level battles remain close to the normal attack-versus-defense formula.

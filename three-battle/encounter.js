@@ -4,14 +4,15 @@
   if(!arena||!encounter)return;
   function renderDiscovery(){
     const name=document.getElementById('enemyName')?.textContent||'Wild Signal';
-    const enemy=window.DataByteSession?.roster().find(item=>item.name.toUpperCase()===name.toUpperCase());
+    const battleEnemy=window.DataByteBattle?.creatures?.enemy;
+    const enemy= battleEnemy || window.DataByteSession?.roster().find(item=>item.name.toUpperCase()===name.toUpperCase());
     if(!enemy)return;
     encounter.querySelector('h2').textContent=enemy.name;
     encounter.querySelector('p').textContent=`A wild signal has entered the field. ${enemy.rarity||'Common'} signal · Scan code ${window.__threeBattleEncounterCode||'VL-SIGNAL'}.`;
     document.getElementById('encounterType').textContent=enemy.configurations?.[0]||enemy.alignment||'Wild Signal';
     document.getElementById('encounterRarity').textContent=enemy.rarity||'Common';
     document.getElementById('encounterAlignment').textContent=enemy.alignment||'Unknown';
-    document.getElementById('encounterHp').textContent='100';
+    document.getElementById('encounterHp').textContent=`${Math.max(0,Number(enemy.hp??100))} / ${Math.max(1,Number(enemy.maxHp??100))}`;
     const battleState=window.DataByteBattle?.getState?.(),chance=window.DataByteBattle?.captureChance?.()??45;
     document.getElementById('encounterDetail').textContent=`${enemy.description||enemy.lore||'Signal record pending.'} Capture window ${chance}% · Signal stability ${battleState?.stability??100}%.`;
     const image=document.getElementById('enemyPreviewSprite');
