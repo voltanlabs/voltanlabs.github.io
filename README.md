@@ -8,7 +8,7 @@ The project uses modular runtimes, explicit ownership contracts, searchable know
 
 **Data Discovery Phase 6.3.0: Portal Battle Presentation + Mobile Recovery**
 
-The current release consolidates the live game into one generated 19-module browser bundle. A deterministic battle core owns each complete turn, the player runtime owns all persistent player domains, and the reward runtime owns XP, levels, stat growth, ByteCoins, Version Upgrade tiers, and battle history. The presentation layer now owns synchronized portal canvas/rim effects, depth shading, rarity accents, responsive mobile framing, and deterministic stage-background selection without reopening gameplay ownership boundaries.
+The live game is now the standalone Three.js build at [`/three-battle/`](./three-battle/). It owns the battle loop, player persistence, XP, stat growth, evolution, capture, regions, Dex, rewards, items, and responsive presentation. The former Data Discovery shell remains recoverable in Git history and its old URL redirects to this build.
 
 ## Recovery Milestone
 
