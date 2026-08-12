@@ -45,7 +45,18 @@ function buildScannerField() {
     blending: THREE.AdditiveBlending,
     sizeAttenuation: true
   }));
-  scene.add(coreParticles);
+  const coreGrid = new THREE.Mesh(
+    new THREE.SphereGeometry(0.76, 20, 12),
+    new THREE.MeshBasicMaterial({
+      color: 0x168dcc,
+      transparent: true,
+      opacity: 0.42,
+      wireframe: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    })
+  );
+  scene.add(coreParticles, coreGrid);
 
   const rings = [
     { tilt: [1.04, 0.62, -0.78], radius: 1.42, thickness: 0.13, speed: 0.48, wobble: 0.08, color: 0x50d9ff },
@@ -132,6 +143,8 @@ function buildScannerField() {
     corePosition.needsUpdate = true;
     coreParticles.rotation.y = elapsed * 0.12;
     coreParticles.rotation.x = Math.sin(elapsed * 0.3) * 0.08;
+    coreGrid.rotation.copy(coreParticles.rotation);
+    coreGrid.scale.setScalar(0.98 + Math.sin(elapsed * 1.7) * 0.025);
     renderer.render(scene, camera);
     window.requestAnimationFrame(animate);
   }
