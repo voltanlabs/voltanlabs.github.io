@@ -9,11 +9,7 @@ export function renderBattleView({ state, creatures, getElement, documentRef = d
   }
   const turn = getElement('turnText'), log = getElement('battleLog');
   if (turn) turn.textContent = state.over ? 'BATTLE COMPLETE' : state.busy ? 'ENEMY TURN' : 'YOUR TURN';
-  if (log) {
-    const effect = state.lastEffectApplied;
-    log.textContent = `${state.message || ''}${effect ? ` ${effect} applied.` : ''}`.trim();
-    if (effect) state.lastEffectApplied = null;
-  }
+  if (log) log.textContent = `${state.message || ''}`.trim();
   const stabilityValue = getElement('stabilityValue'), stabilityFill = getElement('stabilityFill');
   if (stabilityValue) stabilityValue.textContent = `${state.stability}%`;
   if (stabilityFill) stabilityFill.style.width = `${state.stability}%`;
