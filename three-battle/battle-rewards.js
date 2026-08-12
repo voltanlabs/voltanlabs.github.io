@@ -12,19 +12,28 @@
     const outcomeMultiplier = outcome === 'captured' ? 1.35 : 1;
     return Math.max(12, Math.round(base * rarityMultiplier * stageMultiplier * outcomeMultiplier));
   }
-  function awardDefeat(state) {
-    if (!state || state.__defeatRewardGranted || state.outcome !== 'victory') return;
-    state.__defeatRewardGranted = true;
+  function settle(state, outcome = 'defeat') {
+    if (!state || state.__rewardSettled) return state?.__rewardDetails || null;
+    state.__rewardSettled = true;
     const session = window.DataByteSession;
     const party = session?.party?.() || [];
     const active = session?.starter?.();
     const lead = party.find(item => (item.uid || item.id) === active || item.id === active) || party[0];
-    const xp = xpForEnemy(state, 'defeat');
+    const xp = xpForEnemy(state, outcome);
     window.DataByteProgression?.addXp?.(xp);
     if (lead) session?.addSpriteXp?.(lead.uid || lead.id, xp);
-    session?.addCoins?.(1);
-    window.DataByteRewardHistory?.record?.('Victory reward');
-    window.dispatchEvent(new CustomEvent('databyte:defeat-rewarded', { detail: { id: lead?.uid || lead?.id, xp, coins: 1 } }));
+    const coins = 1;
+    session?.addCoins?.(coins);
+    const item = ['patch', 'repair', 'boost'][Math.floor(Math.random() * 3)];
+    window.DataByteInventory?.add?.(item, 1);
+    const details = { xp, coins, item, outcome, lead: lead?.uid || lead?.id || null };
+    state.__rewardDetails = details;
+    window.DataByteRewardHistory?.record?.(outcome === 'captured' ? 'Captured' : 'Victory', xp, details);
+    window.dispatchEvent(new CustomEvent('databyte:battle-rewarded', { detail: details }));
+    return details;
   }
-  window.DataByteBattleRewards = { awardDefeat, xpForEnemy };
+  function awardDefeat(state) {
+    return settle(state, 'defeat');
+  }
+  window.DataByteBattleRewards = { awardDefeat, settle, xpForEnemy };
 })();
