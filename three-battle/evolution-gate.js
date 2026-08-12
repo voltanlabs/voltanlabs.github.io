@@ -15,7 +15,7 @@
   session.evolve=function(id){
     const plan=preview(id);
     if(!plan.ok)return {ok:false,reason:plan.reason||'requires-xp',required:plan.required,xp:plan.xp};
-    const active=session.party?.()||[],stored=session.repository?.()||[],target=[...active,...stored].find(entry=>session.identity?.(entry)===id||entry?.id===id),wasLead=session.starter?.()===session.identity?.(target);
+    const active=session.party?.()||[],stored=session.repository?.()||[],target=[...active,...stored].find(entry=>session.identity?.(entry)===id||entry?.id===id),fromId=target?.id||id,wasLead=session.starter?.()===session.identity?.(target);
     for(const list of [active,stored]){
       const targetEntry=list.find(entry=>session.identity?.(entry)===id||entry?.id===id);
       if(targetEntry){const hpRatio=Number(targetEntry.maxHp)>0?Math.max(0,Number(targetEntry.hp||0)/Number(targetEntry.maxHp)):1;targetEntry.id=plan.next.id;targetEntry.name=plan.next.name;targetEntry.sprite='./data/sprites/'+(plan.next.sprite||'placeholder.png');targetEntry.upgrade=plan.from+2;targetEntry.version=plan.from+2;Object.assign(targetEntry,session.refreshInstance?.({...targetEntry,...plan.next,uid:targetEntry.uid,version:plan.from+2})||{});targetEntry.hp=Math.round(targetEntry.maxHp*hpRatio);targetEntry.statsVersion=3}
@@ -27,6 +27,6 @@
     if(wasLead)window.dispatchEvent(new CustomEvent('databyte:starter-updated',{detail:{id:upgraded?.id,uid:upgraded?.uid}}));
     window.dispatchEvent(new CustomEvent('databyte:evolved',{detail:{from:id,to:plan.next.id}}));
     window.dispatchEvent(new CustomEvent('databyte:party-updated'));
-    return {ok:true,from:target?.id||id,to:upgraded?.uid||upgraded?.id,speciesTo:plan.next.id,xp:plan.xp,upgrade:plan.from+2};
+    return {ok:true,from:fromId,to:upgraded?.uid||upgraded?.id,speciesTo:plan.next.id,xp:plan.xp,upgrade:plan.from+2};
   };
 })();

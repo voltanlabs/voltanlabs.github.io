@@ -19,6 +19,7 @@ This is the working rulebook for the standalone `three-battle` game. It is the s
 - The lead is the first active party slot and cannot be a fainted instance.
 - Repository instances retain their own HP, XP, level, stats, crit, form, and UID.
 - A delete operation permanently removes that one instance from party or repository.
+- Deleting a nonexistent UID returns failure and changes nothing.
 
 ## 3. Capture and wild instances
 
@@ -55,6 +56,7 @@ This is the working rulebook for the standalone `three-battle` game. It is the s
 - Level is capped at 100.
 - XP is the sole source of truth for an owned instance’s level.
 - Saved level fields are display/cache fields and are repaired from XP; they must never inflate XP.
+- Imported and legacy instances are normalized immediately on import; level, XP, HP, and stats are not left in a partially normalized state.
 - XP rewards are added to both the player profile and the active instance when appropriate.
 - A level-up preserves the current HP percentage while recalculating max HP and combat stats.
 
@@ -198,7 +200,5 @@ Regions are selected through the World Map and live inside the map system.
 
 - Whether the current wild stat ceiling should remain 160 after more balance playtesting.
 - Whether the third-form +18 bonus should remain additive without an owned-stat ceiling; current rule says yes.
-- Whether the battle log/API should rename the upgrade result’s `from` field to consistently report the source species ID.
-- Whether delete should return a structured failure result instead of a boolean for nonexistent UIDs.
 
 When any open decision is resolved, update this rulebook and the relevant implementation in the same change.
