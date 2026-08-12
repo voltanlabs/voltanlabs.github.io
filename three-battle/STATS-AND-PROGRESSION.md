@@ -30,6 +30,8 @@ Sprite level uses the existing XP curve and is capped at level 100.
 - Max HP grows progressively toward the current form cap, with higher levels reaching the cap more reliably.
 - Attack, defense, and speed each gain 0.85 points per level, rounded for display and battle.
 - Evolution adds a stage bonus to attack, defense, and speed while preserving the instance's original variation.
+- Wild encounter stat generation uses a temporary 160-point ceiling before capture. Owned instances have no 160-point ceiling: leveling and evolution may raise attack, defense, and speed above 160.
+- XP is the sole source of truth for owned level. The total XP curve is `50 × (level - 1) × level`; saved level fields are repaired from XP instead of increasing XP to match a stale level.
 - Current HP is preserved as a percentage when leveling or evolving, preventing free healing.
 
 ## Family evolution timing
