@@ -145,6 +145,8 @@ Regions are selected through the World Map and live inside the map system.
 - Multiple different effects can be active at the same time.
 - Reapplying an existing effect refreshes duration and increases stacks up to that effect’s stack limit.
 - Damage-over-time effects tick at the defined turn boundary and can defeat a target.
+- Tick moves report their effect application after the attack, then report later tick damage; application does not also tick immediately.
+- Tick effects stack only up to their definition's maximum and refresh duration when reapplied.
 - Current effects include burn, freeze, shock, corruption, shield, boost, charged, guarded, misdirected, bound, infected, glitched, focused, and drained.
 - Positive effects are color-coded green; negative effects are color-coded red/pink.
 - Status badges expose a tooltip/description in the battle UI.

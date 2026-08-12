@@ -10,7 +10,7 @@
       if (download) state.capturePressure = Math.min(35, Math.max(0, Number(state.capturePressure || 0) + download));
     }
     const effect = move.statusEffect;
-    if (!effect || Math.random() * 100 >= Number(effect.chance ?? 100)) return;
+    if (!effect || Math.random() * 100 >= Number(effect.chance ?? 100)) return { applied: false };
     const self = actor === 'enemy' ? 'enemyStatus' : 'playerStatus';
     const opponent = actor === 'enemy' ? 'playerStatus' : 'enemyStatus';
     const target = effect.target === 'self' ? self : opponent;
@@ -20,6 +20,8 @@
     if (effect.id === 'glitched' && target === 'playerStatus') state.status = 'Glitched';
     if (effect.id === 'drained' && target === 'playerStatus') state.stability = Math.max(0, Number(state.stability || 0) - 5);
     state.lastEffectApplied = effect.id;
+    state.effectSequence = Number(state.effectSequence || 0) + 1;
+    return { applied: true, id: effect.id, target };
   }
   function renderStatuses() {
     const state = window.DataByteBattle?.getState?.();
@@ -41,7 +43,7 @@
           const record = window.DataByteSession?.party?.().find(item => (item.uid || item.id) === window.DataByteSession?.starter?.() || item.id === player?.id);
           window.DataByteSession?.updateHp?.(record?.uid || record?.id, creature.hp);
         }
-        if (damage) state.message = `${creature.name} suffered ${damage} status damage.`;
+        if (damage) state.statusTickMessages = [...(state.statusTickMessages || []), `${creature.name} suffered ${damage} ${list.filter(status => (window.DataByteStatusRuntime?.definition?.(status.id)?.tickDamage || 0) > 0).map(status => status.id).join(' and ')} damage.`];
         state[key] = kept;
         if (creature?.hp <= 0) {
           if (key === 'playerStatus') window.DataByteBattle?.playerFainted?.();
@@ -54,6 +56,11 @@
         if (!state[key].some(status => status.id === 'glitched')) state.status = null;
       }
     }
+    if (state.lastEffectApplied && state.lastEffectRendered !== state.effectSequence) {
+      state.message = `${state.message} ${effectText(state.lastEffectApplied)}.`;
+      state.lastEffectRendered = state.effectSequence;
+    }
+    if (state.statusTickMessages?.length) { state.message = state.statusTickMessages.join(' '); state.statusTickMessages = []; }
     wasBusy = Boolean(state.busy);
     const player = document.getElementById('playerStatus');
     const enemy = document.getElementById('enemyStatus');
@@ -64,5 +71,6 @@
     if (enemy) enemy.innerHTML = badges(state.enemyStatus);
   }
   window.setInterval(renderStatuses, 150);
-  window.DataByteMoveEffects = { apply };
+  const effectText = id => ({ burn: 'Burn applied', corruption: 'Corruption applied', infected: 'Infected applied', shock: 'Shock applied', misdirected: 'Misdirection applied', bound: 'Bound applied', charged: 'Charge applied', guarded: 'Guard applied', boost: 'Boost applied', glitched: 'Glitch applied', focused: 'Focus applied', drained: 'Drain applied', freeze: 'Freeze applied', shield: 'Shield applied' }[id] || `${id} applied`);
+  window.DataByteMoveEffects = { apply, effectText };
 })();
