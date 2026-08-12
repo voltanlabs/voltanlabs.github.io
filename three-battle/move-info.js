@@ -13,7 +13,7 @@
     const modal = document.createElement('div');
     modal.id = 'moveInfoModal';
     modal.className = 'capture-modal is-open move-info-modal';
-    modal.innerHTML = `<div class="capture-card move-info-card"><button class="ghost move-info-close" type="button">CLOSE</button><span class="eyebrow">MOVE DATA // DETAILS</span><h2>${name}</h2><p>${details}</p><button class="scan-button move-info-close" type="button">BACK TO COMMAND DECK</button></div>`;
+    modal.innerHTML = `<div class="capture-card move-info-card"><span class="eyebrow">MOVE DATA // DETAILS</span><h2>${name}</h2><p>${details}</p><button class="scan-button move-info-close" type="button">BACK TO COMMAND DECK</button></div>`;
     document.body.appendChild(modal);
     modal.querySelectorAll('.move-info-close').forEach(close => close.addEventListener('click', closeInfo));
     modal.addEventListener('click', event => { if (event.target === modal) closeInfo(); });
