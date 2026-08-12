@@ -61,7 +61,7 @@ This is the working rulebook for the standalone `three-battle` game. It is the s
 ## 5. HP rules
 
 - There is no hard max-HP cap for owned instances.
-- Each instance receives a capture HP roll from 60–100.
+- Wild capture HP rolls are stage-based: base forms 60–100, second forms 90–140, and third forms 120–180.
 - Level growth adds `0.85 HP per level` after level 1, rounded to the nearest whole HP.
 - Each form upgrade adds a flat `+50 max HP` bonus.
 - The controlled formula is: `capture HP + round((level - 1) × 0.85) + ((form stage - 1) × 50)`.

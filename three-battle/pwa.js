@@ -26,7 +26,7 @@
       refreshing = true;
       window.location.reload();
     });
-    navigator.serviceWorker.register('./sw.js?v=release-0.1.10').then(function (registration) {
+    navigator.serviceWorker.register('./sw.js?v=release-0.1.11').then(function (registration) {
       registration.update();
     }).catch(function (error) {
       console.warn('DataByte offline shell unavailable.', error);
