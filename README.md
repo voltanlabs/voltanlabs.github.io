@@ -16,7 +16,7 @@ The current recovery pass established:
 
 - A canonical species-index reconstruction tool at `studio/tools/reconstruct-species-index.mjs`.
 - A GitHub Actions workflow that regenerates, validates, commits, and pushes `studio/databytesprites/species.json`.
-- A reconstructed 71-species Studio index generated from the active canon roster.
+- The active Three.js roster currently contains 83 unique species records; older Studio recovery notes may still refer to the prior 71-species index.
 - A canonical DataByteSprites Configuration Chart containing 20 configurations.
 - A strict separation between Alignment (`Pristine`, `Stained`, `Null`) and Configuration.
 - An authored first-pass configuration matchup model for battle and Download systems.
