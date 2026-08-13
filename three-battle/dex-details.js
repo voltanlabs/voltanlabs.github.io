@@ -32,7 +32,9 @@
       if (speciesId) counts.set(speciesId, (counts.get(speciesId) || 0) + 1);
       return counts;
     }, new Map());
-    host.innerHTML = data.filter(item => item.id !== 'placeholder').map(item => {
+    const query = String(document.getElementById('dexSearch')?.value || '').trim().toLowerCase();
+    const filtered = data.filter(item => item.id !== 'placeholder' && (!query || [item.name, item.familyId, item.alignment, item.primaryConfiguration, item.version, item.zodiac].some(value => String(value || '').toLowerCase().includes(query))));
+    host.innerHTML = filtered.map(item => {
       const isSeen = seen.has(item.id), captureCount = capturedCounts.get(item.id) || 0, isCaptured = captureCount > 0;
       const status = isCaptured ? 'CAPTURED' : isSeen ? 'SEEN' : 'UNKNOWN';
       const sprite = isSeen ? spriteUrl(item.sprite) : './data/sprites/placeholder.png';
@@ -46,5 +48,6 @@
   }
   window.addEventListener('DOMContentLoaded', render);
   ['databyte:dex-updated', 'databyte:party-updated'].forEach(event => window.addEventListener(event, render));
+  document.addEventListener('input', event => { if (event.target?.id === 'dexSearch') render(); });
   window.DataByteDexDetails = { render };
 })();
