@@ -9,7 +9,7 @@
   "theme_color": "#061221",
   "orientation": "portrait-primary",
   "icons": [
-    { "src": "../images/voltanlabs_icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "../images/voltanlabs_icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "../images/databytecoin-icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "../images/databytecoin-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
