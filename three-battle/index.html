@@ -27,7 +27,7 @@
     </section>
       <section id="controlView" class="control-panel hidden"><div class="panel-heading"><div><span class="eyebrow">COMMAND DECK</span><h2>Choose an action</h2></div><button id="switchBtn" class="ghost">SWITCH DATABYTE</button><button id="captureBattleBtn" class="ghost">CAPTURE SIGNAL</button><button id="resetBtn" hidden aria-hidden="true"></button></div><div id="actions" class="actions"><button class="action" data-move="0"><b>Volt Lash</b><span>Fast electric strike · 18 DMG</span></button><button class="action" data-move="1"><b>Signal Surge</b><span>High-voltage data burst · 25 DMG</span></button><button class="action" data-move="2"><b>Stabilize</b><span>Restore your signal · +20 HP</span></button></div><div id="battleOutcome" class="battle-outcome hidden"></div></section>
     <section id="partyView" class="party-panel"><div><span class="eyebrow">DATABYTE PARTY // STORAGE</span><h2>Your captured signals</h2></div><div id="partyList" class="party-list"><span class="party-empty">No captured DataBytes yet.</span></div></section>
-    <section id="dexView" class="dex-panel"><span class="eyebrow">DATABYTEDex // DISCOVERY LOG</span><h2><span id="dexSeenCount">0</span> signals discovered</h2><p><span id="dexCapturedCount">0</span> captured in party storage.</p></section>
+    <section id="dexView" class="dex-panel"><span class="eyebrow">DATABYTEDex // DISCOVERY LOG</span><h2><span id="dexSeenCount">0</span> species discovered</h2><p><span id="dexCapturedCount">0</span> captured instances in party storage.</p></section>
     <section id="missionView" class="dex-panel"><span class="eyebrow">SCAN MISSIONS // PROGRESSION</span><h2>Mission Board</h2><p id="progressionSummary"></p><p id="missionProgress">Choose a mission to begin.</p><div id="missionBoard"></div></section>
     <section id="itemsView" class="items-panel"><span class="eyebrow">ITEM CACHE // FIELD TOOLS</span><h2>Items</h2><p>DataByteCoins capture. Signal Boosts improve capture odds. Repair Pulses restore HP.</p><div id="itemsList" class="items-list"></div><div id="saveTools" class="save-tools"></div></section>
     <footer>Three.js presentation layer · standalone prototype · original DataByte battle remains unchanged</footer>
@@ -66,8 +66,8 @@
   <script src="./move-info.js?v=long-press-info-3"></script>
   <script src="./recovery.js?v=signal-reboot-3"></script>
   <script src="./encounter.js?v=discovery-sprite-path-1"></script>
-  <script src="./dex-ui.js?v=collection-count-1"></script>
-  <script src="./dex-details.js?v=dex-records"></script>
+  <script src="./dex-ui.js?v=dex-instance-count-1"></script>
+  <script src="./dex-details.js?v=dex-instance-map-1"></script>
   <script src="./regions.js?v=region-level-gates-1"></script>
   <script src="./region-encounters.js?v=pristine-grove-pool-1"></script>
   <script src="./events.js?v=profile-events-1"></script>
