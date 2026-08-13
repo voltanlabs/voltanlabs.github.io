@@ -5,6 +5,19 @@
     if (!sprite || /(^|\/)placeholder\.png(?:[?#].*)?$/i.test(sprite)) return './data/sprites/placeholder.png';
     return /^(?:\.\/|\.\.\/|\/|https?:\/\/|data:|blob:)/i.test(sprite) ? sprite : `./data/sprites/${sprite}`;
   };
+  const configurationFor = item => item.configurations?.join(' / ') || item.primaryConfiguration || item.configuration || 'Unassigned';
+
+  function openRecord(item, isSeen, captureCount) {
+    let modal = document.getElementById('dexRecordModal');
+    if (!modal) { modal = document.createElement('div'); modal.id = 'dexRecordModal'; modal.className = 'capture-modal'; document.body.appendChild(modal); }
+    const visibleName = isSeen ? item.name : 'Unknown Signal';
+    const description = isSeen ? (item.description || item.lore || 'Signal record pending.') : 'Scan this signal to reveal its record.';
+    const details = isSeen ? `<div class="dex-detail-stats"><span>ALIGNMENT <b>${escapeHtml(item.alignment || 'Unassigned')}</b></span><span>TYPE <b>${escapeHtml(configurationFor(item))}</b></span><span>RARITY <b>${escapeHtml(item.rarity || 'Common')}</b></span><span>CAUGHT <b>${captureCount}</b></span><span>FAMILY <b>${escapeHtml(item.familyId || 'Unassigned')}</b></span><span>FORM <b>${escapeHtml(item.version || 'Base Form')}</b></span>${item.zodiac ? `<span>ZODIAC <b>${escapeHtml(item.zodiac)}</b></span>` : ''}</div>` : '';
+    modal.innerHTML = `<div class="capture-card dex-detail-card"><button class="party-info-close ghost" data-dex-close type="button">CLOSE</button><span class="eyebrow">DATABYTEDex // SPECIES RECORD</span><img class="dex-detail-sprite" src="${escapeHtml(isSeen ? spriteUrl(item.sprite) : './data/sprites/placeholder.png')}" alt="${escapeHtml(visibleName)}"><h2>${escapeHtml(visibleName)}</h2><p class="dex-detail-number">#${escapeHtml(item.dex || '???')} · ${isSeen ? 'RECORD UNLOCKED' : 'SCAN REQUIRED'}</p>${details}<p class="dex-detail-description">${escapeHtml(description)}</p><button class="scan-button" data-dex-close type="button">RETURN TO DEX</button></div>`;
+    modal.classList.add('is-open');
+    modal.querySelectorAll('[data-dex-close]').forEach(button => { button.onclick = () => modal.classList.remove('is-open'); });
+  }
+
   function render() {
     const view = document.getElementById('dexView');
     const data = window.THREE_BATTLE_DATA?.species || [];
@@ -23,9 +36,13 @@
       const isSeen = seen.has(item.id), captureCount = capturedCounts.get(item.id) || 0, isCaptured = captureCount > 0;
       const status = isCaptured ? 'CAPTURED' : isSeen ? 'SEEN' : 'UNKNOWN';
       const sprite = isSeen ? spriteUrl(item.sprite) : './data/sprites/placeholder.png';
-      const count = isCaptured ? ` · ${captureCount} instance${captureCount === 1 ? '' : 's'}` : '';
-      return `<article class="dex-record ${status.toLowerCase()}"><img src="${escapeHtml(sprite)}" loading="${isSeen ? 'lazy' : 'eager'}" decoding="async" fetchpriority="low" alt="${escapeHtml(isSeen ? item.name : 'Unknown Signal')}"><div><strong>#${escapeHtml(item.dex || '???')} ${escapeHtml(isSeen ? item.name : 'Unknown Signal')}</strong><small>${status} · ${escapeHtml(item.rarity || 'Common')} · ${escapeHtml(item.alignment || 'Unassigned')}${count}</small><p>${escapeHtml(isSeen ? (item.lore || item.description || 'Signal record pending.') : 'Scan this signal to reveal its record.')}</p></div></article>`;
+      const count = isCaptured ? ` · ${captureCount} caught` : '';
+      return `<button class="dex-record ${status.toLowerCase()}" data-dex-id="${escapeHtml(item.id)}" type="button"><img src="${escapeHtml(sprite)}" loading="${isSeen ? 'lazy' : 'eager'}" decoding="async" fetchpriority="low" alt="${escapeHtml(isSeen ? item.name : 'Unknown Signal')}"><span><strong>#${escapeHtml(item.dex || '???')} ${escapeHtml(isSeen ? item.name : 'Unknown Signal')}</strong><small>${status} · ${escapeHtml(item.rarity || 'Common')} · ${escapeHtml(item.alignment || 'Unassigned')}${count}</small><span class="dex-record-description">${escapeHtml(isSeen ? (item.lore || item.description || 'Signal record pending.') : 'Tap to view record status.')}</span></span></button>`;
     }).join('');
+    host.querySelectorAll('[data-dex-id]').forEach(button => button.addEventListener('click', () => {
+      const item = data.find(entry => entry.id === button.dataset.dexId);
+      if (item) openRecord(item, seen.has(item.id), capturedCounts.get(item.id) || 0);
+    }));
   }
   window.addEventListener('DOMContentLoaded', render);
   ['databyte:dex-updated', 'databyte:party-updated'].forEach(event => window.addEventListener(event, render));
