@@ -36,3 +36,14 @@ The public `databyte-discovery.html` redirects to `three-battle/index.html`. `th
 ## Decision
 
 **Hold all further JavaScript moves.** This audit establishes that Studio diagnostics actively fetches some retired-load scripts and that ownership indexes retain others. No application or registry behavior is changed by this document.
+
+## Follow-up source inspection — 2026-10-31
+
+Verified at commit `ba4aafdb2cc0c5e924d0b114b3f20fdefd1221ae`:
+
+- `assets/js/studio-validation-engine.js` declares `SOURCE_REGISTRY = "/studio/diagnostics/sources.json"` and fetches registry `source.path` as text or JSON (around lines 357–360). This is an actual file-availability dependency, not merely documentation.
+- `assets/js/studio-phase37-ownership-validator.js` loads `/studio/databytesprites/source-files.json` and uses indexed records for canonical-owner checks, duplicate-owner detection, and UI-canon checks. Classification edits can change validation findings without changing gameplay.
+- `assets/js/dd-mobile-game-tray-4-2.js` is a 43-line styling-only module guarded by a pathname check. It mentions `dd-battle-centerline-fix-4-3.js` **only in a comment**; it does not import or dynamically load that module. Correct the earlier “code dependency” shorthand: this is a documented division of styling responsibility, not a verified runtime dependency edge.
+- `assets/js/dd-status-battle-flow.js` exposes `window.DD_STATUS_BATTLE_FLOW`, and is not one of the 19 `dd-app-bootstrap.js` registered bundle inputs. A global-name reference audit remains necessary before moving it.
+
+**Status:** still no approved script moves. Required next checks: all page entrypoints and script tags, global references, dynamic loaders, Studio registry fetch outcomes, workflow validation and Three.js smoke testing. GitHub text search alone cannot certify absence of use.
